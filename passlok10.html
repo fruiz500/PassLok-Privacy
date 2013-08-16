@@ -1,0 +1,2573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>PassLok privacy</title>
+    <style type="text/css">
+	    body {
+		font-family: Sans-Serif;
+				margin-left: 1%;
+		margin-right: 1%;
+		background-color: #FFFFFF;
+		color: #000000;
+	    }
+			label {
+				display: inline-block;
+			font-size:small;
+			margin-left: 2%;
+				margin-right: 2%;
+				vertical-align:middle;
+			}
+	</style>
+       
+    <meta name="Keywords" content="passlok, URSA, browser, encryption, decryption, symmetric, public key, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, system, javascript, pgp">
+    <meta name="Description" content="PassLok privacy">
+    <meta name="author" content="F. Ruiz">
+    <meta name="robots" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="apple-touch-icon" href="passlok-touch-icon.png">
+	
+   <script>
+  
+//SJCL.js begins
+"use strict";
+var sjcl = {
+    cipher: {},
+    hash: {},
+    keyexchange: {},
+    mode: {},
+    misc: {},
+    codec: {},
+    exception: {
+	corrupt: function (a) {
+	    this.toString = function () {
+		return "CORRUPT: " + this.message
+	    };
+	    this.message = a
+	},
+	invalid: function (a) {
+	    this.toString = function () {
+		return "INVALID: " + this.message
+	    };
+	    this.message = a
+	},
+	bug: function (a) {
+	    this.toString = function () {
+		return "BUG: " + this.message
+	    };
+	    this.message = a
+	},
+	notReady: function (a) {
+	    this.toString = function () {
+		return "NOT READY: " + this.message
+	    };
+	    this.message = a
+	}
+    }
+};
+if (typeof module != "undefined" && module.exports) module.exports = sjcl;
+sjcl.cipher.aes = function (a) {
+    this.h[0][0][0] || this.z();
+    var b, c, d, e, f = this.h[0][4],
+	g = this.h[1];
+    b = a.length;
+    var h = 1;
+    if (b !== 4 && b !== 6 && b !== 8) throw new sjcl.exception.invalid("invalid aes key size");
+    this.a = [d = a.slice(0), e = []];
+    for (a = b; a < 4 * b + 28; a++) {
+	c = d[a - 1];
+	if (a % b === 0 || b === 8 && a % b === 4) {
+	    c = f[c >>> 24] << 24 ^ f[c >> 16 & 255] << 16 ^ f[c >> 8 & 255] << 8 ^ f[c & 255];
+	    if (a % b === 0) {
+		c = c << 8 ^ c >>> 24 ^ h << 24;
+		h = h << 1 ^ (h >> 7) * 283
+	    }
+	}
+	d[a] = d[a - b] ^ c
+    }
+    for (b = 0; a; b++, a--) {
+	c = d[b & 3 ? a : a - 4];
+	e[b] = a <= 4 || b < 4 ? c : g[0][f[c >>> 24]] ^ g[1][f[c >> 16 & 255]] ^ g[2][f[c >> 8 & 255]] ^ g[3][f[c & 255]]
+    }
+};
+sjcl.cipher.aes.prototype = {
+    encrypt: function (a) {
+	return this.I(a, 0)
+    },
+    decrypt: function (a) {
+	return this.I(a, 1)
+    },
+    h: [
+	[
+	    [],
+	    [],
+	    [],
+	    [],
+	    []
+	],
+	[
+	    [],
+	    [],
+	    [],
+	    [],
+	    []
+	]
+    ],
+    z: function () {
+	var a = this.h[0],
+	    b = this.h[1],
+	    c = a[4],
+	    d = b[4],
+	    e, f, g, h = [],
+	    i = [],
+	    k, j, l, m;
+	for (e = 0; e < 0x100; e++) i[(h[e] = e << 1 ^ (e >> 7) * 283) ^ e] = e;
+	for (f = g = 0; !c[f]; f ^= k || 1, g = i[g] || 1) {
+	    l = g ^ g << 1 ^ g << 2 ^ g << 3 ^ g << 4;
+	    l = l >> 8 ^ l & 255 ^ 99;
+	    c[f] = l;
+	    d[l] = f;
+	    j = h[e = h[k = h[f]]];
+	    m = j * 0x1010101 ^ e * 0x10001 ^ k * 0x101 ^ f * 0x1010100;
+	    j = h[l] * 0x101 ^ l * 0x1010100;
+	    for (e = 0; e < 4; e++) {
+		a[e][f] = j = j << 24 ^ j >>> 8;
+		b[e][l] = m = m << 24 ^ m >>> 8
+	    }
+	}
+	for (e = 0; e < 5; e++) {
+	    a[e] = a[e].slice(0);
+	    b[e] = b[e].slice(0)
+	}
+    },
+    I: function (a, b) {
+	if (a.length !== 4) throw new sjcl.exception.invalid("invalid aes block size");
+	var c = this.a[b],
+	    d = a[0] ^ c[0],
+	    e = a[b ? 3 : 1] ^ c[1],
+	    f = a[2] ^ c[2];
+	a = a[b ? 1 : 3] ^ c[3];
+	var g, h, i, k = c.length / 4 - 2,
+	    j, l = 4,
+	    m = [0, 0, 0, 0];
+	g = this.h[b];
+	var n = g[0],
+	    o = g[1],
+	    p = g[2],
+	    q = g[3],
+	    r = g[4];
+	for (j = 0; j < k; j++) {
+	    g = n[d >>> 24] ^ o[e >> 16 & 255] ^ p[f >> 8 & 255] ^ q[a & 255] ^ c[l];
+	    h = n[e >>> 24] ^ o[f >> 16 & 255] ^ p[a >> 8 & 255] ^ q[d & 255] ^ c[l + 1];
+	    i = n[f >>> 24] ^ o[a >> 16 & 255] ^ p[d >> 8 & 255] ^ q[e & 255] ^ c[l + 2];
+	    a = n[a >>> 24] ^ o[d >> 16 & 255] ^ p[e >> 8 & 255] ^ q[f & 255] ^ c[l + 3];
+	    l += 4;
+	    d = g;
+	    e = h;
+	    f = i
+	}
+	for (j = 0; j < 4; j++) {
+	    m[b ? 3 & -j : j] = r[d >>> 24] << 24 ^ r[e >> 16 & 255] << 16 ^ r[f >> 8 & 255] << 8 ^ r[a & 255] ^ c[l++];
+	    g = d;
+	    d = e;
+	    e = f;
+	    f = a;
+	    a = g
+	}
+	return m
+    }
+};
+sjcl.bitArray = {
+    bitSlice: function (a, b, c) {
+	a = sjcl.bitArray.P(a.slice(b / 32), 32 - (b & 31)).slice(1);
+	return c === undefined ? a : sjcl.bitArray.clamp(a, c - b)
+    },
+    extract: function (a, b, c) {
+	var d = Math.floor(-b - c & 31);
+	return ((b + c - 1 ^ b) & -32 ? a[b / 32 | 0] << 32 - d ^ a[b / 32 + 1 | 0] >>> d : a[b / 32 | 0] >>> d) & (1 << c) - 1
+    },
+    concat: function (a, b) {
+	if (a.length === 0 || b.length === 0) return a.concat(b);
+	var c = a[a.length - 1],
+	    d = sjcl.bitArray.getPartial(c);
+	return d === 32 ? a.concat(b) : sjcl.bitArray.P(b, d, c | 0, a.slice(0, a.length - 1))
+    },
+    bitLength: function (a) {
+	var b = a.length;
+	if (b === 0) return 0;
+	return (b - 1) * 32 + sjcl.bitArray.getPartial(a[b - 1])
+    },
+    clamp: function (a, b) {
+	if (a.length * 32 < b) return a;
+	a = a.slice(0, Math.ceil(b / 32));
+	var c = a.length;
+	b &= 31;
+	if (c > 0 && b) a[c - 1] = sjcl.bitArray.partial(b, a[c - 1] & 2147483648 >> b - 1, 1);
+	return a
+    },
+    partial: function (a, b, c) {
+	if (a === 32) return b;
+	return (c ? b | 0 : b << 32 - a) + a * 0x10000000000
+    },
+    getPartial: function (a) {
+	return Math.round(a / 0x10000000000) || 32
+    },
+    equal: function (a, b) {
+	if (sjcl.bitArray.bitLength(a) !== sjcl.bitArray.bitLength(b)) return false;
+	var c = 0,
+	    d;
+	for (d = 0; d < a.length; d++) c |= a[d] ^ b[d];
+	return c === 0
+    },
+    P: function (a, b, c, d) {
+	var e;
+	e = 0;
+	if (d === undefined) d = [];
+	for (; b >= 32; b -= 32) {
+	    d.push(c);
+	    c = 0
+	}
+	if (b === 0) return d.concat(a);
+	for (e = 0; e < a.length; e++) {
+	    d.push(c | a[e] >>> b);
+	    c = a[e] << 32 - b
+	}
+	e = a.length ? a[a.length - 1] : 0;
+	a = sjcl.bitArray.getPartial(e);
+	d.push(sjcl.bitArray.partial(b + a & 31, b + a > 32 ? c : d.pop(), 1));
+	return d
+    },
+    k: function (a, b) {
+	return [a[0] ^ b[0], a[1] ^ b[1], a[2] ^ b[2], a[3] ^ b[3]]
+    }
+};
+sjcl.codec.utf8String = {
+    fromBits: function (a) {
+	var b = "",
+	    c = sjcl.bitArray.bitLength(a),
+	    d, e;
+	for (d = 0; d < c / 8; d++) {
+	    if ((d & 3) === 0) e = a[d / 4];
+	    b += String.fromCharCode(e >>> 24);
+	    e <<= 8
+	}
+	return decodeURIComponent(escape(b))
+    },
+    toBits: function (a) {
+	a = unescape(encodeURIComponent(a));
+	var b = [],
+	    c, d = 0;
+	for (c = 0; c < a.length; c++) {
+	    d = d << 8 | a.charCodeAt(c);
+	    if ((c & 3) === 3) {
+		b.push(d);
+		d = 0
+	    }
+	}
+	c & 3 && b.push(sjcl.bitArray.partial(8 * (c & 3), d));
+	return b
+    }
+};
+sjcl.codec.hex = {
+    fromBits: function (a) {
+	var b = "",
+	    c;
+	for (c = 0; c < a.length; c++) b += ((a[c] | 0) + 0xf00000000000).toString(16).substr(4);
+	return b.substr(0, sjcl.bitArray.bitLength(a) / 4)
+    },
+    toBits: function (a) {
+	var b, c = [],
+	    d;
+	a = a.replace(/\s|0x/g, "");
+	d = a.length;
+	a += "00000000";
+	for (b = 0; b < a.length; b += 8) c.push(parseInt(a.substr(b, 8), 16) ^ 0);
+	return sjcl.bitArray.clamp(c, d * 4)
+    }
+};
+sjcl.codec.base64 = {
+    F: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    fromBits: function (a, b, c) {
+	var d = "",
+	    e = 0,
+	    f = sjcl.codec.base64.F,
+	    g = 0,
+	    h = sjcl.bitArray.bitLength(a);
+	if (c) f = f.substr(0, 62) + "-_";
+	for (c = 0; d.length * 6 < h;) {
+	    d += f.charAt((g ^ a[c] >>> e) >>> 26);
+	    if (e < 6) {
+		g = a[c] << 6 - e;
+		e += 26;
+		c++
+	    } else {
+		g <<= 6;
+		e -= 6
+	    }
+	}
+	for (; d.length & 3 && !b;) d += "=";
+	return d
+    },
+    toBits: function (a, b) {
+	a = a.replace(/\s|=/g, "");
+	var c = [],
+	    d = 0,
+	    e = sjcl.codec.base64.F,
+	    f = 0,
+	    g;
+	if (b) e = e.substr(0, 62) + "-_";
+	for (b = 0; b < a.length; b++) {
+	    g = e.indexOf(a.charAt(b));
+	    if (g < 0) throw new sjcl.exception.invalid("this isn't base64!");
+	    if (d > 26) {
+		d -= 26;
+		c.push(f ^ g >>> d);
+		f = g << 32 - d
+	    } else {
+		d += 6;
+		f ^= g << 32 - d
+	    }
+	}
+	d & 56 && c.push(sjcl.bitArray.partial(d & 56, f, 1));
+	return c
+    }
+};
+sjcl.codec.base64url = {
+    fromBits: function (a) {
+	return sjcl.codec.base64.fromBits(a, 1, 1)
+    },
+    toBits: function (a) {
+	return sjcl.codec.base64.toBits(a, 1)
+    }
+};
+sjcl.hash.sha256 = function (a) {
+    this.a[0] || this.z();
+    if (a) {
+	this.n = a.n.slice(0);
+	this.i = a.i.slice(0);
+	this.e = a.e
+    } else this.reset()
+};
+sjcl.hash.sha256.hash = function (a) {
+    return (new sjcl.hash.sha256).update(a).finalize()
+};
+sjcl.hash.sha256.prototype = {
+    blockSize: 512,
+    reset: function () {
+	this.n = this.N.slice(0);
+	this.i = [];
+	this.e = 0;
+	return this
+    },
+    update: function (a) {
+	if (typeof a === "string") a = sjcl.codec.utf8String.toBits(a);
+	var b, c = this.i = sjcl.bitArray.concat(this.i, a);
+	b = this.e;
+	a = this.e = b + sjcl.bitArray.bitLength(a);
+	for (b = 512 + b & -512; b <= a; b += 512) this.D(c.splice(0, 16));
+	return this
+    },
+    finalize: function () {
+	var a, b = this.i,
+	    c = this.n;
+	b = sjcl.bitArray.concat(b, [sjcl.bitArray.partial(1, 1)]);
+	for (a = b.length + 2; a & 15; a++) b.push(0);
+	b.push(Math.floor(this.e / 4294967296));
+	for (b.push(this.e | 0); b.length;) this.D(b.splice(0, 16));
+	this.reset();
+	return c
+    },
+    N: [],
+    a: [],
+    z: function () {
+	function a(e) {
+	    return (e - Math.floor(e)) * 0x100000000 | 0
+	}
+	var b = 0,
+	    c = 2,
+	    d;
+	a: for (; b < 64; c++) {
+	    for (d = 2; d * d <= c; d++) if (c % d === 0) continue a;
+	    if (b < 8) this.N[b] = a(Math.pow(c, 0.5));
+	    this.a[b] = a(Math.pow(c, 1 / 3));
+	    b++
+	}
+    },
+    D: function (a) {
+	var b, c, d = a.slice(0),
+	    e = this.n,
+	    f = this.a,
+	    g = e[0],
+	    h = e[1],
+	    i = e[2],
+	    k = e[3],
+	    j = e[4],
+	    l = e[5],
+	    m = e[6],
+	    n = e[7];
+	for (a = 0; a < 64; a++) {
+	    if (a < 16) b = d[a];
+	    else {
+		b = d[a + 1 & 15];
+		c = d[a + 14 & 15];
+		b = d[a & 15] = (b >>> 7 ^ b >>> 18 ^ b >>> 3 ^ b << 25 ^ b << 14) + (c >>> 17 ^ c >>> 19 ^ c >>> 10 ^ c << 15 ^ c << 13) + d[a & 15] + d[a + 9 & 15] | 0
+	    }
+	    b = b + n + (j >>> 6 ^ j >>> 11 ^ j >>> 25 ^ j << 26 ^ j << 21 ^ j << 7) + (m ^ j & (l ^ m)) + f[a];
+	    n = m;
+	    m = l;
+	    l = j;
+	    j = k + b | 0;
+	    k = i;
+	    i = h;
+	    h = g;
+	    g = b + (h & i ^ k & (h ^ i)) + (h >>> 2 ^ h >>> 13 ^ h >>> 22 ^ h << 30 ^ h << 19 ^ h << 10) | 0
+	}
+	e[0] = e[0] + g | 0;
+	e[1] = e[1] + h | 0;
+	e[2] = e[2] + i | 0;
+	e[3] = e[3] + k | 0;
+	e[4] = e[4] + j | 0;
+	e[5] = e[5] + l | 0;
+	e[6] = e[6] + m | 0;
+	e[7] = e[7] + n | 0
+    }
+};
+sjcl.mode.ccm = {
+    name: "ccm",
+    encrypt: function (a, b, c, d, e) {
+	var f, g = b.slice(0),
+	    h = sjcl.bitArray,
+	    i = h.bitLength(c) / 8,
+	    k = h.bitLength(g) / 8;
+	e = e || 64;
+	d = d || [];
+	if (i < 7) throw new sjcl.exception.invalid("ccm: iv must be at least 7 bytes");
+	for (f = 2; f < 4 && k >>> 8 * f; f++);
+	if (f < 15 - i) f = 15 - i;
+	c = h.clamp(c, 8 * (15 - f));
+	b = sjcl.mode.ccm.H(a, b, c, d, e, f);
+	g = sjcl.mode.ccm.J(a, g, c, b, e, f);
+	return h.concat(g.data, g.tag)
+    },
+    decrypt: function (a, b, c, d, e) {
+	e = e || 64;
+	d = d || [];
+	var f = sjcl.bitArray,
+	    g = f.bitLength(c) / 8,
+	    h = f.bitLength(b),
+	    i = f.clamp(b, h - e),
+	    k = f.bitSlice(b,
+	    h - e);
+	h = (h - e) / 8;
+	if (g < 7) throw new sjcl.exception.invalid("ccm: iv must be at least 7 bytes");
+	for (b = 2; b < 4 && h >>> 8 * b; b++);
+	if (b < 15 - g) b = 15 - g;
+	c = f.clamp(c, 8 * (15 - b));
+	i = sjcl.mode.ccm.J(a, i, c, k, e, b);
+	a = sjcl.mode.ccm.H(a, i.data, c, d, e, b);
+	if (!f.equal(i.tag, a)) throw new sjcl.exception.corrupt("ccm: tag doesn't match");
+	return i.data
+    },
+    H: function (a, b, c, d, e, f) {
+	var g = [],
+	    h = sjcl.bitArray,
+	    i = h.k;
+	e /= 8;
+	if (e % 2 || e < 4 || e > 16) throw new sjcl.exception.invalid("ccm: invalid tag length");
+	if (d.length > 0xffffffff || b.length > 0xffffffff) throw new sjcl.exception.bug("ccm: can't deal with 4GiB or more data");
+	f = [h.partial(8, (d.length ? 64 : 0) | e - 2 << 2 | f - 1)];
+	f = h.concat(f, c);
+	f[3] |= h.bitLength(b) / 8;
+	f = a.encrypt(f);
+	if (d.length) {
+	    c = h.bitLength(d) / 8;
+	    if (c <= 65279) g = [h.partial(16, c)];
+	    else if (c <= 0xffffffff) g = h.concat([h.partial(16, 65534)], [c]);
+	    g = h.concat(g, d);
+	    for (d = 0; d < g.length; d += 4) f = a.encrypt(i(f, g.slice(d, d + 4).concat([0, 0, 0])))
+	}
+	for (d = 0; d < b.length; d += 4) f = a.encrypt(i(f, b.slice(d, d + 4).concat([0, 0, 0])));
+	return h.clamp(f, e * 8)
+    },
+    J: function (a, b, c, d, e, f) {
+	var g, h = sjcl.bitArray;
+	g = h.k;
+	var i = b.length,
+	    k = h.bitLength(b);
+	c = h.concat([h.partial(8,
+	f - 1)], c).concat([0, 0, 0]).slice(0, 4);
+	d = h.bitSlice(g(d, a.encrypt(c)), 0, e);
+	if (!i) return {
+	    tag: d,
+	    data: []
+	};
+	for (g = 0; g < i; g += 4) {
+	    c[3]++;
+	    e = a.encrypt(c);
+	    b[g] ^= e[0];
+	    b[g + 1] ^= e[1];
+	    b[g + 2] ^= e[2];
+	    b[g + 3] ^= e[3]
+	}
+	return {
+	    tag: d,
+	    data: h.clamp(b, k)
+	}
+    }
+};
+sjcl.mode.ocb2 = {
+    name: "ocb2",
+    encrypt: function (a, b, c, d, e, f) {
+	if (sjcl.bitArray.bitLength(c) !== 128) throw new sjcl.exception.invalid("ocb iv must be 128 bits");
+	var g, h = sjcl.mode.ocb2.B,
+	    i = sjcl.bitArray,
+	    k = i.k,
+	    j = [0, 0, 0, 0];
+	c = h(a.encrypt(c));
+	var l, m = [];
+	d = d || [];
+	e = e || 64;
+	for (g = 0; g + 4 < b.length; g += 4) {
+	    l = b.slice(g, g + 4);
+	    j = k(j, l);
+	    m = m.concat(k(c, a.encrypt(k(c, l))));
+	    c = h(c)
+	}
+	l = b.slice(g);
+	b = i.bitLength(l);
+	g = a.encrypt(k(c, [0, 0, 0, b]));
+	l = i.clamp(k(l.concat([0, 0, 0]), g), b);
+	j = k(j, k(l.concat([0, 0, 0]), g));
+	j = a.encrypt(k(j, k(c, h(c))));
+	if (d.length) j = k(j, f ? d : sjcl.mode.ocb2.pmac(a, d));
+	return m.concat(i.concat(l, i.clamp(j, e)))
+    },
+    decrypt: function (a, b, c, d, e, f) {
+	if (sjcl.bitArray.bitLength(c) !== 128) throw new sjcl.exception.invalid("ocb iv must be 128 bits");
+	e = e || 64;
+	var g = sjcl.mode.ocb2.B,
+	    h = sjcl.bitArray,
+	    i = h.k,
+	    k = [0, 0, 0, 0],
+	    j = g(a.encrypt(c)),
+	    l, m, n = sjcl.bitArray.bitLength(b) - e,
+	    o = [];
+	d = d || [];
+	for (c = 0; c + 4 < n / 32; c += 4) {
+	    l = i(j, a.decrypt(i(j, b.slice(c, c + 4))));
+	    k = i(k, l);
+	    o = o.concat(l);
+	    j = g(j)
+	}
+	m = n - c * 32;
+	l = a.encrypt(i(j, [0, 0, 0, m]));
+	l = i(l, h.clamp(b.slice(c),
+	m).concat([0, 0, 0]));
+	k = i(k, l);
+	k = a.encrypt(i(k, i(j, g(j))));
+	if (d.length) k = i(k, f ? d : sjcl.mode.ocb2.pmac(a, d));
+	if (!h.equal(h.clamp(k, e), h.bitSlice(b, n))) throw new sjcl.exception.corrupt("ocb: tag doesn't match");
+	return o.concat(h.clamp(l, m))
+    },
+    pmac: function (a, b) {
+	var c, d = sjcl.mode.ocb2.B,
+	    e = sjcl.bitArray,
+	    f = e.k,
+	    g = [0, 0, 0, 0],
+	    h = a.encrypt([0, 0, 0, 0]);
+	h = f(h, d(d(h)));
+	for (c = 0; c + 4 < b.length; c += 4) {
+	    h = d(h);
+	    g = f(g, a.encrypt(f(h, b.slice(c, c + 4))))
+	}
+	b = b.slice(c);
+	if (e.bitLength(b) < 128) {
+	    h = f(h, d(h));
+	    b = e.concat(b, [2147483648 | 0, 0,
+	    0, 0])
+	}
+	g = f(g, b);
+	return a.encrypt(f(d(f(h, d(h))), g))
+    },
+    B: function (a) {
+	return [a[0] << 1 ^ a[1] >>> 31, a[1] << 1 ^ a[2] >>> 31, a[2] << 1 ^ a[3] >>> 31, a[3] << 1 ^ (a[0] >>> 31) * 135]
+    }
+};
+sjcl.misc.hmac = function (a, b) {
+    this.M = b = b || sjcl.hash.sha256;
+    var c = [
+	[],
+	[]
+    ],
+	d = b.prototype.blockSize / 32;
+    this.l = [new b, new b];
+    if (a.length > d) a = b.hash(a);
+    for (b = 0; b < d; b++) {
+	c[0][b] = a[b] ^ 909522486;
+	c[1][b] = a[b] ^ 1549556828
+    }
+    this.l[0].update(c[0]);
+    this.l[1].update(c[1])
+};
+sjcl.misc.hmac.prototype.encrypt = sjcl.misc.hmac.prototype.mac = function (a, b) {
+    a = (new this.M(this.l[0])).update(a, b).finalize();
+    return (new this.M(this.l[1])).update(a).finalize()
+};
+sjcl.misc.pbkdf2 = function (a, b, c, d, e) {
+    c = c || 1E3;
+    if (d < 0 || c < 0) throw sjcl.exception.invalid("invalid params to pbkdf2");
+    if (typeof a === "string") a = sjcl.codec.utf8String.toBits(a);
+    e = e || sjcl.misc.hmac;
+    a = new e(a);
+    var f, g, h, i, k = [],
+	j = sjcl.bitArray;
+    for (i = 1; 32 * k.length < (d || 1); i++) {
+	e = f = a.encrypt(j.concat(b, [i]));
+	for (g = 1; g < c; g++) {
+	    f = a.encrypt(f);
+	    for (h = 0; h < f.length; h++) e[h] ^= f[h]
+	}
+	k = k.concat(e)
+    }
+    if (d) k = j.clamp(k, d);
+    return k
+};
+sjcl.random = {
+    randomWords: function (a, b) {
+	var c = [];
+	b = this.isReady(b);
+	var d;
+	if (b === 0) throw new sjcl.exception.notReady("generator isn't seeded");
+	else b & 2 && this.U(!(b & 1));
+	for (b = 0; b < a; b += 4) {
+	    (b + 1) % 0x10000 === 0 && this.L();
+	    d = this.w();
+	    c.push(d[0], d[1], d[2], d[3])
+	}
+	this.L();
+	return c.slice(0, a)
+    },
+    setDefaultParanoia: function (a) {
+	this.t = a
+    },
+    addEntropy: function (a, b, c) {
+	c = c || "user";
+	var d, e, f = (new Date).valueOf(),
+	    g = this.q[c],
+	    h = this.isReady(),
+	    i = 0;
+	d = this.G[c];
+	if (d === undefined) d = this.G[c] = this.R++;
+	if (g === undefined) g = this.q[c] = 0;
+	this.q[c] = (this.q[c] + 1) % this.b.length;
+	switch (typeof a) {
+	    case "number":
+		if (b === undefined) b = 1;
+		this.b[g].update([d, this.u++, 1, b, f, 1, a | 0]);
+		break;
+	    case "object":
+		c = Object.prototype.toString.call(a);
+		if (c === "[object Uint32Array]") {
+		    e = [];
+		    for (c = 0; c < a.length; c++) e.push(a[c]);
+		    a = e
+		} else {
+		    if (c !== "[object Array]") i = 1;
+		    for (c = 0; c < a.length && !i; c++) if (typeof a[c] != "number") i = 1
+		}
+		if (!i) {
+		    if (b === undefined) for (c = b = 0; c < a.length; c++) for (e = a[c]; e > 0;) {
+			b++;
+			e >>>= 1
+		    }
+		    this.b[g].update([d, this.u++, 2, b, f, a.length].concat(a))
+		}
+		break;
+	    case "string":
+		if (b === undefined) b = a.length;
+		this.b[g].update([d, this.u++, 3, b, f, a.length]);
+		this.b[g].update(a);
+		break;
+	    default:
+		i = 1
+	}
+	if (i) throw new sjcl.exception.bug("random: addEntropy only supports number, array of numbers or string");
+	this.j[g] += b;
+	this.f += b;
+	if (h === 0) {
+	    this.isReady() !== 0 && this.K("seeded", Math.max(this.g, this.f));
+	    this.K("progress", this.getProgress())
+	}
+    },
+    isReady: function (a) {
+	a = this.C[a !== undefined ? a : this.t];
+	return this.g && this.g >= a ? this.j[0] > 80 && (new Date).valueOf() > this.O ? 3 : 1 : this.f >= a ? 2 : 0
+    },
+    getProgress: function (a) {
+	a = this.C[a ? a : this.t];
+	return this.g >= a ? 1 : this.f > a ? 1 : this.f / a
+    },
+    startCollectors: function () {
+	if (!this.m) {
+	    if (window.addEventListener) {
+		window.addEventListener("load", this.o, false);
+		window.addEventListener("mousemove", this.p, false)
+	    } else if (document.attachEvent) {
+		document.attachEvent("onload", this.o);
+		document.attachEvent("onmousemove", this.p)
+	    } else throw new sjcl.exception.bug("can't attach event");
+	    this.m = true
+	}
+    },
+    stopCollectors: function () {
+	if (this.m) {
+	    if (window.removeEventListener) {
+		window.removeEventListener("load",
+		this.o, false);
+		window.removeEventListener("mousemove", this.p, false)
+	    } else if (window.detachEvent) {
+		window.detachEvent("onload", this.o);
+		window.detachEvent("onmousemove", this.p)
+	    }
+	    this.m = false
+	}
+    },
+    addEventListener: function (a, b) {
+	this.r[a][this.Q++] = b
+    },
+    removeEventListener: function (a, b) {
+	var c;
+	a = this.r[a];
+	var d = [];
+	for (c in a) a.hasOwnProperty(c) && a[c] === b && d.push(c);
+	for (b = 0; b < d.length; b++) {
+	    c = d[b];
+	    delete a[c]
+	}
+    },
+    b: [new sjcl.hash.sha256],
+    j: [0],
+    A: 0,
+    q: {},
+    u: 0,
+    G: {},
+    R: 0,
+    g: 0,
+    f: 0,
+    O: 0,
+    a: [0, 0, 0, 0, 0, 0, 0, 0],
+    d: [0, 0, 0, 0],
+    s: undefined,
+    t: 6,
+    m: false,
+    r: {
+	progress: {},
+	seeded: {}
+    },
+    Q: 0,
+    C: [0, 48, 64, 96, 128, 192, 0x100, 384, 512, 768, 1024],
+    w: function () {
+	for (var a = 0; a < 4; a++) {
+	    this.d[a] = this.d[a] + 1 | 0;
+	    if (this.d[a]) break
+	}
+	return this.s.encrypt(this.d)
+    },
+    L: function () {
+	this.a = this.w().concat(this.w());
+	this.s = new sjcl.cipher.aes(this.a)
+    },
+    T: function (a) {
+	this.a = sjcl.hash.sha256.hash(this.a.concat(a));
+	this.s = new sjcl.cipher.aes(this.a);
+	for (a = 0; a < 4; a++) {
+	    this.d[a] = this.d[a] + 1 | 0;
+	    if (this.d[a]) break
+	}
+    },
+    U: function (a) {
+	var b = [],
+	    c = 0,
+	    d;
+	this.O = b[0] = (new Date).valueOf() + 3E4;
+	for (d = 0; d < 16; d++) b.push(Math.random() * 0x100000000 | 0);
+	for (d = 0; d < this.b.length; d++) {
+	    b = b.concat(this.b[d].finalize());
+	    c += this.j[d];
+	    this.j[d] = 0;
+	    if (!a && this.A & 1 << d) break
+	}
+	if (this.A >= 1 << this.b.length) {
+	    this.b.push(new sjcl.hash.sha256);
+	    this.j.push(0)
+	}
+	this.f -= c;
+	if (c > this.g) this.g = c;
+	this.A++;
+	this.T(b)
+    },
+    p: function (a) {
+	sjcl.random.addEntropy([a.x || a.clientX || a.offsetX || 0, a.y || a.clientY || a.offsetY || 0], 2, "mouse")
+    },
+    o: function () {
+	sjcl.random.addEntropy((new Date).valueOf(), 2, "loadtime")
+    },
+    K: function (a, b) {
+	var c;
+	a = sjcl.random.r[a];
+	var d = [];
+	for (c in a) a.hasOwnProperty(c) && d.push(a[c]);
+	for (c = 0; c < d.length; c++) d[c](b)
+    }
+};
+try {
+    var s = new Uint32Array(32);
+    crypto.getRandomValues(s);
+    sjcl.random.addEntropy(s, 1024, "crypto['getRandomValues']")
+} catch (t) {}
+sjcl.json = {
+    defaults: {
+	v: 1,
+	iter: 1E3,
+	ks: 128,
+	ts: 64,
+	mode: "ccm",
+	adata: "",
+	cipher: "aes"
+    },
+    encrypt: function (a, b, c, d) {
+	c = c || {};
+	d = d || {};
+	var e = sjcl.json,
+	    f = e.c({
+		iv: sjcl.random.randomWords(4, 0)
+	    }, e.defaults),
+	    g;
+	e.c(f, c);
+	c = f.adata;
+	if (typeof f.salt === "string") f.salt = sjcl.codec.base64.toBits(f.salt);
+	if (typeof f.iv === "string") f.iv = sjcl.codec.base64.toBits(f.iv);
+	if (!sjcl.mode[f.mode] || !sjcl.cipher[f.cipher] || typeof a === "string" && f.iter <= 100 || f.ts !== 64 && f.ts !== 96 && f.ts !== 128 || f.ks !== 128 && f.ks !== 192 && f.ks !== 0x100 || f.iv.length < 2 || f.iv.length > 4) throw new sjcl.exception.invalid("json encrypt: invalid parameters");
+	if (typeof a === "string") {
+	    g = sjcl.misc.cachedPbkdf2(a, f);
+	    a = g.key.slice(0, f.ks / 32);
+	    f.salt = g.salt
+	}
+	if (typeof b === "string") b = sjcl.codec.utf8String.toBits(b);
+	if (typeof c === "string") c = sjcl.codec.utf8String.toBits(c);
+	g = new sjcl.cipher[f.cipher](a);
+	e.c(d, f);
+	d.key = a;
+	f.ct = sjcl.mode[f.mode].encrypt(g, b, f.iv, c, f.ts);
+	return e.encode(f)
+    },
+    decrypt: function (a, b, c, d) {
+	c = c || {};
+	d = d || {};
+	var e = sjcl.json;
+	b = e.c(e.c(e.c({}, e.defaults), e.decode(b)),
+	c, true);
+	var f;
+	c = b.adata;
+	if (typeof b.salt === "string") b.salt = sjcl.codec.base64.toBits(b.salt);
+	if (typeof b.iv === "string") b.iv = sjcl.codec.base64.toBits(b.iv);
+	if (!sjcl.mode[b.mode] || !sjcl.cipher[b.cipher] || typeof a === "string" && b.iter <= 100 || b.ts !== 64 && b.ts !== 96 && b.ts !== 128 || b.ks !== 128 && b.ks !== 192 && b.ks !== 0x100 || !b.iv || b.iv.length < 2 || b.iv.length > 4) throw new sjcl.exception.invalid("json decrypt: invalid parameters");
+	if (typeof a === "string") {
+	    f = sjcl.misc.cachedPbkdf2(a, b);
+	    a = f.key.slice(0, b.ks / 32);
+	    b.salt = f.salt
+	}
+	if (typeof c === "string") c = sjcl.codec.utf8String.toBits(c);
+	f = new sjcl.cipher[b.cipher](a);
+	c = sjcl.mode[b.mode].decrypt(f, b.ct, b.iv, c, b.ts);
+	e.c(d, b);
+	d.key = a;
+	return sjcl.codec.utf8String.fromBits(c)
+    },
+    encode: function (a) {
+	var b, c = "{",
+	    d = "";
+	for (b in a) if (a.hasOwnProperty(b)) {
+	    if (!b.match(/^[a-z0-9]+$/i)) throw new sjcl.exception.invalid("json encode: invalid property name");
+	    c += d + '"' + b + '":';
+	    d = ",";
+	    switch (typeof a[b]) {
+		case "number":
+		case "boolean":
+		    c += a[b];
+		    break;
+		case "string":
+		    c += '"' + escape(a[b]) + '"';
+		    break;
+		case "object":
+		    c += '"' + sjcl.codec.base64.fromBits(a[b], 1) + '"';
+		    break;
+		default:
+		    throw new sjcl.exception.bug("json encode: unsupported type");
+	    }
+	}
+	return c + "}"
+    },
+    decode: function (a) {
+	a = a.replace(/\s/g, "");
+	if (!a.match(/^\{.*\}$/)) throw new sjcl.exception.invalid("json decode: this isn't json!");
+	a = a.replace(/^\{|\}$/g, "").split(/,/);
+	var b = {}, c, d;
+	for (c = 0; c < a.length; c++) {
+	    if (!(d = a[c].match(/^(?:(["']?)([a-z][a-z0-9]*)\1):(?:(\d+)|"([a-z0-9+\/%*_.@=\-]*)")$/i))) throw new sjcl.exception.invalid("json decode: this isn't json!");
+	    b[d[2]] = d[3] ? parseInt(d[3], 10) : d[2].match(/^(ct|salt|iv)$/) ? sjcl.codec.base64.toBits(d[4]) : unescape(d[4])
+	}
+	return b
+    },
+    c: function (a, b, c) {
+	if (a === undefined) a = {};
+	if (b === undefined) return a;
+	var d;
+	for (d in b) if (b.hasOwnProperty(d)) {
+	    if (c && a[d] !== undefined && a[d] !== b[d]) throw new sjcl.exception.invalid("required parameter overridden");
+	    a[d] = b[d]
+	}
+	return a
+    },
+    W: function (a, b) {
+	var c = {}, d;
+	for (d in a) if (a.hasOwnProperty(d) && a[d] !== b[d]) c[d] = a[d];
+	return c
+    },
+    V: function (a, b) {
+	var c = {}, d;
+	for (d = 0; d < b.length; d++) if (a[b[d]] !== undefined) c[b[d]] = a[b[d]];
+	return c
+    }
+};
+sjcl.encrypt = sjcl.json.encrypt;
+sjcl.decrypt = sjcl.json.decrypt;
+sjcl.misc.S = {};
+sjcl.misc.cachedPbkdf2 = function (a, b) {
+    var c = sjcl.misc.S,
+	d;
+    b = b || {};
+    d = b.iter || 1E3;
+    c = c[a] = c[a] || {};
+    d = c[d] = c[d] || {
+	firstSalt: b.salt && b.salt.length ? b.salt.slice(0) : sjcl.random.randomWords(2, 0)
+    };
+    c = b.salt === undefined ? d.firstSalt : b.salt;
+    d[c] = d[c] || sjcl.misc.pbkdf2(a, c, b.iter);
+    return {
+	key: d[c].slice(0),
+	salt: c.slice(0)
+    }
+};
+
+//SHA512.js begins (also from SJCL)
+/** @fileOverview Javascript SHA-512 implementation.
+ *
+ * This implementation was written for CryptoJS by Jeff Mott and adapted for
+ * SJCL by Stefan Thomas.
+ *
+ * CryptoJS (c) 2009â€“2012 by Jeff Mott. All rights reserved.
+ * Released with New BSD License
+ *
+ * @author Emily Stark
+ * @author Mike Hamburg
+ * @author Dan Boneh
+ * @author Jeff Mott
+ * @author Stefan Thomas
+ */
+
+/**
+ * Context for a SHA-512 operation in progress.
+ * @constructor
+ * @class Secure Hash Algorithm, 512 bits.
+ */
+sjcl.hash.sha512 = function (hash) {
+  if (!this._key[0]) { this._precompute(); }
+  if (hash) {
+    this._h = hash._h.slice(0);
+    this._buffer = hash._buffer.slice(0);
+    this._length = hash._length;
+  } else {
+    this.reset();
+  }
+};
+
+/**
+ * Hash a string or an array of words.
+ * @static
+ * @param {bitArray|String} data the data to hash.
+ * @return {bitArray} The hash value, an array of 16 big-endian words.
+ */
+sjcl.hash.sha512.hash = function (data) {
+  return (new sjcl.hash.sha512()).update(data).finalize();
+};
+
+sjcl.hash.sha512.prototype = {
+  /**
+   * The hash's block size, in bits.
+   * @constant
+   */
+  blockSize: 1024,
+   
+  /**
+   * Reset the hash state.
+   * @return this
+   */
+  reset:function () {
+    this._h = this._init.slice(0);
+    this._buffer = [];
+    this._length = 0;
+    return this;
+  },
+  
+  /**
+   * Input several words to the hash.
+   * @param {bitArray|String} data the data to hash.
+   * @return this
+   */
+  update: function (data) {
+    if (typeof data === "string") {
+      data = sjcl.codec.utf8String.toBits(data);
+    }
+    var i, b = this._buffer = sjcl.bitArray.concat(this._buffer, data),
+        ol = this._length,
+        nl = this._length = ol + sjcl.bitArray.bitLength(data);
+    for (i = 1024+ol & -1024; i <= nl; i+= 1024) {
+      this._block(b.splice(0,32));
+    }
+    return this;
+  },
+  
+  /**
+   * Complete hashing and output the hash value.
+   * @return {bitArray} The hash value, an array of 16 big-endian words.
+   */
+  finalize:function () {
+    var i, b = this._buffer, h = this._h;
+
+    // Round out and push the buffer
+    b = sjcl.bitArray.concat(b, [sjcl.bitArray.partial(1,1)]);
+
+    // Round out the buffer to a multiple of 32 words, less the 4 length words.
+    for (i = b.length + 4; i & 31; i++) {
+      b.push(0);
+    }
+
+    // append the length
+    b.push(0);
+    b.push(0);
+    b.push(Math.floor(this._length / 0x100000000));
+    b.push(this._length | 0);
+
+    while (b.length) {
+      this._block(b.splice(0,32));
+    }
+
+    this.reset();
+    return h;
+  },
+
+  /**
+   * The SHA-512 initialization vector, to be precomputed.
+   * @private
+   */
+  _init:[],
+
+  /**
+   * Least significant 24 bits of SHA512 initialization values.
+   *
+   * Javascript only has 53 bits of precision, so we compute the 40 most
+   * significant bits and add the remaining 24 bits as constants.
+   *
+   * @private
+   */
+  _initr: [ 0xbcc908, 0xcaa73b, 0x94f82b, 0x1d36f1, 0xe682d1, 0x3e6c1f, 0x41bd6b, 0x7e2179 ],
+
+  /*
+  _init:
+  [0x6a09e667, 0xf3bcc908, 0xbb67ae85, 0x84caa73b, 0x3c6ef372, 0xfe94f82b, 0xa54ff53a, 0x5f1d36f1,
+   0x510e527f, 0xade682d1, 0x9b05688c, 0x2b3e6c1f, 0x1f83d9ab, 0xfb41bd6b, 0x5be0cd19, 0x137e2179],
+  */
+
+  /**
+   * The SHA-512 hash key, to be precomputed.
+   * @private
+   */
+  _key:[],
+
+  /**
+   * Least significant 24 bits of SHA512 key values.
+   * @private
+   */
+  _keyr:
+  [0x28ae22, 0xef65cd, 0x4d3b2f, 0x89dbbc, 0x48b538, 0x05d019, 0x194f9b, 0x6d8118,
+   0x030242, 0x706fbe, 0xe4b28c, 0xffb4e2, 0x7b896f, 0x1696b1, 0xc71235, 0x692694,
+   0xf14ad2, 0x4f25e3, 0x8cd5b5, 0xac9c65, 0x2b0275, 0xa6e483, 0x41fbd4, 0x1153b5,
+   0x66dfab, 0xb43210, 0xfb213f, 0xef0ee4, 0xa88fc2, 0x0aa725, 0x03826f, 0x0e6e70,
+   0xd22ffc, 0x26c926, 0xc42aed, 0x95b3df, 0xaf63de, 0x77b2a8, 0xedaee6, 0x82353b,
+   0xf10364, 0x423001, 0xf89791, 0x54be30, 0xef5218, 0x65a910, 0x71202a, 0xbbd1b8,
+   0xd2d0c8, 0x41ab53, 0x8eeb99, 0x9b48a8, 0xc95a63, 0x418acb, 0x63e373, 0xb2b8a3,
+   0xefb2fc, 0x172f60, 0xf0ab72, 0x6439ec, 0x631e28, 0x82bde9, 0xc67915, 0x72532b,
+   0x26619c, 0xc0c207, 0xe0eb1e, 0x6ed178, 0x176fba, 0xc898a6, 0xf90dae, 0x1c471b,
+   0x047d84, 0xc72493, 0xc9bebc, 0x100d4c, 0x3e42b6, 0x657e2a, 0xd6faec, 0x475817],
+
+  /*
+  _key:
+  [0x428a2f98, 0xd728ae22, 0x71374491, 0x23ef65cd, 0xb5c0fbcf, 0xec4d3b2f, 0xe9b5dba5, 0x8189dbbc,
+   0x3956c25b, 0xf348b538, 0x59f111f1, 0xb605d019, 0x923f82a4, 0xaf194f9b, 0xab1c5ed5, 0xda6d8118,
+   0xd807aa98, 0xa3030242, 0x12835b01, 0x45706fbe, 0x243185be, 0x4ee4b28c, 0x550c7dc3, 0xd5ffb4e2,
+   0x72be5d74, 0xf27b896f, 0x80deb1fe, 0x3b1696b1, 0x9bdc06a7, 0x25c71235, 0xc19bf174, 0xcf692694,
+   0xe49b69c1, 0x9ef14ad2, 0xefbe4786, 0x384f25e3, 0x0fc19dc6, 0x8b8cd5b5, 0x240ca1cc, 0x77ac9c65,
+   0x2de92c6f, 0x592b0275, 0x4a7484aa, 0x6ea6e483, 0x5cb0a9dc, 0xbd41fbd4, 0x76f988da, 0x831153b5,
+   0x983e5152, 0xee66dfab, 0xa831c66d, 0x2db43210, 0xb00327c8, 0x98fb213f, 0xbf597fc7, 0xbeef0ee4,
+   0xc6e00bf3, 0x3da88fc2, 0xd5a79147, 0x930aa725, 0x06ca6351, 0xe003826f, 0x14292967, 0x0a0e6e70,
+   0x27b70a85, 0x46d22ffc, 0x2e1b2138, 0x5c26c926, 0x4d2c6dfc, 0x5ac42aed, 0x53380d13, 0x9d95b3df,
+   0x650a7354, 0x8baf63de, 0x766a0abb, 0x3c77b2a8, 0x81c2c92e, 0x47edaee6, 0x92722c85, 0x1482353b,
+   0xa2bfe8a1, 0x4cf10364, 0xa81a664b, 0xbc423001, 0xc24b8b70, 0xd0f89791, 0xc76c51a3, 0x0654be30,
+   0xd192e819, 0xd6ef5218, 0xd6990624, 0x5565a910, 0xf40e3585, 0x5771202a, 0x106aa070, 0x32bbd1b8,
+   0x19a4c116, 0xb8d2d0c8, 0x1e376c08, 0x5141ab53, 0x2748774c, 0xdf8eeb99, 0x34b0bcb5, 0xe19b48a8,
+   0x391c0cb3, 0xc5c95a63, 0x4ed8aa4a, 0xe3418acb, 0x5b9cca4f, 0x7763e373, 0x682e6ff3, 0xd6b2b8a3,
+   0x748f82ee, 0x5defb2fc, 0x78a5636f, 0x43172f60, 0x84c87814, 0xa1f0ab72, 0x8cc70208, 0x1a6439ec,
+   0x90befffa, 0x23631e28, 0xa4506ceb, 0xde82bde9, 0xbef9a3f7, 0xb2c67915, 0xc67178f2, 0xe372532b,
+   0xca273ece, 0xea26619c, 0xd186b8c7, 0x21c0c207, 0xeada7dd6, 0xcde0eb1e, 0xf57d4f7f, 0xee6ed178,
+   0x06f067aa, 0x72176fba, 0x0a637dc5, 0xa2c898a6, 0x113f9804, 0xbef90dae, 0x1b710b35, 0x131c471b,
+   0x28db77f5, 0x23047d84, 0x32caab7b, 0x40c72493, 0x3c9ebe0a, 0x15c9bebc, 0x431d67c4, 0x9c100d4c,
+   0x4cc5d4be, 0xcb3e42b6, 0x597f299c, 0xfc657e2a, 0x5fcb6fab, 0x3ad6faec, 0x6c44198c, 0x4a475817],
+  */
+
+  /**
+   * Function to precompute _init and _key.
+   * @private
+   */
+  _precompute: function () {
+    // XXX: This code is for precomputing the SHA256 constants, change for
+    //      SHA512 and re-enable.
+    var i = 0, prime = 2, factor;
+
+    function frac(x)  { return (x-Math.floor(x)) * 0x100000000 | 0; }
+    function frac2(x) { return (x-Math.floor(x)) * 0x10000000000 & 0xff; }
+
+    outer: for (; i<80; prime++) {
+      for (factor=2; factor*factor <= prime; factor++) {
+        if (prime % factor === 0) {
+          // not a prime
+          continue outer;
+        }
+      }
+
+      if (i<8) {
+        this._init[i*2] = frac(Math.pow(prime, 1/2));
+        this._init[i*2+1] = (frac2(Math.pow(prime, 1/2)) << 24) | this._initr[i];
+      }
+      this._key[i*2] = frac(Math.pow(prime, 1/3));
+      this._key[i*2+1] = (frac2(Math.pow(prime, 1/3)) << 24) | this._keyr[i];
+      i++;
+    }
+  },
+
+  /**
+   * Perform one cycle of SHA-512.
+   * @param {bitArray} words one block of words.
+   * @private
+   */
+  _block:function (words) {
+    var i, wrh, wrl,
+        w = words.slice(0),
+        h = this._h,
+        k = this._key,
+        h0h = h[ 0], h0l = h[ 1], h1h = h[ 2], h1l = h[ 3],
+        h2h = h[ 4], h2l = h[ 5], h3h = h[ 6], h3l = h[ 7],
+        h4h = h[ 8], h4l = h[ 9], h5h = h[10], h5l = h[11],
+        h6h = h[12], h6l = h[13], h7h = h[14], h7l = h[15];
+
+    // Working variables
+    var ah = h0h, al = h0l, bh = h1h, bl = h1l,
+        ch = h2h, cl = h2l, dh = h3h, dl = h3l,
+        eh = h4h, el = h4l, fh = h5h, fl = h5l,
+        gh = h6h, gl = h6l, hh = h7h, hl = h7l;
+
+    for (i=0; i<80; i++) {
+      // load up the input word for this round
+      if (i<16) {
+        wrh = w[i * 2];
+        wrl = w[i * 2 + 1];
+      } else {
+        // Gamma0
+        var gamma0xh = w[(i-15) * 2];
+        var gamma0xl = w[(i-15) * 2 + 1];
+        var gamma0h =
+          ((gamma0xl << 31) | (gamma0xh >>> 1)) ^
+          ((gamma0xl << 24) | (gamma0xh >>> 8)) ^
+           (gamma0xh >>> 7);
+        var gamma0l =
+          ((gamma0xh << 31) | (gamma0xl >>> 1)) ^
+          ((gamma0xh << 24) | (gamma0xl >>> 8)) ^
+          ((gamma0xh << 25) | (gamma0xl >>> 7));
+
+        // Gamma1
+        var gamma1xh = w[(i-2) * 2];
+        var gamma1xl = w[(i-2) * 2 + 1];
+        var gamma1h =
+          ((gamma1xl << 13) | (gamma1xh >>> 19)) ^
+          ((gamma1xh << 3)  | (gamma1xl >>> 29)) ^
+           (gamma1xh >>> 6);
+        var gamma1l =
+          ((gamma1xh << 13) | (gamma1xl >>> 19)) ^
+          ((gamma1xl << 3)  | (gamma1xh >>> 29)) ^
+          ((gamma1xh << 26) | (gamma1xl >>> 6));
+
+        // Shortcuts
+        var wr7h = w[(i-7) * 2];
+        var wr7l = w[(i-7) * 2 + 1];
+
+        var wr16h = w[(i-16) * 2];
+        var wr16l = w[(i-16) * 2 + 1];
+
+        // W(round) = gamma0 + W(round - 7) + gamma1 + W(round - 16)
+        wrl = gamma0l + wr7l;
+        wrh = gamma0h + wr7h + ((wrl >>> 0) < (gamma0l >>> 0) ? 1 : 0);
+        wrl += gamma1l;
+        wrh += gamma1h + ((wrl >>> 0) < (gamma1l >>> 0) ? 1 : 0);
+        wrl += wr16l;
+        wrh += wr16h + ((wrl >>> 0) < (wr16l >>> 0) ? 1 : 0);
+      }
+
+      w[i*2]     = wrh |= 0;
+      w[i*2 + 1] = wrl |= 0;
+
+      // Ch
+      var chh = (eh & fh) ^ (~eh & gh);
+      var chl = (el & fl) ^ (~el & gl);
+
+      // Maj
+      var majh = (ah & bh) ^ (ah & ch) ^ (bh & ch);
+      var majl = (al & bl) ^ (al & cl) ^ (bl & cl);
+
+      // Sigma0
+      var sigma0h = ((al << 4) | (ah >>> 28)) ^ ((ah << 30) | (al >>> 2)) ^ ((ah << 25) | (al >>> 7));
+      var sigma0l = ((ah << 4) | (al >>> 28)) ^ ((al << 30) | (ah >>> 2)) ^ ((al << 25) | (ah >>> 7));
+
+      // Sigma1
+      var sigma1h = ((el << 18) | (eh >>> 14)) ^ ((el << 14) | (eh >>> 18)) ^ ((eh << 23) | (el >>> 9));
+      var sigma1l = ((eh << 18) | (el >>> 14)) ^ ((eh << 14) | (el >>> 18)) ^ ((el << 23) | (eh >>> 9));
+
+      // K(round)
+      var krh = k[i*2];
+      var krl = k[i*2+1];
+
+      // t1 = h + sigma1 + ch + K(round) + W(round)
+      var t1l = hl + sigma1l;
+      var t1h = hh + sigma1h + ((t1l >>> 0) < (hl >>> 0) ? 1 : 0);
+      t1l += chl;
+      t1h += chh + ((t1l >>> 0) < (chl >>> 0) ? 1 : 0);
+      t1l += krl;
+      t1h += krh + ((t1l >>> 0) < (krl >>> 0) ? 1 : 0);
+      t1l += wrl;
+      t1h += wrh + ((t1l >>> 0) < (wrl >>> 0) ? 1 : 0);
+
+      // t2 = sigma0 + maj
+      var t2l = sigma0l + majl;
+      var t2h = sigma0h + majh + ((t2l >>> 0) < (sigma0l >>> 0) ? 1 : 0);
+
+      // Update working variables
+      hh = gh;
+      hl = gl;
+      gh = fh;
+      gl = fl;
+      fh = eh;
+      fl = el;
+      el = (dl + t1l) | 0;
+      eh = (dh + t1h + ((el >>> 0) < (dl >>> 0) ? 1 : 0)) | 0;
+      dh = ch;
+      dl = cl;
+      ch = bh;
+      cl = bl;
+      bh = ah;
+      bl = al;
+      al = (t1l + t2l) | 0;
+      ah = (t1h + t2h + ((al >>> 0) < (t1l >>> 0) ? 1 : 0)) | 0;
+    }
+
+    // Intermediate hash
+    h0l = h[1] = (h0l + al) | 0;
+    h[0] = (h0h + ah + ((h0l >>> 0) < (al >>> 0) ? 1 : 0)) | 0;
+    h1l = h[3] = (h1l + bl) | 0;
+    h[2] = (h1h + bh + ((h1l >>> 0) < (bl >>> 0) ? 1 : 0)) | 0;
+    h2l = h[5] = (h2l + cl) | 0;
+    h[4] = (h2h + ch + ((h2l >>> 0) < (cl >>> 0) ? 1 : 0)) | 0;
+    h3l = h[7] = (h3l + dl) | 0;
+    h[6] = (h3h + dh + ((h3l >>> 0) < (dl >>> 0) ? 1 : 0)) | 0;
+    h4l = h[9] = (h4l + el) | 0;
+    h[8] = (h4h + eh + ((h4l >>> 0) < (el >>> 0) ? 1 : 0)) | 0;
+    h5l = h[11] = (h5l + fl) | 0;
+    h[10] = (h5h + fh + ((h5l >>> 0) < (fl >>> 0) ? 1 : 0)) | 0;
+    h6l = h[13] = (h6l + gl) | 0;
+    h[12] = (h6h + gh + ((h6l >>> 0) < (gl >>> 0) ? 1 : 0)) | 0;
+    h7l = h[15] = (h7l + hl) | 0;
+    h[14] = (h7h + hh + ((h7l >>> 0) < (hl >>> 0) ? 1 : 0)) | 0;
+  }
+};
+//SHA512.js ends
+
+//BN.js begins (also from SJCL)
+/**
+ * Constructs a new bignum from another bignum, a number or a hex string.
+ */
+sjcl.bn = function(it) {
+  this.initWith(it);
+};
+
+sjcl.bn.prototype = {
+  radix: 24,
+  maxMul: 8,
+  _class: sjcl.bn,
+  
+  copy: function() {
+    return new this._class(this);
+  },
+
+  /**
+   * Initializes this with it, either as a bn, a number, or a hex string.
+   */
+  initWith: function(it) {
+    var i=0, k, n, l;
+    switch(typeof it) {
+    case "object":
+      this.limbs = it.limbs.slice(0);
+      break;
+      
+    case "number":
+      this.limbs = [it];
+      this.normalize();
+      break;
+      
+    case "string":
+      it = it.replace(/^0x/, '');
+      this.limbs = [];
+      // hack
+      k = this.radix / 4;
+      for (i=0; i < it.length; i+=k) {
+	this.limbs.push(parseInt(it.substring(Math.max(it.length - i - k, 0), it.length - i),16));
+      }
+      break;
+
+    default:
+      this.limbs = [0];
+    }
+    return this;
+  },
+
+  /**
+   * Returns true if "this" and "that" are equal.  Calls fullReduce().
+   * Equality test is in constant time.
+   */
+  equals: function(that) {
+    if (typeof that === "number") { that = new this._class(that); }
+    var difference = 0, i;
+    this.fullReduce();
+    that.fullReduce();
+    for (i = 0; i < this.limbs.length || i < that.limbs.length; i++) {
+      difference |= this.getLimb(i) ^ that.getLimb(i);
+    }
+    return (difference === 0);
+  },
+  
+  /**
+   * Get the i'th limb of this, zero if i is too large.
+   */
+  getLimb: function(i) {
+    return (i >= this.limbs.length) ? 0 : this.limbs[i];
+  },
+  
+  /**
+   * Constant time comparison function.
+   * Returns 1 if this >= that, or zero otherwise.
+   */
+  greaterEquals: function(that) {
+    if (typeof that === "number") { that = new this._class(that); }
+    var less = 0, greater = 0, i, a, b;
+    i = Math.max(this.limbs.length, that.limbs.length) - 1;
+    for (; i>= 0; i--) {
+      a = this.getLimb(i);
+      b = that.getLimb(i);
+      greater |= (b - a) & ~less;
+      less |= (a - b) & ~greater;
+    }
+    return (greater | ~less) >>> 31;
+  },
+  
+  /**
+   * Convert to a hex string.
+   */
+  toString: function() {
+    this.fullReduce();
+    var out="", i, s, l = this.limbs;
+    for (i=0; i < this.limbs.length; i++) {
+      s = l[i].toString(16);
+      while (i < this.limbs.length - 1 && s.length < 6) {
+	s = "0" + s;
+      }
+      out = s + out;
+    }
+    return "0x"+out;
+  },
+  
+  /** this += that.  Does not normalize. */
+  addM: function(that) {
+    if (typeof(that) !== "object") { that = new this._class(that); }
+    var i, l=this.limbs, ll=that.limbs;
+    for (i=l.length; i<ll.length; i++) {
+      l[i] = 0;
+    }
+    for (i=0; i<ll.length; i++) {
+      l[i] += ll[i];
+    }
+    return this;
+  },
+  
+  /** this *= 2.  Requires normalized; ends up normalized. */
+  doubleM: function() {
+    var i, carry=0, tmp, r=this.radix, m=this.radixMask, l=this.limbs;
+    for (i=0; i<l.length; i++) {
+      tmp = l[i];
+      tmp = tmp+tmp+carry;
+      l[i] = tmp & m;
+      carry = tmp >> r;
+    }
+    if (carry) {
+      l.push(carry);
+    }
+    return this;
+  },
+  
+  /** this /= 2, rounded down.	Requires normalized; ends up normalized. */
+  halveM: function() {
+    var i, carry=0, tmp, r=this.radix, l=this.limbs;
+    for (i=l.length-1; i>=0; i--) {
+      tmp = l[i];
+      l[i] = (tmp+carry)>>1;
+      carry = (tmp&1) << r;
+    }
+    if (!l[l.length-1]) {
+      l.pop();
+    }
+    return this;
+  },
+
+  /** this -= that.  Does not normalize. */
+  subM: function(that) {
+    if (typeof(that) !== "object") { that = new this._class(that); }
+    var i, l=this.limbs, ll=that.limbs;
+    for (i=l.length; i<ll.length; i++) {
+      l[i] = 0;
+    }
+    for (i=0; i<ll.length; i++) {
+      l[i] -= ll[i];
+    }
+    return this;
+  },
+  
+  mod: function(that) {
+    that = new sjcl.bn(that).normalize(); // copy before we begin
+    var out = new sjcl.bn(this).normalize(), ci=0;
+    
+    for (; out.greaterEquals(that); ci++) {
+
+      that.doubleM();
+    }
+    for (; ci > 0; ci--) {
+      that.halveM();
+      if (out.greaterEquals(that)) {
+	out.subM(that).normalize();
+      }
+    }
+    return out.trim();
+  },
+  
+  /** return inverse mod prime p.  p must be odd. Binary extended Euclidean algorithm mod p. */
+  inverseMod: function(p) {
+    var a = new sjcl.bn(1), b = new sjcl.bn(0), x = new sjcl.bn(this), y = new sjcl.bn(p), tmp, i, nz=1;
+    
+    if (!(p.limbs[0] & 1)) {
+      throw (new sjcl.exception.invalid("inverseMod: p must be odd"));
+    }
+    
+    // invariant: y is odd
+    do {
+      if (x.limbs[0] & 1) {
+	if (!x.greaterEquals(y)) {
+	  // x < y; swap everything
+	  tmp = x; x = y; y = tmp;
+	  tmp = a; a = b; b = tmp;
+	}
+	x.subM(y);
+	x.normalize();
+	
+	if (!a.greaterEquals(b)) {
+	  a.addM(p);
+	}
+	a.subM(b);
+      }
+      
+      // cut everything in half
+      x.halveM();
+      if (a.limbs[0] & 1) {
+	a.addM(p);
+      }
+      a.normalize();
+      a.halveM();
+      
+      // check for termination: x ?= 0
+      for (i=nz=0; i<x.limbs.length; i++) {
+	nz |= x.limbs[i];
+      }
+    } while(nz);
+    
+    if (!y.equals(1)) {
+      throw (new sjcl.exception.invalid("inverseMod: p and x must be relatively prime"));
+    }
+    
+    return b;
+  },
+  
+  /** this + that.  Does not normalize. */
+  add: function(that) {
+    return this.copy().addM(that);
+  },
+
+  /** this - that.  Does not normalize. */
+  sub: function(that) {
+    return this.copy().subM(that);
+  },
+  
+  /** this * that.  Normalizes and reduces. */
+  mul: function(that) {
+    if (typeof(that) === "number") { that = new this._class(that); }
+    var i, j, a = this.limbs, b = that.limbs, al = a.length, bl = b.length, out = new this._class(), c = out.limbs, ai, ii=this.maxMul;
+
+    for (i=0; i < this.limbs.length + that.limbs.length + 1; i++) {
+      c[i] = 0;
+    }
+    for (i=0; i<al; i++) {
+      ai = a[i];
+      for (j=0; j<bl; j++) {
+	c[i+j] += ai * b[j];
+      }
+     
+      if (!--ii) {
+	ii = this.maxMul;
+	out.cnormalize();
+      }
+    }
+    return out.cnormalize().reduce();
+  },
+
+  /** this ^ 2.  Normalizes and reduces. */
+  square: function() {
+    return this.mul(this);
+  },
+
+  /** this ^ n.  Uses square-and-multiply.  Normalizes and reduces. */
+  power: function(l) {
+    if (typeof(l) === "number") {
+      l = [l];
+    } else if (l.limbs !== undefined) {
+      l = l.normalize().limbs;
+    }
+    var i, j, out = new this._class(1), pow = this;
+
+    for (i=0; i<l.length; i++) {
+      for (j=0; j<this.radix; j++) {
+	if (l[i] & (1<<j)) {
+	  out = out.mul(pow);
+	}
+	pow = pow.square();
+      }
+    }
+    
+    return out;
+  },
+
+  /** this * that mod N */
+  mulmod: function(that, N) {
+    return this.mod(N).mul(that.mod(N)).mod(N);
+  },
+
+  /** this ^ x mod N */
+  powermod: function(x, N) {
+    var result = new sjcl.bn(1), a = new sjcl.bn(this), k = new sjcl.bn(x);
+    while (true) {
+      if (k.limbs[0] & 1) { result = result.mulmod(a, N); }
+      k.halveM();
+      if (k.equals(0)) { break; }
+      a = a.mulmod(a, N);
+    }
+    return result.normalize().reduce();
+  },
+
+  trim: function() {
+    var l = this.limbs, p;
+    do {
+      p = l.pop();
+    } while (l.length && p === 0);
+    l.push(p);
+    return this;
+  },
+  
+  /** Reduce mod a modulus.  Stubbed for subclassing. */
+  reduce: function() {
+    return this;
+  },
+
+  /** Reduce and normalize. */
+  fullReduce: function() {
+    return this.normalize();
+  },
+  
+  /** Propagate carries. */
+  normalize: function() {
+    var carry=0, i, pv = this.placeVal, ipv = this.ipv, l, m, limbs = this.limbs, ll = limbs.length, mask = this.radixMask;
+    for (i=0; i < ll || (carry !== 0 && carry !== -1); i++) {
+      l = (limbs[i]||0) + carry;
+      m = limbs[i] = l & mask;
+      carry = (l-m)*ipv;
+    }
+    if (carry === -1) {
+      limbs[i-1] -= this.placeVal;
+    }
+    return this;
+  },
+
+  /** Constant-time normalize. Does not allocate additional space. */
+  cnormalize: function() {
+    var carry=0, i, ipv = this.ipv, l, m, limbs = this.limbs, ll = limbs.length, mask = this.radixMask;
+    for (i=0; i < ll-1; i++) {
+      l = limbs[i] + carry;
+      m = limbs[i] = l & mask;
+      carry = (l-m)*ipv;
+    }
+    limbs[i] += carry;
+    return this;
+  },
+  
+  /** Serialize to a bit array */
+  toBits: function(len) {
+    this.fullReduce();
+    len = len || this.exponent || this.limbs.length * this.radix;
+    var i = Math.floor((len-1)/24), w=sjcl.bitArray, e = (len + 7 & -8) % this.radix || this.radix,
+	out = [w.partial(e, this.getLimb(i))];
+    for (i--; i >= 0; i--) {
+      out = w.concat(out, [w.partial(this.radix, this.getLimb(i))]);
+    }
+    return out;
+  },
+  
+  /** Return the length in bits, rounded up to the nearest byte. */
+  bitLength: function() {
+    this.fullReduce();
+    var out = this.radix * (this.limbs.length - 1),
+	b = this.limbs[this.limbs.length - 1];
+    for (; b; b >>= 1) {
+      out ++;
+    }
+    return out+7 & -8;
+  }
+};
+
+sjcl.bn.fromBits = function(bits) {
+  var Class = this, out = new Class(), words=[], w=sjcl.bitArray, t = this.prototype,
+      l = Math.min(this.bitLength || 0x100000000, w.bitLength(bits)), e = l % t.radix || t.radix;
+  
+  words[0] = w.extract(bits, 0, e);
+  for (; e < l; e += t.radix) {
+    words.unshift(w.extract(bits, e, t.radix));
+  }
+
+  out.limbs = words;
+  return out;
+};
+
+sjcl.bn.prototype.ipv = 1 / (sjcl.bn.prototype.placeVal = Math.pow(2,sjcl.bn.prototype.radix));
+sjcl.bn.prototype.radixMask = (1 << sjcl.bn.prototype.radix) - 1;
+
+/**
+ * Creates a new subclass of bn, based on reduction modulo a pseudo-Mersenne prime,
+ * i.e. a prime of the form 2^e + sum(a * 2^b),where the sum is negative and sparse.
+ */
+sjcl.bn.pseudoMersennePrime = function(exponent, coeff) {
+  function p(it) {
+    this.initWith(it);
+    /*if (this.limbs[this.modOffset]) {
+      this.reduce();
+    }*/
+  }
+
+  var ppr = p.prototype = new sjcl.bn(), i, tmp, mo;
+  mo = ppr.modOffset = Math.ceil(tmp = exponent / ppr.radix);
+  ppr.exponent = exponent;
+  ppr.offset = [];
+  ppr.factor = [];
+  ppr.minOffset = mo;
+  ppr.fullMask = 0;
+  ppr.fullOffset = [];
+  ppr.fullFactor = [];
+  ppr.modulus = p.modulus = new sjcl.bn(Math.pow(2,exponent));
+  
+  ppr.fullMask = 0|-Math.pow(2, exponent % ppr.radix);
+
+  for (i=0; i<coeff.length; i++) {
+    ppr.offset[i] = Math.floor(coeff[i][0] / ppr.radix - tmp);
+    ppr.fullOffset[i] = Math.ceil(coeff[i][0] / ppr.radix - tmp);
+    ppr.factor[i] = coeff[i][1] * Math.pow(1/2, exponent - coeff[i][0] + ppr.offset[i] * ppr.radix);
+    ppr.fullFactor[i] = coeff[i][1] * Math.pow(1/2, exponent - coeff[i][0] + ppr.fullOffset[i] * ppr.radix);
+    ppr.modulus.addM(new sjcl.bn(Math.pow(2,coeff[i][0])*coeff[i][1]));
+    ppr.minOffset = Math.min(ppr.minOffset, -ppr.offset[i]); // conservative
+  }
+  ppr._class = p;
+  ppr.modulus.cnormalize();
+
+  /** Approximate reduction mod p.  May leave a number which is negative or slightly larger than p. */
+  ppr.reduce = function() {
+    var i, k, l, mo = this.modOffset, limbs = this.limbs, aff, off = this.offset, ol = this.offset.length, fac = this.factor, ll;
+
+    i = this.minOffset;
+    while (limbs.length > mo) {
+      l = limbs.pop();
+      ll = limbs.length;
+      for (k=0; k<ol; k++) {
+	limbs[ll+off[k]] -= fac[k] * l;
+      }
+      
+      i--;
+      if (!i) {
+	limbs.push(0);
+	this.cnormalize();
+	i = this.minOffset;
+      }
+    }
+    this.cnormalize();
+
+    return this;
+  };
+  
+  ppr._strongReduce = (ppr.fullMask === -1) ? ppr.reduce : function() {
+    var limbs = this.limbs, i = limbs.length - 1, k, l;
+    this.reduce();
+    if (i === this.modOffset - 1) {
+      l = limbs[i] & this.fullMask;
+      limbs[i] -= l;
+      for (k=0; k<this.fullOffset.length; k++) {
+	limbs[i+this.fullOffset[k]] -= this.fullFactor[k] * l;
+      }
+      this.normalize();
+    }
+  };
+
+  /** mostly constant-time, very expensive full reduction. */
+  ppr.fullReduce = function() {
+    var greater, i;
+    // massively above the modulus, may be negative
+    
+    this._strongReduce();
+    // less than twice the modulus, may be negative
+
+    this.addM(this.modulus);
+    this.addM(this.modulus);
+    this.normalize();
+    // probably 2-3x the modulus
+    
+    this._strongReduce();
+    // less than the power of 2.  still may be more than
+    // the modulus
+
+    // HACK: pad out to this length
+    for (i=this.limbs.length; i<this.modOffset; i++) {
+      this.limbs[i] = 0;
+    }
+    
+    // constant-time subtract modulus
+    greater = this.greaterEquals(this.modulus);
+    for (i=0; i<this.limbs.length; i++) {
+      this.limbs[i] -= this.modulus.limbs[i] * greater;
+    }
+    this.cnormalize();
+
+    return this;
+  };
+
+  ppr.inverse = function() {
+    return (this.power(this.modulus.sub(2)));
+  };
+
+  p.fromBits = sjcl.bn.fromBits;
+
+  return p;
+};
+
+// a small Mersenne prime
+sjcl.bn.prime = {
+  // NIST primes
+  p521: sjcl.bn.pseudoMersennePrime(521, [[0,-1]])
+};
+
+sjcl.bn.random = function(modulus, paranoia) {
+  if (typeof modulus !== "object") { modulus = new sjcl.bn(modulus); }
+  var words, i, l = modulus.limbs.length, m = modulus.limbs[l-1]+1, out = new sjcl.bn();
+  while (true) {
+    // get a sequence whose first digits make sense
+    do {
+      words = sjcl.random.randomWords(l, paranoia);
+      if (words[l-1] < 0) { words[l-1] += 0x100000000; }
+    } while (Math.floor(words[l-1] / m) === Math.floor(0x100000000 / m));
+    words[l-1] %= m;
+
+    // mask off all the limbs
+    for (i=0; i<l-1; i++) {
+      words[i] &= modulus.radixMask;
+    }
+
+    // check the rest of the digitssj
+    out.limbs = words;
+    if (!out.greaterEquals(modulus)) {
+      return out;
+    }
+  }
+};
+
+//ECC.js begins (I added the 521-bit curve, took out elGamal etc at the end)
+sjcl.ecc = {};
+
+/**
+ * Represents a point on a curve in affine coordinates.
+ * @constructor
+ * @param {sjcl.ecc.curve} curve The curve that this point lies on.
+ * @param {bigInt} x The x coordinate.
+ * @param {bigInt} y The y coordinate.
+ */
+sjcl.ecc.point = function(curve,x,y) {
+  if (x === undefined) {
+    this.isIdentity = true;
+  } else {
+    this.x = x;
+    this.y = y;
+    this.isIdentity = false;
+  }
+  this.curve = curve;
+};
+
+sjcl.ecc.point.prototype = {
+  toJac: function() {
+    return new sjcl.ecc.pointJac(this.curve, this.x, this.y, new this.curve.field(1));
+  },
+
+  mult: function(k) {
+    return this.toJac().mult(k, this).toAffine();
+  },
+  
+  /**
+   * Multiply this point by k, added to affine2*k2, and return the answer in Jacobian coordinates.
+   * @param {bigInt} k The coefficient to multiply this by.
+   * @param {bigInt} k2 The coefficient to multiply affine2 this by.
+   * @param {sjcl.ecc.point} affine The other point in affine coordinates.
+   * @return {sjcl.ecc.pointJac} The result of the multiplication and addition, in Jacobian coordinates.
+   */
+  mult2: function(k, k2, affine2) {
+    return this.toJac().mult2(k, this, k2, affine2).toAffine();
+  },
+  
+  multiples: function() {
+    var m, i, j;
+    if (this._multiples === undefined) {
+      j = this.toJac().doubl();
+      m = this._multiples = [new sjcl.ecc.point(this.curve), this, j.toAffine()];
+      for (i=3; i<16; i++) {
+	j = j.add(this);
+	m.push(j.toAffine());
+      }
+    }
+    return this._multiples;
+  },
+
+  isValid: function() {
+    return this.y.square().equals(this.curve.b.add(this.x.mul(this.curve.a.add(this.x.square()))));
+  },
+
+  toBits: function() {
+    return sjcl.bitArray.concat(this.x.toBits(), this.y.toBits());
+  }
+};
+
+/**
+ * Represents a point on a curve in Jacobian coordinates. Coordinates can be specified as bigInts or strings (which
+ * will be converted to bigInts).
+ *
+ * @constructor
+ * @param {bigInt/string} x The x coordinate.
+ * @param {bigInt/string} y The y coordinate.
+ * @param {bigInt/string} z The z coordinate.
+ * @param {sjcl.ecc.curve} curve The curve that this point lies on.
+ */
+sjcl.ecc.pointJac = function(curve, x, y, z) {
+  if (x === undefined) {
+    this.isIdentity = true;
+  } else {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.isIdentity = false;
+  }
+  this.curve = curve;
+};
+
+sjcl.ecc.pointJac.prototype = {
+  /**
+   * Adds S and T and returns the result in Jacobian coordinates. Note that S must be in Jacobian coordinates and T must be in affine coordinates.
+   * @param {sjcl.ecc.pointJac} S One of the points to add, in Jacobian coordinates.
+   * @param {sjcl.ecc.point} T The other point to add, in affine coordinates.
+   * @return {sjcl.ecc.pointJac} The sum of the two points, in Jacobian coordinates. 
+   */
+  add: function(T) {
+    var S = this, sz2, c, d, c2, x1, x2, x, y1, y2, y, z;
+    if (S.curve !== T.curve) {
+      throw("sjcl.ecc.add(): Points must be on the same curve to add them!");
+    }
+
+    if (S.isIdentity) {
+      return T.toJac();
+    } else if (T.isIdentity) {
+      return S;
+    }
+
+    sz2 = S.z.square();
+    c = T.x.mul(sz2).subM(S.x);
+
+    if (c.equals(0)) {
+      if (S.y.equals(T.y.mul(sz2.mul(S.z)))) {
+	// same point
+	return S.doubl();
+      } else {
+	// inverses
+	return new sjcl.ecc.pointJac(S.curve);
+      }
+    }
+    
+    d = T.y.mul(sz2.mul(S.z)).subM(S.y);
+    c2 = c.square();
+
+    x1 = d.square();
+    x2 = c.square().mul(c).addM( S.x.add(S.x).mul(c2) );
+    x  = x1.subM(x2);
+
+    y1 = S.x.mul(c2).subM(x).mul(d);
+    y2 = S.y.mul(c.square().mul(c));
+    y  = y1.subM(y2);
+
+    z  = S.z.mul(c);
+
+    return new sjcl.ecc.pointJac(this.curve,x,y,z);
+  },
+  
+  /**
+   * doubles this point.
+   * @return {sjcl.ecc.pointJac} The doubled point.
+   */
+  doubl: function() {
+    if (this.isIdentity) { return this; }
+
+    var
+      y2 = this.y.square(),
+      a  = y2.mul(this.x.mul(4)),
+      b  = y2.square().mul(8),
+      z2 = this.z.square(),
+      c  = this.x.sub(z2).mul(3).mul(this.x.add(z2)),
+      x  = c.square().subM(a).subM(a),
+      y  = a.sub(x).mul(c).subM(b),
+      z  = this.y.add(this.y).mul(this.z);
+    return new sjcl.ecc.pointJac(this.curve, x, y, z);
+  },
+
+  /**
+   * Returns a copy of this point converted to affine coordinates.
+   * @return {sjcl.ecc.point} The converted point.
+   */  
+  toAffine: function() {
+    if (this.isIdentity || this.z.equals(0)) {
+      return new sjcl.ecc.point(this.curve);
+    }
+    var zi = this.z.inverse(), zi2 = zi.square();
+    return new sjcl.ecc.point(this.curve, this.x.mul(zi2).fullReduce(), this.y.mul(zi2.mul(zi)).fullReduce());
+  },
+  
+  /**
+   * Multiply this point by k and return the answer in Jacobian coordinates.
+   * @param {bigInt} k The coefficient to multiply by.
+   * @param {sjcl.ecc.point} affine This point in affine coordinates.
+   * @return {sjcl.ecc.pointJac} The result of the multiplication, in Jacobian coordinates.
+   */
+  mult: function(k, affine) {
+    if (typeof(k) === "number") {
+      k = [k];
+    } else if (k.limbs !== undefined) {
+      k = k.normalize().limbs;
+    }
+    
+    var i, j, out = new sjcl.ecc.point(this.curve).toJac(), multiples = affine.multiples();
+
+    for (i=k.length-1; i>=0; i--) {
+      for (j=sjcl.bn.prototype.radix-4; j>=0; j-=4) {
+	out = out.doubl().doubl().doubl().doubl().add(multiples[k[i]>>j & 0xF]);
+      }
+    }
+    
+    return out;
+  },
+  
+/**
+   * Multiply this point by k, added to affine2*k2, and return the answer in Jacobian coordinates.
+   * @param {bigInt} k The coefficient to multiply this by.
+   * @param {sjcl.ecc.point} affine This point in affine coordinates.
+   * @param {bigInt} k2 The coefficient to multiply affine2 this by.
+   * @param {sjcl.ecc.point} affine The other point in affine coordinates.
+   * @return {sjcl.ecc.pointJac} The result of the multiplication and addition, in Jacobian coordinates.
+   */
+  mult2: function(k1, affine, k2, affine2) {
+    if (typeof(k1) === "number") {
+      k1 = [k1];
+    } else if (k1.limbs !== undefined) {
+      k1 = k1.normalize().limbs;
+    }
+    
+    if (typeof(k2) === "number") {
+      k2 = [k2];
+    } else if (k2.limbs !== undefined) {
+      k2 = k2.normalize().limbs;
+    }
+    
+    var i, j, out = new sjcl.ecc.point(this.curve).toJac(), m1 = affine.multiples(),
+        m2 = affine2.multiples(), l1, l2;
+
+    for (i=Math.max(k1.length,k2.length)-1; i>=0; i--) {
+      l1 = k1[i] | 0;
+      l2 = k2[i] | 0;
+      for (j=sjcl.bn.prototype.radix-4; j>=0; j-=4) {
+        out = out.doubl().doubl().doubl().doubl().add(m1[l1>>j & 0xF]).add(m2[l2>>j & 0xF]);
+      }
+    }
+    
+    return out;
+  },
+  
+  isValid: function() {
+    var z2 = this.z.square(), z4 = z2.square(), z6 = z4.mul(z2);
+    return this.y.square().equals(
+	    this.curve.b.mul(z6).add(this.x.mul(
+	      this.curve.a.mul(z4).add(this.x.square()))));
+  }
+};
+
+/**
+ * Construct an elliptic curve. Most users will not use this and instead start with one of the NIST curves defined below.
+ *
+ * @constructor
+ * @param {bigInt} p The prime modulus.
+ * @param {bigInt} r The prime order of the curve.
+ * @param {bigInt} a The constant a in the equation of the curve y^2 = x^3 + ax + b (for NIST curves, a is always -3).
+ * @param {bigInt} x The x coordinate of a base point of the curve.
+ * @param {bigInt} y The y coordinate of a base point of the curve.
+ */
+sjcl.ecc.curve = function(Field, r, a, b, x, y) {
+  this.field = Field;
+  this.r = Field.prototype.modulus.sub(r);
+  this.a = new Field(a);
+  this.b = new Field(b);
+  this.G = new sjcl.ecc.point(this, new Field(x), new Field(y));
+};
+
+sjcl.ecc.curve.prototype.fromBits = function (bits) {
+  var w = sjcl.bitArray, l = this.field.prototype.exponent + 7 & -8,
+      p = new sjcl.ecc.point(this, this.field.fromBits(w.bitSlice(bits, 0, l)),
+			    this.field.fromBits(w.bitSlice(bits, l, 2*l)));
+  if (!p.isValid()) {
+    throw new sjcl.exception.corrupt("not on the curve!");
+  }
+  return p;
+};
+
+//elliptic curve parameters in the original SJCL ecc script have been deleted to save space. Replaced with the NIST 521-bit elliptic curve
+sjcl.ecc.curves = {
+	c521: new sjcl.ecc.curve(
+	sjcl.bn.prime.p521,
+	"0x5AE79787C40D069948033FEB708F65A2FC44A36477663B851449048E16EC79BF6",
+	- 3,
+"0x051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00",
+"0xc6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66",
+"0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650")
+};
+
+//End of SJCL code   
+
+//keygenerator using ECC and DH
+function keygenerator(){
+	var curve = sjcl.ecc.curves["c521"],					//make curve object
+		sec = sjcl.bn.random(curve.r,0),					//make random secret key		
+		secstr = sjcl.codec.base64.fromBits(sec.toBits()); 	//turn into base64
+	secstr = secstr.slice(1,secstr.length);					//the first character is always "A", so strip it
+	return secstr;
+};
+
+//display the public part, in case it got deleted
+function showpub(){
+	var secstr = document.sec.text.value.trim();			//cut trailing spaces
+	if (secstr === "") throw("secret key empty");
+	var pubstr = makepub(secstr);
+	document.pub.text.value = "PL10lok=" + pubstr + "=PL10lok";
+};
+
+//makes the public string of a private string
+function makepub(secstr){
+	if (secstr==="") throw("secret key empty");
+	var curve = sjcl.ecc.curves["c521"],					//make curve object
+		sec = toexponent(secstr),							//retrieve secret key, correctly formatted as an EC exponent
+	    pub = curve.G.mult(sec),							//make public key
+		pubstr = sjcl.codec.base64.fromBits(pub.toBits());
+	return pubstr.slice(1,88)								//strip initial "A", only x part
+};
+
+//key reformatting for secret key (shared key is formatted automatically by sjcl) for 521 bit keys
+function toexponent(string){
+	var w = sjcl.bitArray;
+	return sjcl.bn.fromBits(w.bitSlice(sjcl.misc.pbkdf2(string,"",1,528)));	//use no salt, 1 iteration since key generation and usage are already slow, 528 bits
+};
+
+//this one makes the shared secret
+function makeshared(secstr,xstr){
+	var curve = sjcl.ecc.curves["c521"],
+		sec = toexponent(secstr),
+		ystr = yfromx(curve,xstr),				      				//retrieve y coordinate from x coordinate
+		pub = curve.fromBits(sjcl.codec.base64.toBits(xstr+ystr)),  //make public key object containing both x and y
+		sharedsec = pub.mult(sec),
+		sharedstr = sjcl.codec.base64.fromBits(sharedsec.toBits());
+	return sharedstr.slice(1,88)  									//strip initial "A", only x part
+};
+
+function yfromx(curve,xstr){
+	var x = sjcl.bn.fromBits(sjcl.codec.base64.toBits(xstr)),   //the following to retrieve y coordinate from x coordinate
+		y = curve.b.add(x.mul(curve.a.add(x.square())));		//this is actually y^2, square root by special case of Tonelli-Shanks follows
+	var i;
+	for (i=0; i<519; i++) {
+  		y = y.square();											//performs y^((p+1)/4), since p = 2^521 - 1, (p=1)/4=2^519, all is mod p
+		};
+	return sjcl.codec.base64.fromBits(y.toBits());
+};
+
+//display a hash of the public key for authentication purposes
+function makehash(){
+	var mine = document.pub.text.value.trim();		//remove spaces at start and end
+	if (mine.length < 215){							//if it's a key or fits in decoy msg remove spaces, tags and anything that is not base64
+		mine = mine.replace(/\s/g,'');
+		mine = mine.split("=").sort(function (a, b) { return b.length - a.length; })[0];  
+		mine = mine.replace(/[^a-zA-Z0-9+/ ]+/g, '');
+	};
+	if(mine === "") throw ("public key empty");
+	mine = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(mine)).match(/.{1,4}/g).join("-"); //take hash, make it hex, cut into 4-char pieces and join with dashes
+	document.plain.text.value = mine;
+};
+
+//AES encryption process: determines which kind of encryption by looking at which key boxes are filled
+function Encrypt_text(){
+	var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('4','0')),					//22 char serial
+		salt = "";
+	var secstr = document.sec.text.value.trim();
+	var pubstr = document.pub.text.value.replace(/\s/g,'');
+		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64		
+	if (secstr === ""){												//no secret key in box = public or short  mode
+		var secstrdum = keygenerator(),								//make dummy key, strip initial A
+			pubstrdum = makepub(secstrdum);							//makes 87 char dummy public key, initial A stripped
+		if (pubstr === "") {								//no keys, short mode			
+			iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0'));		//smaller salt
+			var keystr = "";
+			while (keystr==="") keystr = prompt("Short msg Key");		//empty key not allowed
+			if (document.getElementById("decoymode").checked === false){salt = sjcl.codec.base64.fromBits(sjcl.random.randomWords('12','0')).slice(0,62)}else{salt = decoysalt(iv,38)};
+			var text = encodeURI(document.plain.text.value).replace(/%20/g, ' ');
+			text = text + "                                                         ";   //clip or add spaces to make a 57 char message 
+			text = text.slice(0,57);
+			var cipherj = JSON.parse(sjcl.encrypt(keystr,text,{"iv":iv,"salt":salt,"ks":256,"iter": 10000}));
+			document.cipher.text.value = cipherj.iv + cipherj.salt + cipherj.ct;
+		}
+		else{
+			pubstr = "A" + pubstr;
+			var keystr = makeshared(secstrdum,pubstr);		//make AES key from dummy secret and recipient's public key
+			if (document.getElementById("decoymode").checked === false){salt = sjcl.codec.base64.fromBits(sjcl.random.randomWords('24','0')).slice(0,127)}else{salt = decoysalt(iv,87)}; 	//127 char salt, 87 char hidden msg
+			var cipherj = JSON.parse(sjcl.encrypt(keystr,document.plain.text.value,{"iv":iv,"salt":salt,"ks":256,"iter": 10000}));    //use 256 bit keys, 10000x key stretching
+			document.cipher.text.value = "PL10msa=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL10msa";			//strip final "=" and display adding dummy public key and anonymous tags
+		}
+	}	
+	else{
+		if (pubstr === ""){									//there is a secret key but no public key: AES encryption using the secret key alone
+			if (document.getElementById("decoymode").checked === false){salt = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214)}else{salt = decoysalt(iv,152)}; //214 char salt, 152 char hidden msg
+			var cipherj = JSON.parse(sjcl.encrypt(secstr,document.plain.text.value,{"iv":iv,"salt":salt,"ks":256,"iter": 10000}));
+			document.cipher.text.value = "PL10msc=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL10msc";
+		}
+		else{												//both secret key and public key present: authenticated mode
+			pubstr = "A" + pubstr;
+			var keystr = makeshared(secstr,pubstr);					//make AES key from secret key and recipient's public key
+			if (document.getElementById("decoymode").checked === false){salt = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214)}else{salt = decoysalt(iv,152)}; //214 char salt, 152 char hidden msg
+			var cipherj = JSON.parse(sjcl.encrypt(keystr,document.plain.text.value,{"iv":iv,"salt":salt,"ks":256,"iter": 10000}));
+			document.cipher.text.value = "PL10mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL10mss";
+		}
+	}
+};
+
+//encrypts a hidden message into the salt value used by regular encryption
+function decoysalt(iv,leng){
+	var	key2 = prompt("enter decoy password"),								//key from prompt, spaces allowed, empty key allowed
+		text2 = encodeURI(document.cipher.text.value).replace(/%20/g, ' ');		//make it ASCII, preserve spaces
+	while (text2.length < leng) {								//clip or add spaces to make the number of characters required
+		text2 = text2 + "          ";
+	};
+	text2 = text2.slice(0,leng);
+	var cipher2j = JSON.parse(sjcl.encrypt(key2,text2,{"iv":iv,"salt":"","ks":256,"iter": 10000}));
+	return cipher2j.ct;
+};
+
+//AES decryption process: determines which kind of encryption by looking at first character after the initial tag
+function Decrypt_text(){
+	var cipherstr = document.cipher.text.value;
+	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];   //remove end tags
+	var type = cipherstr.slice(0,1);									//get encryption type. !=public, @=symmetric, #=authenticated
+	cipherstr = cipherstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');				//remove anything that is not base64
+	if (type === "!"){			//public encryption
+		var	iv = cipherstr.slice(0,22),									//get iv, salt, and later ct data and public key
+			salt = cipherstr.slice(22,149);			
+		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt); 	//do decoy decryption first, in case regular fails
+		var secstr = document.sec.text.value.trim();
+		if (secstr === ""){
+			alert("enter your Key in box 1");
+			throw("secret key empty");
+		};
+		var pubstrdum = cipherstr.slice(149,236);			
+		pubstrdum = "A" + pubstrdum;
+		var keystr = makeshared(secstr,pubstrdum);
+		var	ct = cipherstr.slice(236,cipherstr.length);
+		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":10000}';	//add labels and keylength to data
+		document.plain.text.value = sjcl.decrypt(keystr,cipherstr);
+	}
+	else if (type === "@"){			//symmetric encryption
+		var	iv = cipherstr.slice(0,22),
+			salt = cipherstr.slice(22,236);
+		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt);
+		var keystr = document.sec.text.value.trim();
+		if (keystr === ""){
+			alert("enter Combination in box 1");
+			throw("secret key empty");
+		};
+		var	ct = cipherstr.slice(236,cipherstr.length);
+		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":10000}';
+		document.plain.text.value = sjcl.decrypt(keystr,cipherstr);
+	} 
+	else if (type === "#"){			//authenticated encryption
+		var	iv = cipherstr.slice(0,22),
+			salt = cipherstr.slice(22,236);
+		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt);	
+		var secstr = document.sec.text.value.trim();
+		if (secstr === ""){
+			alert("enter your Key in box 1");
+			throw("secret key empty");
+		};
+		var pubstr = document.pub.text.value;
+		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
+		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');
+		if (pubstr === ""){
+			alert("enter the sender's Lock in box 2");
+			throw("public key empty");
+		};
+		pubstr = "A" + pubstr;	
+		var keystr = makeshared(secstr,pubstr),
+			ct = cipherstr.slice(236,cipherstr.length);	
+		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":10000}';	
+		document.plain.text.value = sjcl.decrypt(keystr,cipherstr);
+	}
+	else {							//short encryption, no tags
+		var	iv = cipherstr.slice(0,11),
+			salt = cipherstr.slice(11,73),
+			keystr = prompt("Short msg Password");
+		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt);
+		var	ct = cipherstr.slice(73,cipherstr.length);
+		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":10000}';
+		document.plain.text.value = decodeURI(sjcl.decrypt(keystr,cipherstr));
+	};
+};
+
+//decrypt the message hidden in the salt, for decoy mode
+function decoydecrypt(iv,ct){
+		var	key2 = prompt("enter decoy password"),
+			cipherstr2 = '{"iv":"' + iv + '","salt":"' + "" + '","ct":"' + ct + '","ks":256,"iter":10000}';
+		document.cipher.text.value = decodeURI(sjcl.decrypt(key2,cipherstr2));
+};
+
+//takes a hash of the plaintext and generates an ECDSA signature
+function Signhash(){
+	var secstr = document.sec.text.value.trim();
+	if (secstr===""){
+		alert("enter your Key in box 1");
+		throw("secret key empty")
+	};
+	var hash = sjcl.hash.sha512.hash(document.plain.text.value.replace(/\s/g,'')),				//take SHA512 hash of plaintext, ignoring spaces
+		sec = toexponent(secstr),
+		curve = sjcl.ecc.curves["c521"],
+		R = curve.r,
+		l = R.bitLength(),
+    	k = sjcl.bn.random(R.sub(1), 0).add(1),
+    	r = curve.G.mult(k).x.mod(R),
+		s = sjcl.bn.fromBits(hash).add(r.mul(sec)).mul(k.inverseMod(R)).mod(R),
+		sigstr = sjcl.codec.base64.fromBits(sjcl.bitArray.concat(r.toBits(l), s.toBits(l)));	//make it base64
+	document.cipher.text.value = "PL10stp=" + sigstr.slice(1,sigstr.length) + "=PL10stp";	//strip initial "A" and add tags
+};	
+
+//verifies the ECDSA signature of a hash of the plaintext
+function Verifyhash(){
+try{
+	var	pubstr = document.pub.text.value.replace(/\s/g,'');
+		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];	//remove tags
+		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 
+	if (pubstr===""){
+		alert("enter the signer's Public Key in box 2");
+		throw("public key empty")
+	};
+	var hash = sjcl.hash.sha512.hash(document.plain.text.value.replace(/\s/g,'')),				//take SHA512 hash of plaintext, ignoring spaces
+		curve = sjcl.ecc.curves["c521"],
+		xstr = "A" + pubstr.slice(0,pubstr.length),
+		ystr = yfromx(curve,xstr),
+		pub = curve.fromBits(sjcl.codec.base64.toBits(xstr+ystr));
+	var sigstr = document.cipher.text.value.replace(/\s/g,'');
+		sigstr = sigstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];			
+		sigstr = sigstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');
+	var	rs = sjcl.codec.base64.toBits("A" + sigstr),
+		w = sjcl.bitArray,
+        R = curve.r,
+        l = R.bitLength(),
+        r = sjcl.bn.fromBits(w.bitSlice(rs,0,l)),
+        s = sjcl.bn.fromBits(w.bitSlice(rs,l,2*l)),
+		u = s.inverseMod(R),	
+        hG = sjcl.bn.fromBits(hash).mul(u).mod(R),	
+        hA = r.mul(u).mod(R),	
+        r2 = curve.G.mult2(hG, hA, pub).x.mod(R),
+		check = true;
+		if (!r2.equals(r)){													//hack from when y is the wrong root of y^2
+			var y = sjcl.bn.fromBits(sjcl.codec.base64.toBits(ystr)),
+				p = curve.field.modulus.copy(),
+				y2 = p.sub(y),												//this should be the right y
+				ystr2 = sjcl.codec.base64.fromBits(y2.toBits());		
+			pub = curve.fromBits(sjcl.codec.base64.toBits(xstr+ystr2));
+			r2 = curve.G.mult2(hG, hA, pub).x.mod(R);
+		};																	//end of wrong root hack
+    if (r.equals(0) || s.equals(0) || r.greaterEquals(R) || s.greaterEquals(R) || !r2.equals(r)) check = false;
+	if (check) {
+		alert("The stamp is VERIFIED")
+		}
+	else {
+		alert("The stamp has FAILED verification")
+		}
+	}
+catch(err){
+	alert("The stamp has FAILED verification")							//display this if anything goes wrong
+	}
+};
+
+//add entropy as forms are manipulated
+function ce() {
+	sjcl.random.addEntropy(Math.floor((((new Date).getMilliseconds()) * 255) / 999), 2, "loadtime");
+};
+
+<!-- Text hide trick, by Sandeep Gangadharan 2005-->
+if (document.getElementById) {
+ document.writeln('<style type="text/css"><!--')
+ document.writeln('.texter {display:none} @media print {.texter {display:block;}}')
+ document.writeln('//--></style>') }
+
+function openClose(theID) {
+ if (document.getElementById(theID).style.display === "block") { document.getElementById(theID).style.display = "none" }
+ else { document.getElementById(theID).style.display = "block" } };
+// end of hide trick
+
+//these two are for showing and hiding text in secret input fields
+function showsec(){
+  var showPasswordCheckBox = document.getElementById("show");
+  if(showPasswordCheckBox.checked){
+        document.getElementById("pwd").type="TEXT";
+  }else{
+      document.getElementById("pwd").type="PASSWORD";
+  }
+};
+
+//function to test password strength
+function passwordChanged() {
+var strength = document.getElementById("strength");
+var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+var pwd = document.getElementById("pwd");
+if (pwd.value.length==0) {
+strength.innerHTML = "&nbsp";
+} else if (false === enoughRegex.test(pwd.value)) {
+strength.innerHTML = "  Too Short!";
+} else if (strongRegex.test(pwd.value)) {
+strength.innerHTML = '<span style="color:green">  Strong!</span>';
+} else if (mediumRegex.test(pwd.value)) {
+strength.innerHTML = '<span style="color:orange">  Medium!</span>';
+} else {
+strength.innerHTML = '<span style="color:red">  Weak!</span>';
+};
+};
+
+function sendMail() {
+    var link = "mailto:"+ "?subject=" + "&body=Message encrypted with PassLok v.1.0 %0D%0A%0D%0AGet PassLok at http://passlok.com %0D%0A%0D%0A" + encodeURIComponent(document.cipher.text.value);
+	window.open(link);
+};
+
+		</script><style type="text/css"><!--
+.texter {display:none} @media print {.texter {display:block;}}
+//--></style>
+
+   <style type="text/css">
+   .style2 {font-weight: bold}
+   </style><style type="text/css"></style></head>
+  
+  <body onload="ce();">
+<h2>PassLok privacy</h2>
+    <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <form name="warning" action="http://passlok.com/#" onsubmit="return false;">
+<input type="text" name="warning" style="background-color: rgb(224, 255, 224); color: rgb(0, 0, 0);" value="Your browser does not support JavaScript or it&#39;s off." size="48" class="ctr" readonly="readonly">
+</form>
+
+
+<script type="text/javascript" language="JavaScript">
+<!--
+    //  Clear out "sorry, no JavaScript" message from text box.
+    document.warning.warning.value = "To get instructions for each box, click on the titles.";
+    document.warning.warning.style.backgroundColor = "#E0FFE0";
+// -->
+</script>
+    	
+    <form onsubmit="return false;" id="sec" name="sec">
+      <label for="sec">
+      <p>&nbsp;</p>
+      <p>For extended instructions and self-ID, <a href="instructions.html" target="_blank">Click Here</a>.
+      </p>
+      <div onclick="openClose(&#39;a1&#39;)" style="cursor:hand; cursor:pointer">
+         <h3><b>1. Key / Combination</b></h3>
+      </div>
+      <div id="a1" class="texter"> 
+         <p>Write your secret Key or shared combination in box 1 (yellow). To display the characters, check Show. As you type, a text below will tell you the strength of the key based on simple rules. Make sure to use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss. You will need to enter your Key to unlock or sign messages.</p>
+        <p>To display the matching Lock in box 2 (green), click Make Lock.</p>
+      </div>
+       </label>
+	   
+      <p align="center"> 
+	 
+	<input type="password" autocomplete="off" id="pwd" onkeydown="ce();" onkeyup="return passwordChanged();" onblur="ce();" onfocus="ce();" style="background-color: rgb(255, 255, 200); color: #000000; width: 96%;" cols="36" name="text"></p>
+	  <div align="center">
+<input type="checkbox" id="show" onclick="showsec();">
+	    Show 
+	   
+	    <input type="button" onclick="showpub();" value=" Make Lock">
+	    <input type="button" value=" Select " onclick="document.sec.text.select();">
+	    <input type="button" onclick="passwordChanged();document.sec.text.value = &#39;&#39;" value=" Clear ">
+      </div>
+	  <p align="left">
+	<span id="strength">&nbsp;</span>
+      </p>
+    </form>
+	<form onsubmit="return false;" id="pub" name="pub">
+      <label for="pub">
+       <div onclick="openClose(&#39;a2&#39;)" style="cursor:hand; cursor:pointer">
+         <h3><b>2. Lock</b></h3>
+       </div>
+       <div id="a2" class="texter"> 
+         <p>If you have just clicked Make Lock, this box displays the Lock matching the key in box 1. Publish it so people can send you locked messages.</p>
+         <p>To put somebody's Lock on a message so only that person can read it, enter it here. If you also enter your secret Key in box 1, the message will be signed as well as locked. </p>
+         <p>You will also need to enter here the sender's Lock if you have received a signed message from that person, or wish to verify his/her signature of a plain text.</p>
+         <p>To display a SHA256 hash of this box, click Show ID. This is useful for authentication purposes. It will appear in box 3. </p>
+       </div>
+       </label>
+      <p align="center">
+	  <textarea onkeydown="ce();" onblur="ce();" onfocus="ce();" style="background-color: rgb(200, 255, 200); color: #000000; width: 96%;" cols="36" rows="3" name="text"></textarea> 
+	<br>
+          	<input type="button" onclick="makehash();" value=" Show ID ">
+		<input type="button" value=" Select " onclick="document.pub.text.select();">
+		<input type="button" onclick="document.pub.text.value = &#39;&#39;;" value=" Clear ">
+      </p>
+    </form>
+    <form onsubmit="return false;" id="plain" name="plain">
+      <label for="plain">
+      <div onclick="openClose(&#39;a3&#39;)" style="cursor:hand; cursor:pointer">
+        <h3><b>3. Plain Text</b></h3>
+      </div>
+ <div id="a3" class="texter">
+   <p>To lock a text:  Enter it into box 3 below (yellow). Make sure the appropriate items are in boxes 1 and 2, depending on the type of locking you want: shared combination in box 1 only for combination-lock, to be unlocked with the same combination, recipient's Lock in box 2 only for anonymous locked messages to be unlocked with the recipient's Key, both your Key in box 1 and recipient's Lock in box 2 for messages that are locked and signed. Then click the Lock button.</p>
+   <p>If boxes 1 and 2 are both empty, a prompt will ask for a Short msg Password (message length limited to 57 ASCII characters, non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.).</p>
+   <p>The locked text  will appear in box 4 (green).  You can send it with your default email client by clicking Send Email below.</p>
+   <p>To stamp a text with your key: Make sure your Key is in box 1 at the top (yellow). Then enter into box 3 below the text to be signed and click Stamp. The stamp will appear in box 4. Copy it and send it along with the plain text. </p>
+ </div>
+      </label>
+      <p align="center"> <textarea onkeydown="ce();" onblur="ce();" onfocus="ce();" style="background-color: rgb(255, 255, 200); color: #000000; width: 96%;" cols="24" rows="10" name="text"></textarea>
+	<br>
+	<input type="button" onclick="Encrypt_text();" value=" Lock " name="encrypt">
+	<input type="button" onclick="Signhash();" value=" Stamp " name="sign">
+	  <input type="button" onclick="document.plain.text.select();" value=" Select ">
+	  <input type="button" onclick="document.plain.text.value = &#39;&#39;;" value=" Clear ">
+      </p>
+    </form>
+    <form onsubmit="return false;" id="cipher" name="cipher">
+      <label for="cipher">
+       <div onclick="openClose(&#39;a4&#39;)" style="cursor:hand; cursor:pointer">
+         <h3><b>4. Locked Text / Stamp</b></h3>
+       </div>
+ <div id="a4" class="texter">
+   <p>To unlock a locked text: Paste it into box 4 below, make sure your Key or shared combination (and maybe also the sender's Lock) are in boxes 1 and 2, depending on the type of locked text. The tags tell you what is needed: shared combination for combination-locked message (msc), your Key for anonymous locked message (msa), both your Key and the sender's Lock for signed message (mss), or none for short messages (no tags). Then click Unlock. In the case of short messages, a prompt will ask for the password. The plain text will appear in box 3.</p>
+   <p>To verify the stamp accompanying a text: Make sure the text is in the Plain Text box above (box 3) and the signer's Lock is in box 2. Then paste the stamp into box 4 below and click Verify. A popup will confirm whether or not the stamp has been verified.</p>
+   </div>
+      </label>
+      <p align="center"> <input type="button" onclick="sendMail();" value=" Send Email ">
+	  <textarea onkeydown="ce();" onblur="ce();" onfocus="ce();" style="background-color: rgb(200, 255, 200); color: #000000; width: 96%;" cols="24" rows="10" name="text"></textarea>
+	<br>
+	<input type="button" onclick="Decrypt_text();" value=" Unlock " name="decrypt">
+      <input type="button" onclick="Verifyhash();" value=" Verify ">
+	  <input type="button" onclick="document.cipher.text.select();" value=" Select ">
+	  <input type="button" onclick="document.cipher.text.value = &#39;&#39;;" value=" Clear ">
+	  </p><div onclick="openClose(&#39;a5&#39;)" style="cursor:hand; cursor:pointer"><label for="cipher">
+	    <h3><b>Decoy mode <input type="checkbox" id="decoymode"></b></h3>
+      </label></div>
+	  <div id="a5" class="texter"><label for="cipher">
+	    In this mode you can include a second, hidden text locked by a separate password. Place the hidden text in the Locked Text box (number 4) before clicking Lock. A popup will ask the password for this text.  The result in box 4 contains both texts. The hidden text is limited to 152 ASCII characters for combination and signed modes, 87 characters for anonymous lock mode, 38 characters for short message mode.
+	    Non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.
+	      <p>When you unlock in decoy mode, a popup will ask for the special password. The hidden text will appear in box 4, Locked Text.</p>
+      </label></div>
+      <p></p>
+    </form>
+    <p></p>
+    <hr>
+    <div onclick="openClose(&#39;a6&#39;)" style="cursor:hand; cursor:pointer">
+         <h3><b><address>
+    PASSLOK v.1.0  © by <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013
+         </address>
+             <address>
+             </address>
+         </b></h3>
+  </div>
+ <div id="a6" class="texter"> 
+   <address>
+   based on SJCL by <a href="http://crypto.stanford.edu/sjcl" target="_blank">Stark, Hamburg, and Boneh</a> 2012
+   </address>
+   <address> GUI inspired on jscrypt by <a href="http://www.fourmilab.ch/" target="_blank">John
+        Walker</a> 2005 </address>
+    <address>
+    text hide trick by <a href="http://www.sivamdesign.com/scripts/" target="_blank">S. Gangadharan</a> 2005
+    </address>
+	<address>
+    password strength meter by <a href="http://www.marketingtechblog.com/javascript-password-strength/" target="_blank">D. Karr</a> 2007
+    </address>
+ </div>
+    <center> <em>This document may be used, modified or redistributed under GNU GPL license, version 2.0 or higher.</em> </center>
+
+
+</body></html>
