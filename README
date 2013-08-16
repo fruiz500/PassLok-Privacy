@@ -2,7 +2,8 @@ README for PassLok Github page
 
 PassLok is a privacy app that implements public key cryptography functions on a browser.
 
-These are the principles guiding the design of PassLok:o	Perfect portability. Runs on any computer or mobile device.o	Completely self-contained so it runs offline. No servers.o	Absolutely nothing should be installed or even written in the device.o	Highest-level security at every step. No compromises.o	Easy to understand and use by novices. Single-screen graphical interface, as clean 	and simple as possible. No cryptographic jargon.
+These are the principles guiding the design of PassLok:o	Perfect portability. Runs on any computer or mobile device.o	Completely self-contained so it runs offline. No servers.o	Absolutely nothing should be installed or even written in the device.o	Highest-level security at every step. No compromises.o	Easy to understand and use by novices. Single-screen graphical interface,
+	as clean and simple as possible. No cryptographic jargon.
 
 Because of this, version 1 of PassLok is pure html code consisting mostly of javascript instructions. Its cryptography code is based on the SJCL code, also on Github. It uses AES for symmetric encryption and elliptic curves (NIST-521 curve) for the public-key functions.
 
