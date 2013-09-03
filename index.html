@@ -25,6 +25,7 @@
     <meta name="robots" content="index">
     <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<link rel="apple-touch-icon" href="passlok-touch-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
 <script>
         /* 
@@ -63,6 +64,327 @@
     }
 </script>
 		
+<script>
+// secrets.js - by Alexander Stetsyuk - released under MIT License
+//substantial edits by F. Ruiz: since RNG used is from SJCL, RNG check is left to SJCL: RNG checking code removed from here. Addshare function not used and is removed
+
+(function(exports, global){
+var defaults = {
+	bits: 8, // default number of bits
+	radix: 16, // work with HEX by default
+	minBits: 3,
+	maxBits: 20, // this permits 1,048,575 shares, though going this high is NOT recommended in JS!
+	
+	bytesPerChar: 2,
+	maxBytesPerChar: 6, // Math.pow(256,7) > Math.pow(2,53)
+		
+	// Primitive polynomials (in decimal form) for Galois Fields GF(2^n), for 2 <= n <= 30
+	// The index of each term in the array corresponds to the n for that polynomial
+	// i.e. to get the polynomial for n=16, use primitivePolynomials[16]
+	primitivePolynomials: [null,null,1,3,3,5,3,3,29,17,9,5,83,27,43,3,45,9,39,39,9,5,3,33,27,9,71,39,9,5,83],
+	
+	// warning for insecure PRNG
+	warning: 'WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!'
+};
+
+// Protected settings object
+var config = {};
+
+function init(bits){
+	if(bits && (typeof bits !== 'number' || bits%1 !== 0 || bits<defaults.minBits || bits>defaults.maxBits)){
+		throw new Error('Number of bits must be an integer between ' + defaults.minBits + ' and ' + defaults.maxBits + ', inclusive.')
+	}	
+	config.radix = defaults.radix;
+	config.bits = bits || defaults.bits;
+	config.size = Math.pow(2, config.bits);
+	config.max = config.size - 1;
+	
+	// Construct the exp and log tables for multiplication.	
+	var logs = [], exps = [], x = 1, primitive = defaults.primitivePolynomials[config.bits];
+	for(var i=0; i<config.size; i++){
+		exps[i] = x;
+		logs[x] = i;
+		x <<= 1;
+		if(x >= config.size){
+			x ^= primitive;
+			x &= config.max;
+		}
+	}		
+	config.logs = logs;
+	config.exps = exps;
+};
+
+/** @expose **/
+exports.init = init;
+
+// Divides a `secret` number String str expressed in radix `inputRadix` (optional, default 16) 
+// into `numShares` shares, each expressed in radix `outputRadix` (optional, default to `inputRadix`), 
+// requiring `threshold` number of shares to reconstruct the secret. 
+// Optionally, zero-pads the secret to a length that is a multiple of padLength before sharing.
+/** @expose **/
+exports.share = function(secret, numShares, threshold, padLength){
+	padLength =  padLength || 0;
+		
+	if(typeof secret !== 'string'){
+		throw new Error('Secret must be a string.');
+	}
+	if(typeof numShares !== 'number' || numShares%1 !== 0 || numShares < 2){
+		throw new Error('Number of shares must be an integer between 2 and 2^bits-1 (' + config.max + '), inclusive.')
+	}
+	if(numShares > config.max){
+		var neededBits = Math.ceil(Math.log(numShares +1)/Math.LN2);
+		throw new Error('Number of shares must be an integer between 2 and 2^bits-1 (' + config.max + '), inclusive. To create ' + numShares + ' shares, use at least ' + neededBits + ' bits.')	
+	}
+	if(typeof threshold !== 'number' || threshold%1 !== 0 || threshold < 2){
+		throw new Error('Threshold number of shares must be an integer between 2 and 2^bits-1 (' + config.max + '), inclusive.');
+	}
+	if(threshold > config.max){
+		var neededBits = Math.ceil(Math.log(threshold +1)/Math.LN2);
+		throw new Error('Threshold number of shares must be an integer between 2 and 2^bits-1 (' + config.max + '), inclusive.  To use a threshold of ' + threshold + ', use at least ' + neededBits + ' bits.');
+	}
+	if(typeof padLength !== 'number' || padLength%1 !== 0 ){
+		throw new Error('Zero-pad length must be an integer greater than 1.');
+	}	
+	secret = '1' + hex2bin(secret); // append a 1 so that we can preserve the correct number of leading zeros in our secret
+	secret = split(secret, padLength);	
+	var x = new Array(numShares), y = new Array(numShares);
+	for(var i=0, len = secret.length; i<len; i++){
+		var subShares = this._getShares(secret[i], numShares, threshold);
+		for(var j=0; j<numShares; j++){
+			x[j] = x[j] || subShares[j].x.toString(config.radix);
+			y[j] = padLeft(subShares[j].y.toString(2)) + (y[j] ? y[j] : '');
+		}
+	}
+	var padding = config.max.toString(config.radix).length;
+	for(var i=0; i<numShares; i++){
+		x[i] = config.bits.toString(36) + padLeft(x[i],padding) + bin2hex(y[i]);
+	}		
+	return x;
+};
+
+// This is the basic polynomial generation and evaluation function 
+// for a `config.bits`-length secret (NOT an arbitrary length)
+// Note: no error-checking at this stage! If `secrets` is NOT 
+// a NUMBER less than 2^bits-1, the output will be incorrect!
+/** @expose **/
+exports._getShares = function(secret, numShares, threshold){	
+	var shares = [];
+	var coeffs = [secret];
+	var limit = Math.pow(2,config.bits); 		
+	for(var i=1; i<threshold; i++){
+//		coeffs[i] = parseInt(config.rng(config.bits),2);		//original random decimal number of maximum size 2^config.bits
+		coeffs[i]=sjcl.bn.random(limit).limbs[0];				//using SJCL RNG
+	}
+	for(var i=1, len = numShares+1; i<len; i++){
+		shares[i-1] = {
+			x: i,
+			y: horner(i, coeffs)
+		}
+	}
+	return shares;
+};
+	
+// Polynomial evaluation at `x` using Horner's Method
+// TODO: this can possibly be sped up using other methods
+// NOTE: fx=fx * x + coeff[i] ->  exp(log(fx) + log(x)) + coeff[i], 
+//       so if fx===0, just set fx to coeff[i] because
+//       using the exp/log form will result in incorrect value
+function horner(x, coeffs){
+	var logx = config.logs[x];
+	var fx = 0;
+	for(var i=coeffs.length-1; i>=0; i--){	
+		if(fx === 0){
+			fx = coeffs[i];
+			continue;
+		}
+		fx = config.exps[ (logx + config.logs[fx]) % config.max ] ^ coeffs[i];
+	}
+	return fx;
+};
+
+function inArray(arr,val){
+	for(var i = 0,len=arr.length; i < len; i++) {
+		if(arr[i] === val){
+   		 return true;
+	 	}
+ 	}
+	return false;
+};
+
+function processShare(share){
+	
+	var bits = parseInt(share[0], 36);
+	if(bits && (typeof bits !== 'number' || bits%1 !== 0 || bits<defaults.minBits || bits>defaults.maxBits)){
+		throw new Error('Number of bits must be an integer between ' + defaults.minBits + ' and ' + defaults.maxBits + ', inclusive.')
+	}	
+	var max = Math.pow(2, bits) - 1;
+	var idLength = max.toString(config.radix).length;
+	
+	var id = parseInt(share.substr(1, idLength), config.radix);
+	if(typeof id !== 'number' || id%1 !== 0 || id<1 || id>max){
+		throw new Error('Share id must be an integer between 1 and ' + config.max + ', inclusive.');
+	}
+	share = share.substr(idLength + 1);
+	if(!share.length){
+		throw new Error('Invalid share: zero-length share.')
+	}
+	return {
+		'bits': bits,
+		'id': id,
+		'value': share
+	};
+};
+
+/** @expose **/
+secrets._processShare = processShare;
+
+// Protected method that evaluates the Lagrange interpolation
+// polynomial at x=`at` for individual config.bits-length
+// segments of each share in the `shares` Array.
+// Each share is expressed in base `inputRadix`. The output 
+// is expressed in base `outputRadix'
+function combine(at, shares){
+	var setBits, share, x = [], y = [], result = '', idx;	
+	
+	for(var i=0, len = shares.length; i<len; i++){
+		share = processShare(shares[i]);
+		if(typeof setBits === 'undefined'){
+			setBits = share['bits'];
+		}else if(share['bits'] !== setBits){
+			throw new Error('Mismatched shares: Different bit settings.')
+		}		
+		if(config.bits !== setBits){
+			init(setBits);
+		}		
+		if(inArray(x, share['id'])){ // repeated x value?
+			continue;
+		}	
+		idx = x.push(share['id']) - 1;
+		share = split(hex2bin(share['value']));
+		for(var j=0, len2 = share.length; j<len2; j++){
+			y[j] = y[j] || [];
+			y[j][idx] = share[j];
+		}
+	}	
+	for(var i=0, len=y.length; i<len; i++){
+		result = padLeft(lagrange(at, x, y[i]).toString(2)) + result;
+	}
+	if(at===0){// reconstructing the secret
+		var idx = result.indexOf('1'); //find the first 1
+		return bin2hex(result.slice(idx+1));
+	}else{// generating a new share
+		return bin2hex(result);
+	}
+};
+
+// Combine `shares` Array into the original secret
+/** @expose **/
+exports.combine = function(shares){
+	return combine(0, shares);
+};
+
+// Generate a new share with id `id` (a number between 1 and 2^bits-1)
+// `id` can be a Number or a String in the default radix (16)
+/** @expose **/
+exports.newShare = function(id, shares){
+	if(typeof id === 'string'){
+		id = parseInt(id, config.radix);	
+	}
+	
+	var share = processShare(shares[0]);
+	var max = Math.pow(2, share['bits']) - 1;
+	
+	if(typeof id !== 'number' || id%1 !== 0 || id<1 || id>max){
+		throw new Error('Share id must be an integer between 1 and ' + config.max + ', inclusive.');
+	}
+
+	var padding = max.toString(config.radix).length;
+	return config.bits.toString(36) + padLeft(id.toString(config.radix), padding) + combine(id, shares);
+};
+
+// Evaluate the Lagrange interpolation polynomial at x = `at`
+// using x and y Arrays that are of the same length, with
+// corresponding elements constituting points on the polynomial.
+function lagrange(at, x, y){
+	var sum = 0,
+		product, 
+		i, j;
+		
+	for(var i=0, len = x.length; i<len; i++){
+		if(!y[i]){
+			continue; 
+		}			
+		product = config.logs[y[i]];
+		for(var j=0; j<len; j++){
+			if(i === j){ continue; }
+			if(at === x[j]){ // happens when computing a share that is in the list of shares used to compute it
+				product = -1; // fix for a zero product term, after which the sum should be sum^0 = sum, not sum^1
+				break; 
+			}
+			product = ( product + config.logs[at ^ x[j]] - config.logs[x[i] ^ x[j]] + config.max/* to make sure it's not negative */ ) % config.max;
+		}			
+		sum = product === -1 ? sum : sum ^ config.exps[product]; // though exps[-1]= undefined and undefined ^ anything = anything in chrome, this behavior may not hold everywhere, so do the check
+	}
+	return sum;
+};
+
+/** @expose **/
+exports._lagrange = lagrange;
+
+// Splits a number string `bits`-length segments, after first 
+// optionally zero-padding it to a length that is a multiple of `padLength.
+// Returns array of integers (each less than 2^bits-1), with each element
+// representing a `bits`-length segment of the input string from right to left, 
+// i.e. parts[0] represents the right-most `bits`-length segment of the input string.
+function split(str, padLength){
+	if(padLength){
+		str = padLeft(str, padLength)
+	}
+	var parts = [];
+	for(var i=str.length; i>config.bits; i-=config.bits){
+		parts.push(parseInt(str.slice(i-config.bits, i), 2));
+	}	
+	parts.push(parseInt(str.slice(0, i), 2));	
+	return parts;
+};
+	
+// Pads a string `str` with zeros on the left so that its length is a multiple of `bits`
+function padLeft(str, bits){
+	bits = bits || config.bits
+	var missing = str.length % bits;
+	return (missing ? new Array(bits - missing + 1).join('0') : '') + str;
+};
+
+function hex2bin(str){
+	var bin = '', num;
+	for(var i=str.length - 1; i>=0; i--){
+		num = parseInt(str[i], 16)
+		if(isNaN(num)){
+			throw new Error('Invalid hex character.')
+		}
+		bin = padLeft(num.toString(2), 4) + bin;
+	}
+	return bin;
+}
+
+function bin2hex(str){
+	var hex = '', num;
+	str = padLeft(str, 4);
+	for(var i=str.length; i>=4; i-=4){
+		num = parseInt(str.slice(i-4, i), 2);
+		if(isNaN(num)){
+			throw new Error('Invalid binary character.')
+		}
+		hex = num.toString(16) + hex;
+	}
+	return hex;
+}
+	
+// by default, initialize without an RNG
+exports.init();
+})(typeof module !== 'undefined' && module['exports'] ? module['exports'] : (window['secrets'] = {}), typeof GLOBAL !== 'undefined' ? GLOBAL : window );
+</script> 
+       
    <script>
 
 /*SJCL.js begins
@@ -2173,7 +2495,7 @@ function showpub(){
 			if(reply===false) throw("lock canceled");
 		};
 	var pubstr = makepub(secstr);
-	document.plain.text.value = "PL13lok=" + pubstr + "=PL13lok";
+	document.plain.text.value = "PL14lok=" + pubstr + "=PL14lok";
 };
 
 //makes the public string of a private string
@@ -2279,7 +2601,7 @@ function Encrypt_text(){
 		if (document.getElementById("learnmode").checked === true){
 				alert("The recipent will need to place his/her secret Key in box 1 to unlock the message in box 2.");
 			};
-		document.plain.text.value = "PL13msl=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL13msl";			//display adding dummy public key and anonymous tags
+		document.plain.text.value = "PL14msl=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL14msl";			//display adding dummy public key and anonymous tags
 	} else {														//not a public key
 		if (secstr === ""){											//nothing in box = short  mode			
 			if (document.getElementById("learnmode").checked === true){
@@ -2308,12 +2630,12 @@ function Encrypt_text(){
 			if (document.getElementById("learnmode").checked === true){
 				alert("The recipent will need your Lock and his/her secret Key to unlock the message in box 2.");
 			};
-			document.plain.text.value = "PL13mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL13mss"
+			document.plain.text.value = "PL14mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14mss"
 			}else{
 			if (document.getElementById("learnmode").checked === true){
 				alert("The recipent will need to place the same Key in box 1 to unlock the message in box 2.");
 			};	
-			document.plain.text.value = "PL13msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL13msk"
+			document.plain.text.value = "PL14msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14msk"
 			}
 		}
 	}
@@ -2460,7 +2782,7 @@ function Signhash(){
 		sigstr = sjcl.codec.base64.fromBits(sjcl.bitArray.concat(r.toBits(l), s.toBits(l)));	//make it base64
 	var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),						//for hidden message, if activated
 		padding = makesalt(iv,40);
-	document.plain.text.value = document.plain.text.value + "\n\n" + "PL13sig=" + sigstr.slice(1,sigstr.length) + iv.slice(0,11) + padding + "=PL13sig";	//strip initial "A" and add decoy iv & padding and tags
+	document.plain.text.value = document.plain.text.value + "\n\n" + "PL14sig=" + sigstr.slice(1,sigstr.length) + iv.slice(0,11) + padding + "=PL14sig";	//strip initial "A" and add decoy iv & padding and tags
 };	
 
 //verifies the ECDSA signature of a hash of the plaintext, calls Signhash as appropriate. Algorithm from SJCL ecc.js, but not the latest version
@@ -2615,17 +2937,17 @@ function sendMail() {
 	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	var type = cipherstr.slice(0,1);
 	if(type==="!"){
-    	var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.3 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+    	var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.4 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else if (type==="@"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.3 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.4 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else if (type==="#"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.3 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.4 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else if (cipherstr.length===87){
-		var link = "mailto:"+ "?subject=" + "&body=This is my PassLok v.1.3 Lock, use it to send me messages and verify my signature. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) +"%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=This is my PassLok v.1.4 Lock, use it to send me messages and verify my signature. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) +"%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else if (cipherstr.length===250){
-		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.3. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at http://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value);			
+		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.4. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at http://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value);			
 	} else if (cipherstr.length===160){
-		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.1.3 %0D%0A%0D%0AStrip everything but the locked message and unlock with Short Message Key.%0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.1.4 %0D%0A%0D%0AStrip everything but the locked message and unlock with Short Message Key.%0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else{ 
 		alert("Only Locks, and locked or signed text are allowed for Email");
 		throw("illegal text")
@@ -2653,6 +2975,102 @@ function selectPlain(){
 
 function displayhelp(){
 	window.open("help.html","_blank")
+};
+
+//this function implements the Shamir Secret Sharing Scheme, taking the secret from box 1 and putting the result in box 2, and vice-versa. To do: capture errors due to insufficient or malformed parts
+function secretshare(){
+	var plain = document.plain.text.value.trim(),
+		sec = document.sec.text.value.trim();
+	if (!(plain==="")){									//box 2 not empty: join parts or make one more part
+		var quorum = parseInt(plain.match(/p\d{3}/)[0].slice(1,4)),			//quorum in tags is "p" plus 3 digits in a row, first instance
+			shares = plain.replace(/\n\s*\n/g, '\n').split("\n"),				//go from newline-containing string to array
+			n = shares.length;
+		if(n < quorum){												//not enough parts
+			var reply = confirm("According to the tags, you need " + (quorum - n) + " more parts in box 2. Do you want to proceed?");
+			if(reply===false) throw("insufficient parts");
+		};	
+		for (var i=0; i < shares.length; i++) {
+			shares[i] = shares[i].split("=").sort(function (a, b) { return b.length - a.length; })[0];							//remove tags
+			var isLock = shares[i].length;
+			shares[i] = "8" + sjcl.codec.hex.fromBits(sjcl.codec.base64.toBits(shares[i].replace(/[^a-zA-Z0-9+/ ]+/g, '')));	//retrieve from base64 back to hex and add initial "8" to each item
+		};
+		if(sec===""){											//box 1 empty: join parts
+			if (document.getElementById("learnmode").checked === true){
+				var reply = confirm("The partial Keys in box 2 will be joined to retrieve the original Key, which will be placed in box 1. Please make sure that there are enough partial Keys. Cancel if this is not what you want.");
+				if(reply===false) throw("SSSS join canceled");
+			};
+			if(n === 1){
+				alert("There is only one part in box 2. Can't retrieve the original.");
+				throw("insufficient parts")
+			};
+			var	sechex = secrets.combine(shares),
+				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
+			document.sec.text.value = secret;						
+		} else {																			//box 1 not empty: add a part instead
+			if (document.getElementById("learnmode").checked === true){
+				var reply = confirm("Provided there are sufficient parts in box 2, an additional part will be added to box 2.  Cancel if this is not what you want.");
+				if(reply===false) throw("SSSS part addition canceled");
+			};
+			if(n > 254){
+				alert("Maximum number of parts is 255");
+				throw("max part number reached")
+			} else if(isLock === 87){
+				alert("Box 2 contains a Lock, not Key parts");
+				throw("Lock instead of parts")
+			} else if(isLock === 250){
+				alert("Box 2 contains a signature, not Key parts");
+				throw("signature instead of parts")
+			} else if(n === 1){	
+				alert("There is only one part in box 2. Can't add any more.");
+				throw("insufficient parts")
+			};
+			var	sechex = secrets.combine(shares),					//first check that box 1 has the right Key = parts in box 2 are good
+				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
+			if(sec===secret){			//if OK, add more parts. Get index by finding the highest of all the indices present
+				var maxindex = 1,
+					index = 1;
+				for (var i=0; i < shares.length; i++) {				//get greatest index on the set
+					index = parseInt(shares[i].slice(1,3),16);
+					if (index > maxindex){maxindex = index};
+				};
+				var	newshare = secrets.newShare(maxindex+1,shares);
+					shares = shares.concat(newshare);
+				displayshare(shares,quorum);			//required parts was read from tag
+			} else {
+				alert("Wrong Key in box 1. Please delete it and try again");
+				throw("bad Key in box 1");	
+			};				
+		};
+	} else {																		//box 2 empty: split secret in box 1
+		if (sec==="") {
+			alert("There is no Key to split in box 1");
+			throw("No key in box 1")
+		};
+		if (document.getElementById("learnmode").checked === true){
+			var reply = confirm("The Key in box 1 will be split into several partial Keys, which will be placed in box 2 replacing its contents. A popup will ask for number of parts needed to reconstruct the original Key. Extra parts can be made by clicking Split/Join again. Cancel if this is not what you want.");
+			if(reply===false) throw("SSSS split canceled");
+		};
+		var quorum = prompt("How many parts to retrieve the original?");
+		if(quorum.trim()===""){quorum = 2}else{quorum = parseInt(quorum)};
+		if(quorum < 2){quorum = 2} else if(quorum > 255) {
+			alert("Maximum number exceeded. Making 255 parts");
+			quorum = 255;
+		};
+		var	sechex = sjcl.codec.hex.fromBits(sjcl.codec.utf8String.toBits(document.sec.text.value)),
+			shares = secrets.share(sechex,quorum,quorum);
+		displayshare(shares,quorum);
+	};
+};
+
+function displayshare(shares,quorum){
+	var length = shares[0].length,
+		quorumst = "00" + quorum;
+		quorumst = quorumst.substr(quorumst.length-3);
+	var	output = "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//trim final "=" signs and display with tags
+	for (var i=1; i < shares.length; i++) {
+		output = output + "\n\n" + "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//strip initial "8" and display each share in a new line, base 64, with tags
+	};	
+	document.plain.text.value = output;
 };
 
 //The main script ends here.
@@ -2702,16 +3120,20 @@ function displayhelp(){
       	<p>Write your personal or shared Key, or the recipient's or signer's Lock in box 1. To display the characters, check Show. As you type your Key, a text below will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and trailing numbers are not helpful and will be ignored for the strength score. It is strongly encouraged to <strong>append your email to the Key.</strong> The strength meter won't show a Perfect score otherwise.</p>
         <p>You will need to enter a Key to unlock or sign messages. To send a short locked message, leave this box empty.</p>
         <p>To display the Lock matching a Key, place the Key in box 1, click the Make Lock button. The Lock will appear in box 2. You can then email it by clicking Email.</p>
-        <p>To make a shared Key from your personal Key and someone's Lock, place your Key in box 1 and the Lock in box 2, then click Make Lock.</p>
-		<p>To put a random Key in box 1 and its corresponding Lock in box 2, click Make Lock with box 1 empty.</p> 
+        <p>To make a shared Key from your personal Key and someone's Lock, place your Key in box 1 and the Lock in box 2, then click Make Lock. The shared key will appear in box 1.</p>
+		<p>To put a random Key in box 1 and its corresponding Lock in box 2, click Make Lock with box 1 empty.</p>
+        <p>To split a Key into several parts, which can be rejoined later, click Split/Join with box 2 empty. A popup will ask for number of parts needed to reconstruct the original Key. The parts, one per line, will appear in box 2. Extra parts can be made by clicking Split/Join again. To join several parts, place them in separate lines in box 2, then click Split/Join. The reconstructed Key will appear in box 1.</p>
       	</div>
        </label>	
       <span id="strength"></span>
 		<p align="center">
-        <input type="password" autocomplete="off" id="pwd" onKeyDown="ce();" onKeyUp="return passwordChanged();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 96%; font-size: medium;" cols="36" name="text"></p>
+		      	<input type="checkbox" id="show" onClick="showsec();" onBlur="ce();" onFocus="ce();"> Show</p>
+        <p align="center">
+		<input type="password" autocomplete="off" id="pwd" onKeyDown="ce();" onKeyUp="return passwordChanged();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 96%; font-size: medium;" cols="36" name="text"></p>
 	  <div align="center">
-      	<input type="checkbox" id="show" onClick="showsec();" onBlur="ce();" onFocus="ce();"> Show
+
 	    <input type="button" onclick="fillkeys();" onBlur="ce();" onFocus="ce();" value="Make Lock" style="background-color: #EEE; font-size: medium;"/>
+        <input type="button" onclick="secretshare();" onBlur="ce();" onFocus="ce();" value="Split/Join" style="background-color: #EEE; font-size: medium;"/>
 	    <input type="button" onClick="passwordChanged();document.sec.text.value = ''" onBlur="ce();" onFocus="ce();" value="Clear" style="background-color: #EEE; font-size: medium;">
       </div>
     </form>
@@ -2757,7 +3179,7 @@ function displayhelp(){
 <p></p>
     <div onClick="openClose('a6')" style="cursor:hand; cursor:pointer">
          <h3><b><address>
-    PASSLOK v.1.3.04 &#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013 &#9660;
+    PASSLOK v1.4.01&#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013 &#9660;
          </address>
          </b></h3>
   </div>
@@ -2774,6 +3196,8 @@ function displayhelp(){
     password strength meter by <a href="http://www.marketingtechblog.com/javascript-password-strength/" target="_blank">D. Karr</a> 2007
     </address>
 	<address>
+    Shamir secret sharing by <a href="https://github.com/amper5and/secrets.js" target="_blank">A. Stetsyuk</a> 2013
+    </address>
  </div>
     <center> <em>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</em> </center>
 

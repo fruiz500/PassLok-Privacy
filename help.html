@@ -76,13 +76,14 @@ function displaymanual(){
 <p>5. Come back to this Help page and look at the ID for this version of PassLok, shown below. If this ID and the one obtained in step 3 or 4 are the
 same, the program has not been tampered with.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=SYCed3jTtTU" target="_blank">https://www.youtube.com/watch?v=SYCed3jTtTU</a></p>
-<p>Current version of PassLok is: 1.3.04</p>
-<p>source server: https://passlok.site44.com</p>
+<p>Current version of PassLok is: 1.4.01</p>
+<p>made on: 9/3/13</p>
+<p>source server: https://www.autistici.org/passlok</p>
+<p>mirror at: https://passlok.site44.com</p>
 <p>GitHub page: https://github.com/fruiz500/passlok<p>
-<p>made on: 8/26/13</p>
 <p>Self-check ID (SHA256):</p>
-<p>c0b9-ee74-0fd0-27a5-c377-fbd7-9e72-cb27-abf2-8717-52bb-1464-43e3-9481-8ab9-87b8</p>
-<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=vlkA6ZzMMPU" target="_blank">https://www.youtube.com/watch?v=vlkA6ZzMMPU</a></p>
+<p>262f-3f7b-b2e3-9f1e-f10d-555a-19b9-b25a-80f9-5011-59d8-b7ac-c20b-f323-27fb-363c</p>
+<p>Watch the author reading this ID in this Youtube video: <a href="http://www.youtube.com/watch?v=cxGJxy37UWw" target="_blank">http://www.youtube.com/watch?v=cxGJxy37UWw</a></p>
 </div>
 <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
 
@@ -90,7 +91,7 @@ same, the program has not been tampered with.</p>
 <h3>View tutorial videos on how to use PassLok</h3>
 </div>
       <div id="a22" class="texter" style="display: none;">
-<p>There are a few tutorial videos on Youtube, which were made with PassLok 1.3:</p>
+<p>There are a few tutorial videos on Youtube, which were made mostly with PassLok 1.3:</p>
 <ul>
 <li>Walkthrough of the interface: <p><a href="https://www.youtube.com/watch?v=S_fy3cXpS1Y" target="_blank">https://www.youtube.com/watch?v=S_fy3cXpS1Y</a></p></li>
 <li>How to get help: <p><a href="https://www.youtube.com/watch?v=wf1G5k0RGnU" target="_blank">https://www.youtube.com/watch?v=wf1G5k0RGnU</a></p></li>
@@ -105,6 +106,7 @@ same, the program has not been tampered with.</p>
 <li>Shared keys and locked and signed mode: <p><a href="https://www.youtube.com/watch?v=ECcN-iFlQsA" target="_blank">https://www.youtube.com/watch?v=ECcN-iFlQsA</a></p></li>
 <li>Short message mode: <p><a href="https://www.youtube.com/watch?v=X5OkW871Mk8" target="_blank">https://www.youtube.com/watch?v=X5OkW871Mk8</a></p></li>
 <li>Make a random Key and its matching Lock: <p><a href="http://www.youtube.com/watch?v=s9GS3qIRdws" target="_blank">http://www.youtube.com/watch?v=s9GS3qIRdws</a></p></li>
+<li>Split a Key into multiple parts, or Join the parts back together: <p><a href="http://www.youtube.com/watch?v=fmjEPz0UJfU" target="_blank">http://www.youtube.com/watch?v=fmjEPz0UJfU</a></p></li>
 <li>Checking PassLok’s integrity: <p><a href="https://www.youtube.com/watch?v=SYCed3jTtTU" target="_blank">https://www.youtube.com/watch?v=SYCed3jTtTU</a></p></li>
 </ul>
 </div>
@@ -387,6 +389,27 @@ The unique ID of that lock will be
   authenticity of a lock by means of a phone call, video message, etc., in
   which at least one of the parties reads the ID.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=iYVJ5ufvrnU" target="_blank">https://www.youtube.com/watch?v=iYVJ5ufvrnU</a></p></div>
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a24')" style="cursor:hand; cursor:pointer">
+<h3>Split a Key into several parts</h3>
+</div>
+<div id="a24" class="texter" style="display: none;">
+<p>1. Put the Key, which must be at least 5 characters long, in box 1. If you want a new random Key, follow the steps above.</p>
+<p>2. Make sure that box 2 is empty, and then click the Split/Join button.</p>
+<p>3. A popup asks for the number of parts required to retrieve the original. Write the number, which must be between 2 and 255, and click OK. The parts appear in box 2. If you need more parts (the number required won't change), click Split/Join again for each additional part. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the &quot;=&quot; sign, but not recommended. It is also okay to split the locked message with spaces and punctuation other than = + / or line returns.</p>
+<p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=fmjEPz0UJfU" target="_blank">http://www.youtube.com/watch?v=fmjEPz0UJfU</a></p>
+  </div>
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a25')" style="cursor:hand; cursor:pointer">
+<h3>Join parts of a Key to retrieve the original Key (tags are PL**p***)</h3>
+</div>
+<div id="a25" class="texter" style="display: none;">
+<p>1. Paste all the necessary Key parts in box 2. Make sure that each part is unique and occupies one line, and different parts are in different lines. You need as many parts the number entered when the Key was split, which is written at the end of each PL**p tag. Having more parts than the minimum is OK, so long as they belong to the same set and are not corrupt. They don't need to be placed in any particular order.</p>
+<p>2. Click the Split/Join button. If all goes well, the reconstructed Key appears in box 1, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
+<p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=fmjEPz0UJfU" target="_blank">http://www.youtube.com/watch?v=fmjEPz0UJfU</a></p>
+  </div>
   
 <hr style="background-color: rgb(192, 192, 192); color: #000000;">
 <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
@@ -404,7 +427,7 @@ The unique ID of that lock will be
     <p>You can lock a text with a combination, which we will call from now on a <strong>shared Key</strong>, which you give to those who are supposed to open the text, but keep secret from those whom you don&rsquo;t want to be able to read it. To do this, place the <strong>shared Key in box 1</strong> of the PassLok page and the <strong>text in box 2</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a locked text, place it in box 2 and the shared Key in box 1, then click Lock/Unlock.</p>
     <p>You can also lock a text with <strong>somebody&rsquo;s Lock</strong>, which you have gotten from that person (more on this below), and then only that person will be able to open it, using his/her secret Key. To lock a text this way, place the <strong>person&rsquo;s Lock in box 1</strong> and the <strong>text in box 2</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a text locked in this way, the recipient will need to place his/her Key in box 1, the locked text in box 2, and then click Lock/Unlock.</p>
 <p>Combinations and Keys are secret items, but Locks are not. In PassLok, you start with a Key and then you make the Lock to match your Key. To do this, you place the <strong>Key in box 1</strong> and then click <strong>Lock/Unlock</strong> with box 2 empty. The Lock appears in box 2. <strong>You should give your Lock to people</strong> whom you wish to send you locked messages, as you would give them your phone number or your email address. It is prety much impossible to retrieve the Key from the Lock. For convenience, there is an Email button, so that you only need to supply the addresses where the Lock should be sent.</p>
-  <p>PassLok has two more locking modes, which are described below, along with signatures and hidden messages. Read on if you want to learn about those.</p></div>
+  <p>PassLok has two more locking modes, which are described below, along with signatures, hidden messages, and secret sharing. Read on if you want to learn about those.</p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
   <div onClick="openClose('a18')" style="cursor:hand; cursor:pointer">
@@ -430,8 +453,9 @@ The unique ID of that lock will be
       using words that are misspelled, so it's hard to find them in a
       dictionary. For extra security against "rainbow tables," add your email at the end.
       PassLok rewards those using strong passwords by reducing the processing time required to use them.</p>
+<p>You can make a <strong>random Key</strong> and its matching Lock by clicking the Make Lock button with box 1 empty. Random Keys are especially useful as temporary Keys for a session where forward secrecy is desired. Random Keys offer perfect security against hackers but they are very hard to remember; resist the temptation to write down a whole Key in a place where it might be compromised. To help with this, PassLok can <strong>split a Key</strong> into several parts, by clicking the Split/Join button. A predetermined number of parts must be entered in box 2 in order to retrieve the original Key, by clicking again the same button. One use of this function is for storing Key parts in different locations, to minimize the risk of compromise.</p>
 <p>In addition to key-locking and regular locking, PassLok
-      has a third locking mode,
+      has a <strong>third locking mode</strong>,
       triggered when neither Key nor Lock is supplied in box 1 prior to clicking the Lock/Unlock
       button. In this case, PassLok asks for a Password that is to be the same
       to lock and unlock, as in key-locking. The difference is that the
@@ -444,7 +468,7 @@ The unique ID of that lock will be
       allegedly was signed, including the signature at the end, into box 2, and the signer's Lock
       (matching the key used for signing) in box 1, then click signature/Verify. A popup
       will say whether or not the signature verification has succeeded.</p>
-<p>It is possible to authenticate a locked message without signing it. To do this,
+<p>It is possible to <strong>authenticate a locked message without signing it</strong>. To do this,
 lock it with the shared Key that results from merging your personal Key and the recipient's
 Lock. Just put your Key in box 1 and the Lock in box 2, then click Make Lock, 
 and then write the message into box 2 amd click Lock/Unlock or Email. The recipient will place
