@@ -29,7 +29,7 @@
 
 <script>
         /* 
-		@source: https://passlok.site44.com/index.html
+		@source: https://www.autistici.org/passlok/index.html
 		   
         @licstart  The following is the entire license notice for the 
         JavaScript code in this page.
@@ -66,7 +66,7 @@
 		
 <script>
 // secrets.js - by Alexander Stetsyuk - released under MIT License
-//substantial edits by F. Ruiz: since RNG used is from SJCL, RNG check is left to SJCL: RNG checking code removed from here. Addshare function not used and is removed
+//substantial edits by F. Ruiz: since RNG used is from SJCL, RNG check is left to SJCL: RNG checking code removed from here.
 
 (function(exports, global){
 var defaults = {
@@ -2495,7 +2495,11 @@ function showpub(){
 			if(reply===false) throw("lock canceled");
 		};
 	var pubstr = makepub(secstr);
-	document.plain.text.value = "PL14lok=" + pubstr + "=PL14lok";
+	if (document.getElementById("tags").checked === true){
+		document.plain.text.value = "PL14lok=" + pubstr + "=PL14lok";
+	}else{
+		document.plain.text.value = pubstr;
+	}
 };
 
 //makes the public string of a private string
@@ -2600,8 +2604,12 @@ function Encrypt_text(){
 		var cipherj = JSON.parse(sjcl.encrypt(keystr,document.plain.text.value,{"iv":iv,"salt":salt,"ks":256,"iter": 101}));   //use 256 bit keys, min stretching for random key
 		if (document.getElementById("learnmode").checked === true){
 				alert("The recipent will need to place his/her secret Key in box 1 to unlock the message in box 2.");
-			};
-		document.plain.text.value = "PL14msl=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL14msl";			//display adding dummy public key and anonymous tags
+		};
+		if (document.getElementById("tags").checked === true){	
+			document.plain.text.value = "PL14msl=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL14msl";			//display adding dummy public key and anonymous tags
+		}else{
+			document.plain.text.value = "!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct;
+		}
 	} else {														//not a public key
 		if (secstr === ""){											//nothing in box = short  mode			
 			if (document.getElementById("learnmode").checked === true){
@@ -2627,15 +2635,23 @@ function Encrypt_text(){
 			salt = makesalt(iv,152);
 			var cipherj = JSON.parse(sjcl.encrypt(secstr,document.plain.text.value,{"iv":iv,"salt":salt,"ks":256,"iter": iter}));
 			if(secstr.length===86){								//if shared Key, use a different tag
-			if (document.getElementById("learnmode").checked === true){
-				alert("The recipent will need your Lock and his/her secret Key to unlock the message in box 2.");
-			};
-			document.plain.text.value = "PL14mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14mss"
+				if (document.getElementById("learnmode").checked === true){
+					alert("The recipent will need your Lock and his/her secret Key to unlock the message in box 2.");
+				};
+				if (document.getElementById("tags").checked === true){
+					document.plain.text.value = "PL14mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14mss"
+				}else{
+					document.plain.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct
+				}
 			}else{
-			if (document.getElementById("learnmode").checked === true){
-				alert("The recipent will need to place the same Key in box 1 to unlock the message in box 2.");
-			};	
-			document.plain.text.value = "PL14msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14msk"
+				if (document.getElementById("learnmode").checked === true){
+					alert("The recipent will need to place the same Key in box 1 to unlock the message in box 2.");
+				};
+				if (document.getElementById("tags").checked === true){
+					document.plain.text.value = "PL14msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL14msk"
+				}else{
+					document.plain.text.value = "@" + cipherj.iv + cipherj.salt + cipherj.ct
+				}
 			}
 		}
 	}
@@ -2782,7 +2798,11 @@ function Signhash(){
 		sigstr = sjcl.codec.base64.fromBits(sjcl.bitArray.concat(r.toBits(l), s.toBits(l)));	//make it base64
 	var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),						//for hidden message, if activated
 		padding = makesalt(iv,40);
-	document.plain.text.value = document.plain.text.value + "\n\n" + "PL14sig=" + sigstr.slice(1,sigstr.length) + iv.slice(0,11) + padding + "=PL14sig";	//strip initial "A" and add decoy iv & padding and tags
+	if (document.getElementById("tags").checked === true){
+		document.plain.text.value = document.plain.text.value + "\n\n" + "PL14sig=" + sigstr.slice(1,sigstr.length) + iv.slice(0,11) + padding + "=PL14sig";	//strip initial "A" and add decoy iv & padding and tags
+	}else{
+		document.plain.text.value = document.plain.text.value + "\n\n" + sigstr.slice(1,sigstr.length) + iv.slice(0,11) + padding
+	}
 };	
 
 //verifies the ECDSA signature of a hash of the plaintext, calls Signhash as appropriate. Algorithm from SJCL ecc.js, but not the latest version
@@ -2800,7 +2820,9 @@ function Verifyhash(){
 	var	sign = text.split(/\r?\n/);
 		sign = sign[sign.length-1];							//this is a signature if added as last line of text
 	var	sigstr = sign.replace(/\s/g,'');
-	if (!(sigstr.slice(4,8)==="sig=")){							//no signature tag, therefore making sign
+	var sigstripped = sigstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
+//	if (!(sigstr.slice(4,8)==="sig=")){							//no signature tag, therefore making sign
+	if (!(sigstripped.length===250)){							//no signature tag, therefore making sign	
 		Signhash();
 		throw("no signature, creating one")
 	};
@@ -2936,6 +2958,7 @@ function sendMail() {
 	var cipherstr = document.plain.text.value;
 	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	var type = cipherstr.slice(0,1);
+if (document.getElementById("tags").checked === true){			//tags is checked, add explanatory text	
 	if(type==="!"){
     	var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.4 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.plain.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
 	} else if (type==="@"){
@@ -2951,13 +2974,21 @@ function sendMail() {
 	} else{ 
 		alert("Only Locks, and locked or signed text are allowed for Email");
 		throw("illegal text")
-	};
+	}
+}else{														//tags unchecked, no extra text
+	if((type=="!")||(type=="@")||(type=="#")||(cipherstr.length==87)||(cipherstr.length==250)||(cipherstr.length==160)){
+		var link = "mailto:"+ "?subject=" + "&body=" + encodeURIComponent(document.plain.text.value);
+	}else{
+		alert("Only Locks, and locked or signed text are allowed for Email");
+		throw("illegal text")
+	}
+}
 	if(typeof window.orientation !== 'undefined'){ 	 		//new window for PC, same for mobile
 		window.open(link,"_parent")
 	} else {
 		window.open(link,"_blank")
-	};
-};
+	}
+}
 
 //calls SMS app (works on mobile only)
 function sendSMS() {
@@ -2982,9 +3013,10 @@ function secretshare(){
 	var plain = document.plain.text.value.trim(),
 		sec = document.sec.text.value.trim();
 	if (!(plain==="")){									//box 2 not empty: join parts or make one more part
-		var quorum = parseInt(plain.match(/p\d{3}/)[0].slice(1,4)),			//quorum in tags is "p" plus 3 digits in a row, first instance
-			shares = plain.replace(/\n\s*\n/g, '\n').split("\n"),				//go from newline-containing string to array
-			n = shares.length;
+		var shares = plain.replace(/\n\s*\n/g, '\n').split("\n"),				//go from newline-containing string to array
+			n = shares.length,
+			quorumarr = plain.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
+		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it form tags
 		if(n < quorum){												//not enough parts
 			var reply = confirm("According to the tags, you need " + (quorum - n) + " more parts in box 2. Do you want to proceed?");
 			if(reply===false) throw("insufficient parts");
@@ -3066,12 +3098,128 @@ function displayshare(shares,quorum){
 	var length = shares[0].length,
 		quorumst = "00" + quorum;
 		quorumst = quorumst.substr(quorumst.length-3);
-	var	output = "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//trim final "=" signs and display with tags
+	if (document.getElementById("tags").checked === true){	
+		var	output = "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//trim final "=" signs and display with tags
+	}else{
+		var	output = sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '')
+	}
 	for (var i=1; i < shares.length; i++) {
-		output = output + "\n\n" + "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//strip initial "8" and display each share in a new line, base 64, with tags
+		if (document.getElementById("tags").checked === true){
+			output = output + "\n\n" + "PL14p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, '') + "=PL14p" + quorumst;	//strip initial "8" and display each share in a new line, base 64, with tags
+		}else{
+			output = output + "\n\n" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, '')
+		}
 	};	
 	document.plain.text.value = output;
 };
+
+//The following code is to convert the contents of box 2 into fake text, and backward. This can be useful against email scanners.
+
+if (typeof code == 'undefined'){			//default text for base64 to words conversion, global variable
+	var dictionary = "The licenses for most software and other practical works are designed to take away your freedom to share and change the works. By contrast, the GNU General Public License is intended to guarantee your freedom to share and change all versions of a program to make sure it remains free software for all its users. We, the Free Software Foundation, use the GNU General Public License for most of our software; it applies also to any other work released this way by its authors. You can apply it to your programs, too. When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things. To protect your rights, we need to prevent others from denying you these rights or asking you to surrender the rights. Therefore, you have certain responsibilities if you distribute copies of the software, or if you modify it: responsibilities to respect the freedom of others. For example, if you distribute copies of such a program, whether gratis or for a fee, you must pass on to the recipients the same freedoms that you received. You must make sure that they, too, receive or can get the source code. And you must show them these terms so they know their rights. Developers that use the GNU GPL protect your rights with two steps: (1) assert copyright on the software, and (2) offer you this License giving you legal permission to copy, distribute and/or modify it. For the developers' and authors' protection, the GPL clearly explains that there is no warranty for this free software. For both users' and authors' sake, the GPL requires that modified versions be marked as changed, so that their problems will not be attributed erroneously to authors of previous versions.";
+	var dict = dictionary.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " ");
+	var code = dict.split(" ");
+		code = code.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});		//global array containing the words, no duplicates
+	var keystr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=!@# " + "\n",	//base64 plus other characters used in PassLok strings
+		remainder = code.length % keystr.length,
+		noptions = Math.floor(code.length / keystr.length);
+}
+
+//This function converts base64-plus text into fake words, from the list of words above, and back
+function words(){
+if(document.plain.text.value.trim() == ""){					//if box 2 is empty, display the dictionary	
+	if (document.getElementById("learnmode").checked === true){
+			var reply = confirm("The current dictionary for converting box 2 into fake text will be displayed in box 2. Cancel if this is not what you want.");
+			if(reply===false) throw("dictionary display canceled");
+	}
+		document.plain.text.value = dictionary
+} else {
+	if(document.sec.text.value.trim() == "") {				//if box 1 is empty, make new dictionary from the text in box 2
+			var reply = confirm("A new dictionary for converting code into fake text will be made using the contents of box 2. Cancel if this is not what you want.");
+			if(reply===false) throw("dictionary change canceled");
+		var	newdictionary = document.plain.text.value,
+			newdict = newdictionary.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " "),  //removes punctuation, collapses spaces to single space
+			newcode = newdict.split(" ");
+			newcode = newcode.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;})
+		if (newcode.length >= keystr.length){
+			code = newcode;									//store into global variables
+			dictionary = newdictionary
+		} else {
+			alert("This text is too short to make a dictionary")
+		}
+	} else {
+		var text = document.plain.text.value,
+			textlow = text.toLowerCase().replace(/[,\.]+/g,'').replace(/\n+/g,' '),		//make lowercase and strip periods, commas and newlines
+			textvector = textlow.split(" "),						//break up box 2 into an array of words
+			notencoded = false,
+			indices = new Array();
+			if(indices == -1) notbase64 = true;
+		for (var i = 0; i < textvector.length; i++){					//find the words in the dictionary
+			var index = searchStringInArray(textvector[i],code);
+			indices[i] = index;										//put the indices into an array
+			if(index == -1) notencoded = true						//if any word is not in the dictionary, this was not encoded base64
+		}
+		if (notencoded) {									//routine to make encoded text
+		if (document.getElementById("learnmode").checked === true){
+			var reply = confirm("The contents of box 2 will be replaced with fake text representing it. Cancel if this is not what you want.");
+			if(reply===false) throw("toWords canceled");
+		}
+			var output = code[randomindex(keystr.indexOf(text[0]))];				//character by character, get the base64 index and then the dictionary word, from 0 to last
+			for (var i = 1; i < text.length; i++){
+				var index = keystr.indexOf(text[i]);
+				if(index == -1){
+					alert("Box 2 cannot be converted to fake text. Make sure it contains only characters used in PassLok strings");
+					throw("illegal characters in box 2")
+				}
+				output = output + randompunct() + code[randomindex(index)]		//add some random commas and periods, and spaces between words
+			}
+			output = output.replace(/[.][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[a-z]/,function(a){return a.toUpperCase();}) + "."; //capitalize initial and after period, add final period.
+			document.plain.text.value = output		
+		} else {											//routine to extract original string from encoded text
+		if (document.getElementById("learnmode").checked === true){
+			var reply = confirm("The fake text in box 2 will be replaced with the original code from which it came. Cancel if this is not what you want.");
+			if(reply===false) throw("fromWords canceled");
+		}
+			var output = "";
+			for (var i = 0; i < textvector.length; i++){
+				output = output + keystr[indices[i] % keystr.length]				//get base64 characters corresponding to the indices, calculated earlier
+			}
+			document.plain.text.value = output.replace(/undefined/g,'')	
+		}
+	}
+}}
+
+//Computes an index taking the full range of words in the dictionary
+function randomindex(index){
+	if(index >= remainder){
+		var choice = Math.floor(Math.random() * noptions)
+	}else{
+		var choice = Math.floor(Math.random() * (noptions + 1))
+	}
+	return index + choice*keystr.length
+}
+
+//To find words in the code. Returns the index if found, or -1 if not found
+function searchStringInArray (str, strArray) {
+    for (var j = 0; j < strArray.length; j++) {
+        if (strArray[j] == str) return j;
+    }
+    return -1;
+}
+
+//This is to generate random periods, commans and newlines, per the percentage brackets below, plus spaces when appropriate
+function randompunct(){
+	var percent = Math.ceil(Math.random() * 100);
+	if (percent < 7) {
+		return ". "
+	} else if(percent < 13) {
+		return ", "
+	} else if(percent < 15) {
+		return ".\n"	
+	} else {
+		return " "
+	}
+}
 
 //The main script ends here.
 </script>
@@ -3119,10 +3267,10 @@ function displayshare(shares,quorum){
 		<div id="a1" class="texter" style="display: none;">
       	<p>Write your personal or shared Key, or the recipient's or signer's Lock in box 1. To display the characters, check Show. As you type your Key, a text below will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and trailing numbers are not helpful and will be ignored for the strength score. It is strongly encouraged to <strong>append your email to the Key.</strong> The strength meter won't show a Perfect score otherwise.</p>
         <p>You will need to enter a Key to unlock or sign messages. To send a short locked message, leave this box empty.</p>
-        <p>To display the Lock matching a Key, place the Key in box 1, click the Make Lock button. The Lock will appear in box 2. You can then email it by clicking Email.</p>
+        <p>To display the Lock matching a Key, place the Key in box 1, click the Make Lock button. The Lock will appear in box 2. You can then email it by clicking Email. To display the Lock without its tags, uncheck the Tags checkbox above box 2.</p>
         <p>To make a shared Key from your personal Key and someone's Lock, place your Key in box 1 and the Lock in box 2, then click Make Lock. The shared key will appear in box 1.</p>
 		<p>To put a random Key in box 1 and its corresponding Lock in box 2, click Make Lock with box 1 empty.</p>
-        <p>To split a Key into several parts, which can be rejoined later, click Split/Join with box 2 empty. A popup will ask for number of parts needed to reconstruct the original Key. The parts, one per line, will appear in box 2. Extra parts can be made by clicking Split/Join again. To join several parts, place them in separate lines in box 2, then click Split/Join. The reconstructed Key will appear in box 1.</p>
+        <p>To split a Key into several parts, which can be rejoined later, click Split/Join with box 2 empty. A popup will ask for number of parts needed to reconstruct the original Key. The parts, one per line, will appear in box 2. Extra parts can be made by clicking Split/Join again. To display them without tags, uncheck the Tags checkbox above box 2. To join several parts, place them in separate lines in box 2, then click Split/Join. The reconstructed Key will appear in box 1.</p>
       	</div>
        </label>	
       <span id="strength"></span>
@@ -3146,16 +3294,19 @@ function displayshare(shares,quorum){
       </div>
  <div id="a3" class="texter">
 	<p>This is where you write the text to be locked, signed or unlocked. Locks matching the Key in box 1 also appear here. The process to make Locks and shared Keys is described above.</p>
-	<p>To lock a text, enter it into box 2 below. Write a shared Key or the recipient's Lock in box 1, depending on the type of locking you want. Then click the Lock/Unlock button. The locked text will appear in box 2, replacing the original text. You can then email it or text it using the buttons above box 2.</p>
+	<p>To lock a text, enter it into box 2 below. Write a shared Key or the recipient's Lock in box 1, depending on the type of locking you want. Then click the Lock/Unlock button. The locked text will appear in box 2, replacing the original text. You can then email it or text it using the buttons above box 2. To display the locked messages without its normal tags, first uncheck the Tags checkbox.</p>
 	<p>If box 1 is empty when you click Lock/Unlock, a prompt will ask for a Short Message Key (message length limited to 57 ASCII characters, non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.).</p>
 	<p>To unlock a locked text, place your personal or shared Key in box 1, with the locked text in box 2, then click Lock/Unlock. If you have the wrong item in box 1, a popup will tell you.</p>
-	<p>To sign a text with your personal Key, first make sure your Key is in box 1 above, then enter into box 2 below the text to be signed and click Sign/Verify. The signature will be appended to the text. This can also be emailed with the Email button.</p>
+	<p>To sign a text with your personal Key, first make sure your Key is in box 1 above, then enter into box 2 below the text to be signed and click Sign/Verify. The signature will be appended to the text. This can also be emailed with the Email button. To make the signature appear without identifying tags, uncheck the Tags checkbox before signing.</p>
 	<p>To verify a signed text, place the text carrying the signature at the end in box 2 below, and the signer's Lock in box 1 above, then click Sign/Verify. A popup will say whether or not the signature is verified for this text and this signer.</p>
-	<p>The Email button places the contents of box 2 in a formatted email, using the default client. The SMS App button opens your default messaging app; you need to copy the message into the clipboard before clicking the button. The ID button replaces the content of box 2 with its SHA256 hash. This is useful for authentication purposes.</p>
+	<p>The Email button places the contents of box 2 in a formatted email, using the default client. To make an unformatted email, uncheck Tags first. The SMS App button opens your default messaging app; you need to copy the message into the clipboard before clicking the button. The Words button converts the contents of box 2 into fake text, and back. To display the current dictionary, click Words with box 2 empty. To change the dictionary, click Words with box 1 empty. The ID button replaces the content of box 2 with its SHA256 hash. This is useful for authentication purposes.</p>
  </div>
       </label>
-      <div align="center"> <input type="button" onClick="sendMail();" onBlur="ce();" onFocus="ce();" value="Email" style="background-color: #EEE; font-size: medium;">
+      <div align="center">
+      <input type="checkbox" id="tags" checked="true" onBlur="ce();" onFocus="ce();"> Tags</p>
+      <input type="button" onClick="sendMail();" onBlur="ce();" onFocus="ce();" value="Email" style="background-color: #EEE; font-size: medium;">
 	  <input type="button" onClick="sendSMS();" onBlur="ce();" onFocus="ce();" value="SMS" style="background-color: #EEE; font-size: medium;">
+      <input type="button" onClick="words();" onBlur="ce();" onFocus="ce();" value="Words" style="background-color: #EEE; font-size: medium;">
 	  <input type="button" onClick="makehash();" onBlur="ce();" onFocus="ce();" value="ID" style="background-color: #EEE; font-size: medium;">
       <textarea onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 96%; font-size: medium;" cols="24" rows="10" name="text"></textarea>
 	<br>
@@ -3179,7 +3330,7 @@ function displayshare(shares,quorum){
 <p></p>
     <div onClick="openClose('a6')" style="cursor:hand; cursor:pointer">
          <h3><b><address>
-    PASSLOK v1.4.01&#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013 &#9660;
+    PASSLOK v1.4.02&#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013 &#9660;
          </address>
          </b></h3>
   </div>
