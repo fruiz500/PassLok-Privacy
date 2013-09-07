@@ -3143,7 +3143,9 @@ if(document.plain.text.value.trim() == ""){					//if box 2 is empty, display the
 			newcode = newcode.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;})
 		if (newcode.length >= keystr.length){
 			code = newcode;									//store into global variables
-			dictionary = newdictionary
+			dictionary = newdictionary;
+			remainder = code.length % keystr.length;
+			noptions = Math.floor(code.length / keystr.length)
 		} else {
 			alert("This text is too short to make a dictionary")
 		}
