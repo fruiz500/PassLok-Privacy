@@ -14,13 +14,6 @@
 		background-color: #FFFFFF;
 		color: #000000;
 	    }
-			label {
-				display: inline-block;
-			font-size:small;
-			margin-left: 2%;
-				margin-right: 2%;
-				vertical-align:middle;
-			}
 	</style>
     <script>
 	<!-- Text hide trick, by Sandeep Gangadharan 2005-->
@@ -55,43 +48,46 @@ function displaymanual(){
 <p><strong>1. We'll never give your secret Key to anyone.</strong> We cannot do anything concerning your Key because we just don't have it.</p>
 <p><strong>2. We'll never give you or anyone else a conterfeit Lock made from any Key</strong>. We just don't run key servers. PassLok has functions to help you to authenticate Locks, but this is still your responsibility.</p>
 <p><strong>3. We'll never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We'd rather shut down than be forced to do this, which would betray the very essence of PassLok.</p>
-<p>Since PassLok is a piece of human-readable writing, we consider it an expression of free speech, protected by the laws of many countries. Tampering with it in unauthorized ways will violate free speech and copyright protection laws.</p>
+<p>Since the html version of PassLok is a piece of human-readable writing, we consider it an expression of free speech, protected by the laws of many countries. Tampering with it in unauthorized ways will violate free speech and copyright protection laws.</p>
 <p>On the other hand:</p>
-<p>The biggest vulnerability of PassLok is how easy it is to view, <strong>and consequently modify</strong> the code. As mentioned above, we will never weaken the underlying cryptography, but others might. Even though we are taking pains to ensure that PassLok is delivered to you in the most secure way compatible with our budget, <strong>you should still make sure that you have obtained the genuine code.</strong></p>
-<p>The method described in the next item is less than perfect but it works in most situations. Once you are sure that your copy of PassLok is pristine, you can save it and run it as many times as you want from its storage location without having to connect to the page server again.</p>
+<p>The biggest vulnerability of PassLok is how easy it is to view, <strong>and consequently modify</strong> the html code. As mentioned above, we will never weaken the underlying cryptography, but others might. Even though we are taking pains to ensure that PassLok is delivered to you in the most secure way compatible with our budget, <strong>you should still make sure that you have obtained the genuine code.</strong></p>
+<p>The method described in the next item, to verify the integrity of PassLok in html form, is less than perfect but it works in most situations. Once you are sure that your copy of PassLok is pristine, you can save it and run it as many times as you want from its storage location without having to connect to the page server again.</p>
+<p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
 </div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
   <div onClick="openClose('a16')" style="cursor:hand; cursor:pointer">
-<h3>Verify PassLok's integrity </h3>
+<h3>Verify PassLok's integrity</h3>
 </div>
 <div id="a16" class="texter" style="display: none;">
-<p>1. Load PassLok from the Web, or from storage (local or cloud) if previously saved as html as described in step 4 below.</p>
+<p>If you obtained a native version of PassLok from an app store (Apple, GooglePlay) the following does not apply, but rather you are trusting that the app store has not tampered with the code submitted by the author. If you want to make sure that a native copy of PassLok is tamper-free, you should download the authentic html version as described below, and then test it against the native PassLok by locking messages in one app and unlocking them in the other, both ways. You can also check that the same Key produces the same Lock in both versions, and that signatures made by either one can be verified by the other.</p>
+<p>To check the integrity of an html version of PassLok:</p>
+<p>1. Load PassLok from one of the authorized sources listed below, or from storage (local or cloud) if previously saved as html as described in step 4 below.</p>
 <p>2. Direct your browser to &quot;view source&quot;. Each
   browser does this differently, but most non-mobile browsers have this capability. Typically, you load the source on a separate tab by typing CTRL-u (Windows) or option-cmd-u (OSX). On
   the page displaying the source, select all (CTRL-a or cmd-a), then copy to clipboard (CTRL-c or cmd-c). Alternatively, you can get the source from PassLok's GitHub repository at: <a href="https://github.com/fruiz500/passlok">https://github.com/fruiz500/passlok</a></p>
-<p>3. Back in the PassLok page, make sure box 2 is clear, then paste the clipboard into it (CTRL-v or cmd-v). Click the ID
-  button. The self-ID will be displayed in box 2, replacing the previous contents.</p>
+<p>3. Back in the PassLok page, make sure the main box is clear, then paste the clipboard into it (CTRL-v or cmd-v). Click the ID
+  button. The self-ID will be displayed in the main box, replacing the previous contents.</p>
 <p>4. For better security, you can do a SHA256 of the source code using an external program or online utility. In this case you may need to paste the clipboard into a text or html editor so you can save it as a file (html or txt). <strong>DO NOT save the code using the "save" command from the browser menu</strong>, since this command tends to modify the source page before it saves it. A copy of PassLok saved this way will still run, but its SHA256 will be different. If your operating system is Windows, do not use the built-in Notepad program, since it cannot save text with the appropriate encoding (UTF-8, no BOM). Be sure there are no extra spaces at top and bottom, since this would affect the result. Then obtain the SHA256 of this file using the external utility.</p>
 <p>5. Come back to this Help page and look at the ID for this version of PassLok, shown below. If this ID and the one obtained in step 3 or 4 are the
 same, the program has not been tampered with.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=SYCed3jTtTU" target="_blank">https://www.youtube.com/watch?v=SYCed3jTtTU</a></p>
-<p>Current version of PassLok is: 1.4.03</p>
-<p>made on: 9/13/13</p>
+<p>Current version of PassLok is: 1.5.01</p>
+<p>made on: 9/25/13</p>
 <p>source server: https://www.autistici.org/passlok</p>
 <p>mirror at: https://passlok.site44.com</p>
 <p>GitHub page: https://github.com/fruiz500/passlok<p>
 <p>Self-check ID (SHA256):</p>
-<p>c61d-6b90-e3b7-5e03-153b-821b-93cc-a7ab-4c33-d3f3-8f00-b204-26c8-96d5-cf65-4a75</p>
-<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=jzZ3sz9RWOU" target="_blank">https://www.youtube.com/watch?v=jzZ3sz9RWOU</a></p>
+<p>8198-9dc2-a456-45d9-31a5-42be-6598-d29d-f30b-d5f6-93fb-37db-ae0d-a159-0362-ce4f</p>
+<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=fHmKdzsngtg" target="_blank">https://www.youtube.com/watch?v=fHmKdzsngtg</a></p>
 </div>
-<hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">
 
 <div onClick="openClose('a22')" style="cursor:hand; cursor:pointer">
 <h3>View tutorial videos on how to use PassLok</h3>
 </div>
       <div id="a22" class="texter" style="display: none;">
-<p>There are a few tutorial videos on Youtube, which were made mostly with PassLok 1.3:</p>
+<p>There are a few tutorial videos on Youtube, which were made mostly with PassLok 1.3. PassLok 1.5 and above uses multiple windows rather than one large scrolling window, but the mechanics are very similar:</p>
 <ul>
 <li>Walkthrough of the interface: <p><a href="https://www.youtube.com/watch?v=6-j6vh0l51U" target="_blank">https://www.youtube.com/watch?v=6-j6vh0l51U</a></p></li>
 <li>How to get help: <p><a href="https://www.youtube.com/watch?v=wf1G5k0RGnU" target="_blank">https://www.youtube.com/watch?v=wf1G5k0RGnU</a></p></li>
@@ -118,7 +114,7 @@ same, the program has not been tampered with.</p>
 <h3>Use Learn mode to get help as you use PassLok</h3>
 </div>
       <div id="a21" class="texter" style="display: none;">
-<p>1. Click the Learn mode checkbox near the top.</p>
+<p>1. Click the Help button, and then click the Learn mode checkbox near the top.</p>
 <p>2. When this is checked and you click a button, a popup message will alert you of what is about 
 to happen. You will have an opportunity to cancel and do somethig else.</p>
 <p>3. To go back to normal mode without extra popups, uncheck Learn mode</p>
@@ -129,12 +125,12 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
 <h3>Lock a message with a shared Key, to be unlocked with the same Key</h3>  
 </div>
       <div id="a1" class="texter" style="display: none;">
-<p>1. Write or paste the shared Key in box 1. It is masked by default, so
+<p>1. Write or paste the shared Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
-<p>2. Write or paste the message in box 2. Click the Lock/Unlock button. The
-  locked message will appear in box 2, replacing the original text. Copy it and paste it into your
+<p>2. Write or paste the message in the main box. Click the Lock/Unlock button. The
+  locked message will appear in the main box, replacing the original text. Copy it and paste it into your
   communications program or click Email to open your default email. 
-  It is okay to strip the tags up to the &quot;=&quot; sign, but not recommended. 
+  It is okay to strip the tags up to the "=" sign, but not recommended. 
   PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
   also okay to split the locked message with spaces, line returns, and
   punctuation other than = + or / This message can only be unlocked by
@@ -146,12 +142,12 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
  <h3>Unlock a message locked with a shared Key (tags are PL**msk)</h3>
 </div>
       <div id="a2" class="texter" style="display: none;">
-<p>1. Write or paste the shared Key in box 1. It is masked by default, so
+<p>1. Write or paste the shared Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
-<p>2. Paste the locked message in box 2. It is okay if it is broken up by
+<p>2. Paste the locked message in the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + or / or is
   missing its tags. Then click the Lock/Unlock button. The unlocked message
-  will appear in box 2, replacing the locked message.</p>
+  will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=qyriVaaS2Rg" target="_blank">https://www.youtube.com/watch?v=qyriVaaS2Rg</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
@@ -161,16 +157,16 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
 </div>
   <div id="a3" class="texter" style="display: none;">
  <p>1. Fetch the recipient's Lock. He/she would have sent it accompanying an email, or in
- and SMS text message, or posted it publicly. You can tell it is a Lock because it comprises 87 random-looking characters
+ and SMS text message, or posted it publicly. You can tell it is a Lock because it comprises 87 random-looking characters, likely 
  with PL**lok tags at either end (** is the version number). You need this Lock before you can do anything else.</p> 
-<p>2. Paste the recipient's Lock in box 1. It is masked by default, so if you want to display it, check the
-  Show checkbox. It is okay if the tags up to the &quot;=&quot; signs
+<p>2. Paste the recipient's Lock in the key box, which is accessed with the Key button. It is masked by default, so if you want to display it, check the
+  Show checkbox. It is okay if the tags up to the "=" signs
   are missing, or extra spaces, carriage returns, or special characters
   other than = + or / have been added.</p>
-<p>3. Write or paste your message in box 2. Click the Lock/Unlock button. The
-  locked message will appear in box 2, replacing the original message. Copy it and paste it into your
+<p>3. Write or paste your message in the main box. Click the Lock/Unlock button. The
+  locked message will appear in the main box, replacing the original message. Copy it and paste it into your
   communications program or click Email to open your default email. 
-  It is okay to strip the tags up to the &quot;=&quot; sign, but not recommended. 
+  It is okay to strip the tags up to the "=" sign, but not recommended. 
   PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
   also okay to split the locked message with spaces, line returns, and
   punctuation other than = + or / This message can only be unlocked by
@@ -183,13 +179,13 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
   are PL**msl)</h3>
   </div>
   <div id="a4" class="texter" style="display: none;">
-<p>1. Write or paste into box 1 the Key matching the Lock used to secure the
+<p>1. Write or paste into the key box, which is accessed with the Key button, the Key matching the Lock used to secure the
   message. It is masked by default, so if you want to display it, check the
   Show checkbox.</p>
-<p>2. Paste the locked message in box 2. It is okay if it is broken up by
+<p>2. Paste the locked message in the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + or / or is
   missing its tags. Then click the Lock/Unlock button. The unlocked message
-  will appear in box 2, replacing the locked message.</p>
+  will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=W7qjTg6YMp8" target="_blank">https://www.youtube.com/watch?v=W7qjTg6YMp8</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
  
@@ -197,38 +193,33 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
 <h3>Make a short locked message suitable for SMS</h3>
 </div>
 <div id="a5" class="texter" style="display: none;">
-<p>1. Make sure box 1 is empty. Click the Clear button if it is not.</p>
-<p>2. Write or paste your message in box 2. Message length is limited to 57
-  ASCII characters. Non-ASCII characters use 6 spaces each, so avoid them if
-  you can. Any text beyond the limit will be lost. Hit the Lock/Unlock button.</p>
-<p>3. A popup will ask you for a Short Message Key, which will be necessary to unlock
-  the message. Write it in and click OK. The locked message will appear in
-  box 2, replacing the original message. Copy it and paste it into your communications program. The locked
+<p>1. Check the Short mode checkbox below the main box.</p>
+<p>2. Write or paste your message in the main box. Message length is limited to 58
+  ASCII characters when locking with a Key, 38 if locking with a Lock. Non-ASCII characters use 6 spaces each, so avoid them if
+  you can. Any text beyond the limit will be lost. Click the Lock/Unlock button.</p>
+<p>3. The locked message will appear in the main box, replacing the original message. Copy it and paste it into your communications program. The locked
   message, which has no tags, will fit within one SMS message (160
-  characters).</p>
-<p>4. If you are using a smartphone, the SMS button will 
-  open your SMS app. This does not transfer the contents of box 2 to the app, though, so make sure to 
-  copy it to clipboard before you click this button.</p>
-  <p>All of this is explined in this video tutorial: <a href="https://www.youtube.com/watch?v=X5OkW871Mk8" target="_blank">https://www.youtube.com/watch?v=X5OkW871Mk8</a></p></div>
+  characters). </p>
+<p>4. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. You need to copy it manually before clicking the SMS button, which will open your SMS app.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=X5OkW871Mk8" target="_blank">https://www.youtube.com/watch?v=X5OkW871Mk8</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
   <div onClick="openClose('a6')" style="cursor:hand; cursor:pointer">
-<h3>Unlock a short locked message (no tags, first character other than ! @ #)</h3>
+<h3>Unlock a short locked message (no tags)</h3>
   </div>
   <div id="a6" class="texter" style="display: none;">
-<p>1. Paste the locked message in box 2. It is okay if it is broken up by
-  spaces, carriage returns, and special characters. Then click the Lock/Unlock
-  button.</p>
-<p>2. A popup will ask for the Short Message Key, which is the same used for locking.
-  Write it in and click OK. The unlocked message will appear in box 2, replacing the locked message.</p>
-  <p>All of this is explined in this video tutorial: <a href="https://www.youtube.com/watch?v=X5OkW871Mk8" target="_blank">https://www.youtube.com/watch?v=X5OkW871Mk8</a></p></div>
+<p>1. Paste the locked message in the main box. It is okay if it is broken up by
+  spaces, carriage returns, and special characters. As with regular-length messages, the appropriate Key must be entered in the key box prior to unlocking. 
+  Then click the Lock/Unlock button. You don't need to check the Short mode checkbox.</p>
+<p>2. The unlocked message will appear in the main box, replacing the locked message.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=X5OkW871Mk8" target="_blank">https://www.youtube.com/watch?v=X5OkW871Mk8</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
  
   <div onClick="openClose('a7')" style="cursor:hand; cursor:pointer">
 <h3>Make a strong Key</h3>
 </div>
 	<div id="a7" class="texter" style="display: none;">
-<p>1. Start typing in box 1. As you type, a text below box 1 will tell you
+<p>1. Start typing in the key box, which is accessed with the Key button. As you type, a text above the key box will tell you
   how strong the Key is, based on simple rules. If you want to see what you
   are typing and don't mind people peering over your shoulder, check the
   Show checkbox.</p>
@@ -236,11 +227,12 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
   <strong>numb3rs</strong>, and <strong>$ymbol$</strong>. If you use common words, <strong>mispelll</strong> them to make harder a "dictionary attack." Avoid things that refer to yourself and your family, such
   as birthdays or nicknames, or anything else that might be easy to guess,
   like: asdfg, qwerty, password, PassLok, and the like. It is a good practice to <strong>append
-  your email address</strong> at the end of the Key, to combat the "rainbow table" attack. The strength meter won't give a Perfect rating unless you do so. Alternatively, you can use anything that is not a standard dictionary word instead of your email, but you must remember it.</p>
+  your email address</strong> at the end of the Key, to combat the "rainbow table" attack. Alternatively, you can use anything that is not a standard dictionary word instead of your email.</p>
 <p>3. Bear in mind, however, that you should be able to <strong>remember
   your Key</strong> without having to write it down. PassLok will never
   ask you to change your Key, so this is your chance to make a truly strong Key
   that you will use for a long time.</p>
+  <p>PassLok compensates for bad Keys by taking longer to do its computations. If PassLok is slow, this is likely because your Key strength is less than Medium.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=wn4Q4eZZChc" target="_blank">https://www.youtube.com/watch?v=wn4Q4eZZChc</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
@@ -248,10 +240,10 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
 <h3>Make the Lock that matches your Key</h3>
 </div>
 <div id="a8" class="texter" style="display: none;">
-<p>1. Write or paste your secret Key in box 1. It is masked by default, so
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
 <p>2. Click the Lock/Unlock button. The lock matching that Key will appear
-  in box 2. It is okay to strip the tags up to the &quot;=&quot; sign, or insert
+  in the main box. It is okay to strip the tags up to the "=" sign, or insert
   spaces, carriage returns, or special characters other than = + or / but
   not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
   The lock can be made available to anyone who wishes to
@@ -265,11 +257,11 @@ to happen. You will have an opportunity to cancel and do somethig else.</p>
 making a locked and signed message</h3>
 </div>
 <div id="a9" class="texter" style="display: none;">
-<p>1. Write or paste your secret Key in box 1. It is masked by default, so
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
-<p>2. Paste the Lock in box 2. Click the Make Lock
+<p>2. Paste the Lock in the main box. Click the Make Lock
   button. The shared Key resulting from the Key and the Lock 
-  will appear in box 1, replacing the original Key, and box 2 is cleared. 
+  will appear in the key box, replacing the original Key, and the main box is cleared. 
   This is useful to make or read
   a locked and signed message, since the recipient will need the sender's Lock to
   obtain the Key that unlocks the message, in addition to his/her
@@ -281,15 +273,15 @@ making a locked and signed message</h3>
 <h3>Unlock a message locked and signed with the sender's Key (tags are PL**mss)</h3>
 </div>
 <div id="a19" class="texter" style="display: none;">
-<p>1. Write or paste your secret Key in box 1. It is masked by default, so
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
-<p>2. Paste the sender's Lock in box 2. Click the Make Lock
+<p>2. Paste the sender's Lock in the main box. Click the Make Lock
   button. The shared Key resulting from the Key and the Lock 
-  will appear in box 1, replacing the original Key. A confirming message appears in box 2.</p>
- <p>3. Paste the locked message in box 2. It is okay if it is broken up by
+  will appear in the key box, replacing the original Key. A confirming message appears in the main box.</p>
+ <p>3. Paste the locked message in the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + or / or is
   missing its tags. Then click the Lock/Unlock button. The unlocked message
-  will appear in box 2, replacing the locked message.</p>
+  will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=ECcN-iFlQsA" target="_blank">https://www.youtube.com/watch?v=ECcN-iFlQsA</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
   
@@ -297,12 +289,12 @@ making a locked and signed message</h3>
 <h3>Make a set of random Key and its matching Lock</h3>
 </div>
 <div id="a20" class="texter" style="display: none;">
-<p>1. Make sure box 1 is empty, then click the Make Lock button below box 1.
-If box 2 is not empty, a popup message will ask if you want to proceed.</p>
-<p>2. A random Key will appear in box 1 and its matching Lock in box 2. Use them as needed. 
+<p>1. Make sure the key box, which is accessed with the Key button, is empty, then click the Make Lock button below the key box.
+If the main box is not empty, a popup message will ask if you want to proceed.</p>
+<p>2. A random Key will appear in the key box and its matching Lock in the main box. Use them as needed. 
 If you want the Lock to appear without tags, check the No tags checkbox first.</p>
  <p>3. The main use of this function is to generate a short-term Key-Lock pair for
- instant messaging, which is forgotten afterwards.</p>
+ instant messaging, which can be forgotten afterwards.</p>
  <p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=s9GS3qIRdws" target="_blank">http://www.youtube.com/watch?v=s9GS3qIRdws</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">  
   
@@ -310,13 +302,13 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Sign a text with a secret Key</h3>
 </div>
 <div id="a10" class="texter" style="display: none;">
-<p>1. Write or paste your secret Key in box 1. It is masked by default, so
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
   if you want to display it, check the Show checkbox.</p>
-<p>2. Write or paste the text to be signed in box 2. Click the signature/Verify
-  button. A sign matching the text and the Key will be appended at the end of the text in box 2. Copy
+<p>2. Write or paste the text to be signed in the main box. Click the signature/Verify
+  button. A sign matching the text and the Key will be appended at the end of the text in the main box. Copy
   it and use it as appropriate. If you click Email the text with its signature
   will be placed into an email using the default program.
-  It is okay to strip the tags up to the &quot;=&quot;
+  It is okay to strip the tags up to the "="
   sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
   It is also okay to split the signature with spaces,
   and punctuation other than line returns or = + or /. </p>
@@ -327,12 +319,12 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Verify a signature attached to a text (signature tags are PL**sig) </h3>
 </div>
 <div id="a11" class="texter" style="display: none;">
-<p>1. Paste the lock of the person who made the signature into box 1. It is okay
-  if the tags up to the &quot;=&quot; signs are missing, or extra spaces, carriage
+<p>1. Paste the lock of the person who made the signature into the key box, which is accessed with the Key button. It is okay
+  if the tags up to the "=" signs are missing, or extra spaces, carriage
   returns, or special characters other than = + or / have been added.</p>
-<p>2. Write or paste the text with its signature appended at the end in box 2. It is okay if 
+<p>2. Write or paste the text with its signature appended at the end in the main box. It is okay if 
   the signature is broken up by spaces and special characters other than = + or / or is missing
-  its tags up to the &quot;=&quot, but it should not be broken by carriage returns.
+  its tags up to the "=", but it should not be broken by carriage returns.
   Then click the signature/Verify button. A popup message will say whether
   or not the signature for that text has been verified.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=vhlGlDXwBVw" target="_blank">https://www.youtube.com/watch?v=vhlGlDXwBVw</a></p></div>
@@ -342,10 +334,10 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Convert a PassLok item (Lock, message, etc.) into fake text</h3>
   </div>
   <div id="a12" class="texter" style="display: none;">  
-<p>1. Check that the item to be converted into fake text is in box 2.</p>
+<p>1. Check that the item to be converted into fake text is in the main box.</p>
 <p>2. If you wish to make text that is not English, you will have to change the cover text using the process described in the next item.</p>
-<p>3. Click the Stealth button in order to reveal the buttons dealing with the stealth functions. The Words button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The Spaces button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than the other mode.
-<p>4. Click either the Words button of the Spaces button. The contents of box 2 are converted into text using the current cover texty and displayed in box 2, replacing the previous contents.</p>
+<p>3. Click the More button in order to reveal the buttons dealing with the stealth functions. The Words button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The Spaces button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than the other mode.
+<p>4. Click either the Words button of the Spaces button. The contents of the main box are converted into text using the current cover texty and displayed in the main box, replacing the previous contents.</p>
 <p>5. You can now email the fake text, which to an email scanner will be nearly indistinguishable from real text. You can change the punctuation and merge or split lines without changing the encoded material. If you used Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is OK to add more text to complete the sentences, which may contain additional spaces.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=nbh_fRaQabg" target="_blank">https://www.youtube.com/watch?v=nbh_fRaQabg</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -354,9 +346,9 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Retrieve the original PassLok item from fake text</h3>
   </div>
   <div id="a28" class="texter" style="display: none;">
-<p>1. Check that the fake text is in box 2.</p>
+<p>1. Check that the fake text is in the main box.</p>
 <p>2. If the fake text was encoded with the Words method, you will have to load the cover text used to do the encoding using the process described in the next item.</p>
-<p>3. Click the Stealth button, then click either the Words button or the Spaces button. If successful, the fake text in box 2 is converted back into the original item and displayed in box 2, replacing the fake text.</p>
+<p>3. Click the More button, then click either the Words button or the Spaces button. If successful, the fake text in the main box is converted back into the original item and displayed in the main box, replacing the fake text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=nbh_fRaQabg" target="_blank">https://www.youtube.com/watch?v=nbh_fRaQabg</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
   
@@ -364,11 +356,11 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Display or change the cover text used for fake text</h3>
   </div>
   <div id="a26" class="texter" style="display: none;">
-<p>To display the current cover text (which is the default cover text after reloading PassLok), click the Stealth button, and then the Cover Text button with box 2 empty.</p>
+<p>To display the current cover text (which is the default cover text after reloading PassLok), click the More button, and then the Cover button with the main box empty.</p>
 <p>To change the cover text (this is necessary to make fake text in a language that is not English):</p>
-<p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into box 2.</p>
-<p>2. Click the Stealth button, and then the Cover Text button.</p>
-<p>3. If the change is successful, box 2 goes blank. If the change is unsuccessful, a popup will say why. Typically, failure to change the dictionary is due to not having a sufficient number of different words. Use a longer text and try again.</p>
+<p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into the main box.</p>
+<p>2. Click the More button, and then the Cover button.</p>
+<p>3. If the change is successful, the main box goes blank. If the change is unsuccessful, a popup will say why. Typically, failure to change the dictionary is due to not having a sufficient number of different words. Use a longer text and try again.</p>
 <p>4. The recipient of your messages turned into fake text must have the same cover text in order to retrieve a text encoded with the Words method. One way to ensure this when using a non-English language is to display the default cover text, copy it into a translation utility such as Google Translate, and then use the translation as the new cover text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0a1w9JheX6w" target="_blank">https://www.youtube.com/watch?v=0a1w9JheX6w</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -378,24 +370,21 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
   (Decoy mode)</h3>
   </div>
   <div id="a27" class="texter" style="display: none;">
-<p>1. Click the Stealth button below box 2, and then check the Decoy mode checkbox.</p>
-<p>2. Follow the instructions for any of the three types of locking, using
-  a shared Key, the recipient's Lock, or a popup
-  Short Message Key. This also works when making a signature. If Decoy mode is checked, a popup will ask for a Decoy Password
-  to lock the hidden message.</p>
+<p>1. Check the Decoy mode checkbox below the main box.</p>
+<p>2. Follow the instructions for any kind of locking, using
+  a shared Key or the recipient's Lock, short or regular length. This also works when making a signature. If Decoy mode is checked, a popup will ask for a Decoy Password to lock the hidden message.</p>
 <p>3. Write or paste into the popup box the Password for the hidden message
   and click OK. It is all right to enter nothing in this box, and in this
   case the hidden message can be retrieved without a Password.</p>
 <p>4. A second popup will ask for the hidden message itself. Its length is limited to
   152 ASCII characters in key-locked and signed modes, 87 characters in
-  regular locked mode, 38 characters in short message mode, 40 characters in signatures. Non-ASCII characters
-  use 6 spaces each, so avoid them if you can. Any text beyond the limit
-  will be lost.</p>
+  regular locked mode, 37 characters in short message mode (key-locked only), 40 characters in signatures. Non-ASCII characters
+  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost.</p>
 <p>5. After clicking OK, the locked
   message containing both the main text and the hidden text will appear in
-  box 2, replacing the original text. If it is a signature, it will be appended to the text. Copy it and paste it into your
+  the main box, replacing the original text. If it is a signature, it will be appended to the text. Copy it and paste it into your
   communications program. As with regular locked messages, it is okay to
-  strip the tags up to the &quot;=&quot; sign, but not recommended. It is also okay to
+  strip the tags up to the "=" sign, but not recommended. It is also okay to
   split the locked message with spaces, line returns, and punctuation other
   than = + or /</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xP9z14Y2IxQ" target="_blank">https://www.youtube.com/watch?v=xP9z14Y2IxQ</a></p></div>
@@ -406,14 +395,14 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
   mode</h3>
   </div>
   <div id="a13" class="texter" style="display: none;">
-<p>1. Click the Stealth button below box 2, and then check the Decoy mode checkbox.</p>
+<p>1. Check the Decoy mode checkbox below the main box.</p>
 <p>2. Follow the instructions for any of the three locking modes, using a
-  personal or shared Key or nothing initially, or for verifying a signature. If Decoy mode is
+  personal or shared Key, or for verifying a signature. If Decoy mode is
   checked, a popup will ask for a Decoy Password.</p>
 <p>3. Write or paste into the popup box the special Password for the hidden
   message, if there is one, and click OK. The hidden message, if it exists,
   will appear in a popup even if the main unlocking fails. The main message
-  will appear in box 2 if the main unlocking is successful. In the case of signatures, verification occurs first.</p>
+  will appear in the main box if the main unlocking is successful. In the case of signatures, verification occurs first.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xP9z14Y2IxQ" target="_blank">https://www.youtube.com/watch?v=xP9z14Y2IxQ</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
@@ -421,12 +410,12 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <h3>Display the ID of a Lock</h3>
 </div>
 <div id="a14" class="texter" style="display: none;">
-<p>1. Paste the lock in box 2. It is okay if the tags up to the &quot;=&quot; signs
+<p>1. Paste the lock in the main box. It is okay if the tags up to the "=" signs
   are missing, or extra spaces, carriage returns, or special characters
   other than = + or / have been added.</p>
-<p>2. Make sure that box 1 is empty, and then click the ID button above box 2. 
+<p>2. Click the More button, and then click the ID button above the main box. 
 The unique ID of that lock will be
-  displayed in box 2, replacing the Lock. It is useful to verify the
+  displayed in the main box, replacing the Lock. It is useful to verify the
   authenticity of a lock by means of a phone call, video message, etc., in
   which at least one of the parties reads the ID.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=iYVJ5ufvrnU" target="_blank">https://www.youtube.com/watch?v=iYVJ5ufvrnU</a></p></div>
@@ -436,9 +425,9 @@ The unique ID of that lock will be
 <h3>Split a Key into several parts</h3>
 </div>
 <div id="a24" class="texter" style="display: none;">
-<p>1. Put the Key, which must be at least 5 characters long, in box 1. If you want a new random Key, follow the steps above.</p>
-<p>2. Make sure that box 2 is empty, and then click the Split/Join button.</p>
-<p>3. A popup asks for the number of parts required to retrieve the original. Write the number, which must be between 2 and 255, and click OK. The parts appear in box 2. If you need more parts (the number required won't change), click Split/Join again for each additional part. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the &quot;=&quot; sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the locked message with spaces and punctuation other than = + / or line returns.</p>
+<p>1. Make sure the main box is empty, and then click the Key button.</p>
+<p>2. Put the Key, which must be at least 5 characters long, in the key box. If you want a new random Key, follow the steps above. Then click the Split/Join button.</p>
+<p>3. A popup asks for the number of parts required to retrieve the original. Write the number, which must be between 2 and 255, and click OK. The parts appear in the main box and a message confirms it. If you need more parts (the number required won't change), click Split/Join again for each additional part. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the "=" sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the locked message with spaces and punctuation other than = + / or line returns.</p>
 <p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=fmjEPz0UJfU" target="_blank">http://www.youtube.com/watch?v=fmjEPz0UJfU</a></p>
   </div>
 <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
@@ -447,8 +436,8 @@ The unique ID of that lock will be
 <h3>Join parts of a Key to retrieve the original Key (tags are PL**p***)</h3>
 </div>
 <div id="a25" class="texter" style="display: none;">
-<p>1. Paste all the necessary Key parts in box 2. Make sure that each part is unique and occupies one line, and different parts are in different lines. You need as many parts the number entered when the Key was split, which is written at the end of each PL**p tag. Having more parts than the minimum is OK, so long as they belong to the same set and are not corrupt. They don't need to be placed in any particular order.</p>
-<p>2. Click the Split/Join button. If all goes well, the reconstructed Key appears in box 1, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
+<p>1. Paste all the necessary Key parts in the main box. Make sure that each part is unique and occupies one line, and different parts are in different lines. You need as many parts the number entered when the Key was split, which is written at the end of each PL**p tag. Having more parts than the minimum is OK, so long as they belong to the same set and are not corrupt. They don't need to be placed in any particular order.</p>
+<p>2. Click the Key button, and then the Click the Split/Join button. If all goes well, the reconstructed Key appears in the key box, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
 <p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=fmjEPz0UJfU" target="_blank">http://www.youtube.com/watch?v=fmjEPz0UJfU</a></p>
   </div>
   
@@ -461,14 +450,14 @@ The unique ID of that lock will be
 <div id="a17" class="texter" style="display: none;">
 <p>PassLok is a privacy app conceived under the following principles:</p>
 <p>1. Absolutely nothing should be installed or even written in the device. Users should be able to use a public computer or borrow someone else's smartphone, and leave no traces behind.</p>
-<p>2. Completely self-contained so it runs offline. No servers.</p>
+<p>2. Completely self-contained so it runs offline, even in html form. No servers.</p>
 <p>3. Highest-level security at every step. No compromises.</p>
-<p>4. Easy to understand and use by novices. Single-screen graphical interface, as clean and simple as possible. No cryptographic jargon.</p>
+<p>4. Easy to understand and use by novices. Graphical interface, as clean and simple as possible. No cryptographic jargon.</p>
     <p>The metaphor underneath PassLok is that of locks: if you want something to be accessible only to certain people, you put a lock on it. PassLok allows you to put a lock on information in the form of text, so that when it is locked it appears to be gibberish. It also allows you to unlock it and return it to its original readable form.</p>
     <p>There are two kinds of locks out there: combination locks, and regular key locks. A combination lock can be opened by those who know the special code or combination. A regular key lock can be closed by anybody, but you need the key that matches the lock in order to open it. PassLok understands both kinds.</p>
-    <p>You can lock a text with a combination, which we will call from now on a <strong>shared Key</strong>, which you give to those who are supposed to open the text, but keep secret from those whom you don&rsquo;t want to be able to read it. To do this, place the <strong>shared Key in box 1</strong> of the PassLok page and the <strong>text in box 2</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a locked text, place it in box 2 and the shared Key in box 1, then click Lock/Unlock.</p>
-    <p>You can also lock a text with <strong>somebody&rsquo;s Lock</strong>, which you have gotten from that person (more on this below), and then only that person will be able to open it, using his/her secret Key. To lock a text this way, place the <strong>person&rsquo;s Lock in box 1</strong> and the <strong>text in box 2</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a text locked in this way, the recipient will need to place his/her Key in box 1, the locked text in box 2, and then click Lock/Unlock.</p>
-<p>Combinations and Keys are secret items, but Locks are not. In PassLok, you start with a Key and then you make the Lock to match your Key. To do this, you place the <strong>Key in box 1</strong> and then click <strong>Lock/Unlock</strong> with box 2 empty. The Lock appears in box 2. <strong>You should give your Lock to people</strong> whom you wish to send you locked messages, as you would give them your phone number or your email address. It is prety much impossible to retrieve the Key from the Lock. For convenience, there is an Email button, so that you only need to supply the addresses where the Lock should be sent.</p>
+    <p>You can lock a text with a combination, which we will call from now on a <strong>shared Key</strong>, which you give to those who are supposed to open the text, but keep secret from those whom you don't want to be able to read it. To do this, place the <strong>shared Key in the key box</strong> of the PassLok page and the <strong>text in the main box</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a locked text, place it in the main box and the shared Key in the key box, then click Lock/Unlock.</p>
+    <p>You can also lock a text with <strong>somebody's Lock</strong>, which you have gotten from that person (more on this below), and then only that person will be able to open it, using his/her secret Key. To lock a text this way, place the <strong>person's Lock in the key box</strong> and the <strong>text in the main box</strong>. Then click <strong>Lock/Unlock</strong>. To unlock a text locked in this way, the recipient will need to place his/her Key in the key box, the locked text in the main box, and then click Lock/Unlock.</p>
+<p>Keys are secret items, but Locks are not. In PassLok, you start with a Key and then you make the Lock to match your Key. To do this, you place the <strong>Key in the key box</strong> and then click <strong>Lock/Unlock</strong> with the main box empty. The Lock appears in the main box. <strong>You should give your Lock to people</strong> whom you wish to send you locked messages, as you would give them your phone number or your email address. It is prety much impossible to retrieve the Key from the Lock. For convenience, there is an Email button, so that you only need to supply the addresses where the Lock should be sent.</p>
   <p>PassLok has two more locking modes, which are described below, along with signatures, hidden messages, and secret sharing. Read on if you want to learn about those.</p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
@@ -495,32 +484,31 @@ The unique ID of that lock will be
       using words that are misspelled, so it's hard to find them in a
       dictionary. For extra security against "rainbow tables," add your email at the end.
       PassLok rewards those using strong passwords by reducing the processing time required to use them.</p>
-<p>You can make a <strong>random Key</strong> and its matching Lock by clicking the Make Lock button with box 1 empty. Random Keys are especially useful as temporary Keys for a session where forward secrecy is desired. Random Keys offer perfect security against hackers but they are very hard to remember; resist the temptation to write down a whole Key in a place where it might be compromised. To help with this, PassLok can <strong>split a Key</strong> into several parts, by clicking the Split/Join button. A predetermined number of parts must be entered in box 2 in order to retrieve the original Key, by clicking again the same button. One use of this function is for storing Key parts in different locations, to minimize the risk of compromise.</p>
+<p>You can make a <strong>random Key</strong> and its matching Lock by clicking the Make Lock button with the key box empty. Random Keys are especially useful as temporary Keys for a session where forward secrecy is desired. Random Keys offer perfect security against hackers but they are very hard to remember; resist the temptation to write down a whole Key in a place where it might be compromised. To help with this, PassLok can <strong>split a Key</strong> into several parts, by clicking the Split/Join button. A predetermined number of parts must be entered in the main box in order to retrieve the original Key, by clicking again the same button. One use of this function is for storing Key parts in different locations, to minimize the risk of compromise.</p>
 <p>In addition to key-locking and regular locking, PassLok
       has a <strong>third locking mode</strong>,
-      triggered when neither Key nor Lock is supplied in box 1 prior to clicking the Lock/Unlock
-      button. In this case, PassLok asks for a Password that is to be the same
-      to lock and unlock, as in key-locking. The difference is that the
+      selected by checking the Short mode toggle prior to clicking the Lock/Unlock
+      button. The difference is that the
       locked message is guaranteed to fit within the 160 character limit of a
-      cellular text message.</p>      
+      cellular text message. Short mode works when locking either with a Key or with a Lock.</p>      
     <p>PassLok can also put a <strong>personal signature</strong> on a text written
-      in box 2, by supplying a personal Key in box 1 and clicking the signature/Verify/ID
+      in the main box, by supplying a personal Key in the key box and clicking the signature/Verify/ID
       button. The signature, which should be sent along with the plain text, will
       be appended at the end of the text. To verify a signature, people will place the text that
-      allegedly was signed, including the signature at the end, into box 2, and the signer's Lock
-      (matching the key used for signing) in box 1, then click signature/Verify. A popup
+      allegedly was signed, including the signature at the end, into the main box, and the signer's Lock
+      (matching the key used for signing) in the key box, then click signature/Verify. A popup
       will say whether or not the signature verification has succeeded.</p>
 <p>It is possible to <strong>authenticate a locked message without signing it</strong>. To do this,
 lock it with the shared Key that results from merging your personal Key and the recipient's
-Lock. Just put your Key in box 1 and the Lock in box 2, then click Make Lock, 
-and then write the message into box 2 amd click Lock/Unlock or Email. The recipient will place
- his/her Key in box 1 and your Lock in box 2
-in order to retrieve the shared Key, prior to placing the locked message in box 2.
-<p>PassLok can convert its output to <strong>fake text</strong>, in order to fool email scanners looking for encrypted material. The feature is accessed by means of the Words or Spaces buttons in the Stealth menu, which correspond to two different methods. The conversion is reversible, using the same button again. You can use a cover text different from the default, in any language. To change the cover text, you just place a text sample in box 2 and click the Cover Text button.</p>
+Lock. Just put your Key in the key box and the Lock in the main box, then click Make Lock, 
+and then write the message into the main box amd click Lock/Unlock or Email. The recipient will place
+ his/her Key in the key box and your Lock in the main box
+in order to retrieve the shared Key, prior to placing the locked message in the main box.
+<p>PassLok can convert its output to <strong>fake text</strong>, in order to fool email scanners looking for encrypted material. The feature is accessed by means of the Words or Spaces buttons in the More screen, which correspond to two different methods. The conversion is reversible, using the same button again. You can use a cover text different from the default, in any language. To change the cover text, you just place a text sample in the main box and click the Cover Text button.</p>
 <p>Finally, PassLok is able to hide a second, <strong>undetectable message</strong>
       in all the four types of locked message, plus signatures. This could come in handy in the
       event that someone is forced to turn in his/her secret Key. To enable
-      this, click on the Decoy mode checkbox from the Stealth menu. Locking,
+      this, click on the Decoy mode checkbox from the More screen. Locking,
       unlocking, and signature verification are the same as in the regular mode, except that popups appear requesting first
       the Password to lock the hidden message (an empty Password is okay), and then the hidden
       message itself. </p></div>
