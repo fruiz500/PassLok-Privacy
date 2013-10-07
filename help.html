@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta content="F. Ruiz" name="author" />
@@ -9,7 +9,7 @@
     <style type="text/css">
 	    body {
 		font-family: Sans-Serif;
-				margin-left: 1%;
+		margin-left: 1%;
 		margin-right: 1%;
 		background-color: #FFFFFF;
 		color: #000000;
@@ -72,14 +72,14 @@ function displaymanual(){
 <p>5. Come back to this Help page and look at the ID for this version of PassLok, shown below. If this ID and the one obtained in step 3 or 4 are the
 same, the program has not been tampered with.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=SYCed3jTtTU" target="_blank">https://www.youtube.com/watch?v=SYCed3jTtTU</a></p>
-<p>Current version of PassLok is: 1.5.01</p>
-<p>made on: 9/25/13</p>
+<p>Current version of PassLok is: 1.5.02</p>
+<p>made on: 10/7/13</p>
 <p>source server: https://www.autistici.org/passlok</p>
 <p>mirror at: https://passlok.site44.com</p>
 <p>GitHub page: https://github.com/fruiz500/passlok<p>
 <p>Self-check ID (SHA256):</p>
-<p>8198-9dc2-a456-45d9-31a5-42be-6598-d29d-f30b-d5f6-93fb-37db-ae0d-a159-0362-ce4f</p>
-<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=fHmKdzsngtg" target="_blank">https://www.youtube.com/watch?v=fHmKdzsngtg</a></p>
+<p>8a67-6f0e-c3ad-2cb9-3c54-22c6-7a27-a84b-1f57-b085-16db-c0d3-b822-6852-1a17-b7e8</p>
+<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=gIK6rKzFqng" target="_blank">https://www.youtube.com/watch?v=gIK6rKzFqng</a></p>
 </div>
 <hr style="background-color: rgb(192, 192, 192); color: #000000;">
 
@@ -325,7 +325,7 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <p>2. Write or paste the text with its signature appended at the end in the main box. It is okay if 
   the signature is broken up by spaces and special characters other than = + or / or is missing
   its tags up to the "=", but it should not be broken by carriage returns.
-  Then click the signature/Verify button. A popup message will say whether
+  Then click the signature/Verify button. A message above the main box will say whether
   or not the signature for that text has been verified.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=vhlGlDXwBVw" target="_blank">https://www.youtube.com/watch?v=vhlGlDXwBVw</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -360,7 +360,7 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
 <p>To change the cover text (this is necessary to make fake text in a language that is not English):</p>
 <p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into the main box.</p>
 <p>2. Click the More button, and then the Cover button.</p>
-<p>3. If the change is successful, the main box goes blank. If the change is unsuccessful, a popup will say why. Typically, failure to change the dictionary is due to not having a sufficient number of different words. Use a longer text and try again.</p>
+<p>3. If the change is successful, the main box goes blank. If the change is unsuccessful, a message above the window will say why. Typically, failure to change the dictionary is due to not having a sufficient number of different words. Use a longer text and try again.</p>
 <p>4. The recipient of your messages turned into fake text must have the same cover text in order to retrieve a text encoded with the Words method. One way to ensure this when using a non-English language is to display the default cover text, copy it into a translation utility such as Google Translate, and then use the translation as the new cover text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0a1w9JheX6w" target="_blank">https://www.youtube.com/watch?v=0a1w9JheX6w</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -372,15 +372,12 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
   <div id="a27" class="texter" style="display: none;">
 <p>1. Check the Decoy mode checkbox below the main box.</p>
 <p>2. Follow the instructions for any kind of locking, using
-  a shared Key or the recipient's Lock, short or regular length. This also works when making a signature. If Decoy mode is checked, a popup will ask for a Decoy Password to lock the hidden message.</p>
-<p>3. Write or paste into the popup box the Password for the hidden message
-  and click OK. It is all right to enter nothing in this box, and in this
-  case the hidden message can be retrieved without a Password.</p>
-<p>4. A second popup will ask for the hidden message itself. Its length is limited to
+  a shared Key or the recipient's Lock, short or regular length. This also works when making a signature. If Decoy mode is checked, a popup will ask for a Decoy Password to lock the hidden message, and the hidden message itself.</p>
+<p>3. Write or paste into the the appropriate boxes the Password and the hidden message. The length of the hidden message is limited to
   152 ASCII characters in key-locked and signed modes, 87 characters in
   regular locked mode, 37 characters in short message mode (key-locked only), 40 characters in signatures. Non-ASCII characters
-  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost.</p>
-<p>5. After clicking OK, the locked
+  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost. Then click OK.</p>
+<p>4. After clicking OK, the locked
   message containing both the main text and the hidden text will appear in
   the main box, replacing the original text. If it is a signature, it will be appended to the text. Copy it and paste it into your
   communications program. As with regular locked messages, it is okay to
@@ -400,9 +397,9 @@ If you want the Lock to appear without tags, check the No tags checkbox first.</
   personal or shared Key, or for verifying a signature. If Decoy mode is
   checked, a popup will ask for a Decoy Password.</p>
 <p>3. Write or paste into the popup box the special Password for the hidden
-  message, if there is one, and click OK. The hidden message, if it exists,
-  will appear in a popup even if the main unlocking fails. The main message
-  will appear in the main box if the main unlocking is successful. In the case of signatures, verification occurs first.</p>
+  message and click OK. The hidden message, if it exists,
+  will appear above the main box even if the main unlocking fails. The main message
+  will appear in the main box if the main unlocking is successful. In the case of signatures, the hidden message appears in the place normally used by the verification message, so if you still wish to verify the signature, you need to uncheck Decoy Mode and click Sign/Verify again so the verification message is displayed.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xP9z14Y2IxQ" target="_blank">https://www.youtube.com/watch?v=xP9z14Y2IxQ</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
@@ -496,7 +493,7 @@ The unique ID of that lock will be
       button. The signature, which should be sent along with the plain text, will
       be appended at the end of the text. To verify a signature, people will place the text that
       allegedly was signed, including the signature at the end, into the main box, and the signer's Lock
-      (matching the key used for signing) in the key box, then click signature/Verify. A popup
+      (matching the key used for signing) in the key box, then click signature/Verify. A message above the main box 
       will say whether or not the signature verification has succeeded.</p>
 <p>It is possible to <strong>authenticate a locked message without signing it</strong>. To do this,
 lock it with the shared Key that results from merging your personal Key and the recipient's
@@ -509,8 +506,8 @@ in order to retrieve the shared Key, prior to placing the locked message in the 
       in all the four types of locked message, plus signatures. This could come in handy in the
       event that someone is forced to turn in his/her secret Key. To enable
       this, click on the Decoy mode checkbox from the More screen. Locking,
-      unlocking, and signature verification are the same as in the regular mode, except that popups appear requesting first
-      the Password to lock the hidden message (an empty Password is okay), and then the hidden
+      unlocking, and signature verification are the same as in the regular mode, except that a popup appears first, requesting
+      the Password to lock the hidden message, and the hidden
       message itself. </p></div>
 	  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
 	  

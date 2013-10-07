@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>PassLok privacy</title>
     <style type="text/css">
 	    body {
@@ -10,6 +10,32 @@
 		color: #000000;
 		overflow: hidden;
 	    }
+		.black_overlay{
+			display: none;
+			position: absolute;
+			top: 0%;
+			left: 0%;
+			width: 100%;
+			height: 100%;
+			background-color: black;
+			z-index:1001;
+			-moz-opacity: 0.4;
+			opacity:.40;
+			filter: alpha(opacity=40);
+		}
+		.white_content {
+			display: none;
+			position: absolute;
+			top: 15%;
+			left: 15%;
+			width: 70%;
+			height: 70%;
+			padding: 0px;
+			border: 0px solid gray;
+			background-color: white;
+			z-index:1002;
+			overflow: auto;       
+		}
 	</style>
       
     <meta name="Keywords" content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
@@ -443,7 +469,6 @@ ULZSS.Window.prototype = {
 		    this.match_len = j;
 		    this.match_pos = this.current - real_pos;
 		}
-		//alert([j, b, this.match_len]);
 	    }
 	    if (this.match_len != 0){
 		return true;
@@ -531,7 +556,6 @@ ULZSS.decode = function(input){
 	    var code = input.charCodeAt(i) - 0x20;
 	    var match_len = Math.floor(code / 4096) + ULZSS.MIN_LEN + 1;
 	    var match_pos = code % 4096;
-	    //alert([match_pos, match_len, code]);
 	    var j = 0, p = current;
 	    var k = 0;
 	    while(k < match_len){
@@ -1014,10 +1038,10 @@ sjcl.mode.ccm = {
 	c = f.clamp(c, 8 * (15 - b));
 	i = sjcl.mode.ccm.J(a, i, c, k, e, b);
 	a = sjcl.mode.ccm.H(a, i.data, c, d, e, b);
-	if (!f.equal(i.tag, a)){									//modified to add alert in PassLok
-	alert("Unlocking has failed");								//
-	throw new sjcl.exception.corrupt("ccm: tag doesn't match")	//
-	};															//
+	if (!f.equal(i.tag, a)){															//modified to add alert in PassLok
+	document.getElementById("mainmsg").innerHTML = '<span>Unlocking has Failed</span>';	//
+	throw new sjcl.exception.corrupt("ccm: tag doesn't match")							//
+	};																					//
 	return i.data
     },
     H: function (a, b, c, d, e, f) {
@@ -2609,10 +2633,10 @@ sjcl.ecc.curve.prototype.fromBits = function (bits) {
   var w = sjcl.bitArray, l = this.field.prototype.exponent + 7 & -8,
       p = new sjcl.ecc.point(this, this.field.fromBits(w.bitSlice(bits, 0, l)),
 			    this.field.fromBits(w.bitSlice(bits, l, 2*l)));
-  if (!p.isValid()) {										//modified to add alert in PassLok
-  	alert("Invalid Lock");									//
-    throw new sjcl.exception.corrupt("not on the curve!");	//
-  }															//
+  if (!p.isValid()) {															//modified to add alert in PassLok								//
+	document.getElementById("mainmsg").innerHTML = '<span>Invalid Lock</span>';	//
+    throw new sjcl.exception.corrupt("not on the curve!");						//
+  }																				//
   return p;
 };
 
@@ -2635,12 +2659,13 @@ sjcl.ecc.curves = {
 
 //if Key box is empty, this displays a random Key in the top box and its Lock in the bottom box, otherwise display Lock or combine Lock and Key
 function fillkeys(){
-	var message = document.getElementById("strength");			//for displaying messages above key box
+	var keymsg = document.getElementById("keymsg");			//for displaying messages above key box
+		keymsg.innerHTML = "";
 	var plainstr = document.plain.text.value.split("=").sort(function (a, b) { return b.length - a.length; })[0];   //remove end tags in the main box
 	plainstr = plainstr.replace(/\s/g,'');										//remove also spaces
 	if(!(plainstr==="") && !(plainstr.length===87)){
 		var reply = confirm("The main box is not empty. It will be modified if you proceed");
-		if(reply===false) throw("boxes not empty");
+		if(reply===false) throw("main box not empty");
 	};
 	var secstr = document.key.text.value.trim();			//cut trailing spaces
 	if(secstr===""){										//the key box empty, make Random Key and Lock
@@ -2650,7 +2675,7 @@ function fillkeys(){
 		};
 		document.key.text.value = sjcl.codec.base64.fromBits(sjcl.random.randomWords('17','0')).slice(0,85);   //make it 85 characters long so it can be distinguished from a shared Key, which is 86
 		showpub();
-		message.innerHTML = '<span>Random Key and Lock made</span>';
+		keymsg.innerHTML = 'Random Key and Lock made';
 		throw("new random Key");
 	};	
 	if (plainstr.length===87){								//if it's a Lock in the main box, merge it with the secret Key
@@ -2659,7 +2684,7 @@ function fillkeys(){
 			if(reply3===false) throw("merge canceled");
 		};
 		showshared();
-		message.innerHTML = '<span>Key and Lock merged</span>';
+		keymsg.innerHTML = 'Key and Lock merged';
 		throw ("it was a lock, merged with key");
 	} else {												//replace the main box with Lock made from the key box
 		if (document.getElementById("learnmode").checked === true){
@@ -2667,7 +2692,7 @@ function fillkeys(){
 			if(reply4===false) throw("lock canceled");
 		};
 		showpub();
-		message.innerHTML = '<span>Lock in main box</span>';
+		keymsg.innerHTML = 'Lock in main box';
 	};	
 };
 
@@ -2691,10 +2716,6 @@ function showpub(){
 
 //makes the public string of a private string
 function makepub(secstr){
-	if (secstr === ""){
-		alert("Write your secret Key in the key box");
-		throw("secret key empty");
-	};
 	var curve = sjcl.ecc.curves["c521"],					//make curve object
 		sec = toexponent(secstr),							//retrieve secret Key, correctly formatted as an EC exponent
 	    pub = curve.G.mult(sec),							//make public key or Lock
@@ -2715,14 +2736,6 @@ function showshared(){
 		pubstr = document.plain.text.value.replace(/\s/g,'');			//ignore spaces in public key
 		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
 		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64
-	if (secstr === ""){
-		alert("Write your secret Key in the key box");
-		throw("secret key empty");
-	};
-	if (pubstr === ""){
-		alert("Write the other person's Lock into the main box"); 
-		throw("public key empty");
-	};
 		pubstr = "A" + pubstr;										//add inital "A" before calculation
 	document.key.text.value = makeshared(secstr,pubstr);
 	document.plain.text.value = "";
@@ -2755,19 +2768,22 @@ function makehash(){
 			var reply = confirm("The content of this box will be replaced with its ID. This is irreversible. Cancel if this is not what you want.");
 			if(reply===false) throw("ID canceled");
 		};
-	var mine = document.extra.text.value.trim();		//remove spaces at start and end
+	var mine = document.extra.text.value.trim(),		//remove spaces at start and end
+		extramsg = document.getElementById("extramsg");
 	if (mine.length < 267){								//if it's the length of a signature or shorter: remove spaces, tags and anything that is not base64
 		mine = mine.replace(/\s/g,'');
 		mine = mine.split("=").sort(function (a, b) { return b.length - a.length; })[0];  
 		mine = mine.replace(/[^a-zA-Z0-9+/ ]+/g, '');
 	};
 	if(mine === "") {
-		alert("Nothing to make an ID of");
+		extramsg.innerHTML = '<span style="color:red">Nothing to make an ID of</span>';
 		throw("textarea empty");
 	};
 	mine = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(mine)).match(/.{1,4}/g).join("-"); //take hash, make it hex, cut into 4-char pieces and join with dashes
 	document.extra.text.value = mine;
 };
+
+var encrypting;		//global flag so decoy input doesn't get confused
 
 //AES encryption process: determines which kind of encryption by looking at the length of what's in the Key box
 function Encrypt_text(){
@@ -2804,8 +2820,6 @@ function Encrypt_text(){
 		if (document.getElementById("shortmode").checked == true){			//display adding dummy public key and anonymous tags, depending on mode
 			document.plain.text.value = cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct;
 			if(typeof window.orientation !== 'undefined'){
-				document.getElementById('light3').style.display='block';			//focus on extra screen and ready it for copy 
-				document.getElementById('fade3').style.display='block';
 				plain2extra();
 				selectExtra()
 			}
@@ -2820,7 +2834,7 @@ function Encrypt_text(){
 			var reply3 = confirm("The contents of the main box will be locked with the secret Key in the key box, and the result will replace the main box. Cancel if this is not what you want.");
 			if(reply3===false) throw("sym encryption canceled");
 		};
-		var iter = passwordChanged();			//get number of iterations from Key strength meter, minimum is 101
+		var iter = passwordChanged();						//get number of iterations from Key strength meter, minimum is 101
 		if (iter<100) iter=iter+100;
 		if (document.getElementById("shortmode").checked == true){						//salt can hide 37 chars in short mode, shorter iv
 			var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),
@@ -2841,8 +2855,6 @@ function Encrypt_text(){
 			if(document.getElementById("shortmode").checked == true){
 				document.plain.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct;
 				if(typeof window.orientation !== 'undefined'){							//detect mobile
-					document.getElementById('light3').style.display='block';			//focus on extra screen and ready it for copy 
-					document.getElementById('fade3').style.display='block';
 					plain2extra();
 					selectExtra()
 				}
@@ -2858,8 +2870,6 @@ function Encrypt_text(){
 			if(document.getElementById("shortmode").checked == true){
 				document.plain.text.value = "@" + cipherj.iv + cipherj.salt + cipherj.ct;
 				if(typeof window.orientation !== 'undefined'){							//detect mobile
-					document.getElementById('light3').style.display='block';			//focus on extra screen and ready it for copy 
-					document.getElementById('fade3').style.display='block';
 					plain2extra();
 					selectExtra()
 				}
@@ -2870,22 +2880,38 @@ function Encrypt_text(){
 			}
 		}
 	}
+	document.decoyin.text.value = "";
+	document.decoyin.key.value = "";
+	document.decoyout.key.value = ""
 };
+
+//closes input divs
+function closebox() {
+	document.getElementById("shadow").style.display = "none";
+	document.getElementById("decoyin").style.display = "none";
+	document.getElementById("decoyout").style.display = "none";
+	document.getElementById("partsin").style.display = "none"
+}
 
 //encrypts a hidden message into the salt value used by regular encryption, or makes a random salt also encoded by AES so it's indistinguishable
 function makesalt(iv,leng){
-	if (document.getElementById("decoymode").checked === false){				//no decoy mode, so salt comes from random text and key, no stretching
-		var key = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')),
-			text = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214),
-			iter = 101;														//minimum allowed
-	} else {
+	if (document.getElementById("decoymode").checked === true){
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("You are adding a hidden message in Decoy mode. Cancel if this is not what you want.Then uncheck Decoy mode below.");
 			if(reply===false) throw("decoy encryption canceled");
 		};
-		var	key = prompt("Enter Decoy Password"),								//key from prompt, spaces allowed, empty key allowed	
-			text = encodeURI(prompt("Enter hidden message").replace(/%20/g, ' ')),	//make it ASCII, preserve spaces
+		if ((document.decoyin.key.value.trim() == "")||(document.decoyin.text.value.trim() == "")){ //stop to display the decoy entry form if there is no hidden message or key
+			document.getElementById("decoyin").style.display = "block";		//display decoy form, and back shadow
+			document.getElementById("shadow").style.display = "block";			
+			throw ("stopped for decoy input")				
+		}
+		var key = document.decoyin.key.value,
+			text = encodeURI(document.decoyin.text.value.replace(/%20/g, ' ')),
 			iter = 10000;															//key may be weak, so stretch it
+	} else {												//no decoy mode, so salt comes from random text and key, no stretching
+		var key = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')),
+			text = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214),
+			iter = 101;														//minimum allowed
 	};
 	while (text.length < leng) {										//clip or add spaces to make the number of characters required
 			text = text + "          ";
@@ -2897,14 +2923,20 @@ function makesalt(iv,leng){
 
 //AES decryption process: determines which kind of encryption by looking at first character after the initial tag. Calls Encrypt_text or showpub as appropriate
 function Decrypt_text(){
-	var cipherstr = document.plain.text.value.trim(),
+	encrypting = true;
+	var keymsg = document.getElementById("keymsg"),
+		mainmsg = document.getElementById("mainmsg");
+		keymsg.innerHTML = "";
+		mainmsg.innerHTML = "";
+	var	cipherstr = document.plain.text.value.trim(),
 		secstr = document.key.text.value.trim();
 	if (cipherstr===""){								//if the main box or the text box are empty, display a warning
-		alert("Nothing to lock/unlock.");
+		mainmsg.innerHTML = '<span style="color:red">Nothing to lock or unlock</span>';
 		throw("the main box empty");
 	};
 	if (secstr === ""){
-		alert("The key box is empty.");
+		plain2key();
+		keymsg.innerHTML = '<span style="color:red">Enter a Key or a Lock</span>';
 		throw("key box empty");
 	}else{
 		var pubstr = secstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//strip tags, if any, to check later if this is a Lock
@@ -2920,7 +2952,8 @@ function Decrypt_text(){
 			if(reply===false) throw("public decryption canceled");
 		};
 			if (pubstr.length === 87){
-				alert("The key box contains a Lock. Enter your secret Key in the key box");
+				plain2key();
+				message.innerHTML = '<span style="color:red">This is a Lock. Enter a Key</span>';	
 				throw("lock in key box");
 			};
 		var	iv = cipherstr.slice(0,11),									//get iv, salt, and later ct data and public key
@@ -2939,8 +2972,9 @@ function Decrypt_text(){
 			if(reply===false) throw("public decryption canceled");
 		};
 			if (pubstr.length === 87){
-				alert("the key box contains a Lock. Enter your secret Key in the key box");
-				throw("secret key empty");
+				plain2key();
+				keymsg.innerHTML = '<span style="color:red">This is a Lock. Enter a Key</span>';
+				throw("lock in key box");
 			};		
 		var	iv = cipherstr.slice(0,22),									//get iv, salt, and later ct data and public key
 			salt = cipherstr.slice(22,149);			
@@ -2970,47 +3004,55 @@ function Decrypt_text(){
 		var keystr = secstr;
 		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt);
 		if ((type === "#") && !(keystr.length === 86)){		//signed message, key should be 86-char shared key
-			alert("This is a signed message. Make first the special shared Key by putting your personal Key in the key box, the sender's Lock in the main box, and clicking Make Lock.");
+			mainmsg.innerHTML = '<span style="color:red">Signed message. First combine your Key and the sender&rsquo;s Lock</span>';
 			throw("need a shared key");
 		};
 		var iter = passwordChanged();						//get number of iterations from Key strength meter
 		if(iter<100) iter=iter+100;
 		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":' + iter.toString() + '}';
-		document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr))
-	}
+		document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr));
 	
-	else{
+	}else{
 		Encrypt_text()									//none of the known encrypted types, therefore encrypt rather than decrypt
 	};
 };
 
 //decrypt the message hidden in the salt, for decoy mode
 function decoydecrypt(iv,ct){
+	var mainmsg = document.getElementById("mainmsg");
+		mainmsg.innerHTML = "";
 		if (document.getElementById("learnmode").checked === true){
 			var	key2 = prompt("Decoy mode is selected, so please write the Password used to lock the hidden message. If you don't expect a hidden message, uncheck Decoy mode below.");
 		} else {
-			var	key2 = prompt("Enter Decoy Password");
+		if (document.decoyout.key.value.trim() == ""){						//stop to display the decoy key entry form if there is no key entered
+			document.getElementById("decoyout").style.display = "block";
+			document.getElementById("shadow").style.display = "block";			
+			throw ("stopped for decoy input")				
+		}	
+		var key2 = document.decoyout.key.value;			
+			document.decoyout.key.value = ""
 		};
 		var	cipherstr2 = '{"iv":"' + iv + '","salt":"' + "" + '","ct":"' + ct + '","ks":256,"iter":10000}';
-		alert("Hidden message: " + decodeURI(sjcl.decrypt(key2,cipherstr2)))
+		mainmsg.innerHTML = '<span style="color:blue">Hidden message: ' + decodeURI(sjcl.decrypt(key2,cipherstr2)) + '</span>'
 };
 
 //takes a hash of the plaintext and generates an ECDSA signature
 function Signhash(){
+	var keymsg = document.getElementById("keymsg"),
+		mainmsg = document.getElementById("mainmsg");
+		keymsg.innerHTML = "";
+		mainmsg.innerHTML = "";
 	var secstr = document.key.text.value.trim();
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("A signature matching the contents of the main box will be made using your secret Key in the key box, and the resulting signature will be added to the end of the main box. Cancel if this is not what you want.");
 		if(reply===false) throw("signature canceled");
 	};
-	if (secstr===""){
-		alert("Enter your Key in the key box");
-		throw("secret key empty")
-	};
 	var pubstr = secstr.replace(/\s/g,'');
 		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];				
 		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');
 	if (pubstr.length===87){											//this is a Lock, not a Key
-		alert("Lock found in the key box. Enter your secret Key instead");
+		plain2key();
+		keymsg.innerHTML = '<span style="color:red">This is a Lock. Enter your Key here</span>';	
 		throw("lock instead of key")
 	};
 	var hash = sjcl.hash.sha512.hash(document.plain.text.value.trim()),						//take SHA512 hash of plaintext, trimming space at ends
@@ -3033,15 +3075,21 @@ function Signhash(){
 
 //verifies the ECDSA signature of a hash of the plaintext, calls Signhash as appropriate. Algorithm from SJCL ecc.js, but not the latest version
 function Verifyhash(){
-	var	pubstr = document.key.text.value.trim();
-	if (pubstr===""){											//nothing in sec box
-		alert("No Key or Lock in the key box");
-		throw("no key present")
-	};
+	encrypting = false;
+	var keymsg = document.getElementById("keymsg"),
+		mainmsg = document.getElementById("mainmsg");
+		keymsg.innerHTML = "";
+		mainmsg.innerHTML = "";
 	var text = document.plain.text.value.trim();
-	if (text===""){												//nothing in text box
-		alert("Nothing to sign/verify");
+	if (text==""){												//nothing in text box
+		mainmsg.innerHTML = '<span style="color:red">Nothing to sign or verify</span>';
 		throw("no text")
+	};			
+	var	pubstr = document.key.text.value.trim();
+	if (pubstr==""){											//nothing in sec box
+		plain2key();
+		keymsg.innerHTML = '<span style="color:red">Enter a Key to sign, or a Lock to verify</span>';	
+		throw("no key present")
 	};
 	var	sign = text.split(/\r?\n/);
 		sign = sign[sign.length-1];							//this is a signature if added as last line of text
@@ -3057,19 +3105,21 @@ function Verifyhash(){
 	};
 		sigstr = sigstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];			
 		sigstr = sigstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');
-	if (!(sigstr.length===250)){
-		alert("Invalid signature");
-		throw("invalid sign")
+	if (sigstr.length != 250){
+		mainmsg.innerHTML = '<span style="color:red">Invalid signature</span>'
+		throw("invalid signature")
 	};		
 		pubstr = pubstr.replace(/\s/g,'');
 		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];	//remove tags
 		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 
-	if (pubstr===""){
-		alert("Enter the signer's Lock in the key box");
+	if (pubstr == ""){
+		pain2key();
+		keymsg.innerHTML = '<span style="color:red">Enter the signer&rsquo;s Lock in the key box</span>';
 		throw("public key empty")
 	};
 	if (!(pubstr.length===87)){
-		alert("Invalid signer's Lock in the key box");
+		plain2key();
+		keymsg.innerHTML = '<span style="color:red">Enter a valid Lock</span>';
 		throw("invalid public key")
 	};
 		text = text.replace(/\r?\n?[^\r\n]*$/, "");						//remove last line
@@ -3099,10 +3149,10 @@ function Verifyhash(){
 		};																	//end of wrong root hack
     if (r.equals(0) || s.equals(0) || r.greaterEquals(R) || s.greaterEquals(R) || !r2.equals(r)) check = false;
 	if (check) {
-		alert("The signature is VERIFIED")
+		mainmsg.innerHTML = '<span style="color:green">The signature is VERIFIED</span>'
 		}
 	else {
-		alert("The signature has FAILED verification")
+		mainmsg.innerHTML = '<span style="color:magenta">The signature has FAILED verification</span>'
 		};
 	if (document.getElementById("decoymode").checked === true){				//this part to extract the hidden message, if it exists
 		var iv = sigstr.slice(175,186),
@@ -3129,7 +3179,8 @@ function showsec(){
 //function to test password strength
 function passwordChanged() {
 var iter = 100000;
-var strength = document.getElementById("strength");
+var keymsg = document.getElementById("keymsg");
+	keymsg.innerHTML = '';
 var strongRegex = new RegExp("^(?=.{9,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9 ]).*$", "g");
 var mediumRegex = new RegExp("^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
 var enoughRegex = new RegExp("(?=.{7,}).*", "g");
@@ -3137,18 +3188,18 @@ var pwd = document.getElementById("pwd").value;
 	pwd = pwd.replace(/^\d+/,'').replace(/\d+$/,'');		//no credit for initial and trailing numbers
 	pwd = pwd.replace(/^[a-zA-Z]/,'');						//no credit for initial letter, small or capital
 if (pwd.length==0) {
-strength.innerHTML = "&nbsp";
+keymsg.innerHTML = "&nbsp";
 } else if (false === enoughRegex.test(pwd)) {
-strength.innerHTML = '<span style="color:black"> Terrible!</span>';		//less than 7 good characters
+keymsg.innerHTML = '<span style="color:magenta"> Terrible!</span>';		//less than 7 good characters
 iter = 100000;
 } else if (strongRegex.test(pwd)) {
-strength.innerHTML = '<span style="color:green">  Good!</span>';	//lowercase, caps, numbers, and sp chars
+keymsg.innerHTML = '<span style="color:green">  Good!</span>';	//lowercase, caps, numbers, and sp chars
 iter = 1;
 } else if (mediumRegex.test(pwd)) {
-strength.innerHTML = '<span style="color:orange">  Medium</span>';	//either two of lowercase, caps, numbers, but no email
+keymsg.innerHTML = '<span style="color:orange">  Medium</span>';	//either two of lowercase, caps, numbers, but no email
 iter = 10000;
 } else {
-strength.innerHTML = '<span style="color:red">  Weak!</span>';		//just one kind of characters
+keymsg.innerHTML = '<span style="color:red">  Weak!</span>';		//just one kind of characters
 iter = 50000;
 };
 return iter
@@ -3156,6 +3207,8 @@ return iter
 
 //formats results depending on tags present and sends to default email
 function sendMail() {
+	var	extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a title. Only Locks and locked or signed text are allowed. Cancel if this is not what you want.");
 		if(reply===false) throw("email canceled");
@@ -3176,19 +3229,19 @@ if (document.getElementById("notags").checked === false){			//tags is checked, a
 		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.5. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at http://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.extra.text.value);			
 	} else if (cipherstr.length===160){
 		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.1.5 %0D%0A%0D%0AStrip everything but the locked message and unlock with Short Message Key.%0D%0A%0D%0A" + encodeURIComponent(document.extra.text.value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
-	} else{ 
-		alert("Only Locks, and locked or signed text are allowed for Email");
+	} else{
+		extramsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
 		throw("illegal text")
 	}
 }else{														//tags unchecked, no extra text
 	if((type=="!")||(type=="@")||(type=="#")||(cipherstr.length==87)||(cipherstr.length==250)||(cipherstr.length==160)){
 		var link = "mailto:"+ "?subject=" + "&body=" + encodeURIComponent(document.extra.text.value);
 	}else{
-		alert("Only Locks, and locked or signed text are allowed for Email");
+		extramsg.innerHTML = '<span style="color:red">Only Locks, and locked or signed text are allowed for Email</span>';		
 		throw("illegal text")
 	}
 }
-	if(typeof window.orientation !== 'undefined'){ 	 		//new window for PC, same for mobile
+	if(typeof window.orientation !== 'undefined'){ 	 		//new window for PC, same window for mobile
 		window.open(link,"_parent")
 	} else {
 		window.open(link,"_blank")
@@ -3220,7 +3273,7 @@ function displayhelp(){
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the key box and putting the result in the main box, and vice-versa. To do: capture errors due to insufficient or malformed parts
 function secretshare(){
-	var message = document.getElementById("strength");			//for displaying messages above key box
+	var message = document.getElementById("keymsg");			//for displaying messages above key box
 	var plain = document.plain.text.value.trim(),
 		sec = document.key.text.value.trim();
 	if (!(plain==="")){									//the main box not empty: join parts or make one more part
@@ -3243,34 +3296,36 @@ function secretshare(){
 				if(reply===false) throw("SSSS join canceled");
 			};
 			if(n === 1){
-				alert("There is only one part in the main box. Can't retrieve the original.");
+				keymsg.innerHTML = '<span style="color:red">Only one part in main box</span>';
 				throw("insufficient parts")
 			};
 			var	sechex = secrets.combine(shares),
 				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
 			document.key.text.value = secret;
-			message.innerHTML = '<span style>Join successful</span>';						
+			keymsg.innerHTML = 'Join successful';						
 		} else {																			//the key box not empty: add a part instead
 			if (document.getElementById("learnmode").checked === true){
 				var reply = confirm("Provided there are sufficient parts in the main box, an additional part will be added to the main box.  Cancel if this is not what you want.");
 				if(reply===false) throw("SSSS part addition canceled");
 			};
 			if(n > 254){
-				alert("Maximum number of parts is 255");
+				keymsg.innerHTML = '<span style="color:red">Maximum number of parts is 255</span>';		
 				throw("max part number reached")
 			} else if(isLock === 87){
-				alert("the main box contains a Lock, not Key parts");
+				var reply = confirm("The main box contains a Lock. It will be erased if you proceed.");
+				if(reply == true) {document.plain.text.value = ""; secretshare()};
 				throw("Lock instead of parts")
 			} else if(isLock === 250){
-				alert("the main box contains a signature, not Key parts");
+				var reply = confirm("The main box contains a signature. It will be erased if you proceed.");
+				if(reply == true) {document.plain.text.value = ""; secretshare()};		
 				throw("signature instead of parts")
-			} else if(n === 1){	
-				alert("There is only one part in the main box. Can't add any more.");
+			} else if(n === 1){
+				keymsg.innerHTML = '<span style="color:red">You need more than one part in main box</span>';				
 				throw("insufficient parts")
 			};
 			var	sechex = secrets.combine(shares),					//first check that the key box has the right Key = parts in the main box are good
 				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
-			if(sec===secret){			//if OK, add more parts. Get index by finding the highest of all the indices present
+			if(sec===secret){										//if OK, add more parts. Get index by finding the highest of all the indices present
 				var maxindex = 1,
 					index = 1;
 				for (var i=0; i < shares.length; i++) {				//get greatest index on the set
@@ -3295,8 +3350,14 @@ function secretshare(){
 			var reply = confirm("The Key in the key box will be split into several partial Keys, which will be placed in the main box replacing its contents. A popup will ask for number of parts needed to reconstruct the original Key. Extra parts can be made by clicking Split/Join again. Cancel if this is not what you want.");
 			if(reply===false) throw("SSSS split canceled");
 		};
-		var quorum = prompt("How many parts to retrieve the original?");
-		if(quorum.trim()===""){quorum = 2}else{quorum = parseInt(quorum)};
+		if (document.partsin.text.value.trim() == ""){						//stop to display the entry form if it is empty
+			document.getElementById("partsin").style.display = "block";
+			document.getElementById("shadow").style.display = "block";			
+			throw ("stopped for # of parts input")				
+		}	
+		var quorum = document.partsin.text.value;				//on re-execution, read the box and reset it
+		document.partsin.text.value = "";
+		quorum = parseInt(quorum);
 		if(quorum < 2){quorum = 2} else if(quorum > 255) {
 			alert("Maximum number exceeded. Making 255 parts");
 			quorum = 255;
@@ -3306,7 +3367,8 @@ function secretshare(){
 		displayshare(shares,quorum);
 		message.innerHTML = '<span style>Key parts in main box</span>';
 	};
-
+	document.getElementById("partsin").style.display = "none";
+	document.getElementById("shadow").style.display = "none"
 };
 
 function displayshare(shares,quorum){
@@ -3343,11 +3405,16 @@ if (typeof code == 'undefined'){			//default text for base64 to words conversion
 
 //This function checks for words or spaces encoding and calls the approrpiate decoders. If no encoding is detected, it calls the words encoder
 function words(){
+	var extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if(document.extra.text.value.match(/  +/g) != null) {						//detect double spaces and if there are any invoke spaces decoder
 		fromSpaces()	
 	}else{
 		var text = document.extra.text.value.replace(/[\x00-\x09]+/,'');				//get rid of null characters, if any
-		if(text.trim() == "") throw("no text");
+		if(text.trim() == ""){
+			extramsg.innerHTML = '<span style="color:red">No text in the box</span>';
+			throw("no text")
+		}
 		var	textlow = text.toLowerCase().replace(/[,\.]+/g,'').replace(/\n+/g,' '),		//make lowercase and strip periods, commas and newlines
 			textvector = textlow.split(" "),											//break up the main box into an array of words
 			inwords = true,
@@ -3368,11 +3435,16 @@ function words(){
 
 //this is almost the same as above, but if it doesn't detect encoding present, it calls the spaces encoder instead
 function spaces(){
+	var extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if(document.extra.text.value.match(/  +/g) != null) {						//detect double spaces and if there are any invoke spaces decoder
 		fromSpaces()	
 	}else{
 		var text = document.extra.text.value.replace(/[\x00-\x09]+/,'');				//get rid of null characters, if any
-		if(text.trim() == "") throw("no text");
+		if(text.trim() == ""){
+			extramsg.innerHTML = '<span style="color:red">No text in the box</span>';
+			throw("no text");
+		}
 		var	textlow = text.toLowerCase().replace(/[,\.]+/g,'').replace(/\n+/g,' '),		//make lowercase and strip periods, commas and newlines
 			textvector = textlow.split(" "),											//break up the main box into an array of words
 			inwords = true,
@@ -3393,6 +3465,8 @@ function spaces(){
 
 //the following two are to encode or decode each character of the main box into a word from the covertext
 function toWords(text){
+	var extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The contents of the main box will be replaced with fake text representing it. Cancel if this is not what you want.");
 			if(reply===false) throw("toWords canceled");
@@ -3401,7 +3475,7 @@ function toWords(text){
 		for (var i = 1; i < text.length; i++){
 			var index = keystr.indexOf(text[i]);
 			if(index == -1){
-				alert("the main box cannot be converted to fake text. Make sure it contains only characters used in PassLok strings");
+				extramsg.innerHTML = '<span style="color:red">This text contains illegal characters for a PassLok string</span>'; 
 				throw("illegal characters in the main box")
 			}
 			output = output + randompunct() + code[randomindex(index)]		//add some random commas and periods, and spaces between words
@@ -3500,6 +3574,8 @@ function stegospace(bin){
 }
 
 function toSpaces() {
+	var extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("The contents of the main box will be replaced with fake text representing it. Cancel if this is not what you want.");
 		if(reply===false) throw("toWords canceled");
@@ -3508,7 +3584,7 @@ function toSpaces() {
 	var input = document.extra.text.value.trim().replace(/[\x00-\x09]+/,'');		//eliminate null characters
     for (var i=0; i < input.length; i++) {
 		if(keystr.indexOf(input[i]) == -1){
-			alert("The main box cannot be converted to fake text. Make sure it contains only characters used in PassLok strings");
+			extramsg.innerHTML = '<span style="color:red">This text contains illegal characters for a PassLok string</span>'; 			
 			throw("illegal characters in the main box")
 		}
 		var bin = "000" + input[i].charCodeAt(0).toString(2);
@@ -3532,7 +3608,9 @@ function fromSpaces() {
 }
 
 //this one is to display the cover text or change it as requested
-function newcover(){	
+function newcover(){
+	var extramsg = document.getElementById("extramsg");
+		extramsg.innerHTML = "";
 	if(document.extra.text.value.trim() == ""){				//if the box is empty display the cover text
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The cover text will be displayed in the main box. Cancel if this is not what you want.");
@@ -3554,35 +3632,47 @@ function newcover(){
 			noptions = Math.floor(code.length / keystr.length);
 			document.extra.text.value = "";
 		} else {
-			alert("This text is too short to make a covertext");
+			extramsg.innerHTML = '<span style="color:red">This text is too short for a Cover</span>';
 			throw("text sample too short");
 		}	
 	}
 }      
 
+//these are for switching between windows
 function plain2extra(){
 	openClose("main");
 	openClose("extrascr");
 	if(document.plain.text.value.trim() != "") document.extra.text.value = document.plain.text.value
 }
-
 function extra2plain(){
 	openClose("main");
 	openClose("extrascr");
 	if(document.extra.text.value.trim() != "") document.plain.text.value = document.extra.text.value
 }
-
 function plain2help(){
 	openClose("main");
 	openClose("help")	
 }
-
 function plain2key(){
 	openClose("main");
 	openClose("keyscr")
 }
 
-	<!-- Text hide trick, by Sandeep Gangadharan 2005-->
+//resizes text boxes so they fit within the window
+function textrows(){
+	if(isiPad){												//first for iPad. Don't know how to detect other tablets
+		if((angle==90)||(angle==-90)){
+			document.plain.text.rows=document.documentElement.clientHeight/rowheight-11					//landscape
+		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.2-11}			//portrait
+	}else{
+		if((angle==90)||(angle==-90)){
+			document.plain.text.rows=document.documentElement.clientHeight/rowheight*0.9-11				//smartphone here and line below
+		}else if(typeof window.orientation != 'undefined') {document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.25-11
+		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.1-8}}			//non-mobile
+	if(document.extra!=null) document.extra.text.rows = document.plain.text.rows	
+}
+
+<!-- Text hide trick, by Sandeep Gangadharan 2005-->
 if (document.getElementById) {
  document.writeln('<style type="text/css"><!--')
  document.writeln('.texter {display:none} @media print {.texter {display:block;}}')
@@ -3598,12 +3688,12 @@ function openClose(theID) {
 		
 </head>
   
-  <body link="#0000ff" vlink="#0000ff" alink="#0000ff" onload="ce();">
+<body link="#0000ff" vlink="#0000ff" alink="#0000ff" onload="ce();">
   
 <div id="main" class="texter" style="display: block;">
   <div align="center" id="main" ontouchmove="event.preventDefault();">
-  <form name="warning" action="#" onsubmit="return false;">
-	<input type="text" name="warning" style="background-color: #FFB0B0; color: #000000;width: 60%; font-size: large; text-align: center" value="Javascript NOT working!" class="ctr" readonly="readonly" />
+  	<form name="warning" action="#" onsubmit="return false;">
+		<input type="text" name="warning" style="background-color: #FFB0B0; color: #000000;width: 60%; font-size: large; text-align: center" value="Javascript NOT working!" class="ctr" readonly="readonly" />
 	</form>
 	<br />
 <script type="text/javascript" language="JavaScript">
@@ -3614,46 +3704,36 @@ function openClose(theID) {
     document.warning.warning.style.backgroundColor = "rgb(235, 255, 235)";
 // -->
 </script>
-<input type="button" onclick = "plain2help();" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
+	<span id="mainmsg"></span><br />
+	<input type="button" onclick = "plain2help();" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
     <input type="button" onclick = "plain2key();" onBlur="ce();" onFocus="ce();" value="Key" style="font-size:medium"/>
 	<input type="button" onClick="selectPlain();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">
 	<input type="button" onClick="document.plain.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="font-size:medium">
     </div>
     <div align="center">
-    <form onSubmit="return false;" id="plain" name="plain">      
-    <textarea onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Typically, the first thing would be to click the Key button above, and enter a Key or a Lock."></textarea>
+    	<form onSubmit="return false;" id="plain" name="plain">      
+    		<textarea onKeyDown="ce();" onKeyUp="document.getElementById('mainmsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Typically, the first thing would be to click the Key button above, and enter a Key or a Lock."></textarea>
 <script>		
-	var rowheight = document.warning.clientHeight*0.7;				//get title size in pixels, for number of rows calculation. global variable
-	var	isiPad = (navigator.userAgent.match(/iPad/i) != null),
+	var rowheight = document.warning.clientHeight*0.7,				//get title size in pixels, for number of rows calculation. global variables
+		isiPad = (navigator.userAgent.match(/iPad/i) != null),
 		angle = window.orientation;
-	if(isiPad) document.plain.text.rows=35;				//default for iPad, otherwise default is in defined textarea
-	if(typeof window.orientation == 'undefined') document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.1-8		//for PC
-	window.addEventListener("resize", function() {       // Get screen size (inner/outerWidth, inner/outerHeight)
-	if(isiPad){
-		if((angle==90)||(angle==-90)){
-			document.plain.text.rows=document.documentElement.clientHeight/rowheight-10
-		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.2-10}
-	}else{
-		if((angle==90)||(angle==-90)){
-			document.plain.text.rows=document.documentElement.clientHeight/rowheight*0.9-10
-		}else if(typeof window.orientation != 'undefined') {document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.3-10
-		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.1-8}}
-	}, false)	
-    </script>
-    </form>
+	textrows();
+	window.addEventListener("resize", function() { textrows() }, false)	    //resize if the window changes		
+</script>
+    	</form>
     </div>
-    <div align="center" ontouchmove="event.preventDefault();">
-    <input type="button" onClick="Decrypt_text();" onBlur="ce();" onFocus="ce();" value="Lock/Unlock" name="decrypt" style="font-size:medium">
-	<input type="button" onClick="Verifyhash();" onBlur="ce();" onFocus="ce();" value="Sign/Ver." style="font-size:medium">
-    <input type="button" onclick = "plain2extra();" onBlur="ce();" onFocus="ce();" value="More" style="font-size:medium"/><br /><br />
-    <input type="checkbox" id="shortmode" onBlur="ce();" onFocus="ce();"/> Short mode
-      <input type="checkbox" id="notags" onBlur="ce();" onFocus="ce();"/> No tags <input type="checkbox" id="decoymode" onBlur="ce();" onFocus="ce();"/> Decoy mode
-    </div> 
-    </div>  
+	<div align="center" ontouchmove="event.preventDefault();">
+    	<input type="button" onClick="Decrypt_text();" onBlur="ce();" onFocus="ce();" value="Lock/Unlock" name="decrypt" style="font-size:medium">
+		<input type="button" onClick="Verifyhash();" onBlur="ce();" onFocus="ce();" value="Sign/Ver." style="font-size:medium">
+    	<input type="button" onclick = "plain2extra();" onBlur="ce();" onFocus="ce();" value="More" style="font-size:medium"/><br /><br />
+    	<input type="checkbox" id="shortmode" onBlur="ce();" onFocus="ce();"/> Short mode
+    	<input type="checkbox" id="notags" onBlur="ce();" onFocus="ce();"/> No tags <input type="checkbox" id="decoymode" onBlur="ce();" onFocus="ce();"/> Decoy mode
+	</div> 
+</div>  
 
-  <div id="help" class="texter" style="display: none;">
- 		<input type="button" onclick = "plain2help();" value="< Back" style="font-size:medium"/>
-     <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" onBlur="ce();" onFocus="ce();" style="font-size:medium"/></strong></p>    
+<div id="help" class="texter" style="display: none;">
+ 	<input type="button" onclick = "plain2help();" value="< Back" style="font-size:medium"/>
+    <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" onBlur="ce();" onFocus="ce();" style="font-size:medium"/></strong></p>    
     <p>For extensive step by step help and this version's ID, click this button: 
     <input type="button" onclick="displayhelp();" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/></p>
     <p>To enter a Key, which is needed to unlock or sign messages, click the Key button.</p>
@@ -3663,24 +3743,24 @@ function openClose(theID) {
     <p>To split a Key into several parts, which can be rejoined later, click Split/Join with the main screen empty. A popup will ask for number of parts needed to reconstruct the original Key. The parts, one per line, will appear on the main screen. Extra parts can be made by clicking Split/Join again. To join several parts, place them in separate lines on the main screen, then click Key, followed by Split/Join. The reconstructed Key will appear in the key box.</p>
 	<p>To lock a text, enter it into the main box. Then click Key and write a shared Key or the recipient's Lock in the key box, depending on the type of locking you want. Then click the Lock/Unlock button on the main screen. The locked text will replace the original text. You can then email it or text it using the Extra button.</p>
     <p>If you want to lock a text so it can be sent by SMS (limit 160 characters), check the Short message checkbox before clicking Lock/Unlock. When locking with a Key, message length is limited to 58 ASCII characters, non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc. When locking with a Lock, message length is limited to 38 ASCII characters. The rest of the message will be truncated.</p>
-	<p>To unlock a locked text, paste it into the main screen, then click Key and write your personal or shared Key in the key box, then click Lock/Unlock on the main screen. If you have the wrong item in the key box, a popup will tell you. It is not necessary to check the Short message checkbox.</p>
+	<p>To unlock a locked text, paste it into the main screen, then click Key and write your personal or shared Key in the key box, then click Lock/Unlock on the main screen. If you have the wrong item in the key box, a message will tell you. It is not necessary to check the Short message checkbox.</p>
 	<p>To sign the text in the main screen with your secret Key, first make sure your Key has been entered, then click Sign/Verify in the main window. The signature will be appended to the text. This can also be emailed with the Email button, in the Extra screen.</p>
-	<p>To verify a signed text, place the text carrying the signature at the end in the main screen, and the signer's Lock in the key box, then click Sign/Verify on the main screen. A popup will say whether or not the signature is verified for this text and this signer.</p>
+	<p>To verify a signed text, place the text carrying the signature at the end in the main screen, and the signer's Lock in the key box, then click Sign/Verify on the main screen. A message in the main window will say whether or not the signature is verified for this text and this signer.</p>
     <p>The No tags checkbox controls whether or not tags and explanatory text are added to items generated by PassLok. Check it for better stealth.</p>
-    <p>When Decoy mode is checked you can include a second, hidden text locked by a separate Password. Popups will ask first for the Password for this text, and then for the text itself. The locked text on the main screen contains both texts. You can also use this mode when making a signature. The hidden text is limited to 152 ASCII characters for Key-locked text, 87 characters for text locked with the recipient's Lock, 37 characters for short message mode (Key-locked only), 40 characters in signatures. Non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.</p>
-	<p>When you unlock a text or verify a sign with Decoy mode checked, a popup will ask for the special Password. The hidden text will appear in a second popup. </p>
+    <p>When Decoy mode is checked you can include a second, hidden text locked by a separate Password. A popup will ask for the Password and for the text itself. The locked text on the main screen contains both texts. You can also use this mode when making a signature. The hidden text is limited to 152 ASCII characters for Key-locked text, 87 characters for text locked with the recipient's Lock, 37 characters for short message mode (Key-locked only), 40 characters in signatures. Non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.</p>
+	<p>When you unlock a text or verify a sign with Decoy mode checked, a popup will ask for the special Password. The hidden text will appear above the main box. </p>
     <p>This is what the buttons on the More screen do:</p>
 	<p>The Email button places the contents of the main screen in a formatted email, using the default client. The SMS App button opens your default messaging app; you need to copy the message into the clipboard before clicking the button. The ID button replaces the content of the Extra screen box with its SHA256 hash. This is useful for authentication purposes.</p>
     <p>The Words button converts the contents of the main screen into fake text, and back. It replaces each character with a word drawn from the current cover text. The recipient must have the same cover text but no Key or password is needed to retrieve the message, so please <strong>lock the message first</strong> with a Key or a Lock.</p>
 	<p>For better stealth, the Spaces button hides the contents of the main box in the cover text, by encoding each character into the spaces between words, and back. Seven words are needed for each character. No Key, password, or matching cover text is needed to retrieve the message, so please <strong>lock the message first</strong> with a Key or a Lock.</p>
     <p>To display the current cover text, click Cover with the box empty. To change the cover text, place the new text in the box and click Cover.</p>
     <br />
-          <address>
-    PASSLOK v1.5.01 &#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013
+    <address>
+    PASSLOK v1.5.02 &#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013
 	</address>
-   <address>
-   engine: SJCL by <a href="http://crypto.stanford.edu/sjcl" target="_blank">Stark, Hamburg, and Boneh</a> 2012
-   </address>
+	<address>
+	engine: SJCL by <a href="http://crypto.stanford.edu/sjcl" target="_blank">Stark, Hamburg, and Boneh</a> 2012
+	</address>
     <address>
     text hide trick by <a href="http://www.sivamdesign.com/scripts/" target="_blank">S. Gangadharan</a> 2005
     </address>
@@ -3695,63 +3775,88 @@ function openClose(theID) {
     </address>
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address><br />
     <input type="button" onclick = "plain2help();" value="< Back" style="font-size:medium"/>
-    </div>  
+</div>  
 
-  <div id="keyscr" class="texter" style="display: none;">
-        <div align="left" ontouchmove="event.preventDefault();">
-        <input type="button" onclick = "plain2key();" value="< Back" style="font-size:medium;"/>
-        <input type="button" onClick="passwordChanged();document.key.text.value = ''" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right;font-size:medium"/></div>
+<div id="keyscr" class="texter" style="display: none;">
+  	<div align="left" ontouchmove="event.preventDefault();">
+    	<input type="button" onclick = "plain2key();" value="< Back" style="font-size:medium;"/>
+    	<input type="button" onClick="passwordChanged();document.key.text.value = ''" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right;font-size:medium"/>
+    </div>
     <div align="center" ontouchmove="event.preventDefault();">        
-    <form onsubmit="return false;" id="key" name="key">
-      <span id="strength"></span><br />
-		<input type="password" autocomplete="off" id="pwd" onKeyDown="ce();" onKeyUp="return passwordChanged();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" placeholder="Secret Key or public Lock goes here." align="center"><br /></div></form>
-        <div align="center" ontouchmove="event.preventDefault();">
-	    <input type="checkbox" id="show" onClick="showsec();" onBlur="ce();" onFocus="ce();" style="font-size:medium"> Show 
+    	<form onsubmit="return false;" id="key" name="key">
+      		<span id="keymsg"></span><br />
+			<input type="password" autocomplete="off" id="pwd" onKeyDown="ce();" onKeyUp="return passwordChanged();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" placeholder="Secret Key or public Lock goes here." align="center"><br />
+        </form>
+    </div>
+    <div align="center" ontouchmove="event.preventDefault();">
+		<input type="checkbox" id="show" onClick="showsec();" onBlur="ce();" onFocus="ce();" style="font-size:medium"> Show 
         <input type="button" onclick="fillkeys();" onBlur="ce();" onFocus="ce();" value="Make Lock" style="font-size:medium"/>
         <input type="button" onclick="secretshare();" onBlur="ce();" onFocus="ce();" value="Splt/Join" style="font-size:medium"/>
-		</div>
-       <div align="left" ontouchmove="event.preventDefault();">        
+	</div>
+    <div align="left">        
       	<p>Write your personal or shared Key, or the recipient's or signer's Lock in this box. To display the characters, check Show. As you type your Key, a text above it will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and numbers at start and end are not helpful and will be ignored for the strength score.</p>
         <p>If your Key strength is worse than Medium, <strong>PassLok will be very slow.</strong></p>
-      </div>
-        </div>  
+    </div>
+</div>  
         
-		<div id="extrascr" class="texter" style="display: none;" align="left">
-        <div align="left" ontouchmove="event.preventDefault();">
+<div id="extrascr" class="texter" style="display: none;" align="left">
+	<div align="left" ontouchmove="event.preventDefault();">
        <input type="button" onclick = "extra2plain();" value="< Back" style="font-size:medium;"/>
-       <input type="button" onClick="document.extra.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right; font-size:medium;margin-right:2%"/><br />       <br /></div>   
-       <div align="center" ontouchmove="event.preventDefault();">    
-       <input type="button" onClick="sendMail();" onBlur="ce();" onFocus="ce();" value="Email" style="font-size:medium"/>
-	   <input type="button" onClick="sendSMS();" onBlur="ce();" onFocus="ce();" value="SMS" style="font-size:medium"/>
-       <input type="button" onClick="makehash();" onBlur="ce();" onFocus="ce();" value="ID" style="font-size:medium"/>
+       <input type="button" onClick="document.extra.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right; font-size:medium;margin-right:2%"/><br /><br />
+    </div>   
+    <div align="center" ontouchmove="event.preventDefault();">
+		<span id="extramsg"></span><br />
+		<input type="button" onClick="sendMail();" onBlur="ce();" onFocus="ce();" value="Email" style="font-size:medium"/>
+        <input type="button" onClick="sendSMS();" onBlur="ce();" onFocus="ce();" value="SMS" style="font-size:medium"/>
+		<input type="button" onClick="makehash();" onBlur="ce();" onFocus="ce();" value="ID" style="font-size:medium"/>
 		<input type="button" onClick="selectExtra();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">
-        </div>
-        <div align="center">
-      <form onSubmit="return false;" id="extra" name="extra">     
-      <textarea onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13"></textarea>
-        <script>
-	var	isiPad = (navigator.userAgent.match(/iPad/i) != null),
-		angle = window.orientation;
-	if(isiPad) document.extra.text.rows=35;
-	if(typeof window.orientation == 'undefined') document.extra.text.rows=document.documentElement.clientHeight/rowheight*1.1-8
-	window.addEventListener("resize", function() {
-	if(isiPad){
-		if((angle==90)||(angle==-90)){
-			document.extra.text.rows=document.documentElement.clientHeight/rowheight-10
-		}else{document.extra.text.rows=document.documentElement.clientHeight/rowheight*1.2-10}
-	}else{
-		if((angle==90)||(angle==-90)){
-			document.extra.text.rows=document.documentElement.clientHeight/rowheight*0.9-10
-		}else if(typeof window.orientation != 'undefined') {document.extra.text.rows=document.documentElement.clientHeight/rowheight*1.3-10
-		}else{document.extra.text.rows=document.documentElement.clientHeight/rowheight*1.1-8}}
-	}, false)	
-	</script>
-      </form></div>
-      <div align="center" ontouchmove="event.preventDefault();">
-      <input type="button" onClick="words();" onBlur="ce();" onFocus="ce();" value="Words" style="font-size:medium"/>
-	<input type="button" onClick="spaces();" onBlur="ce();" onFocus="ce();" value="Spaces" style="font-size:medium"/>
-          <input type="button" onClick="newcover();" onBlur="ce();" onFocus="ce();" value="Cover" style="font-size:medium"/><br /><br /></div>
-      </div>
-        </div>           
+	</div>
+	<div align="center">
+      	<form onSubmit="return false;" id="extra" name="extra">     
+			<textarea onKeyDown="ce();" onKeyUp="document.getElementById('extramsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13"></textarea>
+<script>
+	textrows();
+	window.addEventListener("resize", function() { textrows() }, false)	
+</script>
+    	</form>
+    </div>
+    <div align="center" ontouchmove="event.preventDefault();">
+    	<input type="button" onClick="words();" onBlur="ce();" onFocus="ce();" value="Words" style="font-size:medium"/>
+		<input type="button" onClick="spaces();" onBlur="ce();" onFocus="ce();" value="Spaces" style="font-size:medium"/>
+    	<input type="button" onClick="newcover();" onBlur="ce();" onFocus="ce();" value="Cover" style="font-size:medium"/><br /><br /></div>
+    </div>
+</div>           
+        
+<div id="shadow" class="black_overlay"></div>
+       
+<div id="decoyin" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="decoyin">
+		<p>Enter Decoy Password</p> 
+    	<input type="password" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
+		<p>Enter Hidden Message</p>      
+		<textarea onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="3"></textarea>
+    	<input type="button" onClick="closebox();if(encrypting){Decrypt_text()}else{Verifyhash()};" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium"/>
+		<input type="button" onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium"/>
+	</form>   
+</div>
+       
+<div id="decoyout" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="decoyout">
+		<p>Enter Decoy Password</p> 
+    	<input type="password" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>     
+    	<input type="button" onClick="closebox();if(encrypting){Decrypt_text()}else{Verifyhash()};" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium"/>
+		<input type="button" onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium"/>
+    	<p>The Hidden message will appear in the main window</p>
+    </form>   
+</div>
+    
+<div id="partsin" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="partsin">
+		<p>Enter the number of parts needed to retrieve the Key (between 2 and 255)</p> 
+    	<input type="text" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 30%; font-size: medium" name="text" rows="1"/><br />    
+    	<input type="button" onClick="closebox();secretshare();" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium"/>
+		<input type="button" onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium"/>
+	</form>
+</div>  
   
 </body></html>
