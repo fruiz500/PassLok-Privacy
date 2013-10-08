@@ -2663,9 +2663,11 @@ function fillkeys(){
 		keymsg.innerHTML = "";
 	var plainstr = document.plain.text.value.split("=").sort(function (a, b) { return b.length - a.length; })[0];   //remove end tags in the main box
 	plainstr = plainstr.replace(/\s/g,'');										//remove also spaces
-	if(!(plainstr==="") && !(plainstr.length===87)){
-		var reply = confirm("The main box is not empty. It will be modified if you proceed");
-		if(reply===false) throw("main box not empty");
+	if((plainstr != "") && (plainstr.length != 87)){
+//		var reply = confirm("The main box is not empty. It will be modified if you proceed");
+//		if(reply===false) throw("main box not empty");
+		keymsg.innerHTML = '<span style="color:red">The main box is not empty. Clear it before you try again<span>';
+		throw ("main box not empty")
 	};
 	var secstr = document.key.text.value.trim();			//cut trailing spaces
 	if(secstr===""){										//the key box empty, make Random Key and Lock
@@ -2699,13 +2701,13 @@ function fillkeys(){
 //display the public part, in case it got deleted
 function showpub(){
 	var secstr = document.key.text.value.trim();
-	var pubstr = secstr.replace(/\s/g,'');			//ignore spaces
-		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
-		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64
-		if (pubstr.length===87){
-			var reply = confirm("The key box may contain a Lock. Are you sure you want to make a Lock for it?");
-			if(reply===false) throw("lock canceled");
-		};
+//	var pubstr = secstr.replace(/\s/g,'');			//ignore spaces
+//		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+//		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64
+//		if (pubstr.length===87){
+//			var reply = confirm("The key box may contain a Lock. Are you sure you want to make a Lock for it?");
+//			if(reply===false) throw("lock canceled");
+//		};
 	var pubstr = makepub(secstr);
 	if (document.getElementById("notags").checked === false){
 		document.plain.text.value = "PL15lok=" + pubstr + "=PL15lok";
@@ -2963,7 +2965,7 @@ function Decrypt_text(){
 		var keystr = makeshared(secstr,pubstrdum);
 		var	ct = cipherstr.slice(98,cipherstr.length);
 		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';	//add labels and keylength to data, minimum keystretching
-		document.plain.text.value = sjcl.decrypt(keystr,cipherstr);
+		document.plain.text.value = sjcl.decrypt(keystr,cipherstr).trim();
 	}
 	
 	else if (type === "!"){									//public decryption
@@ -3009,9 +3011,12 @@ function Decrypt_text(){
 		};
 		var iter = passwordChanged();						//get number of iterations from Key strength meter
 		if(iter<100) iter=iter+100;
-		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":' + iter.toString() + '}';
-		document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr));
-	
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":' + iter.toString() + '}';
+		if (cipherstr.length == 159){
+			document.plain.text.value = sjcl.decrypt(keystr,cipherstr2).trim()
+		}else{
+			document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr2))
+		}	
 	}else{
 		Encrypt_text()									//none of the known encrypted types, therefore encrypt rather than decrypt
 	};
@@ -3282,8 +3287,9 @@ function secretshare(){
 			quorumarr = plain.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it form tags
 		if(n < quorum){												//not enough parts
-			var reply = confirm("According to the tags, you need " + (quorum - n) + " more parts in the main box. Do you want to proceed?");
-			if(reply===false) throw("insufficient parts");
+//			var reply = confirm("According to the tags, you need " + (quorum - n) + " more parts in the main box. Do you want to proceed?");
+//			if(reply===false) throw("insufficient parts");
+			keymsg.innerHTML = '<span style="color:red">According to the tags, you need ' + (quorum - n) + ' more parts in the main box</span>'
 		};	
 		for (var i=0; i < shares.length; i++) {
 			shares[i] = shares[i].split("=").sort(function (a, b) { return b.length - a.length; })[0];							//remove tags
@@ -3312,12 +3318,14 @@ function secretshare(){
 				keymsg.innerHTML = '<span style="color:red">Maximum number of parts is 255</span>';		
 				throw("max part number reached")
 			} else if(isLock === 87){
-				var reply = confirm("The main box contains a Lock. It will be erased if you proceed.");
-				if(reply == true) {document.plain.text.value = ""; secretshare()};
+//				var reply = confirm("The main box contains a Lock. It will be erased if you proceed.");
+//				if(reply == true) {document.plain.text.value = ""; secretshare()};
+				keymsg.innerHTML = '<span style="color:red">The main box contains a Lock. Delete it and try again</span>';
 				throw("Lock instead of parts")
 			} else if(isLock === 250){
-				var reply = confirm("The main box contains a signature. It will be erased if you proceed.");
-				if(reply == true) {document.plain.text.value = ""; secretshare()};		
+//				var reply = confirm("The main box contains a signature. It will be erased if you proceed.");
+//				if(reply == true) {document.plain.text.value = ""; secretshare()};
+				keymsg.innerHTML = '<span style="color:red">The main box contains a signature. Delete it and try again</span>';		
 				throw("signature instead of parts")
 			} else if(n === 1){
 				keymsg.innerHTML = '<span style="color:red">You need more than one part in main box</span>';				
@@ -3335,15 +3343,17 @@ function secretshare(){
 				var	newshare = secrets.newShare(maxindex+1,shares);
 					shares = shares.concat(newshare);
 				displayshare(shares,quorum);			//required parts was read from tag
-				message.innerHTML = '<span style>Part added to main box</span>';
+				keymsg.innerHTML = '<span style>Part added to main box</span>';
 			} else {
-				alert("Wrong Key in the key box. Please delete it and try again");
+//				alert("Wrong Key in the key box. Please delete it and try again");
+				keymsg.innerHTML = '<span style="color:red">Wrong Key in the key box. Please delete it and try again</span>';
 				throw("bad Key in the key box");	
 			};				
 		};
 	} else {																		//the main box empty: split secret in the key box
 		if (sec==="") {
-			alert("There is no Key to split in the key box");
+//			alert("There is no Key to split in the key box");
+			keymsg.innerHTML = '<span style="color:red">There is no Key to split in the key box</span>';
 			throw("No key in the key box")
 		};
 		if (document.getElementById("learnmode").checked === true){
@@ -3358,14 +3368,15 @@ function secretshare(){
 		var quorum = document.partsin.text.value;				//on re-execution, read the box and reset it
 		document.partsin.text.value = "";
 		quorum = parseInt(quorum);
-		if(quorum < 2){quorum = 2} else if(quorum > 255) {
-			alert("Maximum number exceeded. Making 255 parts");
-			quorum = 255;
-		};
+		if(quorum < 2){quorum = 2} else if(quorum > 255) {quorum = 255};
+//			alert("Maximum number exceeded. Making 255 parts");
+//			keymsg.innerHTML = 'Maximum number exceeded. Making 255 parts';
+//			quorum = 255;
+//		};
 		var	sechex = sjcl.codec.hex.fromBits(sjcl.codec.utf8String.toBits(document.key.text.value)),
 			shares = secrets.share(sechex,quorum,quorum);
 		displayshare(shares,quorum);
-		message.innerHTML = '<span style>Key parts in main box</span>';
+		message.innerHTML = '<span style>' + quorum + ' Key parts in main box</span>';
 	};
 	document.getElementById("partsin").style.display = "none";
 	document.getElementById("shadow").style.display = "none"
@@ -3540,8 +3551,9 @@ function encoder(bin){
 			spaces = textsplit.length - 1;
 			iter = iter + 1
 		}	
-		var reply = confirm("The cover text was too short. It was repeated " + iter + " times. If this is not acceptable, cancel and enter a longer cover text.");
-		if (reply==false) throw("cover text too short")
+//		var reply = confirm("The cover text was too short. It was repeated " + iter + " times. If this is not acceptable, cancel and enter a longer cover text.");
+//		if (reply==false) throw("cover text too short")
+		extramsg.innerHTML = '<span style="color:red">The cover text was too short. It was repeated ' + iter + ' times. If this is not acceptable, enter a larger cover.</span>'; 
 	}
 		textsplit = textsplit.slice(0,bin.length+2);
 	var newtext = textsplit[0];
