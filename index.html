@@ -8,7 +8,7 @@
 		margin-right: 1%;
 		background-color: #FFFFFF;
 		color: #000000;
-		overflow: hidden;
+		overflow: auto;
 	    }
 		.black_overlay{
 			display: none;
@@ -2659,55 +2659,53 @@ sjcl.ecc.curves = {
 
 //if Key box is empty, this displays a random Key in the top box and its Lock in the bottom box, otherwise display Lock or combine Lock and Key
 function fillkeys(){
-	var keymsg = document.getElementById("keymsg");			//for displaying messages above key box
+	var learnOn = document.getElementById("learnmode").checked;
+	var keymsg = document.getElementById("keymsg"),			//for displaying messages above key box
+		mainmsg = document.getElementById("mainmsg");
 		keymsg.innerHTML = "";
+		mainmsg.innerHTML = "";
 	var plainstr = document.plain.text.value.split("=").sort(function (a, b) { return b.length - a.length; })[0];   //remove end tags in the main box
 	plainstr = plainstr.replace(/\s/g,'');										//remove also spaces
 	if((plainstr != "") && (plainstr.length != 87)){
-//		var reply = confirm("The main box is not empty. It will be modified if you proceed");
-//		if(reply===false) throw("main box not empty");
 		keymsg.innerHTML = '<span style="color:red">The main box is not empty. Clear it before you try again<span>';
+		mainmsg.innerHTML = 'Clear this box before making a Lock';
 		throw ("main box not empty")
 	};
 	var secstr = document.key.text.value.trim();			//cut trailing spaces
 	if(secstr===""){										//the key box empty, make Random Key and Lock
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply2 = confirm("A random Key will be placed in the key box and its Lock in the main box. Cancel if this is not what you want.");
 			if(reply2===false) throw("random canceled");
 		};
 		document.key.text.value = sjcl.codec.base64.fromBits(sjcl.random.randomWords('17','0')).slice(0,85);   //make it 85 characters long so it can be distinguished from a shared Key, which is 86
 		showpub();
 		keymsg.innerHTML = 'Random Key and Lock made';
+		mainmsg.innerHTML = 'This is the Lock';
 		throw("new random Key");
 	};	
 	if (plainstr.length===87){								//if it's a Lock in the main box, merge it with the secret Key
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply3 = confirm("The Lock in the main box will be combined with the Key in the key box, and the resulting Key will be placed in the key box. The main box will be erased. Cancel if this is not what you want.");
 			if(reply3===false) throw("merge canceled");
 		};
 		showshared();
 		keymsg.innerHTML = 'Key and Lock merged';
+		mainmsg.innerHTML = 'Lock cleared';
 		throw ("it was a lock, merged with key");
 	} else {												//replace the main box with Lock made from the key box
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply4 = confirm("The Lock matching the Key in the key box will be placed in the main box, replacing its contents. Cancel if this is not what you want.");
 			if(reply4===false) throw("lock canceled");
 		};
 		showpub();
 		keymsg.innerHTML = 'Lock in main box';
+		mainmsg.innerHTML = 'This is the Lock';
 	};	
 };
 
 //display the public part, in case it got deleted
 function showpub(){
 	var secstr = document.key.text.value.trim();
-//	var pubstr = secstr.replace(/\s/g,'');			//ignore spaces
-//		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
-//		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64
-//		if (pubstr.length===87){
-//			var reply = confirm("The key box may contain a Lock. Are you sure you want to make a Lock for it?");
-//			if(reply===false) throw("lock canceled");
-//		};
 	var pubstr = makepub(secstr);
 	if (document.getElementById("notags").checked === false){
 		document.plain.text.value = "PL15lok=" + pubstr + "=PL15lok";
@@ -2772,23 +2770,33 @@ function makehash(){
 		};
 	var mine = document.extra.text.value.trim(),		//remove spaces at start and end
 		extramsg = document.getElementById("extramsg");
+	if(mine == "") {
+		extramsg.innerHTML = '<span style="color:red">Nothing to make an ID of</span>';
+		throw("textarea empty");
+	};
+	if(mine.split("-").length == 16){
+		extramsg.innerHTML = "<span style='color:red'>Won't make an ID of an ID</span>";
+		throw("ID in box");
+	};	
 	if (mine.length < 267){								//if it's the length of a signature or shorter: remove spaces, tags and anything that is not base64
 		mine = mine.replace(/\s/g,'');
 		mine = mine.split("=").sort(function (a, b) { return b.length - a.length; })[0];  
 		mine = mine.replace(/[^a-zA-Z0-9+/ ]+/g, '');
 	};
-	if(mine === "") {
-		extramsg.innerHTML = '<span style="color:red">Nothing to make an ID of</span>';
-		throw("textarea empty");
-	};
 	mine = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(mine)).match(/.{1,4}/g).join("-"); //take hash, make it hex, cut into 4-char pieces and join with dashes
 	document.extra.text.value = mine;
+	extramsg.innerHTML = 'Box contents replaced with ID'
 };
 
 var encrypting;		//global flag so decoy input doesn't get confused
 
 //AES encryption process: determines which kind of encryption by looking at the length of what's in the Key box
 function Encrypt_text(){
+	var shortOn = document.getElementById("shortmode").checked,
+		learnOn = document.getElementById("learnmode").checked,
+		tagsOff = document.getElementById("notags").checked;
+	var mainmsg = document.getElementById("mainmsg"),
+		extramsg = document.getElementById("extramsg");
 	var secstr = document.key.text.value.trim();
 	var pubstr = secstr;
 		pubstr = pubstr.replace(/\s/g,'');															//remove spaces
@@ -2796,7 +2804,7 @@ function Encrypt_text(){
 		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 					//takes out anything that is not base64	
 		
 	if (pubstr.length === 87){										//if it's a public key in the key box = Lock mode
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply = confirm("The contents of the main box will be locked with the Lock in the key box and the result will be placed in the main box. This is irreversible. Cancel if this is not what you want.");
 			if(reply===false) throw("public encryption canceled");
 		};
@@ -2804,7 +2812,7 @@ function Encrypt_text(){
 			pubstrdum = makepub(secstrdum);							//makes 87 char dummy public key, initial A stripped	
 			pubstr = "A" + pubstr;
 		var keystr = makeshared(secstrdum,pubstr);					//make AES key from dummy secret and recipient's public key
-		if(document.getElementById("shortmode").checked==true){
+		if(shortOn){
 			var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0'))					//11 char serial in short mode, no salt
 			var salt = "";
 			var text = encodeURI(document.plain.text.value).replace(/%20/g, ' ');
@@ -2816,29 +2824,32 @@ function Encrypt_text(){
 				text = ULZSS.encode(document.plain.text.value)					//compress longer strings; add a tag to recognize it		
 		}
 		var cipherj = JSON.parse(sjcl.encrypt(keystr,text,{"iv":iv,"salt":salt,"ks":256,"iter": 101}));   //use 256 bit keys, min stretching for random key
-		if (document.getElementById("learnmode").checked == true){
+		if (learnOn){
 			alert("The recipent will need to place his/her secret Key in the key box to unlock the message in the main box.");
 		};
-		if (document.getElementById("shortmode").checked == true){			//display adding dummy public key and anonymous tags, depending on mode
+		if (shortOn){			//display adding dummy public key and anonymous tags, depending on mode
 			document.plain.text.value = cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct;
 			if(typeof window.orientation !== 'undefined'){
 				plain2extra();
+				extramsg.innerHTML = 'Locking successful. Copy and click SMS';
 				selectExtra()
 			}
-		} else if(document.getElementById("notags").checked == true){
+		} else if(tagsOff){
 			document.plain.text.value = "!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct;
+			mainmsg.innerHTML = "Locking successful. To be unlocked by recipient's Key"
 		} else {
 			document.plain.text.value = "PL15msl=!" + cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct + "=PL15msl";
+			mainmsg.innerHTML = "Locking successful. To be unlocked by recipient's Key"
 		}
 		
 	} else {														//not a public key, symmetric encryption		
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply3 = confirm("The contents of the main box will be locked with the secret Key in the key box, and the result will replace the main box. Cancel if this is not what you want.");
 			if(reply3===false) throw("sym encryption canceled");
 		};
 		var iter = passwordChanged();						//get number of iterations from Key strength meter, minimum is 101
 		if (iter<100) iter=iter+100;
-		if (document.getElementById("shortmode").checked == true){						//salt can hide 37 chars in short mode, shorter iv
+		if (shortOn){						//salt can hide 37 chars in short mode, shorter iv
 			var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),
 				salt = makesalt(iv,37),
 				text = encodeURI(document.plain.text.value).replace(/%20/g, ' ');
@@ -2851,48 +2862,54 @@ function Encrypt_text(){
 		}
 		var cipherj = JSON.parse(sjcl.encrypt(secstr,text,{"iv":iv,"salt":salt,"ks":256,"iter": iter}));
 		if(secstr.length===86){													//if shared Key, use a different tag
-			if (document.getElementById("learnmode").checked === true){
+			if (learnOn){
 				alert("The recipent will need your Lock and his/her secret Key to unlock the message in the main box.");
 			};
-			if(document.getElementById("shortmode").checked == true){
+			if(shortOn){
 				document.plain.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct;
 				if(typeof window.orientation !== 'undefined'){							//detect mobile
 					plain2extra();
+					extramsg.innerHTML = 'Locking successful. Copy and click SMS';
 					selectExtra()
 				}
-			} else if (document.getElementById("notags").checked === true){
-				document.plain.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct
+			} else if (tagsOff){
+				document.plain.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct;
+				mainmsg.innerHTML = "Locking successful. To be unlocked by combining first your Key and the recipient's Lock"
 			}else{
-				document.plain.text.value = "PL15mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL15mss"
+				document.plain.text.value = "PL15mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL15mss";
+				mainmsg.innerHTML = "Locking successful. To be unlocked by combining first your Key and the recipient's Lock"
 			}
 		}else{																	//not shared Key
-			if (document.getElementById("learnmode").checked === true){
+			if (learnOn){
 				alert("The recipent will need to place the same Key in the key box to unlock the message in the main box.");
 			};
-			if(document.getElementById("shortmode").checked == true){
+			if(shortOn){
 				document.plain.text.value = "@" + cipherj.iv + cipherj.salt + cipherj.ct;
 				if(typeof window.orientation !== 'undefined'){							//detect mobile
 					plain2extra();
+					extramsg.innerHTML = 'Locking successful. Copy and click SMS';
 					selectExtra()
 				}
-			} else if (document.getElementById("notags").checked === true){
-				document.plain.text.value = "@" + cipherj.iv + cipherj.salt + cipherj.ct
+			} else if (tagsOff){
+				document.plain.text.value = "@" + cipherj.iv + cipherj.salt + cipherj.ct;
+				mainmsg.innerHTML = "Locking successful. To be unlocked by the same Key"
 			}else{
-				document.plain.text.value = "PL15msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL15msk"
+				document.plain.text.value = "PL15msk=@" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL15msk";
+				mainmsg.innerHTML = "Locking successful. To be unlocked by the same Key"
 			}
 		}
 	}
-	document.decoyin.text.value = "";
-	document.decoyin.key.value = "";
-	document.decoyout.key.value = ""
+	document.decoyIn.text.value = "";
+	document.decoyIn.key.value = "";
+	document.decoyOut.key.value = "";
 };
 
 //closes input divs
 function closebox() {
 	document.getElementById("shadow").style.display = "none";
-	document.getElementById("decoyin").style.display = "none";
-	document.getElementById("decoyout").style.display = "none";
-	document.getElementById("partsin").style.display = "none"
+	document.getElementById("decoyIn").style.display = "none";
+	document.getElementById("decoyOut").style.display = "none";
+	document.getElementById("partsIn").style.display = "none"
 }
 
 //encrypts a hidden message into the salt value used by regular encryption, or makes a random salt also encoded by AES so it's indistinguishable
@@ -2902,13 +2919,13 @@ function makesalt(iv,leng){
 			var reply = confirm("You are adding a hidden message in Decoy mode. Cancel if this is not what you want.Then uncheck Decoy mode below.");
 			if(reply===false) throw("decoy encryption canceled");
 		};
-		if ((document.decoyin.key.value.trim() == "")||(document.decoyin.text.value.trim() == "")){ //stop to display the decoy entry form if there is no hidden message or key
-			document.getElementById("decoyin").style.display = "block";		//display decoy form, and back shadow
+		if ((document.decoyIn.key.value.trim() == "")||(document.decoyIn.text.value.trim() == "")){ //stop to display the decoy entry form if there is no hidden message or key
+			document.getElementById("decoyIn").style.display = "block";		//display decoy form, and back shadow
 			document.getElementById("shadow").style.display = "block";			
 			throw ("stopped for decoy input")				
 		}
-		var key = document.decoyin.key.value,
-			text = encodeURI(document.decoyin.text.value.replace(/%20/g, ' ')),
+		var key = document.decoyIn.key.value,
+			text = encodeURI(document.decoyIn.text.value.replace(/%20/g, ' ')),
 			iter = 10000;															//key may be weak, so stretch it
 	} else {												//no decoy mode, so salt comes from random text and key, no stretching
 		var key = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')),
@@ -2926,6 +2943,8 @@ function makesalt(iv,leng){
 //AES decryption process: determines which kind of encryption by looking at first character after the initial tag. Calls Encrypt_text or showpub as appropriate
 function Decrypt_text(){
 	encrypting = true;
+	var decoyon = document.getElementById("decoymode").checked,
+		learnOn = document.getElementById("learnmode").checked;
 	var keymsg = document.getElementById("keymsg"),
 		mainmsg = document.getElementById("mainmsg");
 		keymsg.innerHTML = "";
@@ -2949,7 +2968,7 @@ function Decrypt_text(){
 	cipherstr = cipherstr.replace(/[^a-zA-Z0-9+/ ]+/g, '');				//remove anything that is not base64
 	
 	if (cipherstr.length===160){					//short asymmetric decryption
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply = confirm("The short message in the main box was locked with your personal Lock, and will now be unlocked if your secret Key is in the key box, replacing the locked message. Cancel if this is not what you want.");
 			if(reply===false) throw("public decryption canceled");
 		};
@@ -2966,10 +2985,11 @@ function Decrypt_text(){
 		var	ct = cipherstr.slice(98,cipherstr.length);
 		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';	//add labels and keylength to data, minimum keystretching
 		document.plain.text.value = sjcl.decrypt(keystr,cipherstr).trim();
+		if(!decoyon) mainmsg.innerHTML = 'Unlock successful'
 	}
 	
 	else if (type === "!"){									//public decryption
-		if (document.getElementById("learnmode").checked === true){
+		if (decoyon){
 			var reply = confirm("The message in the main box was locked with your personal Lock, and will now be unlocked if your secret Key is in the key box, replacing the locked message. Cancel if this is not what you want.");
 			if(reply===false) throw("public decryption canceled");
 		};
@@ -2980,17 +3000,18 @@ function Decrypt_text(){
 			};		
 		var	iv = cipherstr.slice(0,22),									//get iv, salt, and later ct data and public key
 			salt = cipherstr.slice(22,149);			
-		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt); 	//do decoy decryption first, in case regular fails
+		if (decoyon) decoydecrypt(iv,salt); 	//do decoy decryption first, in case regular fails
 		var pubstrdum = cipherstr.slice(149,236);			
 		pubstrdum = "A" + pubstrdum;
 		var keystr = makeshared(secstr,pubstrdum),
 			ct = cipherstr.slice(236,cipherstr.length);
 		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';	//add labels and keylength to data, minimum keystretching
 		document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr));
+		if (!decoyon) mainmsg.innerHTML = 'Unlock successful'
 	}
 	
 	else if ((type === "@") || (type === "#")){			//symmetric decryption
-		if (document.getElementById("learnmode").checked === true){
+		if (learnOn){
 			var reply2 = confirm("The message in the main box was locked with a Key, and will now be unlocked if the same Key is in the key box, replacing the locked message. Cancel if this is not what you want.");
 			if(reply2===false) throw("sym decryption canceled");
 		};
@@ -3004,9 +3025,9 @@ function Decrypt_text(){
 				ct = cipherstr.slice(236,cipherstr.length);
 		}				
 		var keystr = secstr;
-		if (document.getElementById("decoymode").checked === true) decoydecrypt(iv,salt);
+		if (decoyon) decoydecrypt(iv,salt);
 		if ((type === "#") && !(keystr.length === 86)){		//signed message, key should be 86-char shared key
-			mainmsg.innerHTML = '<span style="color:red">Signed message. First combine your Key and the sender&rsquo;s Lock</span>';
+			mainmsg.innerHTML = "<span style='color:red'>Signed message. First combine your Key and the sender's Lock</span>";
 			throw("need a shared key");
 		};
 		var iter = passwordChanged();						//get number of iterations from Key strength meter
@@ -3014,8 +3035,10 @@ function Decrypt_text(){
 		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":' + iter.toString() + '}';
 		if (cipherstr.length == 159){
 			document.plain.text.value = sjcl.decrypt(keystr,cipherstr2).trim()
+			if (!decoyon) mainmsg.innerHTML = 'Unlock successful'
 		}else{
 			document.plain.text.value = ULZSS.decode(sjcl.decrypt(keystr,cipherstr2))
+			if (!decoyon) mainmsg.innerHTML = 'Unlock successful'
 		}	
 	}else{
 		Encrypt_text()									//none of the known encrypted types, therefore encrypt rather than decrypt
@@ -3029,13 +3052,13 @@ function decoydecrypt(iv,ct){
 		if (document.getElementById("learnmode").checked === true){
 			var	key2 = prompt("Decoy mode is selected, so please write the Password used to lock the hidden message. If you don't expect a hidden message, uncheck Decoy mode below.");
 		} else {
-		if (document.decoyout.key.value.trim() == ""){						//stop to display the decoy key entry form if there is no key entered
-			document.getElementById("decoyout").style.display = "block";
+		if (document.decoyOut.key.value.trim() == ""){						//stop to display the decoy key entry form if there is no key entered
+			document.getElementById("decoyOut").style.display = "block";
 			document.getElementById("shadow").style.display = "block";			
 			throw ("stopped for decoy input")				
 		}	
-		var key2 = document.decoyout.key.value;			
-			document.decoyout.key.value = ""
+		var key2 = document.decoyOut.key.value;			
+			document.decoyOut.key.value = ""
 		};
 		var	cipherstr2 = '{"iv":"' + iv + '","salt":"' + "" + '","ct":"' + ct + '","ks":256,"iter":10000}';
 		mainmsg.innerHTML = '<span style="color:blue">Hidden message: ' + decodeURI(sjcl.decrypt(key2,cipherstr2)) + '</span>'
@@ -3118,8 +3141,8 @@ function Verifyhash(){
 		pubstr = pubstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];	//remove tags
 		pubstr = pubstr.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 
 	if (pubstr == ""){
-		pain2key();
-		keymsg.innerHTML = '<span style="color:red">Enter the signer&rsquo;s Lock in the key box</span>';
+		plain2key();
+		keymsg.innerHTML = "<span style='color:red'>Enter the signer's Lock in the key box</span>";
 		throw("public key empty")
 	};
 	if (!(pubstr.length===87)){
@@ -3171,7 +3194,7 @@ function ce() {
 	sjcl.random.addEntropy(Math.floor((((new Date).getMilliseconds()) * 255) / 999), 2, "loadtime");
 };
 
-//this is for showing and hiding text in secret input fields
+//this is for showing and hiding text in key box
 function showsec(){
   var showPasswordCheckBox = document.getElementById("show");
   if(showPasswordCheckBox.checked){
@@ -3272,23 +3295,18 @@ function selectExtra(){
 	document.extra.text.selectionEnd=document.extra.text.value.length;
 };
 
-function displayhelp(){
-	window.open("help.html","_blank")
-};
-
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the key box and putting the result in the main box, and vice-versa. To do: capture errors due to insufficient or malformed parts
 function secretshare(){
-	var message = document.getElementById("keymsg");			//for displaying messages above key box
+	var learnOn = document.getElementById("learnmode").checked;
+	var keymsg = document.getElementById("keymsg");						//for displaying messages above key box
 	var plain = document.plain.text.value.trim(),
 		sec = document.key.text.value.trim();
-	if (!(plain==="")){									//the main box not empty: join parts or make one more part
-		var shares = plain.replace(/\n\s*\n/g, '\n').split("\n"),				//go from newline-containing string to array
+	if (!(plain==="")){													//main box not empty: join parts or make one more part
+		var shares = plain.replace(/\n\s*\n/g, '\n').split("\n"),		//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = plain.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it form tags
-		if(n < quorum){												//not enough parts
-//			var reply = confirm("According to the tags, you need " + (quorum - n) + " more parts in the main box. Do you want to proceed?");
-//			if(reply===false) throw("insufficient parts");
+		if(n < quorum){																					//not enough parts
 			keymsg.innerHTML = '<span style="color:red">According to the tags, you need ' + (quorum - n) + ' more parts in the main box</span>'
 		};	
 		for (var i=0; i < shares.length; i++) {
@@ -3296,8 +3314,8 @@ function secretshare(){
 			var isLock = shares[i].length;
 			shares[i] = "8" + sjcl.codec.hex.fromBits(sjcl.codec.base64.toBits(shares[i].replace(/[^a-zA-Z0-9+/ ]+/g, '')));	//retrieve from base64 back to hex and add initial "8" to each item
 		};
-		if(sec===""){											//the key box empty: join parts
-			if (document.getElementById("learnmode").checked === true){
+		if(sec===""){													//key box empty: join parts
+			if (learnOn){
 				var reply = confirm("The partial Keys in the main box will be joined to retrieve the original Key, which will be placed in the key box. Please make sure that there are enough partial Keys. Cancel if this is not what you want.");
 				if(reply===false) throw("SSSS join canceled");
 			};
@@ -3309,8 +3327,8 @@ function secretshare(){
 				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
 			document.key.text.value = secret;
 			keymsg.innerHTML = 'Join successful';						
-		} else {																			//the key box not empty: add a part instead
-			if (document.getElementById("learnmode").checked === true){
+		} else {														//key box not empty: add a part instead
+			if (learnOn){
 				var reply = confirm("Provided there are sufficient parts in the main box, an additional part will be added to the main box.  Cancel if this is not what you want.");
 				if(reply===false) throw("SSSS part addition canceled");
 			};
@@ -3318,67 +3336,57 @@ function secretshare(){
 				keymsg.innerHTML = '<span style="color:red">Maximum number of parts is 255</span>';		
 				throw("max part number reached")
 			} else if(isLock === 87){
-//				var reply = confirm("The main box contains a Lock. It will be erased if you proceed.");
-//				if(reply == true) {document.plain.text.value = ""; secretshare()};
 				keymsg.innerHTML = '<span style="color:red">The main box contains a Lock. Delete it and try again</span>';
 				throw("Lock instead of parts")
 			} else if(isLock === 250){
-//				var reply = confirm("The main box contains a signature. It will be erased if you proceed.");
-//				if(reply == true) {document.plain.text.value = ""; secretshare()};
 				keymsg.innerHTML = '<span style="color:red">The main box contains a signature. Delete it and try again</span>';		
 				throw("signature instead of parts")
 			} else if(n === 1){
 				keymsg.innerHTML = '<span style="color:red">You need more than one part in main box</span>';				
 				throw("insufficient parts")
 			};
-			var	sechex = secrets.combine(shares),					//first check that the key box has the right Key = parts in the main box are good
+			var	sechex = secrets.combine(shares),						//first check that the key box has the right Key = parts in the main box are good
 				secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
-			if(sec===secret){										//if OK, add more parts. Get index by finding the highest of all the indices present
+			if(sec===secret){											//if OK, add more parts. Get index by finding the highest of all the indices present
 				var maxindex = 1,
 					index = 1;
-				for (var i=0; i < shares.length; i++) {				//get greatest index on the set
+				for (var i=0; i < shares.length; i++) {					//get greatest index on the set
 					index = parseInt(shares[i].slice(1,3),16);
 					if (index > maxindex){maxindex = index};
 				};
 				var	newshare = secrets.newShare(maxindex+1,shares);
 					shares = shares.concat(newshare);
-				displayshare(shares,quorum);			//required parts was read from tag
-				keymsg.innerHTML = '<span style>Part added to main box</span>';
+				displayshare(shares,quorum);							//required parts was read from tag
+				keymsg.innerHTML = 'Part added to main box';
 			} else {
-//				alert("Wrong Key in the key box. Please delete it and try again");
 				keymsg.innerHTML = '<span style="color:red">Wrong Key in the key box. Please delete it and try again</span>';
 				throw("bad Key in the key box");	
 			};				
 		};
-	} else {																		//the main box empty: split secret in the key box
+	} else {															//main box empty: split secret in the key box
 		if (sec==="") {
-//			alert("There is no Key to split in the key box");
 			keymsg.innerHTML = '<span style="color:red">There is no Key to split in the key box</span>';
 			throw("No key in the key box")
 		};
-		if (document.getElementById("learnmode").checked === true){
-			var reply = confirm("The Key in the key box will be split into several partial Keys, which will be placed in the main box replacing its contents. A popup will ask for number of parts needed to reconstruct the original Key. Extra parts can be made by clicking Split/Join again. Cancel if this is not what you want.");
+		if (learnOn){
+			var reply = confirm("The Key in the key box will be split into several partial Keys, which will replace the contents of the main box. A popup will ask for number of parts needed to reconstruct the original Key. Extra parts can be made by clicking Split/Join again. Cancel if this is not what you want.");
 			if(reply===false) throw("SSSS split canceled");
 		};
-		if (document.partsin.text.value.trim() == ""){						//stop to display the entry form if it is empty
-			document.getElementById("partsin").style.display = "block";
+		if (document.partsIn.text.value.trim() == ""){					//stop to display the entry form if it is empty
+			document.getElementById("partsIn").style.display = "block";
 			document.getElementById("shadow").style.display = "block";			
 			throw ("stopped for # of parts input")				
 		}	
-		var quorum = document.partsin.text.value;				//on re-execution, read the box and reset it
-		document.partsin.text.value = "";
+		var quorum = document.partsIn.text.value;						//on re-execution, read the box and reset it
+		document.partsIn.text.value = "";
 		quorum = parseInt(quorum);
 		if(quorum < 2){quorum = 2} else if(quorum > 255) {quorum = 255};
-//			alert("Maximum number exceeded. Making 255 parts");
-//			keymsg.innerHTML = 'Maximum number exceeded. Making 255 parts';
-//			quorum = 255;
-//		};
 		var	sechex = sjcl.codec.hex.fromBits(sjcl.codec.utf8String.toBits(document.key.text.value)),
 			shares = secrets.share(sechex,quorum,quorum);
 		displayshare(shares,quorum);
 		message.innerHTML = '<span style>' + quorum + ' Key parts in main box</span>';
 	};
-	document.getElementById("partsin").style.display = "none";
+	document.getElementById("partsIn").style.display = "none";
 	document.getElementById("shadow").style.display = "none"
 };
 
@@ -3387,7 +3395,7 @@ function displayshare(shares,quorum){
 		quorumst = "00" + quorum;
 		quorumst = quorumst.substr(quorumst.length-3);
 	if (document.getElementById("notags").checked === false){	
-		var	output = "PL15p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '') + "=PL15p" + quorumst;	//trim final "=" signs and display with tags
+		var	output = "PL15p" + quorumst + "=" + sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '') + "=PL15p" + quorumst;	//trim final "=" and display with tags
 	}else{
 		var	output = sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '')
 	}
@@ -3405,23 +3413,23 @@ function displayshare(shares,quorum){
 
 if (typeof code == 'undefined'){			//default text for base64 to words conversion, global variable
 	var covertext = "The licenses for most software and other practical works are designed to take away your freedom to share and change the works. By contrast, the GNU General Public License is intended to guarantee your freedom to share and change all versions of a program to make sure it remains free software for all its users. We, the Free Software Foundation, use the GNU General Public License for most of our software; it applies also to any other work released this way by its authors. You can apply it to your programs, too. When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things. To protect your rights, we need to prevent others from denying you these rights or asking you to surrender the rights. Therefore, you have certain responsibilities if you distribute copies of the software, or if you modify it: responsibilities to respect the freedom of others. For example, if you distribute copies of such a program, whether gratis or for a fee, you must pass on to the recipients the same freedoms that you received. You must make sure that they, too, receive or can get the source code. And you must show them these terms so they know their rights. Developers that use the GNU GPL protect your rights with two steps: (1) assert copyright on the software, and (2) offer you this License giving you legal permission to copy, distribute and or modify it. For the developers' and authors' protection, the GPL clearly explains that there is no warranty for this free software. For both users' and authors' sake, the GPL requires that modified versions be marked as changed, so that their problems will not be attributed erroneously to authors of previous versions.";
-		covertext = covertext.replace(/   /g, "\t").replace(/  /g, " ").replace(/\n /g,"\n\t");						//remove multiple spaces, space after linefeed
+		covertext = covertext.replace(/   +/g, "\t").replace(/  +/g, " ").replace(/\n /g,"\n\t");		//remove multiple spaces, space after linefeed
 	var code = covertext.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " ").split(" ");
-		code = code.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});		//global array containing the words, no duplicates
+		code = code.filter(function(n){return n});													//remove nulls
+		code = code.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});			//global array containing the words, no duplicates
 	var keystr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=!@#-" + "\n",	//base64 plus other characters used in PassLok strings
 		remainder = code.length % keystr.length,
 		noptions = Math.floor(code.length / keystr.length);
 }
-//document.extra.text.value =  covertext;
 
 //This function checks for words or spaces encoding and calls the approrpiate decoders. If no encoding is detected, it calls the words encoder
 function words(){
 	var extramsg = document.getElementById("extramsg");
 		extramsg.innerHTML = "";
-	if(document.extra.text.value.match(/  +/g) != null) {						//detect double spaces and if there are any invoke spaces decoder
+	if(document.extra.text.value.match(/  +/g) != null) {								//detect double spaces and if there are any invoke spaces decoder
 		fromSpaces()	
 	}else{
-		var text = document.extra.text.value.replace(/[\x00-\x09]+/,'');				//get rid of null characters, if any
+		var text = document.extra.text.value;				//get rid of null characters, if any
 		if(text.trim() == ""){
 			extramsg.innerHTML = '<span style="color:red">No text in the box</span>';
 			throw("no text")
@@ -3430,16 +3438,17 @@ function words(){
 			textvector = textlow.split(" "),											//break up the main box into an array of words
 			inwords = true,
 			indices = new Array();
-			if(indices == -1) inwords = false;
 		for (var i = 0; i < textvector.length; i++){									//find the words in the covertext
 			var index = searchStringInArray(textvector[i],code);
 			indices[i] = index;															//put the indices into an array
-			if(index == -1) inwords = false									//if any word is not in the covertext, this was not encoded with Words method
+			if(index == -1) inwords = false												//if any word is not in the covertext, this was not encoded with Words method
 		}
-		if (inwords) {													//if encoded in words, call words decoder
-			fromWords(indices,textvector)
-		} else {														//otherwise call words encoder
-			toWords(text)
+		if (inwords) {																	//if encoded in words, call words decoder
+			fromWords(indices);
+			extramsg.innerHTML = 'Message extracted from Words encoding'
+		} else {																		//otherwise call words encoder
+			toWords(text);
+			extramsg.innerHTML = 'Message encoded into words of this text. Decoding requires the same Cover text'
 		}
 	}
 }
@@ -3448,10 +3457,10 @@ function words(){
 function spaces(){
 	var extramsg = document.getElementById("extramsg");
 		extramsg.innerHTML = "";
-	if(document.extra.text.value.match(/  +/g) != null) {						//detect double spaces and if there are any invoke spaces decoder
+	if(document.extra.text.value.match(/  +/g) != null) {								//detect double spaces and if there are any invoke spaces decoder
 		fromSpaces()	
 	}else{
-		var text = document.extra.text.value.replace(/[\x00-\x09]+/,'');				//get rid of null characters, if any
+		var text = document.extra.text.value;				//get rid of null characters, if any
 		if(text.trim() == ""){
 			extramsg.innerHTML = '<span style="color:red">No text in the box</span>';
 			throw("no text");
@@ -3460,16 +3469,17 @@ function spaces(){
 			textvector = textlow.split(" "),											//break up the main box into an array of words
 			inwords = true,
 			indices = new Array();
-			if(indices == -1) inwords = false;
 		for (var i = 0; i < textvector.length; i++){									//find the words in the covertext
 			var index = searchStringInArray(textvector[i],code);
 			indices[i] = index;															//put the indices into an array
-			if(index == -1) inwords = false									//if any word is not in the covertext, this was not encoded with Words method
+			if(index == -1) inwords = false												//if any word is not in the covertext, this was not encoded with Words method
 		}
-		if (inwords) {													//if encoded in words, call words decoder
-			fromWords(indices,textvector)
-		} else {														//otherwise call spaces encoder
-			toSpaces()
+		if (inwords) {																	//if encoded in words, call words decoder
+			fromWords(indices);
+			extramsg.innerHTML = 'Message extracted from Spaces encoding'
+		} else {																		//otherwise call spaces encoder
+			toSpaces();
+			if(extramsg.innerHTML=="") extramsg.innerHTML = 'Message encoded into spaces of this text. Decoding does not require the same Cover text'
 		}
 	}
 }
@@ -3492,19 +3502,19 @@ function toWords(text){
 			output = output + randompunct() + code[randomindex(index)]		//add some random commas and periods, and spaces between words
 		}
 		output = output.replace(/[.][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[a-z]/,function(a){return a.toUpperCase();}) + "."; //capitalize initial and after period, add final period.
-		document.extra.text.value = output		
+		document.extra.text.value = output
 }
 
-function fromWords(indices,textvector){
+function fromWords(indices){
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("The fake text in the main box will be replaced with the original code from which it came. Cancel if this is not what you want.");
 		if(reply===false) throw("fromWords canceled");
 	}
 		var output = "";
-		for (var i = 0; i < textvector.length; i++){
+		for (var i = 0; i < indices.length; i++){
 			output = output + keystr[indices[i] % keystr.length]
 		}
-		document.extra.text.value = output.replace(/undefined/g,'')			
+		document.extra.text.value = output		
 }
 
 //Computes an index taking the full range of words in the covertext
@@ -3550,14 +3560,12 @@ function encoder(bin){
 			textsplit = textsplit.concat(covertext.split(" "));
 			spaces = textsplit.length - 1;
 			iter = iter + 1
-		}	
-//		var reply = confirm("The cover text was too short. It was repeated " + iter + " times. If this is not acceptable, cancel and enter a longer cover text.");
-//		if (reply==false) throw("cover text too short")
-		extramsg.innerHTML = '<span style="color:red">The cover text was too short. It was repeated ' + iter + ' times. If this is not acceptable, enter a larger cover.</span>'; 
+		}
+		extramsg.innerHTML = '<span style="color:red">The cover text was too short. It was repeated ' + iter + ' times. If this is not acceptable, repeat with a larger cover.</span>'; 
 	}
 		textsplit = textsplit.slice(0,bin.length+2);
 	var newtext = textsplit[0];
-	for(var i=0; i < spaces; i++){
+	for(var i=0; i < textsplit.length-1; i++){
 		newtext = newtext + stegospace(bin.slice(i,i+1)) + textsplit[i+1]
 	}
 	return newtext
@@ -3590,10 +3598,10 @@ function toSpaces() {
 		extramsg.innerHTML = "";
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("The contents of the main box will be replaced with fake text representing it. Cancel if this is not what you want.");
-		if(reply===false) throw("toWords canceled");
+		if(reply===false) throw("toSpaces canceled");
 	}	
   var output=""; 
-	var input = document.extra.text.value.trim().replace(/[\x00-\x09]+/,'');		//eliminate null characters
+	var input = document.extra.text.value.trim();
     for (var i=0; i < input.length; i++) {
 		if(keystr.indexOf(input[i]) == -1){
 			extramsg.innerHTML = '<span style="color:red">This text contains illegal characters for a PassLok string</span>'; 			
@@ -3602,7 +3610,7 @@ function toSpaces() {
 		var bin = "000" + input[i].charCodeAt(0).toString(2);
         output = output + bin.slice(bin.length-7,bin.length);
     }
-	document.extra.text.value = encoder(output).replace(/ undefined/g,'')
+	document.extra.text.value = encoder(output)
 }
 
 function fromSpaces() {
@@ -3616,33 +3624,36 @@ function fromSpaces() {
 		var bin = input.slice(i,i+7);
         output = output + String.fromCharCode(parseInt(bin,2));
     }
-	document.extra.text.value = output.replace(/[\x00-\x09]+/,'');		//clean out null characters
+	document.extra.text.value = output.replace(/\x00/g,'')		//take out nulls, in case text was added to finish the last sentence.
 }
 
 //this one is to display the cover text or change it as requested
 function newcover(){
 	var extramsg = document.getElementById("extramsg");
 		extramsg.innerHTML = "";
-	if(document.extra.text.value.trim() == ""){				//if the box is empty display the cover text
+	if(document.extra.text.value.trim() == ""){										//if the box is empty display the cover text
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The cover text will be displayed in the main box. Cancel if this is not what you want.");
 			if(reply==false) throw("covertext display canceled");
 		}	
 		document.extra.text.value = covertext
-	}else{													//otherwise store new cover text
+	}else{																			//otherwise store new cover text
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("If you go ahead, the cover text will be replaced with the contents of this box, which will be deleted.");
 			if(reply==false) throw("covertext change canceled");
 		}	
-		var newcovertext = document.extra.text.value.replace(/   /g, "\t").replace(/  /g, " ").replace(/\n /g,"\n\t"),				//remove multiple spaces, spaces after linefeed
-			newcode = newcovertext.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " ").split(" ");  	//removes punctuation, collapses spaces to single space
-			newcode = newcode.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});
-		if (newcode.length >= keystr.length){				//enough length for words method
-			code = newcode;									//store into global variables
-			covertext = newcovertext;
+		var newcovertext = document.extra.text.value.replace(/   +/g, "\t").replace(/  +/g, " ").replace(/\n /g,"\n\t");				//remove multiple spaces, spaces after linefeed
+		if (newcovertext.match(/[\u3400-\u9FBF]/) != null) newcovertext = newcovertext.split('').join(' ').replace(/  +/g, ' ');		//add spaces if Chinese, Korean, or Japanese
+		var	newcode = newcovertext.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " ").split(" ");  	//removes punctuation, collapses spaces to single space
+			newcode = newcode.filter(function(n){return n});																			//remove nulls
+			newcode = newcode.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});									//remove repeats
+		if (newcode.length >= keystr.length){										//enough length for words method
+			code = newcode;															//store into global variables
+			covertext = newcovertext;			
 			remainder = code.length % keystr.length;
 			noptions = Math.floor(code.length / keystr.length);
 			document.extra.text.value = "";
+			extramsg.innerHTML = 'Cover text changed'
 		} else {
 			extramsg.innerHTML = '<span style="color:red">This text is too short for a Cover</span>';
 			throw("text sample too short");
@@ -3659,15 +3670,11 @@ function plain2extra(){
 function extra2plain(){
 	openClose("main");
 	openClose("extrascr");
-	if(document.extra.text.value.trim() != "") document.plain.text.value = document.extra.text.value
-}
-function plain2help(){
-	openClose("main");
-	openClose("help")	
+	if((document.extra.text.value.trim() != "") && (document.extra.text.value.split("-").length != 16)) document.plain.text.value = document.extra.text.value
 }
 function plain2key(){
-	openClose("main");
-	openClose("keyscr")
+	openClose("keyscr");
+	openClose("main")
 }
 
 //resizes text boxes so they fit within the window
@@ -3680,7 +3687,7 @@ function textrows(){
 		if((angle==90)||(angle==-90)){
 			document.plain.text.rows=document.documentElement.clientHeight/rowheight*0.9-11				//smartphone here and line below
 		}else if(typeof window.orientation != 'undefined') {document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.25-11
-		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.1-8}}			//non-mobile
+		}else{document.plain.text.rows=document.documentElement.clientHeight/rowheight*1.2-10}}			//non-mobile
 	if(document.extra!=null) document.extra.text.rows = document.plain.text.rows	
 }
 
@@ -3703,7 +3710,7 @@ function openClose(theID) {
 <body link="#0000ff" vlink="#0000ff" alink="#0000ff" onload="ce();">
   
 <div id="main" class="texter" style="display: block;">
-  <div align="center" id="main" ontouchmove="event.preventDefault();">
+  <div align="center" ontouchmove="event.preventDefault();">
   	<form name="warning" action="#" onsubmit="return false;">
 		<input type="text" name="warning" style="background-color: #FFB0B0; color: #000000;width: 60%; font-size: large; text-align: center" value="Javascript NOT working!" class="ctr" readonly="readonly" />
 	</form>
@@ -3717,16 +3724,16 @@ function openClose(theID) {
 // -->
 </script>
 	<span id="mainmsg"></span><br />
-	<input type="button" onclick = "plain2help();" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
-    <input type="button" onclick = "plain2key();" onBlur="ce();" onFocus="ce();" value="Key" style="font-size:medium"/>
+	<input type="button" onclick = "openClose('mainhelp');openClose('main');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
+    <input type="button" onclick = "openClose('keyscr');openClose('main');" onBlur="ce();" onFocus="ce();" value="Key" style="font-size:medium"/>
 	<input type="button" onClick="selectPlain();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">
 	<input type="button" onClick="document.plain.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="font-size:medium">
     </div>
     <div align="center">
     	<form onSubmit="return false;" id="plain" name="plain">      
-    		<textarea onKeyDown="ce();" onKeyUp="document.getElementById('mainmsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Typically, the first thing would be to click the Key button above, and enter a Key or a Lock."></textarea>
+    		<textarea onKeyDown="ce();" onKeyUp="document.getElementById('mainmsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Usually, the first thing would be to click the Key button above, and enter a Key or a Lock."></textarea>
 <script>		
-	var rowheight = document.warning.clientHeight*0.7,				//get title size in pixels, for number of rows calculation. global variables
+	var rowheight = document.warning.clientHeight*0.7,						//get title size in pixels, for number of rows calculation. global variables
 		isiPad = (navigator.userAgent.match(/iPad/i) != null),
 		angle = window.orientation;
 	textrows();
@@ -3741,59 +3748,14 @@ function openClose(theID) {
     	<input type="checkbox" id="shortmode" onBlur="ce();" onFocus="ce();"/> Short mode
     	<input type="checkbox" id="notags" onBlur="ce();" onFocus="ce();"/> No tags <input type="checkbox" id="decoymode" onBlur="ce();" onFocus="ce();"/> Decoy mode
 	</div> 
-</div>  
-
-<div id="help" class="texter" style="display: none;">
- 	<input type="button" onclick = "plain2help();" value="< Back" style="font-size:medium"/>
-    <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" onBlur="ce();" onFocus="ce();" style="font-size:medium"/></strong></p>    
-    <p>For extensive step by step help and this version's ID, click this button: 
-    <input type="button" onclick="displayhelp();" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/></p>
-    <p>To enter a Key, which is needed to unlock or sign messages, click the Key button.</p>
-    <p>To display the Lock matching a Key, write the Key in the key box, and click the Make Lock button. The Lock will appear in the main box.</p>
-    <p>To make a shared Key from your Key and someone's Lock, write the Lock in the main screen and your Key in the key box, then click Make Lock. The shared key will replace your Key.</p>
-	<p>To make a random Key and display its matching Lock on the main screen, click Make Lock with the key box empty.</p>
-    <p>To split a Key into several parts, which can be rejoined later, click Split/Join with the main screen empty. A popup will ask for number of parts needed to reconstruct the original Key. The parts, one per line, will appear on the main screen. Extra parts can be made by clicking Split/Join again. To join several parts, place them in separate lines on the main screen, then click Key, followed by Split/Join. The reconstructed Key will appear in the key box.</p>
-	<p>To lock a text, enter it into the main box. Then click Key and write a shared Key or the recipient's Lock in the key box, depending on the type of locking you want. Then click the Lock/Unlock button on the main screen. The locked text will replace the original text. You can then email it or text it using the Extra button.</p>
-    <p>If you want to lock a text so it can be sent by SMS (limit 160 characters), check the Short message checkbox before clicking Lock/Unlock. When locking with a Key, message length is limited to 58 ASCII characters, non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc. When locking with a Lock, message length is limited to 38 ASCII characters. The rest of the message will be truncated.</p>
-	<p>To unlock a locked text, paste it into the main screen, then click Key and write your personal or shared Key in the key box, then click Lock/Unlock on the main screen. If you have the wrong item in the key box, a message will tell you. It is not necessary to check the Short message checkbox.</p>
-	<p>To sign the text in the main screen with your secret Key, first make sure your Key has been entered, then click Sign/Verify in the main window. The signature will be appended to the text. This can also be emailed with the Email button, in the Extra screen.</p>
-	<p>To verify a signed text, place the text carrying the signature at the end in the main screen, and the signer's Lock in the key box, then click Sign/Verify on the main screen. A message in the main window will say whether or not the signature is verified for this text and this signer.</p>
-    <p>The No tags checkbox controls whether or not tags and explanatory text are added to items generated by PassLok. Check it for better stealth.</p>
-    <p>When Decoy mode is checked you can include a second, hidden text locked by a separate Password. A popup will ask for the Password and for the text itself. The locked text on the main screen contains both texts. You can also use this mode when making a signature. The hidden text is limited to 152 ASCII characters for Key-locked text, 87 characters for text locked with the recipient's Lock, 37 characters for short message mode (Key-locked only), 40 characters in signatures. Non-ASCII characters use 6 spaces each, so avoid using accents, umlauts, etc.</p>
-	<p>When you unlock a text or verify a sign with Decoy mode checked, a popup will ask for the special Password. The hidden text will appear above the main box. </p>
-    <p>This is what the buttons on the More screen do:</p>
-	<p>The Email button places the contents of the main screen in a formatted email, using the default client. The SMS App button opens your default messaging app; you need to copy the message into the clipboard before clicking the button. The ID button replaces the content of the Extra screen box with its SHA256 hash. This is useful for authentication purposes.</p>
-    <p>The Words button converts the contents of the main screen into fake text, and back. It replaces each character with a word drawn from the current cover text. The recipient must have the same cover text but no Key or password is needed to retrieve the message, so please <strong>lock the message first</strong> with a Key or a Lock.</p>
-	<p>For better stealth, the Spaces button hides the contents of the main box in the cover text, by encoding each character into the spaces between words, and back. Seven words are needed for each character. No Key, password, or matching cover text is needed to retrieve the message, so please <strong>lock the message first</strong> with a Key or a Lock.</p>
-    <p>To display the current cover text, click Cover with the box empty. To change the cover text, place the new text in the box and click Cover.</p>
-    <br />
-    <address>
-    PASSLOK v1.5.02 &#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013
-	</address>
-	<address>
-	engine: SJCL by <a href="http://crypto.stanford.edu/sjcl" target="_blank">Stark, Hamburg, and Boneh</a> 2012
-	</address>
-    <address>
-    text hide trick by <a href="http://www.sivamdesign.com/scripts/" target="_blank">S. Gangadharan</a> 2005
-    </address>
-	<address>
-    password strength meter by <a href="http://www.marketingtechblog.com/javascript-password-strength/" target="_blank">D. Karr</a> 2007
-    </address>
-	<address>
-    Shamir secret sharing by <a href="https://github.com/amper5and/secrets.js" target="_blank">A. Stetsyuk</a> 2013
-    </address>
-    <address>
-    text compression by <a href="https://code.google.com/p/u-lzss/" target="_blank">U-LZSS</a> 2008
-    </address>
-    <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address><br />
-    <input type="button" onclick = "plain2help();" value="< Back" style="font-size:medium"/>
-</div>  
+</div> 
 
 <div id="keyscr" class="texter" style="display: none;">
-  	<div align="left" ontouchmove="event.preventDefault();">
-    	<input type="button" onclick = "plain2key();" value="< Back" style="font-size:medium;"/>
+  	<div align="center" ontouchmove="event.preventDefault();">
+    	<input type="button" onclick = "openClose('main');openClose('keyscr');" value="< Back" style="float:left;font-size:medium;"/>
+        <input type="button" onclick = "openClose('keyhelp');openClose('keyscr');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
     	<input type="button" onClick="passwordChanged();document.key.text.value = ''" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right;font-size:medium"/>
-    </div>
+    </div><br />
     <div align="center" ontouchmove="event.preventDefault();">        
     	<form onsubmit="return false;" id="key" name="key">
       		<span id="keymsg"></span><br />
@@ -3811,10 +3773,11 @@ function openClose(theID) {
     </div>
 </div>  
         
-<div id="extrascr" class="texter" style="display: none;" align="left">
-	<div align="left" ontouchmove="event.preventDefault();">
-       <input type="button" onclick = "extra2plain();" value="< Back" style="font-size:medium;"/>
-       <input type="button" onClick="document.extra.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right; font-size:medium;margin-right:2%"/><br /><br />
+<div id="extrascr" class="texter" style="display: none;" align="center">
+	<div align="center" ontouchmove="event.preventDefault();">
+       <input type="button" onclick = "extra2plain();" value="< Back" style="float: left;font-size:medium;"/>
+       <input type="button" onclick = "openClose('extrahelp');openClose('extrascr');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium"/>
+       <input type="button" onClick="document.extra.text.value = '';" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right; font-size:medium;"/><br /><br />
     </div>   
     <div align="center" ontouchmove="event.preventDefault();">
 		<span id="extramsg"></span><br />
@@ -3825,7 +3788,7 @@ function openClose(theID) {
 	</div>
 	<div align="center">
       	<form onSubmit="return false;" id="extra" name="extra">     
-			<textarea onKeyDown="ce();" onKeyUp="document.getElementById('extramsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13"></textarea>
+			<textarea onKeyDown="ce();" onKeyUp="document.getElementById('extramsg').innerHTML=''" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Usually, the first thing would be to click the Key button above, and enter a Key or a Lock."></textarea>
 <script>
 	textrows();
 	window.addEventListener("resize", function() { textrows() }, false)	
@@ -3841,8 +3804,8 @@ function openClose(theID) {
         
 <div id="shadow" class="black_overlay"></div>
        
-<div id="decoyin" class="white_content" align="center" ontouchmove="event.preventDefault();">
-	<form onSubmit="return false;" name="decoyin">
+<div id="decoyIn" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="decoyIn">
 		<p>Enter Decoy Password</p> 
     	<input type="password" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
 		<p>Enter Hidden Message</p>      
@@ -3852,8 +3815,8 @@ function openClose(theID) {
 	</form>   
 </div>
        
-<div id="decoyout" class="white_content" align="center" ontouchmove="event.preventDefault();">
-	<form onSubmit="return false;" name="decoyout">
+<div id="decoyOut" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="decoyOut">
 		<p>Enter Decoy Password</p> 
     	<input type="password" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>     
     	<input type="button" onClick="closebox();if(encrypting){Decrypt_text()}else{Verifyhash()};" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium"/>
@@ -3862,13 +3825,435 @@ function openClose(theID) {
     </form>   
 </div>
     
-<div id="partsin" class="white_content" align="center" ontouchmove="event.preventDefault();">
-	<form onSubmit="return false;" name="partsin">
+<div id="partsIn" class="white_content" align="center" ontouchmove="event.preventDefault();">
+	<form onSubmit="return false;" name="partsIn">
 		<p>Enter the number of parts needed to retrieve the Key (between 2 and 255)</p> 
     	<input type="text" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 30%; font-size: medium" name="text" rows="1"/><br />    
     	<input type="button" onClick="closebox();secretshare();" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium"/>
 		<input type="button" onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium"/>
 	</form>
-</div>  
+</div>
+
+<div id="mainhelp" class="texter" style="display: none;">
+ 	<input type="button" onclick = "openClose('main');openClose('mainhelp');" value="< Back" style="font-size:medium"/>
+    <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" onBlur="ce();" onFocus="ce();" style="font-size:medium"/></strong></p>    
+	<p>For instructions on how to do things, click on each title below. Click again to hide.</p>
+    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    
+    <div onClick="openClose('a1')" style="cursor:hand; cursor:pointer">
+<h3>Lock a message with a shared Key, to be unlocked with the same Key</h3>  
+</div>
+      <div id="a1" class="texter" style="display: none;">
+<p>1. Write or paste the shared Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Write or paste the message in the main box. Click the Lock/Unlock button. The
+  locked message will appear in the main box, replacing the original text. Copy it and paste it into your
+  communications program or click Email to open your default email. 
+  It is okay to strip the tags up to the "=" sign, but not recommended. 
+  PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
+  also okay to split the locked message with spaces, line returns, and
+  punctuation other than = + or / This message can only be unlocked by
+  someone having the shared Key.</p>
+  <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=y6sk7I7YR0I" target="_blank">https://www.youtube.com/watch?v=y6sk7I7YR0I</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a2')" style="cursor:hand; cursor:pointer">
+ <h3>Unlock a message locked with a shared Key (tags are PL**msk)</h3>
+</div>
+      <div id="a2" class="texter" style="display: none;">
+<p>1. Write or paste the shared Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Paste the locked message in the main box. It is okay if it is broken up by
+  spaces, carriage returns, and special characters other than = + or / or is
+  missing its tags. Then click the Lock/Unlock button. The unlocked message
+  will appear in the main box, replacing the locked message.</p>
+  <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=y6sk7I7YR0I" target="_blank">https://www.youtube.com/watch?v=y6sk7I7YR0I</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a3')" style="cursor:hand; cursor:pointer">
+<h3>Lock a message with a Lock  (tags are PL**lok), to be unlocked with the matching
+  personal Key</h3>
+</div>
+  <div id="a3" class="texter" style="display: none;">
+ <p>1. Fetch the recipient's Lock. He/she would have sent it accompanying an email, or in
+ and SMS text message, or posted it publicly. You can tell it is a Lock because it comprises 87 random-looking characters, likely 
+ with PL**lok tags at either end (** is the version number). You need this Lock before you can do anything else.</p> 
+<p>2. Paste the recipient's Lock in the key box, which is accessed with the Key button. It is masked by default, so if you want to display it, check the
+  Show checkbox. It is okay if the tags up to the "=" signs
+  are missing, or extra spaces, carriage returns, or special characters
+  other than = + or / have been added.</p>
+<p>3. Write or paste your message in the main box. Click the Lock/Unlock button. The
+  locked message will appear in the main box, replacing the original message. Copy it and paste it into your
+  communications program or click Email to open your default email. 
+  It is okay to strip the tags up to the "=" sign, but not recommended. 
+  PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
+  also okay to split the locked message with spaces, line returns, and
+  punctuation other than = + or / This message can only be unlocked by
+  someone having the secret Key matching the Lock used to secure it.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=NqwnQY4O5MA" target="_blank">https://www.youtube.com/watch?v=NqwnQY4O5MA</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a4')" style="cursor:hand; cursor:pointer">
+<h3>Unlock a locked message with the matching personal Key (tags
+  are PL**msl)</h3>
+  </div>
+  <div id="a4" class="texter" style="display: none;">
+<p>1. Write or paste into the key box, which is accessed with the Key button, the Key matching the Lock used to secure the
+  message. It is masked by default, so if you want to display it, check the
+  Show checkbox.</p>
+<p>2. Paste the locked message in the main box. It is okay if it is broken up by
+  spaces, carriage returns, and special characters other than = + or / or is
+  missing its tags. Then click the Lock/Unlock button. The unlocked message
+  will appear in the main box, replacing the locked message.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=NqwnQY4O5MA" target="_blank">https://www.youtube.com/watch?v=NqwnQY4O5MA</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+ 
+  <div onClick="openClose('a5')" style="cursor:hand; cursor:pointer">
+<h3>Make a short locked message suitable for SMS</h3>
+</div>
+<div id="a5" class="texter" style="display: none;">
+<p>1. Check the Short mode checkbox below the main box.</p>
+<p>2. Write or paste your message in the main box. Message length is limited to 58
+  ASCII characters when locking with a Key, 38 if locking with a Lock. Non-ASCII characters use 6 spaces each, so avoid them if
+  you can. Any text beyond the limit will be lost. Click the Lock/Unlock button.</p>
+<p>3. The locked message will appear in the main box, replacing the original message. Copy it and paste it into your communications program. The locked
+  message, which has no tags, will fit within one SMS message (160
+  characters). </p>
+<p>4. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. You need to copy it manually before clicking the SMS button, which will open your SMS app.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=7d2nhjCgo3E" target="_blank">https://www.youtube.com/watch?v=7d2nhjCgo3E</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a6')" style="cursor:hand; cursor:pointer">
+<h3>Unlock a short locked message (no tags)</h3>
+  </div>
+  <div id="a6" class="texter" style="display: none;">
+<p>1. Paste the locked message in the main box. It is okay if it is broken up by
+  spaces, carriage returns, and special characters. As with regular-length messages, the appropriate Key must be entered in the key box prior to unlocking. 
+  Then click the Lock/Unlock button. You don't need to check the Short mode checkbox.</p>
+<p>2. The unlocked message will appear in the main box, replacing the locked message.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=7d2nhjCgo3E" target="_blank">https://www.youtube.com/watch?v=7d2nhjCgo3E</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	 
+  
+  <div onClick="openClose('a7')" style="cursor:hand; cursor:pointer">
+<h3>Sign a text with a secret Key</h3>
+</div>
+<div id="a7" class="texter" style="display: none;">
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Write or paste the text to be signed in the main box. Click the signature/Verify
+  button. A sign matching the text and the Key will be appended at the end of the text in the main box. Copy
+  it and use it as appropriate. If you click Email the text with its signature
+  will be placed into an email using the default program.
+  It is okay to strip the tags up to the "="
+  sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
+  It is also okay to split the signature with spaces,
+  and punctuation other than line returns or = + or /. </p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=7RP8Nc2jU8U" target="_blank">https://www.youtube.com/watch?v=7RP8Nc2jU8U</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">  
+  
+  <div onClick="openClose('a8')" style="cursor:hand; cursor:pointer">
+<h3>Verify a signature attached to a text (signature tags are PL**sig) </h3>
+</div>
+<div id="a8" class="texter" style="display: none;">
+<p>1. Paste the lock of the person who made the signature into the key box, which is accessed with the Key button. It is okay
+  if the tags up to the "=" signs are missing, or extra spaces, carriage
+  returns, or special characters other than = + or / have been added.</p>
+<p>2. Write or paste the text with its signature appended at the end in the main box. It is okay if 
+  the signature is broken up by spaces and special characters other than = + or / or is missing
+  its tags up to the "=", but it should not be broken by carriage returns.
+  Then click the signature/Verify button. A message above the main box will say whether
+  or not the signature for that text has been verified.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=7RP8Nc2jU8U" target="_blank">https://www.youtube.com/watch?v=7RP8Nc2jU8U</a></p></div>
+    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+  <div onClick="openClose('a9')" style="cursor:hand; cursor:pointer">
+<h3>Lock a second, undetectable message in addition to the main message
+  (Decoy mode)</h3>
+  </div>
+  <div id="a9" class="texter" style="display: none;">
+<p>1. Check the Decoy mode checkbox below the main box.</p>
+<p>2. Follow the instructions for any kind of locking, using
+  a shared Key or the recipient's Lock, short or regular length. This also works when making a signature. If Decoy mode is checked, a popup will ask for a Decoy Password to lock the hidden message, and the hidden message itself.</p>
+<p>3. Write or paste into the the appropriate boxes the Password and the hidden message. The length of the hidden message is limited to
+  152 ASCII characters in key-locked and signed modes, 87 characters in
+  regular locked mode, 37 characters in short message mode (key-locked only), 40 characters in signatures. Non-ASCII characters
+  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost. Then click OK.</p>
+<p>4. After clicking OK, the locked
+  message containing both the main text and the hidden text will appear in
+  the main box, replacing the original text. If it is a signature, it will be appended to the text. Copy it and paste it into your
+  communications program. As with regular locked messages, it is okay to
+  strip the tags up to the "=" sign, but not recommended. It is also okay to
+  split the locked message with spaces, line returns, and punctuation other
+  than = + or /</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=XPwilrxhXG0" target="_blank">https://www.youtube.com/watch?v=XPwilrxhXG0</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a10')" style="cursor:hand; cursor:pointer">
+<h3>Reveal the hidden text contained within a message locked in Decoy
+  mode</h3>
+  </div>
+  <div id="a10" class="texter" style="display: none;">
+<p>1. Check the Decoy mode checkbox below the main box.</p>
+<p>2. Follow the instructions for any of the three locking modes, using a
+  personal or shared Key, or for verifying a signature. If Decoy mode is
+  checked, a popup will ask for a Decoy Password.</p>
+<p>3. Write or paste into the popup box the special Password for the hidden
+  message and click OK. The hidden message, if it exists,
+  will appear above the main box even if the main unlocking fails. The main message
+  will appear in the main box if the main unlocking is successful. In the case of signatures, the hidden message appears in the place normally used by the verification message, so if you still wish to verify the signature, you need to uncheck Decoy Mode and click Sign/Verify again so the verification message is displayed.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=XPwilrxhXG0" target="_blank">https://www.youtube.com/watch?v=XPwilrxhXG0</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+
+	<address>PASSLOK v1.5.03 &#169; <a href="http://prgomez.com/" target="_blank">F. Ruiz</a> 2013
+	</address>
+	<address>
+	engine: SJCL by <a href="http://crypto.stanford.edu/sjcl" target="_blank">Stark, Hamburg, and Boneh</a> 2012
+	</address>
+    <address>
+    text hide trick by <a href="http://www.sivamdesign.com/scripts/" target="_blank">S. Gangadharan</a> 2005
+    </address>
+	<address>
+    password strength meter by <a href="http://www.marketingtechblog.com/javascript-password-strength/" target="_blank">D. Karr</a> 2007
+    </address>
+	<address>
+    Shamir secret sharing by <a href="https://github.com/amper5and/secrets.js" target="_blank">A. Stetsyuk</a> 2013
+    </address>
+    <address>
+    text compression by <a href="https://code.google.com/p/u-lzss/" target="_blank">U-LZSS</a> 2008
+    </address>
+    <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address>
+    <hr style="background-color: rgb(192, 192, 192); color: #000000;"> 
+    
+  <input type="button" onclick = "openClose('main');openClose('mainhelp');" value="< Back" style="font-size:medium"/>
+</div>
+
+<div id="keyhelp" class="texter" style="display: none;">
+	<input type="button" onclick = "openClose('keyscr');openClose('keyhelp');" value="< Back" style="font-size:medium"/>
+     <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+      <div onClick="openClose('a11')" style="cursor:hand; cursor:pointer">
+<h3>Make a strong Key</h3>
+</div>
+	<div id="a11" class="texter" style="display: none;">
+<p>1. Start typing in the key box, which is accessed with the Key button. As you type, a text above the key box will tell you
+  how strong the Key is, based on simple rules. If you want to see what you
+  are typing and don't mind people peering over your shoulder, check the
+  Show checkbox.</p>
+<p>2. The Key will be stronger if it contains <strong>caPiTals</strong> in unusual places,
+  <strong>numb3rs</strong>, and <strong>$ymbol$</strong>. If you use common words, <strong>mispelll</strong> them to make harder a "dictionary attack." Avoid things that refer to yourself and your family, such
+  as birthdays or nicknames, or anything else that might be easy to guess,
+  like: asdfg, qwerty, password, PassLok, and the like. It is a good practice to <strong>append
+  your email address</strong> at the end of the Key, to combat the "rainbow table" attack. Alternatively, you can use anything that is not a standard dictionary word instead of your email.</p>
+<p>3. Bear in mind, however, that you should be able to <strong>remember
+  your Key</strong> without having to write it down. PassLok will never
+  ask you to change your Key, so this is your chance to make a truly strong Key
+  that you will use for a long time.</p>
+  <p>PassLok compensates for bad Keys by taking longer to do its computations. If PassLok is slow, this is likely because your Key strength is less than Medium.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0Wdw_SKLOFk" target="_blank">https://www.youtube.com/watch?v=0Wdw_SKLOFk</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a12')" style="cursor:hand; cursor:pointer">
+<h3>Make the Lock that matches your Key</h3>
+</div>
+<div id="a12" class="texter" style="display: none;">
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Click the Lock/Unlock button. The lock matching that Key will appear
+  in the main box. It is okay to strip the tags up to the "=" sign, or insert
+  spaces, carriage returns, or special characters other than = + or / but
+  not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
+  The lock can be made available to anyone who wishes to
+  secure messages to be read with the matching Key. You can also email the lock directly 
+  by clicking Email.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=_t_O2oeUb_w" target="_blank">https://www.youtube.com/watch?v=_t_O2oeUb_w</a></p></div>
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+<div onClick="openClose('a13')" style="cursor:hand; cursor:pointer">
+<h3>Combine a secret Key and a Lock, usually for
+making a locked and signed message</h3>
+</div>
+<div id="a13" class="texter" style="display: none;">
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Paste the Lock in the main box. Click the Make Lock
+  button. The shared Key resulting from the Key and the Lock 
+  will appear in the key box, replacing the original Key, and the main box is cleared. 
+  This is useful to make or read
+  a locked and signed message, since the recipient will need the sender's Lock to
+  obtain the Key that unlocks the message, in addition to his/her
+  secret Key. Use it as you would use a regular Key.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=nTDUYPyDHgo" target="_blank">https://www.youtube.com/watch?v=nTDUYPyDHgo</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+<div onClick="openClose('a14')" style="cursor:hand; cursor:pointer">
+<h3>Unlock a message locked and signed with the sender's Key (tags are PL**mss)</h3>
+</div>
+<div id="a14" class="texter" style="display: none;">
+<p>1. Write or paste your secret Key in the key box, which is accessed with the Key button. It is masked by default, so
+  if you want to display it, check the Show checkbox.</p>
+<p>2. Paste the sender's Lock in the main box. Click the Make Lock
+  button. The shared Key resulting from the Key and the Lock 
+  will appear in the key box, replacing the original Key. A confirming message appears in the main box.</p>
+ <p>3. Paste the locked message in the main box. It is okay if it is broken up by
+  spaces, carriage returns, and special characters other than = + or / or is
+  missing its tags. Then click the Lock/Unlock button. The unlocked message
+  will appear in the main box, replacing the locked message.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=nTDUYPyDHgo" target="_blank">https://www.youtube.com/watch?v=nTDUYPyDHgo</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+<div onClick="openClose('a15')" style="cursor:hand; cursor:pointer">
+<h3>Make a set of random Key and its matching Lock</h3>
+</div>
+<div id="a15" class="texter" style="display: none;">
+<p>1. Make sure the key box, which is accessed with the Key button, is empty, then click the Make Lock button below the key box.
+If the main box is not empty, a popup message will ask if you want to proceed.</p>
+<p>2. A random Key will appear in the key box and its matching Lock in the main box. Use them as needed. 
+If you want the Lock to appear without tags, check the No tags checkbox first.</p>
+ <p>3. The main use of this function is to generate a short-term Key-Lock pair for
+ instant messaging, which can be forgotten afterwards.</p>
+ <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=Ceh3zMcn6zg" target="_blank">https://www.youtube.com/watch?v=Ceh3zMcn6zg</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+  <div onClick="openClose('a16')" style="cursor:hand; cursor:pointer">
+<h3>Split a Key into several parts</h3>
+</div>
+<div id="a16" class="texter" style="display: none;">
+<p>1. Make sure the main box is empty, and then click the Key button.</p>
+<p>2. Put the Key, which must be at least 5 characters long, in the key box. If you want a new random Key, follow the steps above. Then click the Split/Join button.</p>
+<p>3. A popup asks for the number of parts required to retrieve the original. Write the number, which must be between 2 and 255, and click OK. The parts appear in the main box and a message confirms it. If you need more parts (the number required won't change), click Split/Join again for each additional part. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the "=" sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the locked message with spaces and punctuation other than = + / or line returns.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=2VTWnN4lZHw" target="_blank">https://www.youtube.com/watch?v=2VTWnN4lZHw</a></p>
+  </div>
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  
+  <div onClick="openClose('a17')" style="cursor:hand; cursor:pointer">
+<h3>Join parts of a Key to retrieve the original Key (tags are PL**p***)</h3>
+</div>
+<div id="a17" class="texter" style="display: none;">
+<p>1. Paste all the necessary Key parts in the main box. Make sure that each part is unique and occupies one line, and different parts are in different lines. You need as many parts the number entered when the Key was split, which is written at the end of each PL**p tag. Having more parts than the minimum is OK, so long as they belong to the same set and are not corrupt. They don't need to be placed in any particular order.</p>
+<p>2. Click the Key button, and then the Click the Split/Join button. If all goes well, the reconstructed Key appears in the key box, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=2VTWnN4lZHw" target="_blank">https://www.youtube.com/watch?v=2VTWnN4lZHw</a></p>
+  </div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">   
+  <input type="button" onclick = "openClose('keyscr');openClose('keyhelp');" value="< Back" style="font-size:medium"/>
+</div>
+
+<div id="extrahelp" class="texter" style="display: none;">
+	<input type="button" onclick = "openClose('extrascr');openClose('extrahelp');" value="< Back" style="font-size:medium"/>
+     <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+     
+  <div onClick="openClose('a18')" style="cursor:hand; cursor:pointer">
+<h3>Send a PassLok item (Lock, message, etc.) by email</h3>
+  </div>
+  <div id="a18" class="texter" style="display: none;">  
+<p>1. Check that the item is in the main box.</p>
+<p>2. Click the More button in order to reveal the button dealing with email, which is above the text box.</p>
+<p>3. Click the Email button. If so configured in the device, a window appears containing the item and some explanatory text. You only need to supply the recipient's email address and a subject line before clicking the Send button. If you do not want any explanatory text, check the No Tags checkbox in the main screen before clicking More.</p>
+<p>4. This only works for sending messages, not for receiving them. If you receive a PassLok-locked message, you must copy it into the clipboard and then paste it into the main box of PassLok, so it can be unlocked.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=J7waoNX9UPA" target="_blank">https://www.youtube.com/watch?v=J7waoNX9UPA</a></p>
+</div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+  <div onClick="openClose('a19')" style="cursor:hand; cursor:pointer">
+<h3>Send a PassLok item by Text messaging (mobile only)</h3>
+  </div>
+  <div id="a19" class="texter" style="display: none;">  
+<p>1. Check that the item to be sent is in the main box.</p>
+<p>2. Click the More button in order to reveal the button dealing with text messaging, which is labeled SMS.</p>
+<p>3. Click the Select button so the text can be selected.</p>
+<p>4. Then click the Copy label as it appears on screen. The item is copied to clipboard.</p>
+<p>5. Now you can click the SMS button. A window appears with the default Texting app.</p>
+<p>6. Touch the input box and then paste the clipboard. Send he message in the usual way.</p>
+<p>7. To unlock a locked message received by texting, you must copy it to clipboard, and then paste it in the main box of PassLok.</p>
+<p>If you use Short Mode to lock a message, steps 2 and 3 are automatic.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=J7waoNX9UPA" target="_blank">https://www.youtube.com/watch?v=J7waoNX9UPA</a></p>
+</div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+     
+  <div onClick="openClose('a20')" style="cursor:hand; cursor:pointer">
+<h3>Convert a PassLok item (Lock, message, etc.) into fake text</h3>
+  </div>
+  <div id="a20" class="texter" style="display: none;">  
+<p>1. Check that the item to be converted into fake text is in the main box.</p>
+<p>2. If you wish to make text that is not English, you will have to change the cover text using the process described in the next item.</p>
+<p>3. Click the More button in order to reveal the buttons dealing with the stealth functions. The Words button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The Spaces button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than the other mode.
+<p>4. Click either the Words button of the Spaces button. The contents of the main box are converted into text using the current cover texty and displayed in the main box, replacing the previous contents.</p>
+<p>5. You can now email the fake text, which to an email scanner will be nearly indistinguishable from real text. You can change the punctuation and merge or split lines without changing the encoded material. If you used Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is OK to add more text to complete the sentences, which may contain additional spaces.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WXYpdDlVem4" target="_blank">https://www.youtube.com/watch?v=WXYpdDlVem4</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+  <div onClick="openClose('a21')" style="cursor:hand; cursor:pointer">
+<h3>Retrieve the original PassLok item from fake text</h3>
+  </div>
+  <div id="a21" class="texter" style="display: none;">
+<p>1. Check that the fake text is in the main box.</p>
+<p>2. If the fake text was encoded with the Words method, you will have to load the cover text used to do the encoding using the process described in the next item.</p>
+<p>3. Click the More button, then click either the Words button or the Spaces button. If successful, the fake text in the main box is converted back into the original item and displayed in the main box, replacing the fake text.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WXYpdDlVem4" target="_blank">https://www.youtube.com/watch?v=WXYpdDlVem4</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+  <div onClick="openClose('a22')" style="cursor:hand; cursor:pointer">
+<h3>Display or change the cover text used for fake text</h3>
+  </div>
+  <div id="a22" class="texter" style="display: none;">
+<p>To display the current cover text (which is the default cover text after reloading PassLok), click the More button, and then the Cover button with the main box empty.</p>
+<p>To change the cover text (this is necessary to make fake text in a language that is not English):</p>
+<p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into the main box.</p>
+<p>2. Click the More button, and then the Cover button.</p>
+<p>3. If the change is successful, the main box goes blank. If the change is unsuccessful, a message above the window will say why. Typically, failure to change the dictionary is due to not having a sufficient number of different words. Use a longer text and try again.</p>
+<p>4. The recipient of your messages turned into fake text must have the same cover text in order to retrieve a text encoded with the Words method. One way to ensure this when using a non-English language is to display the default cover text, copy it into a translation utility such as Google Translate, and then use the translation as the new cover text.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WXYpdDlVem4" target="_blank">https://www.youtube.com/watch?v=WXYpdDlVem4</a></p></div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+
+  <div onClick="openClose('a23')" style="cursor:hand; cursor:pointer">
+<h3>Display the ID of a Lock</h3>
+</div>
+<div id="a23" class="texter" style="display: none;">
+<p>1. Paste the lock in the main box. It is okay if the tags up to the "=" signs
+  are missing, or extra spaces, carriage returns, or special characters
+  other than = + or / have been added.</p>
+<p>2. Click the More button, and then click the ID button above the main box. 
+The unique ID of that lock will be
+  displayed in the main box, replacing the Lock. It is useful to verify the
+  authenticity of a lock by means of a phone call, video message, etc., in
+  which at least one of the parties reads the ID.</p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=FtNtflnM5zk" target="_blank">https://www.youtube.com/watch?v=FtNtflnM5zk</a></p></div>
+   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+   
+  <div onClick="openClose('a24')" style="cursor:hand; cursor:pointer">
+<h3>Verify PassLok's integrity</h3>
+</div>
+<div id="a24" class="texter" style="display: none;">
+<p>If you obtained a native version of PassLok from an app store (Apple, GooglePlay) the following does not apply, but rather you are trusting that the app store has not tampered with the code submitted by the author. If you want to make sure that a native copy of PassLok is tamper-free, you should download the authentic html version as described below, and then test it against the native PassLok by locking messages in one app and unlocking them in the other, both ways. You can also check that the same Key produces the same Lock in both versions, and that signatures made by either one can be verified by the other.</p>
+<p>To check the integrity of an html version of PassLok:</p>
+<p>1. Load PassLok from one of the authorized sources listed below, or from storage (local or cloud) if previously saved as html as described in step 4 below.</p>
+<p>2. Direct your browser to &quot;view source&quot;. Each
+  browser does this differently, but most non-mobile browsers have this capability. Typically, you load the source on a separate tab by typing CTRL-u (Windows) or option-cmd-u (OSX). On
+  the page displaying the source, select all (CTRL-a or cmd-a), then copy to clipboard (CTRL-c or cmd-c). Alternatively, you can get the source from PassLok's GitHub repository at: <a href="https://github.com/fruiz500/passlok">https://github.com/fruiz500/passlok</a></p>
+<p>3. Back in the PassLok page, make sure the main box is clear, then paste the clipboard into it (CTRL-v or cmd-v). Click the ID
+  button. The self-ID will be displayed in the main box, replacing the previous contents.</p>
+<p>4. For better security, you can do a SHA256 of the source code using an external program or online utility. In this case you may need to paste the clipboard into a text or html editor so you can save it as a file (html or txt). <strong>DO NOT save the code using the "save" command from the browser menu</strong>, since this command tends to modify the source page before it saves it. A copy of PassLok saved this way will still run, but its SHA256 will be different. If your operating system is Windows, do not use the built-in Notepad program, since it cannot save text with the appropriate encoding (UTF-8, no BOM). Be sure there are no extra spaces at top and bottom, since this would affect the result. Then obtain the SHA256 of this file using the external utility.</p>
+<p>5. Click the button below and look at the ID for this version of PassLok, shown below. If this ID and the one obtained in step 3 or 4 are the
+same, the program has not been tampered with.</p>
+<p>All of this is explained in this video tutorial (for v1.4): <a href="https://www.youtube.com/watch?v=SYCed3jTtTU" target="_blank">https://www.youtube.com/watch?v=SYCed3jTtTU</a></p>
+	<input type="button" onclick="window.open('mirrors.html','_blank');" onBlur="ce();" onFocus="ce();" value="Show PassLok's ID" style="font-size:medium"/></p>
+</div>
+<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  
+    <div onClick="openClose('a25')" style="cursor:hand; cursor:pointer">
+<h3>Privacy Statement</h3>
+</div>
+<div id="a25" class="texter" style="display: none;">
+<p>PassLok provides excellent security, since it is a self-contained piece of code that does not rely on a server for its functionality. Therefore:</p>
+<p><strong>1. We'll never give your secret Key to anyone.</strong> We cannot do anything concerning your Key because we just don't have it.</p>
+<p><strong>2. We'll never give you or anyone else a conterfeit Lock made from any Key</strong>. We just don't run key servers. PassLok has functions to help you to authenticate Locks, but this is still your responsibility.</p>
+<p><strong>3. We'll never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We'd rather shut down than be forced to do this, which would betray the very essence of PassLok.</p>
+<p>Since the html version of PassLok is a piece of human-readable writing, we consider it an expression of free speech, protected by the laws of many countries. Tampering with it in unauthorized ways will violate free speech and copyright protection laws.</p>
+<p>On the other hand:</p>
+<p>The biggest vulnerability of PassLok is how easy it is to view, <strong>and consequently modify</strong> the html code. As mentioned above, we will never weaken the underlying cryptography, but others might. Even though we are taking pains to ensure that PassLok is delivered to you in the most secure way compatible with our budget, <strong>you should still make sure that you have obtained the genuine code.</strong></p>
+<p>The method described in the next item, to verify the integrity of PassLok in html form, is less than perfect but it works in most situations. Once you are sure that your copy of PassLok is pristine, you can save it and run it as many times as you want from its storage location without having to connect to the page server again.</p>
+<p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
+</div>
+  <hr style="background-color: rgb(192, 192, 192); color: #000000;"> 
+    <input type="button" onclick = "openClose('extrascr');openClose('extrahelp');" value="< Back" style="font-size:medium"/>
+</div>
   
 </body></html>
