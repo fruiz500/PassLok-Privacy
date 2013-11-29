@@ -4566,6 +4566,17 @@ function Decrypt_text(){
 		if(!decoyOn) mainmsg.innerHTML = 'Unlock successful'
 	}
 	
+	else if (type == "~"){									//master Key encrypted item, such as a complete lockDB database
+		if (learnOn){
+			var reply = confirm("The message in the main box was locked with your master Key, and will now be unlocked if your master Key has been entered, and placed in the Keys screen so you can merge it into the stored database. Cancel if this is not what you want.");
+			if(reply===false) throw("master Key decryption canceled");
+		};
+		var key = readKey();
+		document.lock.text.value = keyDecrypt(key,cipherstr);
+		document.getElementById("lockmsg").innerHTML = 'Decrypted items. Click Merge or Save to add them to this device.';
+		main2lock();
+	}
+	
 	else if (type === "!"){									//regular asymmetric decryption
 		if (learnOn){
 			var reply = confirm("The message in the main box was locked with your personal Lock, and will now be unlocked if your master Key has been entered, replacing the locked message. Cancel if this is not what you want.");
@@ -5208,7 +5219,7 @@ if (typeof code == 'undefined'){			//default text for base64 to words conversion
 	var code = covertext.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()'"]|_/g, "").replace(/\s+/g, " ").split(" ");
 		code = code.filter(function(n){return n});													//remove nulls
 		code = code.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});			//global array containing the words, no duplicates
-	var keystr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=!@#$%.:?-_" + "\n",	//base64 plus other characters used in PassLok strings and URLs
+	var keystr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=~!@#$%" + "\n",	//base64 plus other characters used in PassLok strings
 		remainder = code.length % keystr.length,
 		noptions = Math.floor(code.length / keystr.length);
 }
@@ -5596,7 +5607,7 @@ function decryptItem(){
 	if(string == "") throw('nothing to decrypt');
 	string = string.slice(1,string.length);								//strip initial '~'
 	document.lock.text.value = keyDecrypt(key,string);
-	document.getElementById("mainmsg").innerHTML = 'Shared Key ready'
+	document.getElementById("mainmsg").innerHTML = 'Item ready'
 }
 
 //add a few spaces and newlines, then remove brackets, etc., extra spaces, put in alphabetical order
@@ -5670,10 +5681,18 @@ function mergeLockDB(){
 	}
 }
 
-//clears lockDB object, then stores
-function clearLockDB(){
+//makes encrypted backup of the whole DB, then if allowed clears lockDB object, then stores
+function moveLockDB(){
 	var lockmsg = document.getElementById("lockmsg");
-	var answer = confirm("If you go ahead, all the items stored in this device will be erased. This cannot be undone.");
+	var key = readKey();
+	
+	//first encrypt lockDB, as displayed by showLockDB
+	showLockDB();
+	document.main.text.value = 'PL16db=~' + keyEncrypt(key,document.lock.text.value.trim()) + '=PL16db';
+	lockmsg.innerHTML = '<span>Database in main screen</span>'
+	
+	//now check that the user really wants to delete the database
+	var answer = confirm("The database has been exported to the main screen. If you go ahead, it will now be erased from this device. This cannot be undone.");
 	if (answer == false) throw("lockDB erase canceled");
 		lockDB = {};
 		localStorage.lockDB = JSON.stringify(lockDB);
@@ -5798,7 +5817,7 @@ function lock2main(){
 	}
 	openClose('mainscr');
 	openClose('lockscr');
-	if(document.lock.text.value != '') document.getElementById("mainmsg").innerHTML = 'Lock or shared Key ready';
+	if(document.lock.text.value != '') document.getElementById("mainmsg").innerHTML = 'Item ready';
 	if(document.lock.text.value.length > 200){
 		newcover(document.lock.text.value);		//this for loading cover text from lock screen
 		document.getElementById("mainmsg").innerHTML = 'Cover text changed'
@@ -6085,7 +6104,7 @@ window.onload = function() {
         <button onclick = "openClose('lockhelp');openClose('lockscr');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium">Help</button>
 		<button onClick="showLockDB();" onBlur="ce();" onFocus="ce();" value="All" style="font-size:medium">All</button>
         <button onClick="mergeLockDB();" onBlur="ce();" onFocus="ce();" value="Merge" style="font-size:medium">Merge</button>
-        <button onClick="clearLockDB();" onBlur="ce();" onFocus="ce();" value="ClearAll" style="font-size:medium">ClrAll</button>
+        <button onClick="moveLockDB();" onBlur="ce();" onFocus="ce();" value="Move" style="font-size:medium">Move</button>
 
     </div>
     
@@ -6552,20 +6571,21 @@ window.onload = function() {
   <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
          
  <div onclick="openClose('b7')" style="cursor:hand; cursor:pointer">
-      <h3>Display the entire stored database, so it can be copied and moved elsewhere</h3>
+      <h3>Display the entire stored database</h3>
   </div>
   <div id="b7" class="texter">
-        <p>1. Click the <strong>All</strong> button below the big box. The complete stored database, including PFS and hidden data, is displayed in the box so you can copy it and transfer it elsewhere.</p>
+        <p>1. Click the <strong>All</strong> button below the big box. The complete stored database, including PFS and hidden data, is displayed in the box so you can find items and copy them easily.</p>
         <p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=ej9qPypav-I" target="_blank">http://www.youtube.com/watch?v=ej9qPypav-I</a></p>
         </div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
            
   <div onclick="openClose('b8')" style="cursor:hand; cursor:pointer">
-  <h3>Delete the entire stored database</h3>
+  <h3>Move the entire stored database</h3>
        </div>
  <div id="b8" class="texter">
-      <p>1. Click the <strong>ClearAll</strong> button below the big box. A prompt asks you to confirm, and then the entire stored database is deleted. There is no going back. This is useful whenever you stop using a device, after you copy the database to transfer it to another device, or if the database becomes corrupted.</p>
-  <p>All of this is explained in this video tutorial: <a href="http://www.youtube.com/watch?v=ej9qPypav-I" target="_blank">http://www.youtube.com/watch?v=ej9qPypav-I</a></p>
+      <p>1. Click the <strong>Move</strong> button below the big box. The entire database is first locked with the master Key and placed in the main box. Then a prompt asks you to confirm deleting it from the device. If you click <strong>OK,</strong> the entire stored database is deleted. There is no going back. If you click <strong>Cancel</strong>, the locked backup remains in the main box. This is useful whenever you stop using a device or just want to transfer it to another device, or if the database becomes corrupted.</p>
+      <p>2. To retrieve a backed-up database (has PL**db tags), place it in the main box and click <strong>Lock/Unlock</strong>. If the master Key has been entered, the database will be unlocked and placed in the Keys screen. Then you can add it to the device's current database by clicking <strong>Merge</strong>.</p>
+  <p>All of this is explained in this video tutorial (does not include the retrieving procedure, and the button is labeled ClrAll): <a href="http://www.youtube.com/watch?v=ej9qPypav-I" target="_blank">http://www.youtube.com/watch?v=ej9qPypav-I</a></p>
   </div>
  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
 
