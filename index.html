@@ -6080,7 +6080,7 @@ function showdecoyOut(){
   }
 };
 
-//for selecting text in main and extra screens
+//for selecting text in main, extra, and locks screens
 function selectMain(){
 	document.main.text.selectionStart=0;
 	document.main.text.selectionEnd=document.main.text.value.length;
@@ -6088,6 +6088,10 @@ function selectMain(){
 function selectExtra(){
 	document.extra.text.selectionStart=0;
 	document.extra.text.selectionEnd=document.extra.text.value.length;
+}
+function selectLock(){
+	document.lock.text.selectionStart=0;
+	document.lock.text.selectionEnd=document.lock.text.value.length;
 }
 
 //closes input divs
@@ -6235,9 +6239,9 @@ function openClose(theID) {
     	</form>
     </div>
 	<div align="center">
-    	<button onclick = "openClose('mainscr');openClose('mainhelp');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium">Hlp</button>
+    	<button onclick = "openClose('mainscr');openClose('mainhelp');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium">Help</button>
     	<button onClick="Decrypt_text();" onBlur="ce();" onFocus="ce();" value="Lock/Unlock" name="decrypt" style="font-size:medium;font-weight:bold;color:blue">Lk/Un</button>
-		<button onClick="Verifyhash();" onBlur="ce();" onFocus="ce();" value="Sign/Verify" style="font-size:medium">Sgn/Ver</button>
+		<button onClick="Verifyhash();" onBlur="ce();" onFocus="ce();" value="Sign/Verify" style="font-size:medium">Sig/Ver</button>
     	<button onclick = "main2extra();" onBlur="ce();" onFocus="ce();" value="More" style="font-size:medium">...</button><br /><br />
         Lock mode:<input type="radio" name="lockmodes" id="anonmode" onBlur="ce();" onFocus="ce();" checked/> Anon.
         <input type="radio" name="lockmodes" id="signedmode" onBlur="ce();" onFocus="ce();" /> Signed
@@ -6251,15 +6255,16 @@ function openClose(theID) {
 <div id="extrascr" class="texter" style="display: none;" align="center">
 	<div align="center">
        <button onclick = "extra2main();" onBlur="ce();" onFocus="ce();" value="< Back" style="float: left;font-size:medium;">< Back</button>
-       <button onclick = "openClose('extrascr');openClose('extrahelp');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium">Help</button>
+       <button onClick="selectExtra();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">Select</button>
        <button onClick="document.extra.text.value='';document.getElementById('extramsg').innerHTML='';"onBlur="ce();"onFocus="ce();"value="Clear"style="float:right;font-size:medium;">Clear</button><br /><br />
     </div>   
     <div align="center">
 		<span id="extramsg"></span><br />
+        <button onclick = "openClose('extrascr');openClose('extrahelp');" onBlur="ce();" onFocus="ce();" value="Help" style="font-size:medium">Help</button>
 		<button onClick="sendMail();" onBlur="ce();" onFocus="ce();" value="Mail" style="font-size:medium">Mail</button>
         <button onClick="sendSMS();" onBlur="ce();" onFocus="ce();" value="SMS" style="font-size:medium">SMS</button>
         <button onclick="secretshare();" onBlur="ce();" onFocus="ce();" value="Split/Join" style="font-size:medium">Splt/Jn</button>	
-		<button onClick="selectExtra();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">Sel</button>
+		
 	</div>
 	<div align="center">
       	<form onSubmit="return false;" id="extra" name="extra">     
@@ -6394,7 +6399,7 @@ window.onload = function() {
 <div id="lockscr" class="texter" style="display: none;" align="center">
     <div align="center">
        <button onclick = "lock2main();" onBlur="ce();" onFocus="ce();" value="< Back" style="float: left;font-size:medium;">< Back</button>
-       
+       <button onClick="selectLock();" onBlur="ce();" onFocus="ce();" value="Select" style="font-size:medium">Select</button>
        <button onClick="document.lock.text.value='';document.lockname.text.value='';document.getElementById('lockmsg').innerHTML=''" onBlur="ce();" onFocus="ce();" value="Clear" style="float: right; font-size:medium;">Clear</button><br /><br />
     </div> 
 	<form onSubmit="return false;" name="lockname">
@@ -6552,6 +6557,7 @@ window.onload = function() {
   not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
   The lock can be made available to anyone who wishes to
   secure messages to be read with the matching Key.</p>
+<p>3. If the key box is empty when you click <strong>Make Lock</strong>, a 86-character random key is generated to fill the box, and its Lock appears on the main screen.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
       
@@ -6735,7 +6741,7 @@ window.onload = function() {
 </div>
 <div id="a13" class="texter">
 <p>1. Write your secret Key in the box that is accessed with the <strong>myKey</strong> button. It is masked by default, so if you want to display it, check the Show checkbox.</p>
-<p>2. Write or paste the text to be signed in the main box. Click the <strong>Sgn/Ver</strong>
+<p>2. Write or paste the text to be signed in the main box. Click the <strong>Sig/Ver</strong>
   button (abbreviated from Sign/Verify). A signature matching the text and your Key will be appended at the end of the text in the main box. Copy
   it and use it as appropriate. If you click (...) followed by Mail the text with its signature
   will be placed into an email using the default program.
@@ -6756,7 +6762,7 @@ window.onload = function() {
 <p>2. Write or paste the text with its signature appended on a separate line at the end, in the main box. It is okay if 
   the signature is broken up by spaces and special characters other than = + or / or is missing
   its tags up to the "=", but it should not be broken by carriage returns.
-  Then click the <strong>Sgn/Ver</strong> button. A message above the main box will say whether
+  Then click the <strong>Sig/Ver</strong> button. A message above the main box will say whether
   or not the signature for that text has been verified.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=YiiwcOmbI2U" target="_blank">https://www.youtube.com/watch?v=YiiwcOmbI2U</a></p></div>
     <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -6772,7 +6778,7 @@ window.onload = function() {
 <p>3. Write or paste into the the corresponding boxes the Password and the hidden message. The length of the hidden message is limited to
   152 ASCII characters in key-locked and signed modes, 87 characters in
   anonymous and PFS modes, 37 characters in Short message mode (key-locked or signed only), 40 characters in signatures. Non-ASCII characters
-  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost. Then click OK.</p>
+  use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost. Then click <strong>OK</strong>. To view the Password before you use it, check the Show checkbox.</p>
 <p>4. After clicking <strong>OK</strong>, the locked
   message containing both the main text and the hidden text will appear in
   the main box, replacing the original text. If it is a signature, it will be appended to the text. Copy it and paste it into your
@@ -6793,16 +6799,16 @@ window.onload = function() {
   personal or shared Key, or for verifying a signature. If Decoy mode is
   checked, a popup will ask for a Decoy Password.</p>
 <p>3. Write or paste into the popup box the special Password for the hidden
-  message and click <strong>OK</strong>. The hidden message, if it exists,
-  will appear above the main box. In the case of signatures, the hidden message appears in the place normally used by the verification message, so if you still wish to verify the signature, you need to uncheck Decoy Mode and click Sgn/Ver again so the verification message is displayed.</p>
+  message and click <strong>OK</strong>. To view the Password before you use it, check the Show checkbox. The hidden message, if it exists,
+  will appear above the main box. In the case of signatures, the hidden message appears in the place normally used by the verification message, so if you still wish to verify the signature, you need to uncheck Decoy Mode and click Sig/Ver again so the verification message is displayed.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WaXQGYP0Sec" target="_blank">https://www.youtube.com/watch?v=WaXQGYP0Sec</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
   
 	<div onClick="openClose('a17')" style="cursor:hand; cursor:pointer">  
-  <h3>I have an item that was locked/signed with an old version of PassLok, and the current version cannot handle it</h3>
+  <h3>I have an item that was locked/signed with a previous version of PassLok, and the current version cannot handle it</h3>
  </div>
   <div id="a17" class="texter">
-    <p>We do not recommend using old versions for new work. Newer versions have enhanced security and are more user-friendly. But sometimes you may need to handle an old message that is incompatible with the current version. The button below opens a page containing links to old versions of PassLok, as well as authentication IDs for each one (no videos, though).</p>
+    <p>We do not recommend using old versions for new work. Newer versions have enhanced security and are more user-friendly. But sometimes you may need to handle an item that is incompatible with the current version. The button below opens a page containing links to archived versions of PassLok, as well as authentication IDs for each one (no videos for most of them, though).</p>
   <button onclick="window.open('mirrors.html','_blank');" onBlur="ce();" onFocus="ce();" value="Show PassLok's ID" style="font-size:medium">PassLok archive</button>
   </div>
    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -6863,10 +6869,11 @@ window.onload = function() {
 <h3>Add an item (shared Key, Lock, etc.) to PassLok's permanent storage</h3>
   </div>
     <div id="b3" class="texter">
-      <p>1. You must have entered your secret Key for any items to be stored. You enter this Key by means of the <strong>myKey</strong> button on the main screen..</p>
+      <p>1. You must have entered your secret Key for any items to be stored. You enter this Key by means of the <strong>myKey</strong> button on the main screen.</p>
       <p>2. Write a name for the item in the little box on top. If the name is already taken, something will appear in the large box below it; if you use that name, the stored item will be replaced rather than added.</p>
       <p>3. Write or paste the item in the large box. It can be anything: somebody's Lock, a shared Key, a cover text, a list (don't write your secret Key here; its proper place is the dialog that opens with the myKey button). Then click the <strong>Save</strong> button.</p>
-      <p>4. A message confirms that the item has been added, and the item itself appears in the box, encrypted with your secret Key.</p>
+      <p>4. If you write nothing in the large box before clicking the <strong>Save</strong> button, PassLok will generate a 86-character base64 string, which will be stored under the name supplied in the small box. This way you can use PassLok to make secure passwords for websites, etc.</p>
+      <p>5. A message confirms that the item has been added, and the item itself appears in the box, encrypted with your secret Key.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=FDNRK4CdW2o" target="_blank">https://www.youtube.com/watch?v=FDNRK4CdW2o</a></p>
     </div>
     <hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -6875,9 +6882,9 @@ window.onload = function() {
 <h3>Retrieve an item from permanent storage</h3>
   </div>
       <div id="b4" class="texter">
-       <p>1. You must have entered your secret Key for any stored items to be retrieved. The process for entering this Key is described above.</p>
+       <p>1. You must have entered your secret Key for any stored items to be retrieved. You enter this Key by means of the <strong>myKey</strong> button on the main screen.</p>
        <p>2. Start writing the name of the item in the small box. As you type, the line above the box displays existing items matching what you have typed so far, and the encrypted item appears in the large box. You can stop typing once you see the item you're looking for. Search is case-insensitive, so if the item does not appear, that probably means that the name is wrong.</p>
-       <p>3. PassLok can use the item in encrypted form, but if you want to see the original, you can type "Enter" after the correct name is displayed, and the item will be decrypted. The item is also decrypted when you click the <strong>Back</strong> button. If the item was a cover text, it loads automatically as new cover text.</p>
+       <p>3. PassLok can use the item in encrypted form, but if you want to see the original, you can type "Enter" after the correct name is displayed, and the item will be decrypted. The item is also decrypted when you click the <strong>Back</strong> button. If the item is a cover text, it loads automatically as new cover text.</p>
        <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=FDNRK4CdW2o" target="_blank">https://www.youtube.com/watch?v=FDNRK4CdW2o</a></p>
        </div>
      <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
@@ -6948,7 +6955,7 @@ window.onload = function() {
  <div id="b11" class="texter">
       <p>Sometimes you want to make a high-security random Key, which will be split into several parts for safekeeping, as described in another help screen, or stored in encrypted form, rather than memorized (because you are never going to write it down unencrypted, right?). PassLok provides two ways to make this 86-character random Key:</p>
       <p>a. Click <strong>myKey</strong>, and then, with the key box empty, click <strong>Make Lock</strong>. The box fills with the random Key, which you can then reveal for copying by checking the Show checkbox, and places its matching Lock in the main box.</p>
-      <p>b. Click <strong>Locks</strong>, and write a name in the small name box. If the name is not in the database, the large box will end up empty; if it is, there will be something there, which you will have to clear manually. Then, with the large box empty, click <strong>Save</strong>. An 86-character random Key is made, which is immediately encrypted with the secret Key, if that has been previously entered. From then on this random Key, suitable as a shared Key, can be recalled and used by typing its name into the small box.</p>
+      <p>b. Click <strong>Locks</strong>, and write a name in the small name box. If the name is not in the database, the large box will end up empty. Then, with the large box empty, click <strong>Save</strong>. An 86-character random Key is made, which is immediately encrypted with the secret Key, if that has been previously entered. From then on this random Key, suitable as a shared Key or high-security password for a login, can be recalled and used by typing its name into the small box.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=9gRE1xPr_nE" target="_blank">https://www.youtube.com/watch?v=9gRE1xPr_nE</a></p>
   </div>
  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
