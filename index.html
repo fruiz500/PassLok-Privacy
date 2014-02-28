@@ -2,6 +2,9 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>PassLok privacy</title>
     <style type="text/css">
+		html {
+	    -webkit-text-size-adjust: 100%;
+		}
 	    body {
 		font-family: Sans-Serif;
 		margin-left: 1%;
@@ -1746,6 +1749,7 @@ var importImage = function(e) {
     };
 
     reader.readAsDataURL(e.target.files[0]);
+	document.getElementById('imagemsg').innerHTML=''
 };
 
 // encode the image and save it
@@ -4392,7 +4396,7 @@ function Encrypt_text(){
 		var key = readKey();												//secret Key for encrypting dummy Key before storage, check before anything
 		if (lockDB[name] == null){											//no name selected
 			main2lock();
-			lockmsg.innerHTML = '<span style="color:red">Select a recipient with a valid Lock</span>';
+			lockmsg.innerHTML = '<span style="color:red">Select a recipient with a valid Lock by name</span>';
 			throw("invalid name")
 		}
 		var lastLockcipher = lockDB[name][3],								//retrieve dummy Lock from storage, [0] is the permanent Lock by that name
@@ -4511,9 +4515,11 @@ function Encrypt_text(){
 			}
 		} else if (tagsOff){
 			document.main.text.value = "#" + cipherj.iv + cipherj.salt + cipherj.ct;
+			if(name=='') name = "the recipient";
 			mainmsg.innerHTML = "Locking successful. To be unlocked with your Lock and " +  name + "'s Key"
 		}else{
 			document.main.text.value = "PL17mss=#" + cipherj.iv + cipherj.salt + cipherj.ct + "=PL17mss";
+			if(name=='') name = "the recipient";
 			mainmsg.innerHTML = "Locking successful. To be unlocked with your Lock and " +  name + "'s Key"
 		}
 	}
@@ -4523,6 +4529,7 @@ function Encrypt_text(){
 			var reply = confirm("The contents of the main box will be locked with the Lock in the Locks box and the result will be placed in the main box. This is irreversible. Cancel if this is not what you want.");
 			if(reply===false) throw("public encryption canceled");
 		};
+		if(name=='') name = "the recipient";
 		if (pubstr.length != 87){
 			main2lock();
 			lockmsg.innerHTML = "<span style='color:red'>The recipient's Lock is needed</span>";	
@@ -4720,7 +4727,7 @@ function Encrypt_for_List(listArray){
 	}
 }
 
-//reads key box and stops if there's something wrong
+//reads key box and stops if there's something wrong or the timer has run out
 function readKey(){
 	if ((new Date().getTime()) - keytimer > 300000) document.key.text.value = '';		//erase key after 5 minutes
 	var key = document.key.text.value.trim();
@@ -4728,11 +4735,6 @@ function readKey(){
 		any2key();
 		document.getElementById("keymsg").innerHTML = 'Please enter your secret Key and retry.';
 		throw ('secret Key needed to encrypt item')
-	}
-	if (key.length == 86){																//random or combined Key in key box
-		any2key();
-		document.getElementById("keymsg").innerHTML = 'Likely, this is not your secret Key.';
-		throw ('random or combined key in box')
 	}
 	keytimer = new Date().getTime();													//reset key timer
 	return key
@@ -5927,8 +5929,12 @@ function mergeLockDB(){
 	var learnOn = document.getElementById("learnmode").checked === true;
 	
 	var lockmsg = document.getElementById("lockmsg"),	
-		lockstr = document.lock.text.value,				//see if these are Locks for a possible DH merge, which is not the main function of this button
-		mainstr = document.main.text.value;
+		lockstr = document.lock.text.value.trim(),				//see if these are Locks for a possible DH merge, which is not the main function of this button
+		mainstr = document.main.text.value.trim();
+	if (lockstr == ''){
+		lockmsg.innerHTML = 'Nothing to merge';
+		throw('invalid merge')
+	}
 	if (lockstr.slice(0,1) == '~') {
 		var key = readKey();
 		lockstr = keyDecrypt(key,lockstr.slice(1,lockstr.length))
@@ -5944,6 +5950,10 @@ function mergeLockDB(){
 		throw('invalid DH merge')
 	}
 	if (lockstr2.length == 87){							//if it's a Lock in the lock box, merge it with the Key, clear lock box so it doesn't get merged next time
+		if (mainstr == ''){
+			lockmsg.innerHTML = 'Nothing to merge this Lock with';
+			throw('invalid merge')
+		}
 		if (learnOn){
 			var reply = confirm("The Lock in the Locks box will be combined with the Key in the main box, and the resulting Key will replace both. Cancel if this is not what you want.");
 			if(reply===false) throw("merge canceled");
@@ -5952,7 +5962,7 @@ function mergeLockDB(){
 		document.lock.text.value = document.main.text.value;
 		lockmsg.innerHTML = 'Lock merged with Key in main box';
 		throw ("it was a lock, merged with key")
-	} else if (mainstr2.length == 87 && lockstr.split('\n').length == 1){		//if it's a Lock in the main box and not multiline in the lock box
+	} else if (mainstr2.length == 87 && lockstr.split('\n').length == 1 && lockstr!=''){		//if it's a Lock in the main box and not multiline in the lock box
 		if (learnOn){
 			var reply = confirm("The Key in the Locks box will be combined with the Lock in the main box, and the resulting Key will replace both. Cancel if this is not what you want.");
 			if(reply===false) throw("merge canceled");
@@ -6046,7 +6056,6 @@ function ce() {
 	sjcl.random.addEntropy(Math.floor((((new Date).getMilliseconds()) * 255) / 999), 2, "loadtime");
 	if ((new Date().getTime()) - keytimer > 300000) {
 		document.key.text.value = '';
-		document.lock.text.value = ''
 	}
 };
 
@@ -6108,7 +6117,7 @@ function main2extra(){
 	openClose("mainscr");
 	openClose("extrascr");
 	var main = document.main.text.value;
-	if((document.main.text.value.trim() != "") && !(main.match(/p\d{3}/) && main.slice(0,2)=='PL') && !(main.match(/\n\nA/) && main.slice(0,1)=='A')){
+	if((document.main.text.value.trim() != "") && !(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') && !(main.match(/\n\nA/) && main.slice(0,1)=='A')){
 		document.extra.text.value = document.main.text.value;
 		showhash()
 	} else if (document.main.text.value.trim() != "") {
@@ -6121,7 +6130,7 @@ function extra2main(){
 	openClose("extrascr");
 	openClose("mainscr");
 	var main = document.main.text.value;					//the code below is for passing text between screens, unless empty, or there are parts made by SSSS
-	if((document.extra.text.value.trim() != "") && !(main.match(/p\d{3}/) && main.slice(0,2)=='PL') && !(main.match(/\n\nA/) && main.slice(0,1)=='A')){
+	if((document.extra.text.value.trim() != "") && !(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') && !(main.match(/\n\nA/) && main.slice(0,1)=='A')){
 		document.main.text.value = document.extra.text.value
 	}
 }
@@ -6146,7 +6155,7 @@ function extra2image(){
 	openClose('extrascr');
 	openClose('imagescr');
 	qrcode.makeCode(document.extra.text.value);
-	if(document.getElementById('preview').src.slice(0,40)!='data'){document.getElementById('imagemsg').innerHTML='QR code for the item in the box' + '\n' + 'Click the button above to load an image'}
+	if(document.getElementById('preview').src.slice(0,4)!='data'){document.getElementById('imagemsg').innerHTML='QR code for the item in the box' + '\n' + 'Click the button above to load an image'}
 }
 function any2key(){
 	document.getElementById("keyscr").style.display = "block";
@@ -6169,7 +6178,7 @@ function key2any(){
 
 //resizes text boxes so they fit within the window
 function textrows(){
-	if(isiPad){												//first for iPad. Don't know how to detect other tablets
+	if(isiPad || isAndroidTablet){												//first for iPad. Don't know how to detect other tablets
 		if((angle==90)||(angle==-90)){
 			document.main.text.rows=document.documentElement.clientHeight/rowheight-11					//landscape
 		}else{document.main.text.rows=document.documentElement.clientHeight/rowheight*1.2-11}			//portrait
@@ -6181,6 +6190,11 @@ function textrows(){
 	document.main.text.rows = document.main.text.rows*0.9;			//tweak factor for development
 	if(document.extra!=null) document.extra.text.rows = document.main.text.rows;
 	if(document.lock!=null) document.lock.text.rows = document.main.text.rows
+	
+	//fix for fat text in landscape mode
+	if((angle==90)||(angle==-90)){
+		document.getElementById('modes').innerHTML = '<span style="font-size:50%;color:red">' + document.getElementById('modes').innerHTML + '</span>'
+	}
 }
 
 <!-- Text hide trick, by Sandeep Gangadharan 2005-->
@@ -6226,12 +6240,16 @@ function openClose(theID) {
     </div>
     <div align="center">
     	<form onSubmit="return false;" id="main" name="main">      
-    		<textarea onKeyDown="ce();" onKeyUp="charsLeft();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Usually, the first thing would be to click the Locks button above in order to enter a Lock or shared Key."></textarea>
+    		<textarea onKeyDown="ce();" onKeyUp="charsLeft();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Usually, the first thing would be to click the Locks button above in order to enter a Lock or shared Key, or the myKey button in order to enter your secret Key."></textarea>
             
 <script>		
 	var rowheight = document.warning.clientHeight*0.7,						//get title size in pixels, for number of rows calculation. global variables
 		isiPad = (navigator.userAgent.match(/iPad/i) != null),
+		isiPhone = (navigator.userAgent.match(/iPhone|iPod/i) != null),
+		isAndroidTablet = (navigator.userAgent.match(/mobile/i) == null && navigator.userAgent.match(/Android/i) != null && !isiPad && !isiPhone),
+		isAndroidPhone= (navigator.userAgent.match(/mobile/i) != null && navigator.userAgent.match(/Android/i) != null && !isiPad && !isiPhone),
 		angle = window.orientation;
+		if(isAndroidPhone || isAndroidTablet){rowheight = rowheight*1.1}	//Android rows are fatter
 	textrows();
 	window.addEventListener("resize", function() { textrows() }, false)	    //resize if the window changes		
 </script>
@@ -6243,12 +6261,13 @@ function openClose(theID) {
     	<button onClick="Decrypt_text();" onBlur="ce();" onFocus="ce();" value="Lock/Unlock" name="decrypt" style="font-size:medium;font-weight:bold;color:blue">Lk/Un</button>
 		<button onClick="Verifyhash();" onBlur="ce();" onFocus="ce();" value="Sign/Verify" style="font-size:medium">Sig/Ver</button>
     	<button onclick = "main2extra();" onBlur="ce();" onFocus="ce();" value="More" style="font-size:medium">...</button><br /><br />
-        Lock mode:<input type="radio" name="lockmodes" id="anonmode" onBlur="ce();" onFocus="ce();" checked/> Anon.
+        Mode:<input type="radio" name="lockmodes" id="anonmode" onBlur="ce();" onFocus="ce();" checked/> Anon.
         <input type="radio" name="lockmodes" id="signedmode" onBlur="ce();" onFocus="ce();" /> Signed
-        <input type="radio" name="lockmodes" id="pfsmode" onBlur="ce();" onFocus="ce();" /> PFS<br /><br />
-    	<input type="checkbox" id="shortmode" onBlur="ce();" onFocus="ce();"/> Short mode
+        <input type="radio" name="lockmodes" id="pfsmode" onBlur="ce();" onFocus="ce();" /> PFS
+        <br /><br />
+    	<input type="checkbox" id="shortmode" onBlur="ce();" onFocus="ce();"/> Short
     	<input type="checkbox" id="notags" onBlur="ce();" onFocus="ce();"/> No tags
-        <input type="checkbox" id="decoymode" onBlur="ce();" onFocus="ce();"/> Decoy mode
+        <input type="checkbox" id="decoymode" onBlur="ce();" onFocus="ce();"/> Decoy
   </div> 
 </div> 
         
@@ -6268,7 +6287,7 @@ function openClose(theID) {
 	</div>
 	<div align="center">
       	<form onSubmit="return false;" id="extra" name="extra">     
-			<textarea onKeyDown="ce();" onKeyUp="showhash();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   From this screen, you can send it by email or SMS, or you can disguise it to look like other text or an image."></textarea>
+			<textarea onKeyDown="ce();" onKeyUp="showhash();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   From this screen, you can send it by email or SMS, or you can disguise it to look like other text or an image. File I/O is done from this screen also."></textarea>
             
 <script>
 	textrows();
@@ -6405,7 +6424,7 @@ window.onload = function() {
 	<form onSubmit="return false;" name="lockname">
     <div align="center">
     	<span id="lockmsg"></span><br />
-    	<input type="text" onKeyDown="ce();" onKeyUp="if (event.keyCode == 13) {decryptItem()} else {return findLock()};" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Name associated with the item.   Enter the name first, then enter the item in the box below." /></div></form><br  /><br />
+    	<input type="text" onKeyDown="ce();" onKeyUp="if (event.keyCode == 13) {decryptItem()} else {return findLock()};" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Name associated with the item below.   Enter the name first, then enter the item in the large box." /></div></form><br  /><br />
     <div align="center">
     	<button onClick="addLock();" onBlur="ce();" onFocus="ce();" value="Save" style="font-size:medium">Save</button>
 		<button onClick="removeLock();" onBlur="ce();" onFocus="ce();" value="Del." style="font-size:medium">Del</button>
@@ -6413,7 +6432,7 @@ window.onload = function() {
         <button onClick="addToList();" onBlur="ce();" onFocus="ce();" value="List" style="font-size:medium">List</button>
     </div>
     <form onSubmit="return false;" name="lock">
-		<textarea onBlur="ce();" onFocus="ce();" onKeyDown="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="Enter the item here.   If the item has a name, first enter the name in the box above."></textarea></form>
+		<textarea onBlur="ce();" onFocus="ce();" onKeyDown="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="Enter Locks and shared Keys here.   If the item has a name, first enter the name in the box above."></textarea></form>
         
 <script>
 	textrows();
@@ -6444,12 +6463,12 @@ window.onload = function() {
     <div align="center">        
     	<form onsubmit="return false;" id="key" name="key">
       		<span id="keymsg"></span><br />
-			<input type="password" autocomplete="off" id="pwd" onKeyUp="return keyStrength(document.key.text.value,true);" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Your secret Key goes here." align="center"><br />
+			<input type="password" autocomplete="off" id="pwd" onKeyUp="return keyStrength(document.key.text.value,true);keytimer = new Date().getTime();" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Your secret Key goes here." align="center"><br />
         </form>
     </div>
     <div align="center">
-		<input type="checkbox" id="showKey" onClick="showsec();" style="font-size:medium"> Show 
-        <button onclick="fillkeys();" value="Make Lock" style="font-size:medium">Make Lock</button>
+		<input type="checkbox" id="showKey" onClick="ce();showsec();" onBlur="ce();" onFocus="ce();" style="font-size:medium"> Show 
+        <button onclick="fillkeys();" onBlur="ce();" onFocus="ce();" value="Make Lock" style="font-size:medium">Make Lock</button>
 	</div>
     <div align="left" style="width:98%">        
       	<p>This is your secret Key, which you must memorize and never write down anywhere. As you type your Key, a text above it will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and numbers at start and end are not helpful and will be ignored for the strength score.</p>
@@ -6466,7 +6485,7 @@ window.onload = function() {
     	<input type="password" onKeyDown="ce();" onKeyUp="return keyStrength(document.decoyIn.key.value,true);" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
 		<p>Enter Hidden Message</p>      
 		<textarea onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="3"></textarea>
-        <input type="checkbox" id="showdecIn" onClick="showdecoyIn();" style="font-size:medium"> Show
+        <input type="checkbox" id="showdecIn" onClick="showdecoyIn();" onBlur="ce();" onFocus="ce();" style="font-size:medium"> Show
     	<button onClick="checkBlacklist(document.decoyIn.key.value);closebox();if(encrypting){Decrypt_text()}else{Verifyhash()};" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium">OK</button>
 		<button onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium">Cancel</button>
 	</form>   
@@ -6476,7 +6495,7 @@ window.onload = function() {
 	<form onSubmit="return false;" name="decoyOut">
 		<p>Enter Decoy Password</p> 
     	<input type="password" onKeyDown="ce();" onBlur="ce();" onFocus="ce();" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
-        <input type="checkbox" id="showdecOut" onClick="showdecoyOut();" style="font-size:medium"> Show   
+        <input type="checkbox" id="showdecOut" onClick="showdecoyOut();" onBlur="ce();" onFocus="ce();" style="font-size:medium"> Show   
     	<button onClick="closebox();if(encrypting){Decrypt_text()}else{Verifyhash()};" onBlur="ce();" onFocus="ce();" value="OK" style="font-size:medium">OK</button>
 		<button onClick="closebox();" onBlur="ce();" onFocus="ce();" value="Cancel" style="font-size:medium">Cancel</button>
     	<p>The Hidden message will appear in the main window</p>
@@ -6924,7 +6943,7 @@ window.onload = function() {
  <div id="b8" class="texter">
       <p>1. Click the <strong>Move</strong> button below the big box. The entire database is first locked with the secret Key and placed in the main box. Then a prompt asks you to confirm deleting it from the device. If you click <strong>OK,</strong> the entire stored database is deleted. There is no going back. If you click <strong>Cancel</strong>, the locked backup remains in the main box. This is useful whenever you stop using a device or just want to transfer it to another device, or if the database becomes corrupted.</p>
       <p>2. To retrieve a backed-up database (has PL**db tags), place it in the main box and click <strong>Lk/Un</strong>. If the secret Key has been entered, the database will be unlocked and placed in the Locks screen. Then you can add it to the device's current database by clicking <strong>Merge</strong>.</p>
-  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=V_DwcEyaeIQ" target="_blank">https://www.youtube.com/watch?v=V_DwcEyaeIQ</a><a href="http://www.youtube.com/watch?v=ej9qPypav-I" target="_blank"></a></p>
+  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=V_DwcEyaeIQ" target="_blank">https://www.youtube.com/watch?v=V_DwcEyaeIQ</a></p>
   </div>
  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
 
@@ -7173,5 +7192,4 @@ same, the program has not been tampered with.</p>
 
   <button onclick = "openClose('extrahelp');openClose('extrascr');" onBlur="ce();" onFocus="ce();" value="< Back" style="font-size:medium">< Back</button>
 </div>
-
 </body></html>
