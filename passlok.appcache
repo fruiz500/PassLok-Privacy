@@ -1,6 +1,8 @@
 CACHE MANIFEST 
-# last edited for v1.7.03
+# last edited for v1.7.04
 index.html 
-mirrors.html
+mainhelp.html
+extrahelp.html
+lockhelp.html
 passlok-touch-icon.png
 favicon.ico
