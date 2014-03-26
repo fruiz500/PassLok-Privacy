@@ -3661,6 +3661,8 @@ function Decrypt_from_List(cipherArray){
 		secstr = document.lock.text.value.trim(),
 		pubstr = striptags(secstr);
 		
+	if(lockDB['myself'] == null) key2any();												//make this entry if it has been deleted
+		
 	//now make the idtag to be searched for, depending on the type of encryption. First the shared Key that encrypts the idtag
 	
 	if (type == '#' || type == '$'){				//signed mode first, PFS is the same at this point
@@ -4422,17 +4424,26 @@ function resetPFS(){
 	if (document.lock.text.value.trim().split('\n').length > 1){		//use button to reset current list if a list is displayed, nothing to do with normal use
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
-			if(reply==false) throw("PFS reset canceled");
+			if(reply==false) throw("List reset canceled");
 		}
 		currentList = '';
 		lockmsg.innerHTML = 'Current list reset';
 		return
 	}
-	
-	//now the real stuff
+	if (document.lockname.text.value.trim()=='' && document.lock.text.value.trim()=='') {		//use button to delete 'myself' entry after changing the Key
+		if (document.getElementById("learnmode").checked === true){
+			var reply = confirm("Your Lock stored in the database will be erased so it can be re-written. Cancel if this is not what you want.");
+			if(reply==false) throw("PFS reset canceled");
+		}
+		delete lockDB['myself'];
+		localStorage.lockDB = JSON.stringify(lockDB);
+		lockmsg.innerHTML = 'Your stored Lock has been deleted';
+		suspendFindLock = false;
+		return
+	}																		//now the real stuff
 	if (document.getElementById("learnmode").checked === true){
 		var reply = confirm("The data needed to maintain a PFS conversation with this sender/recipient will be deleted, so the ongoing conversation cannot be continued. This is irreversible. Cancel if this is not what you want.");
-		if(reply==false) throw("PFS reset canceled");
+		if(reply==false) throw("myself reset canceled");
 	}
 	var name = lockmsg.innerHTML;
 	if (lockDB[name] == null){
@@ -4444,8 +4455,8 @@ function resetPFS(){
 		throw('no PFS data')
 	}
 	lockDB[name].splice(1,4);
-	localStorage.lockDB = JSON.stringify(lockDB);
 	lockmsg.innerHTML = 'PFS data for ' + name + ' deleted';
+	localStorage.lockDB = JSON.stringify(lockDB);
 	suspendFindLock = false
 }
 
@@ -4822,7 +4833,7 @@ function openClose(theID) {
 
 //to load Lock directory only once
 function loadLockDir(){
-	if(document.getElementById('lockdirframe').src != 'https://passlok.com/lockdir.php') document.getElementById('lockdirframe').src = 'https://passlok.com/lockdir.php';
+	if(document.getElementById('lockdirframe').src != 'https://passlok.com/lockdir') document.getElementById('lockdirframe').src = 'https://passlok.com/lockdir';
 }
 
 //The main script in the head ends here.

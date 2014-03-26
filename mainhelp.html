@@ -52,13 +52,13 @@ function getElement(aID){
     <div id="a1" class="texter">
     <p>Before you do aything else, you may want to watch this short video, which explains the essential concepts in a lighthearted way: <a href="https://www.youtube.com/watch?v=FZF3EiDt7Ws" target="_blank">https://www.youtube.com/watch?v=FZF3EiDt7Ws</a></p>
     <p>If you don't have time for the video, here's the two-paragraph version. PassLok locks messages and files, turning them into gibberish so only the intended recipients can return them to their original form and read them. It is based on digital Keys and Locks. A Lock is used to lock a message,  and then only the matching Key can unlock it so it becomes readable again. A Key is a piece of text that you choose and memorize; it is personal and should never be revealed to anyone. You make your Lock from your Key, and then you give it to people so they can lock messages for you to read.  It is impossible to get the Key from its matching Lock. Keys are to be kept secret, but Locks are made to be widely distributed. Locks look like gibberish but have tags at both ends of the form &quot;PL17lok&quot;.</p>
-    <p>The first step is to come up with a secret Key that you can remember. You enter it in PassLok by clicking the <strong>myKey</strong> button. Then you make its matching Lock by clicking the <strong>Make Lock</strong> button on that screen. Then you click the <strong>Back</strong> button to go back to the main screen and see your Lock and copy it. You give this Lock to all the people you wish to write to you in secret. They will also send you their Locks, which you can store anywhere you want. To lock a message, the sender puts the plain message in the main box, then clicks <strong>Locks</strong> to get to the Locks screen, and puts the recipient's Lock in the big box there. Going back to the main screen, the message is locked when the sender clicks <strong>Lck/Un</strong> (Lock/Unlock). The recipient unlocks the locked message by first putting it in the main box, then clicks <strong>myKey</strong> and enters his/her secret Key in the small box that appears. Going back to the main screen, the message is unlocked when the recipient clicks <strong>Lck/Un</strong>.</p>
+    <p>The first step is to come up with a secret Key that you can remember. You enter it in PassLok by clicking the <strong>myKey</strong> button. Then you make its matching Lock by clicking the <strong>Make Lock</strong> button on that screen. Then you click the <strong>Back</strong> button to go back to the main screen and see your Lock and copy it. You give this Lock to all the people you wish to write to you in secret. They will also send you their Locks, which you can store anywhere you want. To lock a message, the sender puts the plain message in the main box, then clicks <strong>Locks</strong> to get to the Locks screen, and puts the recipient's Lock in the big box there. Going back to the main screen, the message is locked when the sender clicks <strong>Lk.Un</strong> (Lock/Unlock). The recipient unlocks the locked message by first putting it in the main box, then clicks <strong>myKey</strong> and enters his/her secret Key in the small box that appears. Going back to the main screen, the message is unlocked when the recipient clicks <strong>Lk.Un</strong>.</p>
 	<p>PassLok is very powerful, combining AES encryption with elliptic curves at the strongest levels defined by standards, and including several ways to hide the result from prying eyes. All processing occurs on your device with no server involved, so your privacy cannot be compromised by third parties. But great power means a lot of buttons.</p>
 	<p>Fortunately, only four buttons are essential to get started. They are <span style="color:blue">highlighted in blue:</span></p>
     <p><span style="color:blue"><strong>myKey</strong></span> opens a dialog where you can enter your secret Key, which is needed for most advanced functions in PassLok. It is also needed to unlock messages locked with your personal Lock, which is not secret. To display this Lock, click the <strong>Make Lock</strong> button.</p>
     <p><span style="color:blue"><strong>Make Lock</strong></span> (visible after clicking myKey) creates the Lock matching the Key that has been entered in the Key dialog and writes it on the main screen, from where it can be copied, emailed, etc.</p>
 	<p><span style="color:blue"><strong>Locks</strong></span> opens a screen where you can enter the Lock or shared Key that is needed to lock the contents of the main box.</p>
-	<p><span style="color:blue"><strong>Lck/Un</strong></span> (abbreviated from Lock/Unlock) locks the plain message in the main box, or unlocks it if it was locked. The appropriate Key or Lock must have been entered previously by means of the <strong>myKey</strong> or <strong>Locks</strong> buttons.</p>
+	<p><span style="color:blue"><strong>Lk.Un</strong></span> (abbreviated from Lock/Unlock) locks the plain message in the main box, or unlocks it if it was locked. The appropriate Key or Lock must have been entered previously by means of the <strong>myKey</strong> or <strong>Locks</strong> buttons.</p>
 	
 	<p>With these four buttons, you can get started locking and unlocking messages with very high security. Here's another video that shows this (made for version 1.6, though): <a href="https://www.youtube.com/watch?v=3wrhfzU4DFc" target="_blank">https://www.youtube.com/watch?v=3wrhfzU4DFc</a>    </p></div>
 	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
@@ -93,7 +93,8 @@ function getElement(aID){
   that you will use for a long time.</p>
   <p>4. PassLok compensates for bad Keys by taking longer to do its computations. If PassLok is slow, this is likely because your Key strength is less than Medium.</p>
   <p>5. If your Key is found in its built-in database of 500 most common Keys, PassLok will refuse to accept it. Just choose another Key.</p>
-  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
+  <p>6. If you change your Key after having used a different Key for a long time, be aware that any information stored locally, such as other people's Locks, shared Keys, etc. <strong>will become unavailable</strong>, leading to all sorts of problems. You may want to copy the items in your database to a different location, delete the database, and enter the items again after you change your Key.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
   
   <div onClick="openClose('a4')" style="cursor:hand; cursor:pointer">
@@ -124,7 +125,7 @@ function getElement(aID){
    are missing, or extra spaces, carriage returns, or special characters
    other than = + or / have been added. If you have previously stored it in your device's Locks directory, you can retrieve it by clicking the <strong>Locks</strong> button and then beginning to type the name associated with the Lock in the top box.</p>
  <p>3. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead.</p>
-<p>4. Write or paste your message in the main box. Click the <strong>Lck/Un</strong> button. The
+<p>4. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
   locked message will appear in the main box, replacing the original message. Copy it and paste it into your
   communications program or click (...), followed by Mail to open your default email. 
   It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -144,9 +145,10 @@ function getElement(aID){
 <p>2. Write your secret Key into the box that is accessed by clicking <strong>myKey</strong>. It is masked by default, so if you want to display it, check the Show checkbox.</p>
 <p>3. Paste the locked message into the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + / or % or is
-  missing its tags. Then click the <strong>Lck/Un</strong> button. The unlocked message
+  missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
   will appear in the main box, replacing the locked message.</p>
-  <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0eYxeplsSx0" target="_blank">https://www.youtube.com/watch?v=0eYxeplsSx0</a></p></div>
+<p>4. Unlocking may fail if you have changed your Key recently and your locally stored Lock has not been updated. In that case, click the <strong>Reset</strong> button in the Locks screen to delete your stored Lock and try again.</p>
+<p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0eYxeplsSx0" target="_blank">https://www.youtube.com/watch?v=0eYxeplsSx0</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
 
   <div onclick="openClose('a7')" style="cursor:hand; cursor:pointer">
@@ -162,7 +164,7 @@ function getElement(aID){
           are missing, or extra spaces, carriage returns, or special characters
           other than = + or / have been added. If you have previously stored it in your device's Locks directory, you can retrieve it by clicking the <strong>Locks</strong> button and then beginning to type the name associated with the Lock in the top box.</p>
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead.</p>
-        <p>5. Write or paste your message in the main box. Click the <strong>Lck/Un</strong> button. The
+        <p>5. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
           communications program or click (...), followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -184,7 +186,7 @@ function getElement(aID){
       <p>3. Paste the sender's Lock in the large box of the Locks screen. If the Lock has been previously stored, you can retrieve it by typing the name associated with it in the small box at the top.      </p>
       <p>3. Paste the locked message in the main box. It is okay if it is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
-        missing its tags. Then click the <strong>Lck/Un</strong> button. The unlocked message
+        missing its tags. Then click the <strong>Lk.Un</strong> button. The unlocked message
         will appear in the main box, replacing the locked message.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=F6Ov4MSk2XA" target="_blank">https://www.youtube.com/watch?v=F6Ov4MSk2XA</a></p>
 </div>
@@ -198,7 +200,7 @@ function getElement(aID){
         <p>2. Write your secret Key into the box that is accessed by clicking <strong>myKey</strong>. It is masked by default, so if you want to display it, check the Show checkbox.</p>
         <p>3. This mode requires the recipient's Lock or shared Key to be previously stored in the device's permanent directory. Follow the instructions from the Locks <strong>Help</strong> button to do this. Once the item is stored, you can retrieve it by beginning to type its name in the top box of the Locks screen. If you are restarting a PFS conversation that was interrupted, you must first clear the old PFS data for that recipient by clicking the <strong>Reset</strong> button after the recipient's name is displayed.</p>
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead.</p>
-        <p>5. Write or paste your message in the main box. Click the <strong>Lck/Un</strong> button. The
+        <p>5. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
           communications program or click (...), followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -206,7 +208,7 @@ function getElement(aID){
           also okay to split the locked message with spaces, line returns, and
           punctuation other than = + or / This message can only be unlocked by
           someone having the Key matching the Lock used to lock it, or the appropriate shared Key, if this is what was used.</p>
-        <p>6. If Short mode is used, locking cannot be repeated without corrupting the PFS data stored in the device, which will make it impossible for the recipient to unlock the message (unless it is re-locked as a regular length message). Make sure your plain message is what you want before clicking Lck/Un. This restriction does not apply to regular length messages, but you will get a warning alerting you that you are skipping a turn.</p>
+        <p>6. If Short mode is used, locking cannot be repeated without corrupting the PFS data stored in the device, which will make it impossible for the recipient to unlock the message (unless it is re-locked as a regular length message). Make sure your plain message is what you want before clicking Lk.Un. This restriction does not apply to regular length messages, but you will get a warning alerting you that you are skipping a turn.</p>
         <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=oVJPJJuUCgQ" target="_blank">https://www.youtube.com/watch?v=oVJPJJuUCgQ</a></p>
   </div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
@@ -221,7 +223,7 @@ function getElement(aID){
       <p>3. This mode requires the recipient's Lock or shared Key to be previously stored in the device's permanent directory. Retrieve the item by typing the name associated with it in the small box at the top. The name must be displayed in full on the message above the box for PFS mode to work.</p>
       <p>4. Paste the locked message in the main box. It is okay if it is broken up by
         spaces, carriage returns, and special characters other than = + or / or is
-        missing its tags. Then click the <strong>Lck/Un</strong> button. The unlocked message
+        missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
         will appear in the main box, replacing the locked message.</p>
       <p>5. If this was a Short mode message, it can only be unlocked once. Attempting to unlock it again will corrupt the PFS data stored in the device, which is needed to keep the conversation going.  This restriction does not apply to regular length messages, but you will get a warning alerting you that a turn was skipped.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=oVJPJJuUCgQ" target="_blank">https://www.youtube.com/watch?v=oVJPJJuUCgQ</a></p>
@@ -235,7 +237,7 @@ function getElement(aID){
 <p>1. It does not matter which of the radio buttons below the main box is selected, since they do not apply to this mode.</p>
 <p>2. Write or paste the shared Key in the large box that is accessed with the <strong>Locks</strong> button. If the Key was previously stored, you can search for it by typing in the top box the name associated with the Key. When you type "Enter", the stored Key is decrypted for you to see.  For a stored Key to function, your secret Key must have been entered by clicking the <strong>Locks</strong> button, followed by <strong>myKey</strong>.</p>
 <p>3. To lock a message so it can be read by several people, place their respective shared Keys in the box, one per line. If a Key was previously stored, you can write the name associated with that Key, instead.</p>
-<p>4. Write or paste the message in the main box. Click the <strong>Lck/Un</strong> button. The
+<p>4. Write or paste the message in the main box. Click the <strong>Lk/Un</strong> button. The
   locked message will appear in the main box, replacing the original text. Copy it and paste it into your
   communications program or click (...), and then Mail to open your default email program. 
   It is okay to strip the tags up to the "=" sign, but not recommended; 
@@ -255,7 +257,7 @@ function getElement(aID){
 <p>2. Write or paste the shared Key in the large box that is accessed with the <strong>Locks</strong> button. If the Key was previously stored, you can search for it by typing in the top box the name associated with the Key. When you type "Enter", the stored Key is decrypted for you to see. For a stored Key to function, your secret Key must have been entered by clicking the <strong>myKey</strong> button.</p>
 <p>3. Paste the locked message in the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + / or % or is
-  missing its tags. Then click the <strong>Lck/Un</strong> button. The unlocked message
+  missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
   will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=zFbsTwdHRYQ" target="_blank">https://www.youtube.com/watch?v=zFbsTwdHRYQ</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
@@ -267,7 +269,7 @@ function getElement(aID){
 <p>1. Check the <strong>Short</strong> checkbox below the main box. Also make sure the appropriate locking mode is selected with the radio buttons. The radio buttons don't matter if the message is being locked with a shared Key.</p>
 <p>2. Write or paste your message into the main box. Message length is limited to 58
   ASCII characters when locking with a shared Key or in signed mode, 38 in anonymous mode, 37 in PFS mode. Non-ASCII characters use 6 spaces each, so avoid them if
-  you can. Any text beyond the limit will be lost. A message above the main box will tell you how much space is left, depending on the locking mode selected. Click the <strong>Lck/Un</strong> button.</p>
+  you can. Any text beyond the limit will be lost. A message above the main box will tell you how much space is left, depending on the locking mode selected. Click the <strong>Lk/Un</strong> button.</p>
 <p>3. The locked message will appear in the main box, replacing the original message. Copy it and paste it into your communications program. The locked
   message, which has no tags, will fit within one SMS message (160
   characters). </p>
@@ -283,7 +285,7 @@ function getElement(aID){
 <p>1. It does not matter which of the radio buttons below the main box is selected, or whether the Short checkbox is checked, since the locking mode is determined automatically from the locked message itself.</p>
 <p>2. Paste the locked message into the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters. As with regular-length messages, either a shared Key must be entered in the <strong>Locks</strong> box, or the secret Key in its own box, prior to unlocking. 
-  Then click the <strong>Lck/Un</strong> button.</p>
+  Then click the <strong>Lk/Un</strong> button.</p>
 <p>3. The unlocked message will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=Ly9ESisRKE8" target="_blank">https://www.youtube.com/watch?v=Ly9ESisRKE8</a></p></div>
   <hr style="background-color: rgb(192, 192, 192); color: #000000;">	 
@@ -372,9 +374,9 @@ function getElement(aID){
 <p><a href="https://fruiz500.github.io/passlok" target="_blank">https://fruiz500.github.io/passlok</a></p>
 <p>Self-check ID (SHA256):</p>
 
-<p>41a1-119b-8ae7-189d-39dc-8994-7ef5-adcc-d5e4-66f8-13e8-a3d2-53bd-5c14-b06d-ea14</p>
+<p>0f4f-e5bc-6ae2-0358-fd97-ee65-da6d-99ba-f161-cf0c-2978-d29f-e34a-65f2-8d07-3dc2</p>
 
-<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=6bW2FwL8XGY" target="_blank">https://www.youtube.com/watch?v=6bW2FwL8XGY</a></p>
+<p>Watch the author reading this ID in this Youtube video: <a href="https://www.youtube.com/watch?v=h2QtYztfKFQ" target="_blank">https://www.youtube.com/watch?v=h2QtYztfKFQ</a></p>
 <p>&nbsp;</p>
 
 <p><strong>Previous versions:</strong></p>
