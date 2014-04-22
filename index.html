@@ -4039,21 +4039,21 @@ function sendMail() {
 	var type = cipherstr.slice(0,1);
 if (document.getElementById("notags").checked === false){							//add tags if checked, add explanatory text	
 	if(type==="!"){
-    	var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+    	var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (type==="@"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (type==="#"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (type==="$"){
-		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with your secret Key and the sender's Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (type==="~"){
 		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.1.7 %0D%0A%0D%0AUnlock with my secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value);	
 	} else if (cipherstr.length===87){
-		var link = "mailto:"+ "?subject=" + "&body=This is my PassLok v.1.7 Lock, use it to send me messages and verify my signature. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) +"%0D%0A%0D%0AGet PassLok at http://passlok.com";		
+		var link = "mailto:"+ "?subject=" + "&body=This is my PassLok v.1.7 Lock, use it to send me messages and verify my signature. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) +"%0D%0A%0D%0AGet PassLok at https://passlok.com";		
 	} else if (cipherstr.length===160){
-		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.1.7 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at http://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.1.7 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (cipherstr.length===250){
-		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.7. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at http://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value);
+		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.7. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at https://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value);
 			
 	} else {																		//may be a longish signed text, so try a little harder
 		var cipherstrArray = document.getElementById('mainBox').value.split('\n'),
@@ -4061,7 +4061,7 @@ if (document.getElementById("notags").checked === false){							//add tags if ch
 			cipherstr = cipherstrArray[length-1];
 		cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 		if (cipherstr.length==250){
-			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.7. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at http://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value);			
+			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.1.7. Verify using the signer's Lock.%0D%0A%0D%0AGet PassLok at https://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').value);			
 		} else {
 			mainmsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
 			throw("illegal text")
@@ -5933,7 +5933,7 @@ function remChromeLock(name) {
   <div id="c5" class="texter">  
 <p>1. Check that the item to be converted into fake text is in the main box. Then click the &#x25B6; button.</p>
 <p>2. If you wish to make fake text that is not English, you will have to change the cover text using the process described in the next help item.</p>
-<p>3. The <strong>Words</strong> button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The <strong>Spces</strong> button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than with the other mode. When you click either button, the contents of the box are converted into fake text using the current cover, replacing the previous contents.</p>
+<p>3. The <strong>Words</strong> button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The <strong>Spaces</strong> button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than with the other mode. When you click either button, the contents of the box are converted into fake text using the current cover, replacing the previous contents.</p>
 <p>4. You can now email the fake text, which to an email scanner will be nearly indistinguishable from real text. You can change the punctuation and merge or split lines without changing the encoded material. If you used Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is okay to add more text to complete the last sentence, which may contain additional spaces.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=KwAETd2pgy4" target="_blank">https://www.youtube.com/watch?v=KwAETd2pgy4</a></p></div>
   <hr style="background-color: #c0c0c0">
@@ -5944,7 +5944,7 @@ function remChromeLock(name) {
   <div id="c6" class="texter">
 <p>1. Put the fake text in the box on the main screen. Then click the &#x25B6; button.</p>
 <p>2. If the fake text was encoded with the Words method, you will have to load first the cover text used to do the encoding, using the process described in the next help item.</p>
-<p>3. Now click either the <strong>Words</strong> button or the <strong>Spces</strong> button, it doesn't matter which. If successful, the fake text in the box is converted back into the original item and displayed in the box, replacing the fake text.</p>
+<p>3. Now click either the <strong>Words</strong> button or the <strong>Spaces</strong> button, it doesn't matter which. If successful, the fake text in the box is converted back into the original item and displayed in the box, replacing the fake text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=KwAETd2pgy4" target="_blank">https://www.youtube.com/watch?v=KwAETd2pgy4</a></p></div>
   <hr style="background-color: #c0c0c0">
  
