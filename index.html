@@ -48,6 +48,7 @@
   			-webkit-transform: scale(1.7); /* Safari and Chrome */
   			-o-transform: scale(1.7); /* Opera */
   			padding: 0px;
+			border:1px solid #dcdcdc;
 		}
 		input[type=radio]{
   		/* Larger radio buttons */
@@ -56,7 +57,74 @@
   			-webkit-transform: scale(1.7); /* Safari and Chrome */
   			-o-transform: scale(1.7); /* Opera */
   			padding: 0px;
+			border:1px solid #dcdcdc;
 		}
+.cssbutton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+	background-color:#ededed;
+	-webkit-border-top-left-radius:6px;
+	-moz-border-radius-topleft:6px;
+	border-top-left-radius:6px;
+	-webkit-border-top-right-radius:6px;
+	-moz-border-radius-topright:6px;
+	border-top-right-radius:6px;
+	-webkit-border-bottom-right-radius:6px;
+	-moz-border-radius-bottomright:6px;
+	border-bottom-right-radius:6px;
+	-webkit-border-bottom-left-radius:6px;
+	-moz-border-radius-bottomleft:6px;
+	border-bottom-left-radius:6px;
+	text-indent:0;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	color:#666666;
+	font-size:15px;
+	font-weight:bold;
+	font-style:normal;
+	height:35px;
+	line-height:35px;
+	width:75px;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #ffffff;
+}
+.cssbutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+	background-color:#dfdfdf;
+}
+.cssbutton:active {
+	position:relative;
+	top:1px;
+}
+.cssbox {
+	-webkit-border-top-left-radius:6px;
+	-moz-border-radius-topleft:6px;
+	border-top-left-radius:6px;
+	-webkit-border-top-right-radius:6px;
+	-moz-border-radius-topright:6px;
+	border-top-right-radius:6px;
+	-webkit-border-bottom-right-radius:6px;
+	-moz-border-radius-bottomright:6px;
+	border-bottom-right-radius:6px;
+	-webkit-border-bottom-left-radius:6px;
+	-moz-border-radius-bottomleft:6px;
+	border-bottom-left-radius:6px;
+	text-indent:0;
+	border:4px solid #dfdfdf;
+	background-color: #ffffee;
+	color:#000000;
+	font-size:15px;
+	font-style:normal;
+	text-align:left;
+	text-decoration:none;	
+}
 	</style>
       
     <meta name="Keywords" content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
@@ -97,7 +165,13 @@
         @licend  The above is the entire license notice
         for the JavaScript code in this page.
         */
-		
+
+    if (window.location.protocol == "http:") {				//force SSL/TLS
+
+        var restOfUrl = window.location.href.substr(5);
+        window.location = "https:" + restOfUrl;
+    }
+
 // secrets.js - by Alexander Stetsyuk - released under MIT License
 //substantial edits by F. Ruiz: since RNG used is from SJCL, RNG check is left to SJCL: RNG checking code removed from here.
 
@@ -2869,13 +2943,7 @@ sjcl.ecc.curves = {
 "0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650")
 };
 
-//End of SJCL code, some of its elGamal, ECDSA code is used in the functions below
-
-    if (window.location.protocol == "http:") {				//force SSL/TLS
-
-        var restOfUrl = window.location.href.substr(5);
-        window.location = "https:" + restOfUrl;
-    }
+//End of SJCL code, some of its elGamal, ECDSA code is used in the functions in PassLokhead.js
 
 //Now the ORIGINAL PASSLOK CODE BEGINS
 
@@ -3079,7 +3147,7 @@ function Encrypt_text(){
 		document.getElementById('mainBox').value = "@" + cipherj.iv + cipherj.salt + cipherj.ct;
 		if(typeof window.orientation !== 'undefined'){					//detect mobile
 			main2extra();
-			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Im';
+			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Img';
 			selectMain()
 		}
 	}
@@ -3129,7 +3197,7 @@ function Encrypt_text(){
 		document.getElementById('mainBox').value = "$" + cipherj.iv + cipherj.salt + newLock + cipherj.ct;
 		if(typeof window.orientation !== 'undefined'){											//detect mobile
 			main2extra();
-			mainmsg.innerHTML = 'Locking successful. To be unlocked by ' + name + ' in PFS mode. Copy and click Txt/Im. Must be first locked after reading.';
+			mainmsg.innerHTML = 'Locking successful. To be unlocked by ' + name + ' in PFS mode. Copy and click Txt/Img. Must be first locked after reading.';
 			selectMain()
 		}							
 		lockDB[name][2] = keyEncrypt(key,newKey);							//new Key is stored in the permanent database
@@ -3180,7 +3248,7 @@ function Encrypt_text(){
 		document.getElementById('mainBox').value = "#" + cipherj.iv + cipherj.salt + cipherj.ct;
 		if(typeof window.orientation !== 'undefined'){									//detect mobile
 			main2extra();
-			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Im';
+			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Img';
 			selectMain()
 		}
 	}
@@ -3212,7 +3280,7 @@ function Encrypt_text(){
 		document.getElementById('mainBox').value = cipherj.iv + cipherj.salt + pubstrdum + cipherj.ct;	//display adding dummy public key and anonymous tags, depending on mode
 		if(typeof window.orientation !== 'undefined'){
 			main2extra();
-			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Im';
+			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Img';
 			selectMain()
 		}		
 	}
@@ -3413,14 +3481,15 @@ function Encrypt_for_List(listArray){
 
 //reads key box and stops if there's something wrong or the timer has run out
 function readKey(){
-	if ((new Date().getTime()) - keytimer > 300000) document.getElementById('pwd').value = '';		//erase key after 5 minutes
+	clearTimeout(keytimer);																			//reset key timer
+	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000);
+	
 	var key = document.getElementById('pwd').value.trim();
 	if (key == ""){
 		any2key();
 		document.getElementById("keymsg").innerHTML = 'Please enter your secret Key and retry.';
 		throw ('secret Key needed to encrypt item')
 	}
-	keytimer = new Date().getTime();													//reset key timer
 	return key
 }
 
@@ -4697,14 +4766,11 @@ function searchStringInArrayDB (str, strArray) {
 }
 
 //global variable used for key box expiration
-var keytimer = new Date().getTime();
+var keytimer = 0;
 
 //add entropy as forms are manipulated, reset key boxes after 5 minutes
 function ce() {
 	sjcl.random.addEntropy(Math.floor((((new Date).getMilliseconds()) * 255) / 999), 2, "loadtime");
-	if ((new Date().getTime()) - keytimer > 300000) {
-		document.getElementById('pwd').value = '';
-	}
 };
 
 //now comes the code dealing with page formatting and such
@@ -4808,6 +4874,14 @@ function closelockhelp(){
 	openClose('lockhelp');
 	openClose('lockscr');
 }
+function openquiz(){
+	openClose('mainhelp');
+	openClose('quiz');
+}
+function closequiz(){
+	openClose('quiz');
+	openClose('mainhelp');
+}
 function exitKey(){
 	checkBlacklist(document.getElementById('pwd').value);
 	key2any();
@@ -4843,7 +4917,8 @@ function locknameKeyup(){
 }
 
 function pwdKeyup(){
-	keytimer = new Date().getTime();
+	clearTimeout(keytimer);
+	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000);
 	if (event.keyCode == 13){exitKey()} else return keyStrength(document.getElementById('pwd').value,true);
 }
 function introKeyup(){
@@ -4904,7 +4979,6 @@ function lock2main(){
 		newcover(document.getElementById('lockBox').value);					//this for loading cover text from lock screen
 		document.getElementById("mainmsg").innerHTML = 'Cover text changed'
 	}
-	keytimer = new Date().getTime();
 }
 
 function image2extra(){
@@ -4928,7 +5002,9 @@ function any2key(){
 	document.getElementById("shadow").style.display = "block";	
 }
 function key2any(){
-	keytimer = new Date().getTime();
+	clearTimeout(keytimer);
+	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
+	
 	closebox();
 	var mykey = document.getElementById('pwd').value.trim();
 	if(lockDB['myself'] == null && mykey != ''){					//if "myself" lockDB entry containing the Key's matching Lock is not present, add it
@@ -5021,59 +5097,58 @@ function remChromeLock(name) {
   
 <div id="mainscr" class="texter" style="display: block;">
   <div align="center">
-		<input type="text" id="warning" style="background-color: #FFB0B0; color: #000000;width: 60%; font-size: large; text-align: center" value="Javascript NOT working!" class="ctr" readonly /><br />
-	<br />
+		<input type="text" class="cssbox" id="warning" style="background-color: #FFB0B0; width: 60%; font-size: large; text-align: center" value="Javascript NOT working!" class="ctr" readonly/><br /><br />
 	<span id="mainmsg"></span><br />
 <div id="mainbuttonstop" class="texter" style="display: block;">
-    <button id="myKeyButton" value="myKey" style="font-size:medium;font-weight:bold;color:blue">myKey</button>
-    <button id="main2lockButton" value="Locks" style="font-size:medium;font-weight:bold;color:blue">Locks</button>   
-	<button id="selectMainButton" value="Select" style="font-size:medium">Sel</button>
-	<button id="clearMainButton" value="Clear" style="font-size:medium">Clr</button>
+    <button class="cssbutton" id="myKeyButton" value="myKey" style="color:blue">myKey</button>
+    <button class="cssbutton" id="main2lockButton" value="Locks" style="color:blue">Locks</button>   
+	<button class="cssbutton" id="selectMainButton" value="Select" >Select</button>
+	<button class="cssbutton" id="clearMainButton" value="Clear" >Clear</button>
 </div>
 <div id="extrabuttonstop" class="texter" style="display: none;">
-		<button id="sendMailButton" value="Mail" style="font-size:medium">Mail</button>
-        <button id="sendSMSButton" value="SMS" style="font-size:medium">Txt/Im</button>
-        <button id="secretshareButton" value="Split/Join" style="font-size:medium">Splt/Jn</button>
-        <button id="coverButton" value="Cover" style="font-size:medium">CT</button>
+		<button class="cssbutton" id="sendMailButton" value="Mail" >Mail</button>
+        <button class="cssbutton" id="sendSMSButton" value="SMS" >Txt/Img</button>
+        <button class="cssbutton" id="secretshareButton" value="Split/Join" >Splt/Jn</button>
+        <button class="cssbutton" id="coverButton" value="Cover" >Cover</button>
 </div>
     </div>
-    <div align="center">     
-    		<textarea id="mainBox" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="The text to be locked, unlocked, or signed goes here.   Before locking or verifying, you need to enter the other person's Lock by clicking the Locks button."></textarea>
+    <div align="center">
+    		<textarea class="cssbox" id="mainBox" name="text" rows="13" style="width:96%;" placeholder="The text to be locked, unlocked, or signed goes here.   Before locking or verifying, you need to enter the other person's Lock by clicking the Locks button."></textarea>
     </div>
 	<div align="center">
 <div id="mainbuttonsbot" class="texter" style="display: block;">
-    	<button id="openmainhelpButton" value="Help" style="font-size:medium;color: rgb(0, 150, 0)">Help</button>
-    	<button id="decryptButton" value="Lock/Unlock" style="font-size:medium;font-weight:bold;color:blue">Lk/Un</button>
-		<button id="verifyButton" value="Sign/Verify" style="font-size:medium">Sig/Ver</button>
-    	<button id="main2extraButton" value="More" style="font-size:medium;color:orange">&#x25B6;</button><br /><br />
+    	<button class="cssbutton" id="openmainhelpButton" value="Help" style="color: #009400">Help</button>
+    	<button class="cssbutton" id="decryptButton" value="Lock/Unlock" style="color:blue">Lck/Unl</button>
+		<button class="cssbutton" id="verifyButton" value="Sign/Verify" >Sig/Ver</button>
+    	<button class="cssbutton" id="main2extraButton" value="More" style="color:orange">&#x25B6;</button><br /><br />
         Mode:&nbsp;&nbsp;<input type="radio" name="lockmodes" id="anonmode" checked/>&nbsp; Anon.&nbsp;&nbsp;
-        <input type="radio" name="lockmodes" id="signedmode" />&nbsp; Signed&nbsp;&nbsp;
-        <input type="radio" name="lockmodes" id="pfsmode" />&nbsp; PFS&nbsp;&nbsp;
+        <input type="radio" name="lockmodes" id="signedmode"/>&nbsp; Signed&nbsp;&nbsp;
+        <input type="radio" name="lockmodes" id="pfsmode"/>&nbsp; PFS&nbsp;&nbsp;
         <br /><br />
-    	<input type="checkbox" id="shortmode" />&nbsp; Short&nbsp;&nbsp;
-    	<input type="checkbox" id="notags" />&nbsp; No tags&nbsp;&nbsp;
-        <input type="checkbox" id="decoymode" />&nbsp; Decoy&nbsp;
+    	<input type="checkbox" id="shortmode"/>&nbsp; Short&nbsp;&nbsp;
+    	<input type="checkbox" id="notags"/>&nbsp; No tags&nbsp;&nbsp;
+        <input type="checkbox" id="decoymode"/>&nbsp; Decoy&nbsp;
 </div>
 <div id="extrabuttonsbot" class="texter" style="display: none;">
-        <button id="openextrahelpButton" value="Help" style="font-size:medium;color: rgb(0, 150, 0)">Help</button>
-    	<button id="wordsButton" value="Words" style="font-size:medium">Words</button>
-		<button id="spacesButton" value="Spaces" style="font-size:medium">Spces</button>
-        <button id="extra2mainButton" value="Less" style="font-size:medium;color:orange">&#x25C0;</button><br />
+        <button class="cssbutton" id="openextrahelpButton" value="Help" style="color: #009400">Help</button>
+    	<button class="cssbutton" id="wordsButton" value="Words" >Words</button>
+		<button class="cssbutton" id="spacesButton" value="Spaces" >Spaces</button>
+        <button class="cssbutton" id="extra2mainButton" value="Less" style="color:orange">&#x25C0;</button><br />
     <div align="center" id="fileIO">
     	<p>File In/Out (Chrome,Firefox,Safari)</p>
-    	<input type="file" id="fileToLoad" style="font-size:medium"/>
-        <input type="button" id="savefileButton" value="Save" style="font-size:medium"/>
+    	<input class="cssbutton" type="file" id="fileToLoad" style="width:85px"/>
+        <input class="cssbutton" type="button" id="savefileButton" value="Save"/>
     </div>
 </div>
   </div> 
 </div>
     
 <div id='imagescr' class="texter" style="display: none;" align="center">
-    <button id="image2extraButton" value="< Back" style="font-size:medium">&#x25C0; Back</button>
-    <button id="encode" value="Hide" style="font-size:medium">Hide</button>
-    <button id="decode" value="Reveal" style="font-size:medium">Reveal</button><br /><br />
+    <button class="cssbutton" id="image2extraButton" value="< Back" >&#x25C0; Back</button>
+    <button class="cssbutton" id="encode" value="Hide" >Hide</button>
+    <button class="cssbutton" id="decode" value="Reveal" >Reveal</button><br /><br />
        
-    <input type='file' id='file' style="font-size:medium"/><br /><br />
+    <input class="cssbutton" type='file' id='file' style="width:85px"/><br /><br />
   
     <span id="imagemsg"></span><br />
 
@@ -5085,26 +5160,26 @@ function remChromeLock(name) {
 
 <div id="lockscr" class="texter" style="display: none;" align="center">
     <div align="center">
-       <button id="lock2mainButton" value="< Back" style="float: left;font-size:medium;">&#x25C0; Back</button>
-       <button id="lock2dirButton" value="Directory" style="font-size:medium">Lock directory</button>
-       <button id="clearLocksButton" value="Clear" style="float: right; font-size:medium;">Clear</button><br /><br />
+       <button class="cssbutton" id="lock2mainButton" value="< Back" style="float: left">&#x25C0; Back</button>
+       <button class="cssbutton" id="lock2dirButton" value="Directory" style="width:140px">Lock directory</button>
+       <button class="cssbutton" id="clearLocksButton" value="Clear" style="float: right">Clear</button><br /><br />
     </div> 
     <div align="center">
     	<span id="lockmsg"></span><br />
-    	<input type="text" id="locknameBox" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Enter the name first, then enter the item in the large box." /></div><br  /><br />
+    	<input type="text" class="cssbox" id="locknameBox" style="width: 92%;" name="text" placeholder="Enter the name first, then enter the item in the large box."/></div><br /><br />
     <div align="center">
-    	<button id="addLockButton" value="Save" style="font-size:medium">Save</button>
-		<button id="removeLockButton" value="Del." style="font-size:medium">Del</button>
-        <button id="resetPFSButton" value="Reset" style="font-size:medium">Reset</button>
-        <button id="addToListButton" value="List" style="font-size:medium">List</button>
+    	<button class="cssbutton" id="addLockButton" value="Save" >Save</button>
+		<button class="cssbutton" id="removeLockButton" value="Del." >Delete</button>
+        <button class="cssbutton" id="resetPFSButton" value="Reset" >Reset</button>
+        <button class="cssbutton" id="addToListButton" value="List" >List</button>
     </div>
-		<textarea id="lockBox" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="13" placeholder="Enter Locks and shared Keys here.   If the item has a name, first enter the name in the box above."></textarea>
+		<textarea class="cssbox" id="lockBox" style="width: 96%" name="text" rows="13" placeholder="Enter Locks and shared Keys here.   If the item has a name, first enter the name in the box above."></textarea>
 
 	<div align="center">
-        <button id="openlockhelpButton" value="Help" style="font-size:medium;color: rgb(0, 150, 0);">Help</button>
-		<button id="showLockDBButton" value="All" style="font-size:medium">All</button>
-        <button id="mergeLockDBButton" value="Merge" style="font-size:medium">Merge</button>
-        <button id="moveLockDBButton" value="Move" style="font-size:medium">Move</button>
+        <button class="cssbutton" id="openlockhelpButton" value="Help" style="color: #009400">Help</button>
+		<button class="cssbutton" id="showLockDBButton" value="All" >All</button>
+        <button class="cssbutton" id="mergeLockDBButton" value="Merge" >Merge</button>
+        <button class="cssbutton" id="moveLockDBButton" value="Move" >Move</button>
     </div>
 </div> 
         
@@ -5112,17 +5187,17 @@ function remChromeLock(name) {
 
 <div id="keyscr" class="white_content" align="center" style="display: block;">
   	<div align="center">
-    	<button id="exitKeyButton" value="< Back" style="float:left;font-size:medium;">&#x25C0; Close</button>
-        <button id="clearKeyButton" value="Clear" style="float:right;font-size:medium">Reset</button>   	
+    	<button class="cssbutton" id="exitKeyButton" value="< Back" style="float:left;;">&#x25C0; Close</button>
+        <button class="cssbutton" id="clearKeyButton" value="Clear" style="float:right;">Reset</button>   	
     </div><br /><br />
     <div align="center">        
       		<span id="keymsg">First enter your Key</span><br /><br />
-			<input type="password" autocomplete="off" id="pwd" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Enter your secret Key here.  Then click Make Lock if you need to see your Lock." align="center"><br /><br />
+			<input type="password" class="cssbox" autocomplete="off" id="pwd" style="width: 92%" name="text" placeholder="Enter your secret Key here.  Then click Make Lock if you need to see your Lock." align="center"><br /><br />
     </div>
     <div align="center">
-		<input type="checkbox" id="showKey" style="font-size:medium"> Show 
-        <button id="makelockButton" value="Make Lock" style="font-size:medium;font-weight:bold;color:blue">Make Lock</button><br /><br />
-        <button id="openkeyhelpButton" value="Help" style="font-size:medium;color: rgb(0, 150, 0);">Click here for Help</button>
+		<input type="checkbox" id="showKey" > Show 
+        <button class="cssbutton" id="makelockButton" value="Make Lock" style="color:blue;width:110px">Make Lock</button><br /><br />
+        <button class="cssbutton" id="openkeyhelpButton" value="Help" style="color: #009400">Help</button>
 	</div>
     <div id="keyhelp" class="texter" align="left" style="width:98%;display: none;">        
       	<p>This is your secret Key, which gives you access to the rest of PassLok. You must memorize it and never write it down. As you type your Key, a text above it will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and numbers at start and end are not helpful and will be ignored for the strength score.</p>
@@ -5145,22 +5220,22 @@ function remChromeLock(name) {
     </div>
   	<div align="center">        
       		<span id="intromsg" style="color:green">This is where the score will appear</span><br /><br />
-			<input type="password" autocomplete="off" id="pwdIntro" style="background-color: rgb(255, 255, 240); color: #000000; width: 92%; font-size: medium" name="text" placeholder="Enter your secret Key here." align="center"><br /><br />
+			<input type="password" class="cssbox" autocomplete="off" id="pwdIntro" style="width: 92%" name="text" placeholder="Enter your secret Key here." align="center"><br /><br />
     </div>
     <div align="center">
-		<input type="checkbox" id="showIntroKey" style="font-size:medium"> Show 
-      <button id="clearIntroButton" value="Clear" style="font-size:medium">Clear</button>
+		<input type="checkbox" id="showIntroKey" > Show 
+      <button class="cssbutton" id="clearIntroButton" value="Clear" >Clear</button>
       <br /><br />
 	</div>
     <div class="texter" align="left" style="display: block;">
       	<p>Please take your time to come up with a strong Key. PassLok compensates for weak Keys by adding computations. If your Key strength is worse than Medium, <strong>PassLok will be very slow.</strong></p>       
       	<p>You will <strong>never give this Key to anyone</strong>. Instead, you will give them a <strong>Lock</strong> matching your Key. The Lock is made from the Key, but it is impossible to retrieve a Key from its matching Lock. A Lock consists of a series of 87 random-looking characters, bracketed by &quot;PL17lok&quot; tags.</p></div>
     <div align="center">
-  <button id="makelockIntroButton" value="Make Lock" style="font-size:medium;font-weight:bold;color:blue" align="center">Make Lock</button>
+  <button class="cssbutton" id="makelockIntroButton" value="Make Lock" style="color:blue;width:140px" align="center">Make Lock</button>
   </div>
   <div class="texter" align="left" style="display: block;">
         <p>When you click the <strong>Make Lock</strong> button above, this screen will close and the Lock matching your Key will appear in PassLok's main screen, from where you can copy it, email it, text it, and even post it on PassLok's general directory.</p>
-        <p>To lock a message so it turns into unreadable gibberish, the sender inputs the plain message in PassLok's main screen, then clicks <strong>Locks</strong> to get to the Locks screen, and puts <strong>the recipient's Lock</strong> in the big box there. Back at the main screen, the message is locked when the sender clicks <strong>Lk/Un</strong>. The recipient unlocks the locked message by putting it in the main box and clicking <strong>Lk/Un</strong>.</p>
+        <p>To lock a message so it turns into unreadable gibberish, the sender inputs the plain message in PassLok's main screen, then clicks <strong>Locks</strong> to get to the Locks screen, and puts <strong>the recipient's Lock</strong> in the big box there. Back at the main screen, the message is locked when the sender clicks <strong>Lck/Unl</strong>. The recipient unlocks the locked message by putting it in the main box and clicking <strong>Lck/Unl</strong>.</p>
         <p>The main screen, like all other screens in PassLok, has a <strong style="color:green">Help</strong> button that will give you complete instructions on how to do things.</p>
         <p>Please go ahead and write your secret Key in the box, then click the <strong>Make Lock</strong> button.</p>
 
@@ -5170,67 +5245,71 @@ function remChromeLock(name) {
 <div id="decoyIn" class="white_content" align="center">
     	<p>Enter the Decoy Password</p> 
 		<span id="decoymsg"></span><br /> 
-    	<input type="password" id="decoyPwdIn" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
+    	<input type="password" class="cssbox" id="decoyPwdIn" style="width: 98%" name="key"/>
 		<p>Enter the Hidden Message</p>      
-		<textarea id="decoyText" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="text" rows="3"></textarea>
-        <input type="checkbox" id="showdecIn" style="font-size:medium"> Show
-    	<button id="submitDecoyButton" value="OK" style="font-size:medium">OK</button>
-		<button id="cancelDecoyButton" value="Cancel" style="font-size:medium">Cancel</button>  
+		<textarea id="decoyText" class="cssbox" style="width: 98%" name="text" rows="3"></textarea>
+        <input type="checkbox" id="showdecIn" > Show
+    	<button class="cssbutton" id="submitDecoyButton" value="OK" >OK</button>
+		<button class="cssbutton" id="cancelDecoyButton" value="Cancel" >Cancel</button>  
 </div>
        
 <div id="decoyOut" class="white_content" align="center">
 		<p>Enter the Decoy Password</p> 
-    	<input type="password" id="decoyPwdOut" style="background-color: rgb(255, 255, 240); color: #000000; width: 98%; font-size: medium" name="key"/>
-        <input type="checkbox" id="showdecOut" style="font-size:medium"> Show   
-    	<button id="submitDecoy2Button" value="OK" style="font-size:medium">OK</button>
-		<button id="cancelDecoy2Button" value="Cancel" style="font-size:medium">Cancel</button>
+    	<input type="password" class="cssbox" id="decoyPwdOut" style="width: 98%" name="key"/>
+        <input type="checkbox" id="showdecOut" > Show   
+    	<button class="cssbutton" id="submitDecoy2Button" value="OK" >OK</button>
+		<button class="cssbutton" id="cancelDecoy2Button" value="Cancel" >Cancel</button>
     	<p>The Hidden message will appear on the main screen</p>  
 </div>
     
 <div id="partsIn" class="white_content" align="center">
 		<p>Enter the total number of parts (between 2 and 255)</p> 
-    	<input type="text" id="partsNumber" style="background-color: rgb(255, 255, 240); color: #000000; width: 30%; font-size: medium" name="text" rows="1"/><br />
+    	<input type="text" class="cssbox" id="partsNumber" style="width: 30%" name="text" rows="1"/><br />
 		<p>And the number of parts needed to retrieve the item</p> 
-    	<input type="text" id="partsQuorum" style="background-color: rgb(255, 255, 240); color: #000000; width: 30%; font-size: medium" name="text" rows="1"/><br /> <br />  
-    	<button id="submitPartsButton" value="OK" style="font-size:medium">OK</button>
-		<button id="cancelPartsButton" value="Cancel" style="font-size:medium">Cancel</button>
+    	<input type="text" class="cssbox" id="partsQuorum" style="width: 30%" name="text" rows="1"/><br /> <br />  
+    	<button class="cssbutton" id="submitPartsButton" value="OK" >OK</button>
+		<button class="cssbutton" id="cancelPartsButton" value="Cancel" >Cancel</button>
 </div>
 
 <div id="mainhelp" class="texter" style="display: none;">
- 	<button id="closemainhelpButton" value="< Back" style="font-size:medium">&#x25C0; Back</button>
-    <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" onBlur="ce();" onFocus="ce();" style="font-size:medium"/></strong></p>    
+ 	<button class="cssbutton" id="closemainhelpButton" value="< Back" >&#x25C0; Back</button>
+    <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode"/></strong></p>    
 	<p>For instructions on how to do things, click on each title below. Click again to hide.</p>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <p>If you would like to take the PassLok quiz, click this button: 
+<button class="cssbutton" id="openquizButton" value="Quiz" style="width:140px">Go to Quiz</button>
+</p>
     
-        <div id="aa1" style="cursor:hand; cursor:pointer">
+  <hr style="background-color: #c0c0c0">
+    
+        <div id="aa1" style="cursor:pointer">
 	<h3>I don't know how to start. Please help</h3>
     </div>
     <div id="a1" class="texter">
     <p>Before you do aything else, you may want to watch this six-minute video, which explains the essential concepts in a lighthearted way: <a href="https://www.youtube.com/watch?v=GqIm7fu_rMs" target="_blank">https://www.youtube.com/watch?v=GqIm7fu_rMs</a></p>
     <p>If you don't have time for the video, here's the two-paragraph version. PassLok locks messages and files, turning them into gibberish so only the intended recipients can return them to their original form and read them. It is based on digital Keys and Locks. A Lock is used to lock a message,  and then only the matching Key can unlock it so it becomes readable again. A Key is a piece of text that you choose and memorize; it is personal and should never be revealed to anyone. You make your Lock from your Key, and then you give it to people so they can lock messages for you to read.  It is impossible to get the Key from its matching Lock. Keys are to be kept <em>secret</em>, but Locks are made to be <em>widely distributed</em>. Locks look like gibberish but have tags at both ends of the form &quot;PL17lok&quot;.</p>
-    <p>The first step is to come up with a secret Key that you can remember. You enter it in PassLok by clicking the <strong>myKey</strong> button. Then you make its matching Lock by clicking the <strong>Make Lock</strong> button on that screen. Then you click the <strong>Done</strong> button to go back to the main screen and see your Lock and copy it. You give this Lock to all the people you wish to write to you in secret. They will also send you their Locks, which you can store anywhere you want. To lock a message, the sender puts the plain message in the main box, then clicks <strong>Locks</strong> to get to the Locks screen, and puts the recipient's Lock in the big box there. Back at the main screen, the message is locked when the sender clicks <strong>Lk/Un</strong> (Lock/Unlock). The recipient unlocks the locked message by putting it in the main box and clicking <strong>Lk/Un</strong>. If the recipient had previously entered his/her secret Key, the original plain message is displayed.</p>
+    <p>The first step is to come up with a secret Key that you can remember. You enter it in PassLok by clicking the <strong>myKey</strong> button. Then you make its matching Lock by clicking the <strong>Make Lock</strong> button on that screen. Then you click the <strong>Done</strong> button to go back to the main screen and see your Lock and copy it. You give this Lock to all the people you wish to write to you in secret. They will also send you their Locks, which you can store anywhere you want. To lock a message, the sender puts the plain message in the main box, then clicks <strong>Locks</strong> to get to the Locks screen, and puts the recipient's Lock in the big box there. Back at the main screen, the message is locked when the sender clicks <strong>Lck/Unl</strong> (Lock/Unlock). The recipient unlocks the locked message by putting it in the main box and clicking <strong>Lck/Unl</strong>. If the recipient had previously entered his/her secret Key, the original plain message is displayed.</p>
 	<p>PassLok is very powerful, combining AES encryption with elliptic curves at the strongest levels defined by standards, and including several ways to hide the result from prying eyes. All processing occurs on your device with no server involved, so your privacy cannot be compromised by third parties. But great power means a lot of buttons.</p>
 	<p>Fortunately, only four buttons are essential to get started. They are <span style="color:blue">highlighted in blue:</span></p>
     <p><span style="color:blue"><strong>myKey</strong></span> opens a dialog where you can enter your secret Key, which is needed for most advanced functions in PassLok. It is also needed to unlock messages locked with your personal Lock, which is not secret. To display this Lock, click the <strong>Make Lock</strong> button.</p>
     <p><span style="color:blue"><strong>Make Lock</strong></span> (visible after clicking myKey) creates the Lock matching the Key that has been entered in the Key dialog and writes it on the main screen, from where it can be copied, emailed, etc. Clicking a second time opens it in the general Lock directory, so you can post it for others to get or check that the posted Lock is still authentic.</p>
 	<p><span style="color:blue"><strong>Locks</strong></span> opens a screen where you can enter somebody's Lock or shared Key, which is needed to lock the contents of the main box.</p>
-	<p><span style="color:blue"><strong>Lk/Un</strong></span> (abbreviated from Lock/Unlock) locks the plain message in the main box, or unlocks it if it was locked. The appropriate Lock or shared Key must have been entered previously by means of the <strong>Locks</strong> buttons.</p>
+	<p><span style="color:blue"><strong>Lck/Unl</strong></span> (abbreviated from Lock/Unlock) locks the plain message in the main box, or unlocks it if it was locked. The appropriate Lock or shared Key must have been entered previously by means of the <strong>Locks</strong> buttons.</p>
 	
 	<p>With these four buttons, you can get started locking and unlocking messages with very high security. Here's another video that shows this (made for version 1.6, though): <a href="https://www.youtube.com/watch?v=3wrhfzU4DFc" target="_blank">https://www.youtube.com/watch?v=3wrhfzU4DFc</a>    </p></div>
-	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+	<hr style="background-color: #c0c0c0">
 
-    <div id="aa2" style="cursor:hand; cursor:pointer">
+    <div id="aa2" style="cursor:pointer">
 <h3>Save PassLok to my device, so I don't have to download it again</h3>  
 </div>
       <div id="a2" class="texter">
 <p>PassLok is designed to save its code within the browser, so it only gets downloaded again if the code has changed. In the case of the Chrome packaged app, updates are automatic. Once PassLok has reached your device from its source server, it works even if the device is offline. Just make a bookmark on your browser so you can access it quickly. Still, you can make it behave even more like an app, this way:</p>
 <p>1. If you are using a computer, you can direct the Browser to save the code to a local file via the "Save as..." command from the browser menu. Then you can place a link or shortcut to that file on your desktop. Even better than the "Save as..." command is to direct the browser to display the source (Ctrl-U or cmd-ctrl-U does it, on most devices and browsers), and then save the page that appears with the "Save as..." command. This way you'll save the original code rather than the code after it has been interpreted by the browser.</p>
-<p>2. From an iOS device, it is as easy as loading PassLok on Safari, and then selecting "Add to Home Screen" from the box and arrow icon at the bottom of the screen.</p>
+<p>2. From an iOS device, it is as easy as loading PassLok on Safari, and then selecting "Add to Home Screen" from the box and arrow icon at the bottom of the screen. Be aware, however, that in this case PassLok will reset to its initial state every time you leave the app.</p>
 <p>3. On Android, the same is typically achieved by first making a bookmark of the PassLok page, then tap-holding on the PassLok bookmark and selecting "Add to Home Screen." On some versions you can also tap-hold on the desktop screen and select "Add to Home Screen" followed by "Shortcut", "Bookmark", and selecting PassLok from the list. Newer versions of Android have still more direct ways to do this.</p>      
       </div>
- 	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+ 	<hr style="background-color: #c0c0c0">
     
-      <div id="aa3" style="cursor:hand; cursor:pointer">
+      <div id="aa3" style="cursor:pointer">
 <h3>Make a strong Key</h3>
 </div>
 	<div id="a3" class="texter">
@@ -5250,9 +5329,9 @@ function remChromeLock(name) {
   <p>5. If you change your Key after having used a different Key for a long time, be aware that any information stored locally, such as other people's Locks, shared Keys, etc. <strong>will become unavailable</strong>, leading to all sorts of problems. You may want to copy the items in your local directory to a different location, delete the database, and enter the items again after you change your Key.</p>
   <p>6. PassLok never stores your Key. As a matter of fact, it deletes it from the myKey box after five minutes of not being used.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
   
-  <div id="aa4" style="cursor:hand; cursor:pointer">
+  <div id="aa4" style="cursor:pointer">
 <h3>Display the Lock that matches your secret Key</h3>
 </div>
 <div id="a4" class="texter">
@@ -5264,9 +5343,9 @@ function remChromeLock(name) {
   not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking.</p>
 <p>3. If you click <strong>Make Lock</strong> a second time, the general Lock directory screen will open with the lower box filled with the Lock you just made. If you supply your email, you'll be able to use the buttons on that screen to post it to the directory or check that it has not changed.</p>
   <p>Most of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
       
-  <div id="aa5" style="cursor:hand; cursor:pointer">
+  <div id="aa5" style="cursor:pointer">
 <h3>Lock a message with a Lock, to be unlocked with the matching
   Key, without signing it (anonymous mode)</h3>
 </div>
@@ -5276,7 +5355,7 @@ function remChromeLock(name) {
    are missing, or extra spaces, carriage returns, or special characters
    other than = + or / have been added. If you have previously stored it in your device's Locks directory, you can retrieve it by clicking the <strong>Locks</strong> button and then beginning to type the name associated with the Lock in the top box.</p>
  <p>3. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead of the Lock itself.</p>
-<p>4. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
+<p>4. Write or paste your message in the main box. Click the <strong>Lck/Unl</strong> button. The
   locked message will appear in the main box, replacing the original message. Copy it and paste it into your
   communications program or click &#x25B6;, followed by Mail to open your default email. 
   It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -5285,9 +5364,9 @@ function remChromeLock(name) {
   punctuation other than = + / or % This message can only be unlocked by
   someone who has the Key matching the Lock used to lock it.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0eYxeplsSx0" target="_blank">https://www.youtube.com/watch?v=0eYxeplsSx0</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
   
-  <div id="aa6" style="cursor:hand; cursor:pointer">
+  <div id="aa6" style="cursor:pointer">
 <h3>Unlock an anonymous locked message (tags
   are PL**msa)</h3>
   </div>
@@ -5296,13 +5375,13 @@ function remChromeLock(name) {
 <p>2. If you didn't do it when PassLok opened, write your secret Key into the box that is accessed by clicking <strong>myKey</strong>. It is masked by default, so if you want to display it, check the Show checkbox.</p>
 <p>3. Paste the locked message into the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + / or % or is
-  missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
+  missing its tags. Then click the <strong>Lck/Unl</strong> button. The unlocked message
   will appear in the main box, replacing the locked message.</p>
 <p>4. Unlocking may fail if you have changed your Key recently and your locally stored Lock has not been updated. In that case, click the <strong>Reset</strong> button in the Locks screen to delete your stored Lock and try again.</p>
 <p>Most of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=0eYxeplsSx0" target="_blank">https://www.youtube.com/watch?v=0eYxeplsSx0</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
 
-  <div id="aa7" style="cursor:hand; cursor:pointer">
+  <div id="aa7" style="cursor:pointer">
 <h3>Lock a message with a Lock, to be unlocked with the matching
           Key, and sign it with your secret Key (signed mode)</h3>
   </div>
@@ -5313,7 +5392,7 @@ function remChromeLock(name) {
           are missing, or extra spaces, carriage returns, or special characters
           other than = + or / have been added. If you have previously stored it in your device's Locks directory, you can retrieve it by clicking the <strong>Locks</strong> button and then beginning to type the name associated with the Lock in the top box.</p>
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead of the Lock itself.</p>
-        <p>5. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
+        <p>5. Write or paste your message in the main box. Click the <strong>Lck/Unl</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
           communications program or click &#x25B6;, followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -5323,9 +5402,9 @@ function remChromeLock(name) {
           someone having the Key matching the Lock used to lock it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
         <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=F6Ov4MSk2XA" target="_blank">https://www.youtube.com/watch?v=F6Ov4MSk2XA</a></p>
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
   
-  <div id="aa8" style="cursor:hand; cursor:pointer">
+  <div id="aa8" style="cursor:pointer">
 <h3>Unlock a message  signed with the sender's Key (tags are PL**mss)</h3>
     </div>
   <div id="a8" class="texter">
@@ -5335,13 +5414,13 @@ function remChromeLock(name) {
       <p>3. Paste the sender's Lock in the large box of the Locks screen. If the Lock has been previously stored, you can retrieve it by typing the name associated with it in the small box at the top.      </p>
       <p>3. Paste the locked message in the main box. It is okay if it is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
-        missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
+        missing its tags. Then click the <strong>Lck/Unl</strong> button. The unlocked message
         will appear in the main box, replacing the locked message.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=F6Ov4MSk2XA" target="_blank">https://www.youtube.com/watch?v=F6Ov4MSk2XA</a></p>
 </div>
-      <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+      <hr style="background-color: #c0c0c0"/>
 
-  <div id="aa9" style="cursor:hand; cursor:pointer">
+  <div id="aa9" style="cursor:pointer">
 <h3>Lock a message so that nobody can read it after the exchange is over (PFS mode)</h3>
   </div>
   <div id="a9" class="texter">
@@ -5349,7 +5428,7 @@ function remChromeLock(name) {
         <p>2. If you didn't do it when PassLok opened, write your secret Key into the box that is accessed by clicking <strong>myKey</strong>. It is masked by default, so if you want to display it, check the Show checkbox.</p>
         <p>3. This mode requires the recipient's Lock or shared Key to be previously stored in the device's local directory. Follow the instructions from the Locks <strong>Help</strong> button to do this. Once the item is stored, you can retrieve it by beginning to type its name in the top box of the Locks screen. If you are restarting a PFS conversation that was interrupted, you must first clear the old PFS data for that recipient by clicking the <strong>Reset</strong> button after the recipient's name is displayed.</p>
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead of the Lock itself.</p>
-        <p>5. Write or paste your message in the main box. Click the <strong>Lk/Un</strong> button. The
+        <p>5. Write or paste your message in the main box. Click the <strong>Lck/Unl</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
           communications program or click &#x25B6;, followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
@@ -5357,12 +5436,12 @@ function remChromeLock(name) {
           also okay to split the locked message with spaces, line returns, and
           punctuation other than = + / or % This message can only be unlocked by
           someone having the Key matching the Lock used to lock it.</p>
-        <p>6. If Short mode is used, locking cannot be repeated without corrupting the PFS data stored in the device, which will make it impossible for the recipient to unlock the message (unless it is re-locked as a regular length message). Make sure your plain message is what you want before clicking <strong>Lk/Un</strong>. This restriction does not apply to regular length messages, but you will get a warning alerting you if you are skipping a turn.</p>
+        <p>6. If Short mode is used, locking cannot be repeated without corrupting the PFS data stored in the device, which will make it impossible for the recipient to unlock the message (unless it is re-locked as a regular length message). Make sure your plain message is what you want before clicking <strong>Lck/Unl</strong>. This restriction does not apply to regular length messages, but you will get a warning alerting you if you are skipping a turn.</p>
         <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=oVJPJJuUCgQ" target="_blank">https://www.youtube.com/watch?v=oVJPJJuUCgQ</a></p>
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
   
-  <div id="aa10" style="cursor:hand; cursor:pointer">  
+  <div id="aa10" style="cursor:pointer">  
 <h3>Unlock a message  that was locked in PFS mode (tags are PL**msp)</h3>
     </div>
   <div id="a10" class="texter">
@@ -5372,21 +5451,21 @@ function remChromeLock(name) {
       <p>3. This mode requires the recipient's Lock or shared Key to be previously stored in the device's local directory. Retrieve the item by typing the name associated with it in the small box at the top. The name must be displayed in full on the message above the box for PFS mode to work.</p>
       <p>4. Paste the locked message in the main box. It is okay if it is broken up by
         spaces, carriage returns, and special characters other than = + or / or is
-        missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
+        missing its tags. Then click the <strong>Lck/Unl</strong> button. The unlocked message
         will appear in the main box, replacing the locked message.</p>
       <p>5. If this was a Short mode message, it can be unlocked only once. Attempting to unlock it again will corrupt the PFS data stored in the device, which is needed to keep the conversation going.  This restriction does not apply to regular length messages, but you will get a warning alerting you that a turn was skipped.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=oVJPJJuUCgQ" target="_blank">https://www.youtube.com/watch?v=oVJPJJuUCgQ</a></p>
   </div>
-      <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+      <hr style="background-color: #c0c0c0"/>
       
-  <div id="aa11" style="cursor:hand; cursor:pointer">
+  <div id="aa11" style="cursor:pointer">
 <h3>Lock a message with a shared Key, to be unlocked with the same Key</h3>  
 </div>
       <div id="a11" class="texter">
 <p>1. It does not matter which of the radio buttons below the main box is selected, since they do not apply to this mode.</p>
 <p>2. Write or paste the shared Key in the large box that is accessed with the <strong>Locks</strong> button. If the shared Key was previously stored, you can search for it by typing in the top box the name associated with the Key. When you type "Enter", the stored Key is decrypted for you to see.  For a stored Key to function, your secret Key must have been  entered previously by clicking the <strong>myKey</strong> button.</p>
 <p>3. To lock a message so it can be read by several people, place their respective shared Keys in the box, one per line. If a Key was previously stored, you can write the name associated with that Key, instead. You can mix shared Keys and Locks.</p>
-<p>4. Write or paste the message in the main box. Click the <strong>Lk/Un</strong> button. The
+<p>4. Write or paste the message in the main box. Click the <strong>Lck/Unl</strong> button. The
   locked message will appear in the main box, replacing the original text. Copy it and paste it into your
   communications program or click &#x25B6;, and then <strong>Mail</strong> to open your default email program. 
   It is okay to strip the tags up to the "=" sign, but not recommended; 
@@ -5396,9 +5475,9 @@ function remChromeLock(name) {
   someone having the same shared Key.</p>
 <p>5. The tags will depend on the type of locking selected for using Locks. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
   <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=zFbsTwdHRYQ" target="_blank">https://www.youtube.com/watch?v=zFbsTwdHRYQ</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
   
-  <div id="aa12" style="cursor:hand; cursor:pointer">
+  <div id="aa12" style="cursor:pointer">
  <h3>Unlock a message locked with a shared Key</h3>
 </div>
       <div id="a12" class="texter">
@@ -5406,40 +5485,40 @@ function remChromeLock(name) {
 <p>2. Write or paste the shared Key in the large box that is accessed with the <strong>Locks</strong> button. If the Key was previously stored, you can search for it by typing in the top box the name associated with the Key. When you type "Enter", the stored Key is decrypted for you to see. For a stored Key to function, your secret Key must have been entered previously by clicking the <strong>myKey</strong> button.</p>
 <p>3. Paste the locked message in the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters other than = + / or % or is
-  missing its tags. Then click the <strong>Lk/Un</strong> button. The unlocked message
+  missing its tags. Then click the <strong>Lck/Unl</strong> button. The unlocked message
   will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial:<a href="https://www.youtube.com/watch?v=zFbsTwdHRYQ" target="_blank">https://www.youtube.com/watch?v=zFbsTwdHRYQ</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
    
-    <div id="aa13" style="cursor:hand; cursor:pointer">     
+    <div id="aa13" style="cursor:pointer">     
     <h3>Make a short locked message suitable for texting</h3>
 </div>
 <div id="a13" class="texter">
 <p>1. Check the <strong>Short</strong> checkbox below the main box. Also make sure the appropriate locking mode is selected with the radio buttons. The radio buttons don't matter if the message is being locked with a shared Key.</p>
 <p>2. Write or paste your message into the main box. Message length is limited to 58
   ASCII characters when locking with a shared Key or in signed mode, 38 in anonymous mode, 37 in PFS mode. Non-ASCII characters use 6 spaces each, so avoid them if
-  you can. Any text beyond the limit will be lost. A message above the main box will tell you how much space is left, depending on the locking mode selected. Click the <strong>Lk/Un</strong> button.</p>
+  you can. Any text beyond the limit will be lost. A message above the main box will tell you how much space is left, depending on the locking mode selected. Click the <strong>Lck/Unl</strong> button.</p>
 <p>3. The locked message will appear in the main box, replacing the original message. Copy it and paste it into your communications program. The locked
   message, which has no tags, will fit within one SMS message (160
   characters).</p>
-<p>4. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>Txt/Im</strong> button, which will open your texting app.</p>
+<p>4. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>Txt/Img</strong> button, which will open your texting app.</p>
 <p>5. Short mode is not available for multiple recipients.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=Ly9ESisRKE8" target="_blank">https://www.youtube.com/watch?v=Ly9ESisRKE8</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
   
-  <div id="aa14" style="cursor:hand; cursor:pointer">
+  <div id="aa14" style="cursor:pointer">
 <h3>Unlock a short locked message (no tags)</h3>
   </div>
   <div id="a14" class="texter">
 <p>1. It does not matter which of the radio buttons below the main box is selected, or whether the Short checkbox is checked, since the locking mode is determined automatically from the locked message itself.</p>
 <p>2. Paste the locked message into the main box. It is okay if it is broken up by
   spaces, carriage returns, and special characters. As with regular-length messages, either a shared Key must be entered in the <strong>Locks</strong> box, or your secret Key in its own box, prior to unlocking. 
-  Then click the <strong>Lk/Un</strong> button.</p>
+  Then click the <strong>Lck/Unl</strong> button.</p>
 <p>3. The unlocked message will appear in the main box, replacing the locked message.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=Ly9ESisRKE8" target="_blank">https://www.youtube.com/watch?v=Ly9ESisRKE8</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	 
+  <hr style="background-color: #c0c0c0">	 
   
-  <div id="aa15" style="cursor:hand; cursor:pointer">
+  <div id="aa15" style="cursor:pointer">
 <h3>Sign a text with your secret Key</h3>
 </div>
 <div id="a15" class="texter">
@@ -5453,9 +5532,9 @@ function remChromeLock(name) {
   It is also okay to split the signature with spaces,
   and punctuation other than line returns or = + or /. </p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=YiiwcOmbI2U" target="_blank">https://www.youtube.com/watch?v=YiiwcOmbI2U</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">  
+  <hr style="background-color: #c0c0c0">  
   
-  <div id="aa16" style="cursor:hand; cursor:pointer">
+  <div id="aa16" style="cursor:pointer">
 <h3>Verify a signature attached to a text (signature tags are PL**sig) </h3>
 </div>
 <div id="a16" class="texter">
@@ -5468,9 +5547,9 @@ function remChromeLock(name) {
   Then click the <strong>Sig/Ver</strong> button. A message above the main box will say whether
   or not the signature for that text has been verified.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=YiiwcOmbI2U" target="_blank">https://www.youtube.com/watch?v=YiiwcOmbI2U</a></p></div>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <hr style="background-color: #c0c0c0">
   
-  <div id="aa17" style="cursor:hand; cursor:pointer">
+  <div id="aa17" style="cursor:pointer">
 <h3>Lock a second, undetectable message in addition to the main message
   (Decoy mode)</h3>
   </div>
@@ -5490,9 +5569,9 @@ function remChromeLock(name) {
   split the locked message with spaces, line returns, and punctuation other
   than = + / or %</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WaXQGYP0Sec" target="_blank">https://www.youtube.com/watch?v=WaXQGYP0Sec</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">	
+  <hr style="background-color: #c0c0c0">	
   
-  <div id="aa18" style="cursor:hand; cursor:pointer">
+  <div id="aa18" style="cursor:pointer">
 <h3>Reveal the hidden text contained within a message locked in Decoy
   mode</h3>
   </div>
@@ -5505,9 +5584,9 @@ function remChromeLock(name) {
   message and click <strong>OK</strong>. To view the Password before you use it, check the Show checkbox. The hidden message, if it exists,
   will appear above the main box. In the case of signatures, the hidden message appears in the place normally used by the verification message, so if you still wish to verify the signature, you need to uncheck <strong>Decoy</strong> mode and click <strong>Sig/Ver</strong> again so the verification message is displayed.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=WaXQGYP0Sec" target="_blank">https://www.youtube.com/watch?v=WaXQGYP0Sec</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
   
-	<div id="aa19" style="cursor:hand; cursor:pointer">  
+	<div id="aa19" style="cursor:pointer">  
   <h3>I have an item that was locked/signed with a previous version of PassLok, and the current version cannot handle it</h3>
  </div>
   <div id="a19" class="texter">
@@ -5557,9 +5636,9 @@ function remChromeLock(name) {
 <p><a href="https://www.autistici.org/passlok/archive/passlok10.html" target="_blank">Autistici</a></p>
 <p><a href="https://passlok.site44.com/archive/passlok10.html" target="_blank">Site44</a></p>
   </div>
-   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+   <hr style="background-color: #c0c0c0">
    
-     <div id="aa20" style="cursor:hand; cursor:pointer">  
+     <div id="aa20" style="cursor:pointer">  
   <h3>I want to know PassLok in depth. Is there more information?</h3>
  </div>
   <div id="a20" class="texter">
@@ -5567,9 +5646,9 @@ function remChromeLock(name) {
     <p>The PassLok <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual17.pdf" target="_blank">manual in PDF form.</a></p>
     <p>The PassLok informational website at <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a>. It contains a number of videos and more PDF documents.</p>
   </div>
-   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
-     
-   <div id="aa21" style="cursor:hand; cursor:pointer">  
+   <hr style="background-color: #c0c0c0">
+   
+   <div id="aa21" style="cursor:pointer">  
   <h3>None of the help items answers my question / I want to give feedback</h3>
  </div>
   <div id="a21" class="texter">
@@ -5578,9 +5657,9 @@ function remChromeLock(name) {
     <p><span id='support' style="color:blue">PL17lok=SCh77O0wzIgKuNjct+vV7RJifPi18r5zJUfPonx5WbnrnJ9iPaypXYT+NCp1RrVKykIOTe7Jg5pa2UW5FipUWwN=PL17lok</span></p>
     <p>Good constructive feedback is hard to get, so let us <strong>thank you</strong> right now, before we read your email.</p>
   </div>
-   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+   <hr style="background-color: #c0c0c0">
      
-   <div id="aa22" style="cursor:hand; cursor:pointer">
+   <div id="aa22" style="cursor:pointer">
 <h3>Privacy Statement</h3>
 </div>
 <div id="a22" class="texter">
@@ -5591,10 +5670,10 @@ function remChromeLock(name) {
 <p>Since PassLok, like every html file, is a piece of human-readable writing, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of it violates free speech and copyright protection laws.</p>
 <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
 </div>
-<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+<hr style="background-color: #c0c0c0">
 
 	<address>
-	PassLok v1.7.06 &#169; F. Ruiz 2014
+	PassLok v1.7.07 &#169; F. Ruiz 2014
 	</address>
     <ul>
 	<li>
@@ -5621,16 +5700,16 @@ function remChromeLock(name) {
     </ul>
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address> 
 
-	<hr style="background-color: rgb(192, 192, 192); color: #000000;"> 
+	<hr style="background-color: #c0c0c0"> 
     
-  <button id="closemainhelpButton2" value="< Back" style="font-size:medium">&#x25C0; Back</button>
+  <button class="cssbutton" id="closemainhelpButton2" value="< Back" >&#x25C0; Back</button>
 </div>
 
 <div id="lockhelp" class="texter" style="display: none;">
-	<button id="closelockhelpButton" value="< Back" style="font-size:medium">&#x25C0; Back</button>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+	<button class="cssbutton" id="closelockhelpButton" value="< Back" >&#x25C0; Back</button>
+    <hr style="background-color: #c0c0c0">
     
-  <div id="bb1" style="cursor:hand; cursor:pointer">  
+  <div id="bb1" style="cursor:pointer">  
 <h3>Add an item (shared Key, Lock, etc.) to PassLok's local directory</h3>
   </div>
     <div id="b1" class="texter">
@@ -5642,9 +5721,9 @@ function remChromeLock(name) {
       <p>6. (<em>Chrome app only</em>) The item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=FDNRK4CdW2o" target="_blank">https://www.youtube.com/watch?v=FDNRK4CdW2o</a></p>
     </div>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <hr style="background-color: #c0c0c0">
    
- <div id="bb2" style="cursor:hand; cursor:pointer">
+ <div id="bb2" style="cursor:pointer">
 <h3>Retrieve an item from the local directory</h3>
   </div>
       <div id="b2" class="texter">
@@ -5654,9 +5733,9 @@ function remChromeLock(name) {
        <p>4. (<em>Chrome app only</em>) If you type &quot;Enter&quot; after a name that was not found on the local database, PassLok will look for it in its Chrome sync area, which syncs across computers, and then adds it to the local directory.</p>
        <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=FDNRK4CdW2o" target="_blank">https://www.youtube.com/watch?v=FDNRK4CdW2o</a></p>
        </div>
-     <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+     <hr style="background-color: #c0c0c0"/>
        
-<div id="bb3" style="cursor:hand; cursor:pointer">
+<div id="bb3" style="cursor:pointer">
  <h3>Delete a stored item</h3>
  </div>
   <div id="b3" class="texter">
@@ -5665,9 +5744,9 @@ function remChromeLock(name) {
        <p>3. (<em>Chrome app only</em>) If the Chrome sync area is accessible from the computer, the item will also be deleted from there, after a confirmation popup.</p>
        <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=_rR_ZQZ932c" target="_blank">https://www.youtube.com/watch?v=_rR_ZQZ932c</a></p>
        </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
         
- <div id="bb4" style="cursor:hand; cursor:pointer">
+ <div id="bb4" style="cursor:pointer">
  <h3>Reset the hidden information pertaining to an item (PFS, etc.)</h3>
  </div>
   <div id="b4" class="texter">
@@ -5676,9 +5755,9 @@ function remChromeLock(name) {
           <p>3. If you click the <strong>Reset</strong> button with nothing displayed on either box, the copy of your own Lock cached within PassLok will be erased. This is useful if you have changed your secret Key.</p>
           <p>Most of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=_rR_ZQZ932c" target="_blank">https://www.youtube.com/watch?v=_rR_ZQZ932c</a></p>
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
   
-<div id="bb5" style="cursor:hand; cursor:pointer">
+<div id="bb5" style="cursor:pointer">
       <h3>Find a Lock in PassLok's general directory</h3>
   </div>
   <div id="b5" class="texter">
@@ -5689,29 +5768,29 @@ function remChromeLock(name) {
         <p>c. The PassLok general directory is meant as a convenience, not as a replacement for your local directory. The general directory is not available when you are offline (the local one is). You cannot upload anything but Locks to the general directory.</p>
         <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=1UQw7MaK3T8" target="_blank">https://www.youtube.com/watch?v=1UQw7MaK3T8</a></p>      
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
        
- <div id="bb6" style="cursor:hand; cursor:pointer">
+ <div id="bb6" style="cursor:pointer">
       <h3>Display the entire local directory</h3>
   </div>
   <div id="b6" class="texter">
         <p>1. Click the <strong>All</strong> button below the big box. The complete local directory, including PFS and hidden data, is displayed in the box so you can find items and copy them easily.</p>
         <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=V_DwcEyaeIQ" target="_blank">https://www.youtube.com/watch?v=V_DwcEyaeIQ</a></p>
         </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
            
-  <div id="bb7" style="cursor:hand; cursor:pointer">
+  <div id="bb7" style="cursor:pointer">
   <h3>Move the entire local directory</h3>
        </div>
  <div id="b7" class="texter">
       <p>1. Click the <strong>Move</strong> button below the big box. The entire directory is first locked with the secret Key, and then placed in the main box. Then a prompt asks you to confirm deleting it from the device. If you click <strong>OK,</strong> the entire local directory is deleted. There is no going back. If you click <strong>Cancel</strong>, the locked backup remains in the main box. This is useful whenever you stop using a device or just want to transfer it to another device, or if the directory becomes corrupted.</p>
-      <p>2. To retrieve a backed-up directory (has PL**dir tags), place it in the main box and click <strong>Lk/Un</strong>. If the secret Key has been entered, the database will be unlocked and placed in the Locks screen. Then you can add it to the device's current directory by clicking <strong>Merge</strong>.</p>
+      <p>2. To retrieve a backed-up directory (has PL**dir tags), place it in the main box and click <strong>Lck/Unl</strong>. If the secret Key has been entered, the database will be unlocked and placed in the Locks screen. Then you can add it to the device's current directory by clicking <strong>Merge</strong>.</p>
       <p>3. (<em>Chrome app only</em>) Even if the local directory is completely deleted, the items in your Chrome sync area remain available.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=V_DwcEyaeIQ" target="_blank">https://www.youtube.com/watch?v=V_DwcEyaeIQ</a></p>
   </div>
- <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+ <hr style="background-color: #c0c0c0"/>
 
- <div id="bb8" style="cursor:hand; cursor:pointer">
+ <div id="bb8" style="cursor:pointer">
        <h3>Merge additional data into the local directory</h3>
   </div>
   <div id="b8" class="texter">
@@ -5720,9 +5799,9 @@ function remChromeLock(name) {
        <p>3. (<em>Chrome app only</em>) If the Chrome sync area is accessible from the computer, the additional data will also be added to that area, so it is accessible from other computers.</p>
        <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=V_DwcEyaeIQ" target="_blank">https://www.youtube.com/watch?v=V_DwcEyaeIQ</a></p>
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+  <hr style="background-color: #c0c0c0"/>
                      
- <div id="bb9" style="cursor:hand; cursor:pointer">
+ <div id="bb9" style="cursor:pointer">
      <h3>Make a List of items</h3>
  </div>
   <div id="b9" class="texter">
@@ -5731,9 +5810,9 @@ function remChromeLock(name) {
       <p>3.You can also make a List of items already stored in the local directory, which can be itself stored. To do this, write the name of the item rather than the item itself. If you don't recall the exact name of an item, start typing it in the upper box, and click <strong>List</strong> when the correct item appears in the space above the box. The item name will be added to the current List.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=sO-g9x2RAV8" target="_blank">https://www.youtube.com/watch?v=sO-g9x2RAV8</a></p>
       </div>              
-     <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+     <hr style="background-color: #c0c0c0">
      
-  <div id="bb10" style="cursor:hand; cursor:pointer">
+  <div id="bb10" style="cursor:pointer">
   <h3>Make a random Key</h3>
   </div>
  <div id="b10" class="texter">
@@ -5743,9 +5822,9 @@ function remChromeLock(name) {
       <p>3.To make the Lock matching this random string as a Key, copy the string, go back to the main screen, click <strong>myKey</strong>, paste the string there, and click <strong>Make Lock</strong>. The Lock will appear in the main screen.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=9gRE1xPr_nE" target="_blank">https://www.youtube.com/watch?v=9gRE1xPr_nE</a></p>
   </div>
- <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+ <hr style="background-color: #c0c0c0"/>
  
-   <div id="bb11" style="cursor:hand; cursor:pointer">
+   <div id="bb11" style="cursor:pointer">
   <h3>Combine a Key and a Lock</h3>
   </div>
  <div id="b11" class="texter">
@@ -5755,9 +5834,9 @@ function remChromeLock(name) {
       <p>3. Click the <strong>Merge</strong> button. The Key and the Lock will merge and the 86-character result is placed in both the Locks and the main screens. If both items or neither of them is a valid Lock, the merging process fails and a message is displayed.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=L0UC61Z2KAA" target="_blank">https://www.youtube.com/watch?v=L0UC61Z2KAA</a></p>
   </div>
- <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+ <hr style="background-color: #c0c0c0"/>
  
-   <div id="bb12" style="cursor:hand; cursor:pointer">
+   <div id="bb12" style="cursor:pointer">
   <h3>Make a video to authenticate your Lock</h3>
   </div>
  <div id="b12" class="texter">
@@ -5769,9 +5848,9 @@ function remChromeLock(name) {
       <p>4. People wishing to authenticate your Lock will generate the ID as in step 1 (which won't be affected by having the video address on the line below), and then if they click the <strong>Save</strong> button at the bottom of the screen the accompanying video will start playing on a separate browser tab. Then they will be able to compare it with the ID they see you reading on the video. If they know your face and your voice, they will be assured that the Lock is authentic.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=bODBEB6Oo2I" target="_blank">https://www.youtube.com/watch?v=bODBEB6Oo2I</a></p>
  </div>
- <hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+ <hr style="background-color: #c0c0c0"/>
  
-   <div id="bb13" style="cursor:hand; cursor:pointer">
+   <div id="bb13" style="cursor:pointer">
   <h3>Authenticate a Lock without using videos</h3>
   </div>
  <div id="b13" class="texter">
@@ -5790,16 +5869,16 @@ function remChromeLock(name) {
       Alternatively, you can ask the other person to split the locked message in two, and send you first one half, then the other half (PassLok has a built-in function to split messages securely, explained in another help screen).  The pictures or videos (or recordings) don't need to be locked. Only the instructions for making them need to be locked and transmitted with a two-step process. There is an article in PassLok.com that explains how this protocol works for authenticating Locks.</p>
   </div>
 
-	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+	<hr style="background-color: #c0c0c0">
   
-  <button id="closelockhelpButton2" value="< Back" style="font-size:medium">&#x25C0; Back</button>
+  <button class="cssbutton" id="closelockhelpButton2" value="< Back" >&#x25C0; Back</button>
 </div>
 
 <div id="extrahelp" class="texter" style="display: none;">
-	<button id="closeextrahelpButton" value="< Back" style="font-size:medium">&#x25C0; Back</button>
-	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
+	<button class="cssbutton" id="closeextrahelpButton" value="< Back" >&#x25C0; Back</button>
+	<hr style="background-color: #c0c0c0">
      
-  <div id="cc1" style="cursor:hand; cursor:pointer">
+  <div id="cc1" style="cursor:pointer">
 <h3>Send a PassLok item (Lock, message, etc.) by email</h3>
   </div>
   <div id="c1" class="texter">  
@@ -5809,25 +5888,25 @@ function remChromeLock(name) {
 <p>4. This only works for sending messages, not for receiving them. If you receive a PassLok-locked message, you must copy it into the clipboard and then paste it into the main screen of PassLok, so it can be unlocked. Be also aware that webmail services, such as Gmail, limit the length of messages that can be composed this way. If you get an error from the mail host, you can always copy the box and paste it into a normal mail compose screen.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=2zxCkA4rDN8" target="_blank">https://www.youtube.com/watch?v=2zxCkA4rDN8</a></p>
 </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
   
-  <div id="cc2" style="cursor:hand; cursor:pointer">
+  <div id="cc2" style="cursor:pointer">
 <h3>Send a PassLok item by Text messaging (mobile only)</h3>
   </div>
   <div id="c2" class="texter">  
 <p>1. Check that the item to be sent is in the main box.</p>
-<p>2. Click the &#x25B6; button in order to reveal the button dealing with text messaging, which is labeled Txt/Im.</p>
-<p>3. Click the <strong>Sel</strong> button so the text can be selected.</p>
+<p>2. Click the &#x25B6; button in order to reveal the button dealing with text messaging, which is labeled Txt/Img.</p>
+<p>3. Click the <strong>Select</strong> button so the text can be selected.</p>
 <p>4. Then click the Copy label as it appears on screen. The item is copied to clipboard.</p>
-<p>5. Now you can click the <strong>Txt/Im</strong> button. A window appears with the default texting app.</p>
+<p>5. Now you can click the <strong>Txt/Img</strong> button. A window appears with the default texting app.</p>
 <p>6. Touch the input box and then paste the clipboard. Send the message in the usual way.</p>
 <p>7. To unlock a locked message received by texting, you must copy it to the clipboard, and then paste it in the main box of PassLok.</p>
 <p>If you use Short mode to lock a message, steps 2 and 3 are automatic.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=2zxCkA4rDN8" target="_blank">https://www.youtube.com/watch?v=2zxCkA4rDN8</a></p>
 </div>
-<hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+<hr style="background-color: #c0c0c0"/>
 
-<div id="cc3" style="cursor:hand; cursor:pointer">
+<div id="cc3" style="cursor:pointer">
   <h3>Split an item into several random-looking parts</h3>
 </div>
 <div id="c3" class="texter">
@@ -5836,9 +5915,9 @@ function remChromeLock(name) {
   <p>3. A popup asks for the total number of parts to be made, and the minimum number required to retrieve the original. Write those numbers, which must be between 2 and 255, and click <strong>OK</strong>. The parts appear in the main box, replacing the original item, and a message confirms it. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the "=" sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the parts with spaces and punctuation other than = + / or line returns.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=3-6CNa6iNKc" target="_blank">https://www.youtube.com/watch?v=3-6CNa6iNKc</a></p>
 </div>
-<hr style="background-color: rgb(192, 192, 192); color: #000000;" />
+<hr style="background-color: #c0c0c0"/>
 
-<div id="cc4" style="cursor:hand; cursor:pointer">
+<div id="cc4" style="cursor:pointer">
   <h3>Join parts to retrieve the original item (tags are PL**p***)</h3>
 </div>
 <div id="c4" class="texter">
@@ -5846,9 +5925,9 @@ function remChromeLock(name) {
   <p>2. Click the &#x25B6; button, and then the  <strong>Splt/Jn</strong> button. If all goes well, the reconstructed item appears in the box, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=3-6CNa6iNKc" target="_blank">https://www.youtube.com/watch?v=3-6CNa6iNKc</a></p>
   </div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
      
-  <div id="cc5" style="cursor:hand; cursor:pointer">
+  <div id="cc5" style="cursor:pointer">
 <h3>Convert a PassLok item (Lock, message, etc.) into fake text</h3>
   </div>
   <div id="c5" class="texter">  
@@ -5857,9 +5936,9 @@ function remChromeLock(name) {
 <p>3. The <strong>Words</strong> button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The <strong>Spces</strong> button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than with the other mode. When you click either button, the contents of the box are converted into fake text using the current cover, replacing the previous contents.</p>
 <p>4. You can now email the fake text, which to an email scanner will be nearly indistinguishable from real text. You can change the punctuation and merge or split lines without changing the encoded material. If you used Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is okay to add more text to complete the last sentence, which may contain additional spaces.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=KwAETd2pgy4" target="_blank">https://www.youtube.com/watch?v=KwAETd2pgy4</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
   
-  <div id="cc6" style="cursor:hand; cursor:pointer">
+  <div id="cc6" style="cursor:pointer">
 <h3>Retrieve the original PassLok item from fake text</h3>
   </div>
   <div id="c6" class="texter">
@@ -5867,23 +5946,23 @@ function remChromeLock(name) {
 <p>2. If the fake text was encoded with the Words method, you will have to load first the cover text used to do the encoding, using the process described in the next help item.</p>
 <p>3. Now click either the <strong>Words</strong> button or the <strong>Spces</strong> button, it doesn't matter which. If successful, the fake text in the box is converted back into the original item and displayed in the box, replacing the fake text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=KwAETd2pgy4" target="_blank">https://www.youtube.com/watch?v=KwAETd2pgy4</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
  
-  <div id="cc7" style="cursor:hand; cursor:pointer">
+  <div id="cc7" style="cursor:pointer">
 <h3>Display or change the cover text used for fake text</h3>
   </div>
   <div id="c7" class="texter">
-<p>To display the current cover text (which is the default cover text after reloading PassLok), click the &#x25B6; button, and then the <strong>CT</strong> button (short for Cover Text) with the box empty.</p>
+<p>To display the current cover text (which is the default cover text after reloading PassLok), click the &#x25B6; button, and then the <strong>Cover</strong> button (short for Cover Text) with the box empty.</p>
 <p>To change the cover text (this is necessary to make fake text in a language that is not English):</p>
 <p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into the main box.</p>
-<p>2. Click the &#x25B6; button, and then the <strong>CT</strong> button.</p>
+<p>2. Click the &#x25B6; button, and then the <strong>Cover</strong> button.</p>
 <p>3. If the change is successful, the box goes blank. If the change is unsuccessful, a message above the box will say why. Typically, failure to change the cover text is due to not having a sufficient number of different words. Use a longer text and try again.</p>
 <p>4. The recipient of your messages turned into fake text must have the same cover text in order to retrieve a text encoded with the<strong> Words</strong> button. One way to ensure this when using a non-English language is to display the default cover text, copy it into a translation utility such as Google Translate, and then use the translation as the new cover text.</p>
 <p>5. Since the cover text is a (weak) sort of password for a Words-encoded item, it may be good to put special cover texts in your local directory. To do this, go to the <strong>Locks</strong> screen , write a new name in the upper box, then paste the cover text in the lower box, and click <strong>Save</strong>. The cover text can be retrieved like any other stored item, and it will be automatically loaded if displayed on the Locks screen.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=sv8epS3qBH8" target="_blank">https://www.youtube.com/watch?v=sv8epS3qBH8</a></p></div>
-  <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+  <hr style="background-color: #c0c0c0">
     
-  <div id="cc8" style="cursor:hand; cursor:pointer">  
+  <div id="cc8" style="cursor:pointer">  
   <h3>Load a file (image, on mobile devices) to be locked, signed, or split</h3>
   </div>
   <div id="c8" class="texter">
@@ -5892,9 +5971,9 @@ function remChromeLock(name) {
   <p>3. Now you can lock it, sign it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=v6jnKzzlwS0" target="_blank">https://www.youtube.com/watch?v=v6jnKzzlwS0</a></p>
   </div>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <hr style="background-color: #c0c0c0">
   
-  <div id="cc9" style="cursor:hand; cursor:pointer">  
+  <div id="cc9" style="cursor:pointer">  
   <h3>Retrieve a file (image, on mobile devices) from encoded text</h3>
   </div>
     <div id="c9" class="texter">
@@ -5902,31 +5981,31 @@ function remChromeLock(name) {
   <p>2. Click the <strong>Save</strong> button at the bottom of the screen. What happens next depends on the browser. Chrome and Firefox will save the file, using the original name if not already taken by another file, into the default location for downloads. Safari does the same, but gives it a generic name that you will have to edit later. Internet Explorer doesn't do anything. Mobile browsers normally open another tab displaying the file contents if the file type is recognized, from where you can send it to another app.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=v6jnKzzlwS0" target="_blank">https://www.youtube.com/watch?v=v6jnKzzlwS0</a></p>
   </div>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <hr style="background-color: #c0c0c0">
 
- <div id="cc10" style="cursor:hand; cursor:pointer">  
+ <div id="cc10" style="cursor:pointer">  
   <h3>Hide a PassLok item inside an image (non-mobile only)</h3>
  </div>
   <div id="c10" class="texter">
- <p>1. Make sure the item to be hidden is in the main box, and it remains in the box after clicking the &#x25B6; button . Then click the <strong>Txt/Im</strong> button above the box.</p>
+ <p>1. Make sure the item to be hidden is in the main box, and it remains in the box after clicking the &#x25B6; button . Then click the <strong>Txt/Img</strong> button above the box.</p>
 <p>2. A new screen appears to load the image where the text is to be hidden. To do so, click the <strong>"Choose File"</strong> or <strong>"Browse"</strong> button (browsers vary on the name). A dialog will appear, where you can choose the image. Bear in mind that images taken with a mobile camera are usually too large for PassLok to be able to use them for hiding items, because of the processing required.</p>
     <p>3. When you see the image, click the <strong>Hide</strong> button. Processing will start, and a message will say when it is completed. At this point, you can right-click on the image and another dialog will offer to save the image. This image now contains the item from the main box, even though it looks the same as before.</p>
     <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=lRIYi6IDNzY" target="_blank">https://www.youtube.com/watch?v=lRIYi6IDNzY</a></p>
  </div>
-    <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+    <hr style="background-color: #c0c0c0">
    
- <div id="cc11" style="cursor:hand; cursor:pointer">  
+ <div id="cc11" style="cursor:pointer">  
   <h3>Retrieve the PassLok item hidden inside an image (non-mobile only)</h3>
  </div>
   <div id="c11" class="texter">
-      <p>1. Navigate to the image hiding screen by clicking &#x25B6;, and then <strong>Txt/Im</strong>.</p>
+      <p>1. Navigate to the image hiding screen by clicking &#x25B6;, and then <strong>Txt/Img</strong>.</p>
       <p>2. Click <strong>Choose File</strong> or <strong>Browse</strong> (browsers vary on this) and select the image containing the hidden item.</p>
       <p>3. When the image displays on the screen, click the <strong>Reveal</strong> button. Processing begins, and a message appears when it concludes, saying that the hidden item has been retrieved. If you click <strong>Back</strong> at this point, you will see the item in the big box. If the image contained nothing, a message will tell you.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=lRIYi6IDNzY" target="_blank">https://www.youtube.com/watch?v=lRIYi6IDNzY</a></p>
  </div>
-   <hr style="background-color: rgb(192, 192, 192); color: #000000;">
+   <hr style="background-color: #c0c0c0">
   
-  <div id="cc12" style="cursor:hand; cursor:pointer">
+  <div id="cc12" style="cursor:pointer">
 <h3>Verify PassLok's integrity</h3>
 </div>
 <div id="c12" class="texter">
@@ -5936,13 +6015,557 @@ function remChromeLock(name) {
 <p>A lot of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=1QSRvme3pVQ" target="_blank">https://www.youtube.com/watch?v=1QSRvme3pVQ</a></p>
 </div>
 
-	<hr style="background-color: rgb(192, 192, 192); color: #000000;">
-  <button id="closeextrahelpButton2" value="< Back" style="font-size:medium">&#x25C0; Back</button>
+	<hr style="background-color: #c0c0c0">
+  <button class="cssbutton" id="closeextrahelpButton2" value="< Back" >&#x25C0; Back</button>
 </div>
 
+<div id="quiz" class="texter" style="display: none;">
+	<button class="cssbutton" id="closequizButton1" value="< Back" style="width:185px">&#x25C0; Back to main Help</button>
+	<hr style="background-color: #c0c0c0">
+    
+<div id='qq1' style="cursor:pointer"> 
+<h3>Which of these are correctly formatted Keys?</h3>
+</div>
+<div id="q1" class="texter">
+<p>A. fjslk7798+fsdkj/fGJr</p>
+<p>B. I'll eat 42 Bananas</p>
+<p>C. سوف يأكل الموز</p>
+<p>D. All of the above</p>
+<p>E. None of the above</p>
+<div id='aans1' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans1" class="texter">
+<p><strong>D</strong>. PassLok does not restrict the user to a particular set of characters. Any string that can be encoded as UTF-8 (most languages are) is valid for a Key</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq2' style="cursor:pointer">
+<h3>This is how to write a secure Key:</h3>
+</div>
+<div id="q2" class="texter">
+<p>A. Use capitals and smallcase letters</p>
+<p>B. Use numbers and special characters</p>
+<p>C. Make it long; at least 12 characters</p>
+<p>D. If you use words that might be in a dictionary, misspell them</p>
+<p>E. All of the above</p>
+<div id='aans2' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans2" class="texter">
+<p><strong>E</strong>. Using a variety of characters increases the number of different Keys that a hacker would have to try in order to guess the correct Key. Of course, the longer, the better. Since hackers try the words contained in dictionaries first, you'll do yourself a favor by not using those.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq3' style="cursor:pointer">
+<h3>PassLok uses variable Key stretching</h3>
+</div>
+<div id="q3" class="texter">
+<p>A. True. Computations take longer for shorter Keys</p>
+<p>B. True. Computations take longer for weaker Keys</p>
+<p>C. True. Computations are made shorter for weaker Keys</p>
+<p>D. True. Encryption is done several times for weaker Keys</p>
+<p>E. False. This would cause computations to take too long</p>
+<div id='aans3' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans3" class="texter">
+<p><strong>B</strong>. Key stretching essentially means that a new Key is derived from the user's Key after a lot of roundabout computations, and this new Key is the one actually used for locking, unlocking, and everything else. It does not involve multiple encryptions. PassLok uses the "scrypt" algorithm to lengthen the computations involving weaker Keys, as determined by PassLok's built-in Key strength meter. All features contributing to Key strength are considered, not just the length. If a user uses a Key that is scored as Weak or even Terrible, everything will be very sluggish, although it will still work. This forces hackers to spend a great deal of computer time to go through the weak Keys in their dictionaries, or risk missing those.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq4' style="cursor:pointer">
+<h3>Which of these are correctly formatted Locks?</h3>
+</div>
+<div id="q4" class="texter">
+<p>A. CGRrN5QjMtr+fp74nY+y93EaeHHBh/PTwvLpjL0hl9a2FuTP3mTGjPjMSrXIEmH4gaG41ea4GUkE81m8tDjwydL</p>
+<p>B. PL17lok=CGRrN5QjMtr+fp74nY+y93EaeHHBh/PTwvLpjL0hl9a2FuTP3mTGjPjMSrXIEmH4gaG41ea4GUkE81m8tDjwydL=PL17lok</p>
+<p>C. PL17lok=CGRrN5QjMtr+fp74nY+y93EaeHHBh/PTwvLpjL0hl9a2FuTP3mTGjPjMSrXIEmH4gaG41ea4GUkE81m8tDjwydL=PL17lok_https://www.youtube.com/watch?v=SYx-rH5yjA4</p>
+<p>D. CGRrN5QjMtr+fp74nY+y93EaeHHBh/PTwvLpjL0hl9a2FuTP3mTGjPjMSrXIEmH4gaG41ea4GUkE81m8tDjwydL=http://vimeo.com/88048071</p>
+<p>E. All of the above</p>
+<div id='aans4' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans4" class="texter">
+<p><strong>E</strong>. The core of a PassLok Lock consists of 87 base64 characters (smallcase and capital letters a to z, plus numbers 0 to 9, plus / and +). It may be bracketed by tags, which are separated by the core by = signs. PassLok detects these signs and uses as a Lock the longest string between them. Therefore, video URLs and other material can be added without affecting the function of a Lock. Not all 87-character base64 strings are valid Locks, however. Only about half of those are valid Locks, which PassLok will check right before using it. It is impossible to tell by visual inspection whether a given 87-character string is a valid Lock, however.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq5' style="cursor:pointer">
+<h3>The relationship between a Key and a Lock is like this:</h3>
+</div>
+<div id="q5" class="texter">
+<p>A. You get the Lock from the Key, but you cannot get the Key from the Lock</p>
+<p>B. You get the Key from the Lock, but you cannot get the Lock from the Key</p>
+<p>C. You can get either of them from the other</p>
+<p>D. Key and Lock are independent from each other</p>
+<p>E. None of the above</p>
+<div id='aans5' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans5" class="texter">
+<p><strong>A</strong>. You get the Lock from the Key, but it is impossible to get the Key from the Lock. This is why the Lock can be made public while the Key remains secret.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq6' style="cursor:pointer">
+<h3>This is how PassLok secures an email message</h3>
+</div>
+<div id="q6" class="texter">
+<p>A. The message is locked in PassLok, then the user copies it to any email program and sends it over unsecured channels</p>
+<p>B. PassLok establishes a secure channel with the user, and then the message is sent to a server where it is locked before it is sent</p>
+<p>C. Both sender and recipient connect to the same secure server, and thus the message is never sent over unsecured channels</p>
+<p>D. The message is obfuscated but it is not really locked until it reaches the recipient</p>
+<p>E. The recipient must first supply a password so the message can be locked before it is sent. This is done transparently to the sender.</p>
+<div id='aans6' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans6" class="texter">
+<p><strong>A</strong>. Locking and unlocking in PassLok involves no servers, and transmission takes place over unsecured channels, such as regular email. This implies that the message is locked before it leaves the sender's device. Answer E comes pretty close, but the recipient does not send a password or Key, which would be secret to everyone but the sender and might be compromised if sent over email; instead, the recipient sends a Lock, from which his/her Key cannot be obtained.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq7' style="cursor:pointer">
+<h3>PassLok Tags are...</h3>
+</div>
+<div id="q7" class="texter">
+<p>A. Strings placed at beginning and end of PassLok items, so PassLok knows what they are</p>
+<p>B. Strings placed at beginning and end of PassLok items, so users know what they are</p>
+<p>C. Necessary for PassLok to complete actions such as unlocking a message</p>
+<p>D. A way to identify the author of a PassLok item</p>
+<p>E. A way to include the date when a PassLok item was created</p>
+<div id='aans7' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans7" class="texter">
+<p><strong>B</strong>. Tags such as "PL17lok" and "PL16sig" tell the user that what is between the tags is a PassLok item (PL), the version under which they were created (1.7 and 1.6, respectively), since sometimes a specific version of PassLok is needed in order to handle an item successfully, and the type of item they are (a Lock and a signature, respectively). PassLok can tell what type of item it is dealing with even if the tags are absent, so long as the rest of the item is complete. The tags in no way identify the author or include any information other than what is mentioned above. If the user wishes to produce items bearing no tags, he/she can do so simply by checking the No tags checkbox.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq8' style="cursor:pointer">
+<h3>These are the buttons I need to click in order to lock and unlock messages</h3>
+</div>
+<div id="q8" class="texter">
+<p>A. <strong>Lck/Unl</strong> to lock, <strong>Sig/Ver</strong> to unlock</p>
+<p>B. <strong>Sig/Ver</strong> to lock, <strong>Lck/Unl</strong> to unlock</p>
+<p>C. <strong>Lck/Unl</strong> to lock, either <strong>Lck/Unl</strong> or <strong>Sig/Ver</strong> to unlock</p>
+<p>D. <strong>Lck/Unl</strong> both to lock and to unlock</p>
+<p>E. The button to be clicked depends on the locking mode</p>
+<div id='aans8' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans8" class="texter">
+<p><strong>D</strong>. The <strong>Lck/Unl</strong> button does everything related to locking and unlocking. PassLok detects if the main box contains a locked message, and if so, the locking mode used and proceeds to unlock regardless of the mode set with the checkboxes below. If no locked message is detected, PassLok proceeds to lock the message instead, using the mode set with the checkboxes.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq9' style="cursor:pointer">
+<h3>Locking and unlocking in Anonymous mode works like this:</h3>
+</div>
+<div id="q9" class="texter">
+<p>A. You lock with your Key and the recipient unlocks with your Lock</p>
+<p>B. You lock with your Lock and the recipient unlocks with his/her Key</p>
+<p>C. You lock with the recipient's Lock, and the recipient unlocks with his/her Key</p>
+<p>D. You lock with the recipient's Key, and the recipient unlocks with your Lock</p>
+<p>E. None of the above</p>
+<div id='aans9' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans9" class="texter">
+<p><strong>C</strong>. You lock with the recipient's Lock, and he/she unocks with his/her Key. Using your Key to lock a message would mean (assuming it were possible), that the message is going to be unlocked either with your Key, which would imply that you'd have to give your secret Key to someone else (a no-no in PassLok), or with your Lock, in which case the whole world would be able to unlock the message since the Lock is public. You cannot lock with the recipient's Key, since you don't have it. Locking with your Lock would imply that the recipient has your Key, which he doesn't.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq10' style="cursor:pointer">
+<h3>Regardless of the locking mode selected, I can still use a shared Key to lock a message</h3>
+</div>
+<div id="q10" class="texter">
+<p>A. True, and the message would be unlocked with the recipient's secret Key</p>
+<p>B. False. Sharing a Key is a no-no in PassLok</p>
+<p>C. False. This is possible sometimes, but not in all modes</p>
+<p>D. True, and the message would be unlocked with the same shared Key used to lock it</p>
+<p>E. None of the above</p>
+<div id='aans10' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans10" class="texter">
+<p><strong>D</strong>. You can always lock a message with a shared Key, different from your secret Key, and then the message would be unlocked with the same shared Key. A shared Key, like a secret Key, can be any string that can be written with UTF-8 characters. If it contains exactly 87 characters, and those characters are of the base64 set, it will be mistakien for a Lock, so this particular combination should be avoided.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq11' style="cursor:pointer">
+<h3>When locking and unlocking in Signed mode...</h3>
+</div>
+<div id="q11" class="texter">
+<p>A. Both the sender and the recipent must have the same Key and the same Lock</p>
+<p>B. The recipient must have the sender's Lock</p>
+<p>C. The sender must have the recipient's Lock</p>
+<p>D. Both sender and recipient must have both Locks</p>
+<p>E. None of the above.</p>
+<div id='aans11' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans11" class="texter">
+<p><strong>D</strong>. Both sender and recipient must have both Locks. Each party obviously has his/her own Lock. To lock a message in any mode, the sender needs to have the recipient's Lock. In signed mode, the recipient must additionally have the sender's Lock so the origin of the locked message can be verified.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq12' style="cursor:pointer">
+<h3>The locked message always contains information about the sender or recipient that can be read without unlocking</h3>
+</div>
+<div id="q12" class="texter">
+<p>A. False. A locked message contains no information at all identifying sender or recipient</p>
+<p>B. False. Only the recipient's identity could be found, by matching his/her Lock</p>
+<p>C. False. Only the sender's identity can be found, since his/her Lock was involved in locking the message</p>
+<p>D. False. Part of the recipient's Lock or shared Key is included, but it is encrypted</p>
+<p>E. True. The recipients need to know what part of the message is meant for them, so there is always some identifying information</p>
+<div id='aans12' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans12" class="texter">
+<p><strong>D</strong>. Regular-length locked messages can be locked for multiple recipients by encrypting the special message Key individually for each recipient. The encrypted Keys are identified by a tag, which is made from some information pertaining to each recipient, but it is also encrypted so no one else can read it. Concerning the sender, the only way to tell who sent a message is by unlocking a message locked in Signed or PFS modes.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq13' style="cursor:pointer">
+<h3>PFS mode means this:</h3>
+</div>
+<div id="q13" class="texter">
+<p>A. The message self-destructs after reading</p>
+<p>B. Locked messages become unreadable to both sender and recipient after a while</p>
+<p>C. The messages cannot be tracked over the Internet</p>
+<p>D. Messages contain a hidden message</p>
+<p>E. None of the above</p>
+<div id='aans13' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans13" class="texter">
+<p><strong>B</strong>. Messages locked in PFS mode use temporary Keys that are overwritten next time either party locks a message, so a message becomes unreadable even to the sender after the Key used to lock it has been changed, that is, after one more message from both sides. This does not mean that messages cannot be tracked over the Internet, which depends on the software used to transmit them, not on PassLok. Hidden messages are possible, but this is Decoy mode, not PFS. Finally, answer A is partially true: if a message is locked with both PFS mode and Short mode selected, it can only be onlocked once.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq14' style="cursor:pointer">
+<h3>Short mode messages...</h3>
+</div>
+<div id="q14" class="texter">
+<p>A. Are limited in length</p>
+<p>B. Can be locked in any mode</p>
+<p>C. Can contain hidden messages</p>
+<p>D. Are limited to a single recipient</p>
+<p>E. All of the above</p>
+<div id='aans14' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans14" class="texter">
+<p><strong>E</strong>. Short mode messages are limited to 160 characters (159 in some modes) after they are locked, so they can be texted easily. This imposes even stricter limits on the length of the unlocked message. All modes are possible: Anonymous, Signed, or PFS, both using Locks and shared Keys. They can also contain a shorter hidden message. Finally, space limitations make it impossible to have more than one recipient who would be able to unlock the message.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq15' style="cursor:pointer">
+<h3>In Decoy mode...</h3>
+</div>
+<div id="q15" class="texter">
+<p>A. The same Key or Lock is used to lock a second message</p>
+<p>B. A popup automatically asks for the Decoy Password if the message contains a hidden message</p>
+<p>C. It is possible to add a second message that is itself unlocked</p>
+<p>D. The whole thing is a decoy. There is no real message in there</p>
+<p>E. None of the above</p>
+<div id='aans15' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans15" class="texter">
+<p><strong>E</strong>. In decoy mode, a second message of limited length is locked under a different shared Key, which cannot be empty. Answer B comes closer to the truth, but not quite: a popup asking for a Decoy Password will appear whenever Decoy mode is selected for unlocking. There is no way to know whether or not a particular locked message has been locked using Decoy mode, and therefore may contain a hidden message.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq16' style="cursor:pointer">
+<h3>You can lock messages for multiple recipients under these conditions:</h3>
+</div>
+<div id="q16" class="texter">
+<p>A. Always except in Short mode</p>
+<p>B. Always except in PFS mode</p>
+<p>C. Always except in Decoy mode</p>
+<p>D. Always, except when using a shared Key for at least one recipient</p>
+<p>E. None of the above</p>
+<div id='aans16' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans16" class="texter">
+<p><strong>A</strong>. There is nothing preventing PassLok from locking a message for multiple recipients in any mode, except that it must include a portion meant for each recipient to unlock, and then the locked message would not fit within the 160-character limit of Short mode. Therefore, only one recipient is allowed in Short mode.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq17' style="cursor:pointer">
+<h3>A digital signature is...</h3>
+</div>
+<div id="q17" class="texter">
+<p>A. A random-looking string that reveals who locked a message</p>
+<p>B. A special locking mode that authenticates the contents</p>
+<p>C. The reverse of Anonymous locking</p>
+<p>D. A special Key that you can actually share safely</p>
+<p>E. A random-looking string that reveals who wrote a plain message</p>
+<div id='aans17' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans17" class="texter">
+<p><strong>E</strong>. A digital signature is neither a Lock, nor a Key, nor a locked message, nor the reverse of locking (although it somewhat looks like it). It is associated with a particular plain (not locked) text and with a secret Key. When you apply your secret Key to the plain message by means of the <strong>Sig/Ver</strong> button, a random-looking string is appended to the message, which remains plain to read. Then people can verify that it was you, the possessor of that particular secret Key, who did this, by applying the Lock matching that Key (the Lock is public, so they know it) to the message plus the signature and clicking <strong>Sig/Ver</strong> again.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq18' style="cursor:pointer">
+<h3>The secret Key is stored...</h3>
+</div>
+<div id="q18" class="texter">
+<p>A. In the local directory, unencrypted</p>
+<p>B. In the local directory, encrypted</p>
+<p>C. In the general directory, encrypted</p>
+<p>D. Only between sessions, then it is deleted</p>
+<p>E. Never, anywhere</p>
+<div id='aans18' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans18" class="texter">
+<p><strong>E</strong>. The secret Key is never stored anywhere within or outside PassLok. It is retained in a special input box while it is used, but it is deleted as soon as PassLok closes. If the Key is not used by any function within PassLok for five minutes, it is automatically deleted even though PassLok might still be running.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq19' style="cursor:pointer">
+<h3>Items that can be stored in the local directory include:</h3>
+</div>
+<div id="q19" class="texter">
+<p>A. Only Locks</p>
+<p>B. Locks and shared Keys</p>
+<p>C. Locks, shared Keys, and Lists</p>
+<p>D. Locks, shared Keys, Lists, and Cover texts</p>
+<p>E. Locks, shared Keys, Lists, Cover texts, Lists, and alternative secret Keys</p>
+<div id='aans19' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans19" class="texter">
+<p><strong>D</strong>. Just about anything that PassLok uses can be stored in the local directory. The exception is the secret Key, which is never stored anywhere. Its matching Lock is stored, however, and this is why users are advised to remove this stored Lock by clicking Reset on the Key screen if he/she decides to change the secret Key.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq20' style="cursor:pointer">
+<h3>Items in the local directory...</h3>
+</div>
+<div id="q20" class="texter">
+<p>A. Are stored permanently, and cannot be modified or removed</p>
+<p>B. Are stored permanently, but can be modified or removed at any time</p>
+<p>C. Are stored permanently, and they sync automatically across devices</p>
+<p>D. Are stored permanently, and they sync automatically with the general PassLok directory</p>
+<p>E. Are not stored permanently. When PassLok closes, they are deleted from memory</p>
+<div id='aans20' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans20" class="texter">
+<p><strong>B</strong>. The point of the local directory is that users can keep handy their contacts' Locks, etc. without having to look them up again. They only need to supply the name they gave to each particular item. If they don't remember it, they can list the complete directory and find it that way. Only the Chrome app version of PassLok syncs across devices, so long as the user logs into his/her Google account within Chrome (because this requires some sort of connection with a server, which PassLok does not have by default). The general directory, though handy, is entirely optional and accepts only Locks.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq21' style="cursor:pointer">
+<h3>To lock a message for multiple recipients...</h3>
+</div>
+<div id="q21" class="texter">
+<p>A. You write the recipients' names in the local directory, one per line, in the Locks lower box</p>
+<p>B. You write the recipients' Locks, one per line, in the Locks lower box</p>
+<p>C. You write the name of a List containing the recipients' Locks, in the Locks upper box</p>
+<p>D. You write the name of a List containing the recipients' names in the directory, in the Locks upper box</p>
+<p>E. Any of the above, or any combination of them</p>
+<div id='aans21' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans21" class="texter">
+<p><strong>E</strong>. PassLok will detect automatically if an item entered on its own line in the Locks lower box is itself a Lock or the name of a Lock. If the presumed name is not found in the local directory, PassLok will use it as a shared Key, but will warn you before in case this is a mistake. If you put all those items into a List, it is enough to begin typing the name of the List in the upper box. The only restriction is that Lists are not nested (Lists containing names of other Lists); Lists can be merged if necessary, though.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq22' style="cursor:pointer">
+<h3>The general PassLok directory...</h3>
+</div>
+<div id="q22" class="texter">
+<p>A. Is built into PassLok, so the program can retrieve other users' Locks as needed</p>
+<p>B. Can be accessed from within PassLok and then there is some integration, but it is not necessarily loaded since it is a separate webpage</p>
+<p>C. Is a completely separate website that has no integration with PassLok other than a button to load it, since it involves a server</p>
+<p>D. Has no connection with the PassLok app, though its server is related to it</p>
+<p>E. Is an entirely separate website from entirely different people. PassLok does not endorse it</p>
+<div id='aans22' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans22" class="texter">
+<p><strong>B</strong>. There is as much integration with the general PassLok directory as possible within the "no server" philosophy of PassLok. This means that the general directory, which necessarily involves a server, is actually a separate webpage that is blended as seamlessly as possible within PassLok. You can send your Lock from PasssLok to the directory (you only need to supply your email address, since the directory indexes Locks by email address and confirms changes by email, and click the <strong>Post</strong> button), and the directory can send Locks to PassLok (you still need to supply a name and click the <strong>Save</strong> button), but that's where the integration ends. The general directory page is not even loaded unless specifically requested.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq23' style="cursor:pointer">
+<h3>To use my stored Locks in a different device...</h3>
+</div>
+<div id="q23" class="texter">
+<p>A. I must use the Chrome app version of PassLok. It is not possible otherwise since the local direactory is tied to a particular device and browser</p>
+<p>B. I can use the Chrome app, or I can export the entire local directory, and then import it into the new device</p>
+<p>C. I can use the Chrome app, or I can export that particular Lock so that I can use it in another device</p>
+<p>D. I can always get them from the general PassLok directory, since my local directory syncs automatically with the general directory</p>
+<p>E. This cannot be done. The local directory is strictly local for security reasons</p>
+<div id='aans23' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans23" class="texter">
+<p><strong>B</strong>. The Chrome app version of PassLok syncs its local directory items, one at a time, through Google, and then the user can retrieve them from there by typing the entire name in the Locks upper box, followed by the Enter key. For the regular html version, however, users must first export their entire local directory so it can be imported into a different device. But this is not difficult to do; just click the <strong>Move</strong> button, followed by <strong>Mail</strong>. In most web-based email programs, such as gmail, a draft email containing the encrypted directory will be created immediately, which can be easily retrieved from another machine, and then automatically imported into PassLok as if unlocking a message. The general PassLok directory stores only one Lock at a time, and it must be done by the original owner of that Lock.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq24' style="cursor:pointer">
+<h3>"Authenticating" a Lock means...</h3>
+</div>
+<div id="q24" class="texter">
+<p>A. I downloaded the Lock from the general PassLok directory, which means it is good</p>
+<p>B. I have verified a witness's digital signature attached to the Lock</p>
+<p>C. I made sure that the Lock actually belongs to the person who claims ownership of it</p>
+<p>D. I submitted it to the general PassLok directory, along with some personal information</p>
+<p>E. I made a video of myself reading part of the Lock, and appended its URL  to the Lock before posting it</p>
+<div id='aans24' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans24" class="texter">
+<p><strong>C</strong>. A Lock should not be taken as authentic until you have made sure that it actually belongs to the person who claims to have made it. Otherwise, you may find yourself locking sensitive information for an interloper to read. One way to authenticate a Lock is when the owner has added a video of him/herself reading a portion of the Lock, or of its ID displayed right above it (easier to read), which you watch. If you recognize the person and the code being read matches what you've got, then you can consider the Lock as authentic. Getting the Lock from the general PassLok directory is not enough, since the general directory authenticates entries only by email confirmation, which could be faked by people having access to mail servers. Even though it is possible to do so, PassLok does not authenticate Locks by "web of trust" or similar signature-based schemes.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq25' style="cursor:pointer">
+<h3>The PC and mobile versions of PassLok are identical</h3>
+</div>
+<div id="q25" class="texter">
+<p>A. True. There is no difference at all between PassLok running on a computer vs. a smartphone</p>
+<p>B. False. Either the mobile or the non-mobile code is downloaded to the device, depending on what the device is</p>
+<p>C. True, but PassLok detects the platform it is running on, and behaves differently according to that</p>
+<p>D. False. Chrome apps and extensions don't run on mobile devices (yet)</p>
+<p>E. The distinction is meaningless, since the PassLok code is generated on-the-fly for any device</p>
+<div id='aans25' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans25" class="texter">
+<p><strong>C</strong>. There is only one html code for PassLok, but it runs differently on PCs and mobile devices. Some buttons behave differently, however. If you click Txt/Img on a PC, the image hiding screen appears; on a mobile device, the default texting app opens instead. This is because PCs usually don't have a default texting app, and mobile devices tend to modify images as they load them, making image hiding difficult. There are other differences arising from the non-mobile browsers ability to display at different resolutions and with different screen sizes. The packaged Chrome app (which at this point is not yet supported by mobile Chrome) has its code split among different files rather than all in one file because of Google restrictions, but is otherwise identical to the html version, including Chrome-specific functions that the html version cannot use.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq26' style="cursor:pointer">
+<h3>"Authenticating" an html version of PassLok  means...</h3>
+</div>
+<div id="q26" class="texter">
+<p>A. I have obtained it from a friend</p>
+<p>B. I have downloaded it from one of the official mirrors</p>
+<p>C. I have downloaded it from one of the official mirrors and verified its SHA256 checksum</p>
+<p>D. I have downloaded it from one of the official mirrors, verified its SHA256 checksum, and compared it with what the author reads in a video</p>
+<p>E. It is impossible to authenticate PassLok, so "authenticating" actually means getting a false sense of security</p>
+<div id='aans26' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans26" class="texter">
+<p><strong>D</strong>. Someone could hack into a PassLok server and change the code in subtle ways that make it insecure, so it is a good practice to audit the code (if you are adept in cryptography and web app programming) or, for the rest of us, at least make sure the code still is what the author wrote. If you do this, it doesn't really matter how you got the code. The standard way to authenticate the code is very much like for authenticating a Lock, except that you get the SHA256 of the entire code (using a separate utility, not PassLok itself), and then hopefully you recognize the author after having done it a few times. We're looking into engaging a celebrity to do this, but not yet ;-) If you have the Chrome app version, then Google is vouching for its integrity, so it all depends on whether or not you trust Google.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq27' style="cursor:pointer">
+<h3>The Shamir Secret Sharing Scheme (SSSS) is a function that...</h3>
+</div>
+<div id="q27" class="texter">
+<p>A. Turns text into several random-looking parts, some of which must be joined together to retrieve the original</p>
+<p>B. Hides text inside images</p>
+<p>C. Turns text into a different text, and back</p>
+<p>D. Hides text within the spacing of another text</p>
+<p>E. None of the above</p>
+<div id='aans27' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans27" class="texter">
+<p><strong>A</strong>. When you click the <strong>Splt/Jn</strong> button, a popup asks for the number of parts to make, and the minimum number that will be needed to retrieve the original. To reconstruct, paste in a sufficient number of parts form the same set, each on a separate line, and click the same button. If but one part is missing, it is impossible to retrieve even one bit of the original.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq28' style="cursor:pointer">
+<h3>PassLok can disguise its output as text...</h3>
+</div>
+<div id="q28" class="texter">
+<p>A. True. It converts each character into a word, which can be later converted back</p>
+<p>B. True. It converts each character into a series of spaces, so the output is hidden in the spacing between words of a text</p>
+<p>C. True, but the recipient must have the same Cover text to get the original item back</p>
+<p>D. True, but this does not provide any real security</p>
+<p>E. All of the above</p>
+<div id='aans28' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans28" class="texter">
+<p><strong>E</strong>. PassLok includes two ways to disguise its random-looking output as text: Words and Spaces. Using the Words method, each character is replaced by a word of the Cover text, which measn that the recipient must have the same Cover text. In the Spaces method, each characters is endoded as single or double spaces between words without altering the words of the Cover text, which the recipient does not need to have, at the expense of a greater length. Neither method provides real security, so PassLok will refuse to apply them to plain text.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq29' style="cursor:pointer">
+<h3>PassLok can disguise its output as images...</h3>
+</div>
+<div id="q29" class="texter">
+<p>A. False because, since the output is random-looking, the images will look like abstract paintings</p>
+<p>B. True, but space is limited</p>
+<p>C. False, since web browsers always change images as hey load</p>
+<p>D. True, but one can tell that there is something hidden in the image</p>
+<p>E. True, and this is more secure than hiding within text</p>
+<div id='aans29' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans29" class="texter">
+<p><strong>B</strong>. PassLok can hide its output within images by replacing the least significant digits of the color value of each pixel with the encoded characters.  The larger the number of pixels, the more material can be concealed. Current mobile browsers change images as they load, however, so decoding is only possible with non-mobile browsers. The resulting image is usually indistinguishable from the original, but this is not really secure because no password is needed to retrieve the original. Because of this, PassLok does not allow this function to be applied to plain text.</p>
+</div>
+</div>
+<hr style="background-color: #c0c0c0">
+
+<div id='qq30' style="cursor:pointer">
+<h3>PassLok can lock and sign files, too...</h3>
+</div>
+<div id="q30" class="texter">
+<p>A. False. PassLok is html code runnning in a browser, which is not allowed to alter local files</p>
+<p>B. False. There is no way to load files into the PassLok windows</p>
+<p>C. True. This works equally well on mobile and non-mobile</p>
+<p>D. True, but some browsers don't do his well, especially mobile ones</p>
+<p>E. True, but this does not provide any real security</p>
+<div id='aans30' style="cursor:pointer">
+<p><em>Click here for Answer:</em></p>
+</div>
+<div id="ans30" class="texter">
+<strong>D</strong>. Files can be converted into base64 text and loaded into the main box, from where they can be locked or signed like any piece of text. Once unlocked, the file can be saved to the default Downloads area (or viewed, on mobile devices) with the click of a button. Current mobile  browsers are restricted to loading only images, unless they are rooted or jailbroken. Results vary ccording to the browser used. Chrome, Firefox, and Opera are the best. Safari loads files but saves them with a generic name, which must be edited later. Internet Explorer, as usual, has a lot of problems.</div>
+</div>
+<hr style="background-color: #c0c0c0">
+  <button class="cssbutton" id="closequizButton2" value="< Back" style="width:185px">&#x25C0; Back to main Help</button>
+</div>
 
 <div id="lockdir" class="texter" style="display: none;" align="center">
-	<button id="closelockdirButton" value="< Back" style="float: left;font-size:medium;">&#x25C0; Back to PassLok</button>
+  <button class="cssbutton" id="closelockdirButton" value="< Back" style="float: left;width:180px">&#x25C0; Back to PassLok</button>
     
     <iframe seamless id="lockdirframe" src="" style="width:100%;height:900px"></iframe>
 
@@ -5957,7 +6580,7 @@ function remChromeLock(name) {
     document.getElementById('warning').value = "PassLok Privacy";
    	document.getElementById('warning').style.backgroundColor = "rgb(235, 255, 235)";
 
-	var rowheight = document.getElementById('warning').clientHeight*0.85,						//get title size in pixels, for number of rows calculation. global variables
+	var rowheight = document.getElementById('warning').clientHeight*0.9,						//get title size in pixels, for number of rows calculation. global variables
 		isiPad = (navigator.userAgent.match(/iPad/i) != null),
 		isiPhone = (navigator.userAgent.match(/iPhone|iPod/i) != null),
 		isAndroidTablet = (navigator.userAgent.match(/mobile/i) == null && navigator.userAgent.match(/Android/i) != null && !isiPad && !isiPhone),
@@ -5976,7 +6599,7 @@ function textrows(){
 		if((angle==90)||(angle==-90)){
 			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*0.9-11				//smartphone here and line below
 		}else if(typeof window.orientation != 'undefined') {document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.25-11
-		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.2-10}}				//non-mobile
+		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.27-14}}				//non-mobile
 	document.getElementById('mainBox').rows = document.getElementById('mainBox').rows*0.8;			//tweak factor for development
 	if(document.getElementById('lockBox')!=null) document.getElementById('lockBox').rows = document.getElementById('mainBox').rows
 	
@@ -6395,6 +7018,21 @@ window.onload = function() {
    	closelockdirButton.addEventListener('click', dir2lock);
 	closelockdirButton.addEventListener('blur', ce);
 	closelockdirButton.addEventListener('focus', ce);
+	
+	var closequizButton1 = document.getElementById('closequizButton1');
+   	closequizButton1.addEventListener('click', closequiz);
+	closequizButton1.addEventListener('blur', ce);
+	closequizButton1.addEventListener('focus', ce);
+	
+	var closequizButton2 = document.getElementById('closequizButton2');
+   	closequizButton2.addEventListener('click', closequiz);
+	closequizButton2.addEventListener('blur', ce);
+	closequizButton2.addEventListener('focus', ce);
+	
+	var openquizButton = document.getElementById('openquizButton');
+   	openquizButton.addEventListener('click', openquiz);
+	openquizButton.addEventListener('blur', ce);
+	openquizButton.addEventListener('focus', ce);
 
 //for the help screens	
 	document.getElementById('aa1').addEventListener('click', function() {openClose('a1')});
@@ -6445,7 +7083,69 @@ window.onload = function() {
 	document.getElementById('cc9').addEventListener('click', function() {openClose('c9')});
 	document.getElementById('cc10').addEventListener('click', function() {openClose('c10')});
 	document.getElementById('cc11').addEventListener('click', function() {openClose('c11')});
-	document.getElementById('cc12').addEventListener('click', function() {openClose('c12')});	
+	document.getElementById('cc12').addEventListener('click', function() {openClose('c12')});
+	
+	document.getElementById('qq1').addEventListener('click', function() {openClose('q1')});
+	document.getElementById('qq2').addEventListener('click', function() {openClose('q2')});
+	document.getElementById('qq3').addEventListener('click', function() {openClose('q3')});
+	document.getElementById('qq4').addEventListener('click', function() {openClose('q4')});
+	document.getElementById('qq5').addEventListener('click', function() {openClose('q5')});
+	document.getElementById('qq6').addEventListener('click', function() {openClose('q6')});
+	document.getElementById('qq7').addEventListener('click', function() {openClose('q7')});
+	document.getElementById('qq8').addEventListener('click', function() {openClose('q8')});
+	document.getElementById('qq9').addEventListener('click', function() {openClose('q9')});
+	document.getElementById('qq10').addEventListener('click', function() {openClose('q10')});
+	document.getElementById('qq11').addEventListener('click', function() {openClose('q11')});
+	document.getElementById('qq12').addEventListener('click', function() {openClose('q12')});
+	document.getElementById('qq13').addEventListener('click', function() {openClose('q13')});
+	document.getElementById('qq14').addEventListener('click', function() {openClose('q14')});
+	document.getElementById('qq15').addEventListener('click', function() {openClose('q15')});
+	document.getElementById('qq16').addEventListener('click', function() {openClose('q16')});
+	document.getElementById('qq17').addEventListener('click', function() {openClose('q17')});
+	document.getElementById('qq18').addEventListener('click', function() {openClose('q18')});
+	document.getElementById('qq19').addEventListener('click', function() {openClose('q19')});
+	document.getElementById('qq20').addEventListener('click', function() {openClose('q20')});
+	document.getElementById('qq21').addEventListener('click', function() {openClose('q21')});
+	document.getElementById('qq22').addEventListener('click', function() {openClose('q22')});
+	document.getElementById('qq23').addEventListener('click', function() {openClose('q23')});
+	document.getElementById('qq24').addEventListener('click', function() {openClose('q24')});
+	document.getElementById('qq25').addEventListener('click', function() {openClose('q25')});
+	document.getElementById('qq26').addEventListener('click', function() {openClose('q26')});
+	document.getElementById('qq27').addEventListener('click', function() {openClose('q27')});
+	document.getElementById('qq28').addEventListener('click', function() {openClose('q28')});
+	document.getElementById('qq29').addEventListener('click', function() {openClose('q29')});
+	document.getElementById('qq30').addEventListener('click', function() {openClose('q30')});
+	
+	document.getElementById('aans1').addEventListener('click', function() {openClose('ans1')});
+	document.getElementById('aans2').addEventListener('click', function() {openClose('ans2')});
+	document.getElementById('aans3').addEventListener('click', function() {openClose('ans3')});
+	document.getElementById('aans4').addEventListener('click', function() {openClose('ans4')});
+	document.getElementById('aans5').addEventListener('click', function() {openClose('ans5')});
+	document.getElementById('aans6').addEventListener('click', function() {openClose('ans6')});
+	document.getElementById('aans7').addEventListener('click', function() {openClose('ans7')});
+	document.getElementById('aans8').addEventListener('click', function() {openClose('ans8')});
+	document.getElementById('aans9').addEventListener('click', function() {openClose('ans9')});
+	document.getElementById('aans10').addEventListener('click', function() {openClose('ans10')});
+	document.getElementById('aans11').addEventListener('click', function() {openClose('ans11')});
+	document.getElementById('aans12').addEventListener('click', function() {openClose('ans12')});
+	document.getElementById('aans13').addEventListener('click', function() {openClose('ans13')});
+	document.getElementById('aans14').addEventListener('click', function() {openClose('ans14')});
+	document.getElementById('aans15').addEventListener('click', function() {openClose('ans15')});
+	document.getElementById('aans16').addEventListener('click', function() {openClose('ans16')});
+	document.getElementById('aans17').addEventListener('click', function() {openClose('ans17')});
+	document.getElementById('aans18').addEventListener('click', function() {openClose('ans18')});
+	document.getElementById('aans19').addEventListener('click', function() {openClose('ans19')});
+	document.getElementById('aans20').addEventListener('click', function() {openClose('ans20')});
+	document.getElementById('aans21').addEventListener('click', function() {openClose('ans21')});
+	document.getElementById('aans22').addEventListener('click', function() {openClose('ans22')});
+	document.getElementById('aans23').addEventListener('click', function() {openClose('ans23')});
+	document.getElementById('aans24').addEventListener('click', function() {openClose('ans24')});
+	document.getElementById('aans25').addEventListener('click', function() {openClose('ans25')});
+	document.getElementById('aans26').addEventListener('click', function() {openClose('ans26')});
+	document.getElementById('aans27').addEventListener('click', function() {openClose('ans27')});
+	document.getElementById('aans28').addEventListener('click', function() {openClose('ans28')});
+	document.getElementById('aans29').addEventListener('click', function() {openClose('ans29')});
+	document.getElementById('aans30').addEventListener('click', function() {openClose('ans30')});
 	
 	document.getElementById('support').addEventListener('click', addSupport);
 };

@@ -11,3 +11,4 @@
 <gap:config-file platform="ios" parent="UIViewControllerBasedStatusBarAppearance">
     <false/>
 </gap:config-file>
+<gap:splash src="passlok-touch-icon.png" />
