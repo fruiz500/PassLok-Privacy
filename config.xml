@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+        xmlns:gap   = "http://phonegap.com/ns/1.0"
+        id          = "com.fruiz500.passlok"
+        versionCode = "10" 
+        version     = "1.7.7" >
+		
+    <name>PassLok Privacy</name>
+
+    <description>
+        Elliptic curves on top of AES, and much more. 
+    </description>
+
+    <author href="https://passlok.com" email="passlokprivacy@gmail.com">
+        Francisco Ruiz 
+    </author>
+
+<gap:plugin name="com.phonegap.plugin.statusbar" />
+
+<preference name="StatusBarOverlaysWebView" value="false" />
+
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>
 </gap:config-file>
@@ -9,3 +29,5 @@
 </gap:config-file>
 
 <gap:splash src="passlok-touch-icon.png" />
+
+</widget>
