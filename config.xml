@@ -17,8 +17,6 @@
     </author>
 
 <gap:plugin name="com.phonegap.plugin.statusbar" />
-<gap:plugin name="com.verso.cordova.clipboard" version="0.1.0" />
-<gap:plugin name="org.apache.cordova.contacts" version="0.2.9" />
 
 <preference name="StatusBarOverlaysWebView" value="false" />
 <preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
