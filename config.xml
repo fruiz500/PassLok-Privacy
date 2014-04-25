@@ -6,7 +6,7 @@
         versionCode = "10" 
         version     = "1.7.7" >
 		
-    <name>PassLok Privacy</name>
+    <name>PassLok</name>
 
     <description>
         Elliptic curves on top of AES, and much more. 
@@ -17,8 +17,12 @@
     </author>
 
 <gap:plugin name="com.phonegap.plugin.statusbar" />
+<gap:plugin name="com.verso.cordova.clipboard" version="0.1.0" />
+<gap:plugin name="org.apache.cordova.contacts" version="0.2.9" />
 
 <preference name="StatusBarOverlaysWebView" value="false" />
+<preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
+<preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
 
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>

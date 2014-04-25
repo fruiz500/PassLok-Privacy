@@ -3281,7 +3281,15 @@ function Encrypt_text(){
 		if(typeof window.orientation !== 'undefined'){
 			main2extra();
 			mainmsg.innerHTML = 'Locking successful. Copy and click Txt/Img';
-			selectMain()
+			selectMain();
+			
+//this bit for phonegap only
+			if(window.plugins){
+				window.plugins.copy(document.getElementById('mainBox').value)
+				mainmsg.innerHTML = 'Locked and copied to clipboard. Click Txt/Img to send'
+			}
+//end of phonegap bit	
+
 		}		
 	}
 	if (clipped) mainmsg.innerHTML = "<span style='color:orange'>The message has been truncated</span>"	
@@ -4088,7 +4096,14 @@ function sendSMS() {
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The default texting app will now open. You need to have copied your short locked message to the clipboard before doing this, if you want to send one. This only works in smartphones. Cancel if this is not what you want.");
 			if(reply===false) throw("SMS canceled");
-		};		
+		};
+		
+//this bit for phonegap only
+		if(window.plugins){
+			window.plugins.copy(document.getElementById('mainBox').value)
+		}
+//end of phonegap bit		
+	
 		window.open("SMS:","_parent")							//open SMS on mobile
 	} else {																		//open image screen non-mobile
 		if (document.getElementById("learnmode").checked === true){
@@ -4489,6 +4504,19 @@ function addLock(){
 		lockmsg.innerHTML = '<span style="color:red">Cannot save without a name</span>'	
 	};
 	suspendFindLock = false
+	
+//this for phonegap only
+	if(navigator.contacts){
+		// create a new contact
+    	var contact = navigator.contacts.create();
+
+    	// store contact Lock in ContactField[]
+		contact.name = name;
+    	contact.lock = new ContactField('Lock', lock, true);
+
+    	// save the contact
+    	contact.save();
+	}
 }
 
 //delete a particular key in Object lockDB, then store
@@ -4905,16 +4933,42 @@ function closebox() {
 
 function locknameKeyup(){
 	if (event.keyCode == 13) {												//sync from Chrome or decrypt if hit Return
+		var name = document.getElementById("locknameBox").value;
 		if(document.getElementById("lockmsg").innerHTML == ''){				//found nothing, so try to get it from Chrome sync
 			if(testChromeSync()){
-				var name = document.getElementById("locknameBox").value;
 				getChromeLock(name);
-			}		
+			} else {															//try to find it in mobile contacts
+			
+	//this for phonegap only
+				if(navigator.contacts){
+	// find all contacts with 'name' in any name field
+					var gapoptions      = new ContactFindOptions();
+					gapoptions.filter   = name;
+					gapoptions.multiple = true;
+					var fields       = ["displayName", "name"];
+					navigator.contacts.find(fields, onContactSuccess, onContactError, gapoptions);
+				}			
+				
+			}
 		} else {
 			if(!document.getElementById("lockmsg").innerHTML.match('not found in your Chrome')) decryptItem()		//decrypt 1st time if found locally, 2nd time if synced from Chrome
 		}
 	} else if (!suspendFindLock){return findLock()};
 }
+
+//the following two functions are for phonegap only
+function onContactSuccess(contacts) {
+	if(navigator.contacts.lock){
+		document.getElementById("lockmsg").innerHTML = name;
+		document.getElementById('lockBox').value = navigator.contacts.lock
+	} else {
+		document.getElementById("lockmsg").innerHTML = 'No Lock found for ' + name + ' in Contacts';
+	}
+};
+
+function onContactError(contactError) {
+    document.getElementById("lockmsg").innerHTML = name + ' not found in Contacts'
+};
 
 function pwdKeyup(){
 	clearTimeout(keytimer);
