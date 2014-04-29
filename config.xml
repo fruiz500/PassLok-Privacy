@@ -19,8 +19,6 @@
 <gap:plugin name="com.phonegap.plugin.statusbar" />
 
 <preference name="StatusBarOverlaysWebView" value="false" />
-<preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
-<preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
 
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>

@@ -67,18 +67,18 @@
 	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
 	background-color:#ededed;
-	-webkit-border-top-left-radius:6px;
-	-moz-border-radius-topleft:6px;
-	border-top-left-radius:6px;
-	-webkit-border-top-right-radius:6px;
-	-moz-border-radius-topright:6px;
-	border-top-right-radius:6px;
-	-webkit-border-bottom-right-radius:6px;
-	-moz-border-radius-bottomright:6px;
-	border-bottom-right-radius:6px;
-	-webkit-border-bottom-left-radius:6px;
-	-moz-border-radius-bottomleft:6px;
-	border-bottom-left-radius:6px;
+	-webkit-border-top-left-radius:8px;
+	-moz-border-radius-topleft:8px;
+	border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-moz-border-radius-topright:8px;
+	border-top-right-radius:8px;
+	-webkit-border-bottom-right-radius:8px;
+	-moz-border-radius-bottomright:8px;
+	border-bottom-right-radius:8px;
+	-webkit-border-bottom-left-radius:8px;
+	-moz-border-radius-bottomleft:8px;
+	border-bottom-left-radius:8px;
 	text-indent:0;
 	border:1px solid #dcdcdc;
 	display:inline-block;
@@ -104,18 +104,18 @@
 	top:1px;
 }
 .cssbox {
-	-webkit-border-top-left-radius:6px;
-	-moz-border-radius-topleft:6px;
-	border-top-left-radius:6px;
-	-webkit-border-top-right-radius:6px;
-	-moz-border-radius-topright:6px;
-	border-top-right-radius:6px;
-	-webkit-border-bottom-right-radius:6px;
-	-moz-border-radius-bottomright:6px;
-	border-bottom-right-radius:6px;
-	-webkit-border-bottom-left-radius:6px;
-	-moz-border-radius-bottomleft:6px;
-	border-bottom-left-radius:6px;
+	-webkit-border-top-left-radius:8px;
+	-moz-border-radius-topleft:8px;
+	border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-moz-border-radius-topright:8px;
+	border-top-right-radius:8px;
+	-webkit-border-bottom-right-radius:8px;
+	-moz-border-radius-bottomright:8px;
+	border-bottom-right-radius:8px;
+	-webkit-border-bottom-left-radius:8px;
+	-moz-border-radius-bottomleft:8px;
+	border-bottom-left-radius:8px;
 	text-indent:0;
 	border:4px solid #dfdfdf;
 	background-color: #ffffee;
@@ -3483,6 +3483,8 @@ function Encrypt_for_List(listArray){
 function readKey(){
 	clearTimeout(keytimer);																			//reset key timer
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000);
+	if ((new Date().getTime()) - keytime > 300000) document.key.text.value = '';				//erase key after 5 minutes
+    keytime = new Date().getTime();
 	
 	var key = document.getElementById('pwd').value.trim();
 	if (key == ""){
@@ -4617,7 +4619,6 @@ function decryptItem(){
 	if(string == "") throw('nothing to decrypt');
 	string = string.slice(1,string.length);															//strip initial '~'
 	document.getElementById('lockBox').value = keyDecrypt(key,string);
-	document.getElementById("mainmsg").innerHTML = 'Item ready'
 }
 
 //add a few spaces and newlines, then remove brackets, etc., extra spaces, put in alphabetical order
@@ -4767,10 +4768,14 @@ function searchStringInArrayDB (str, strArray) {
 
 //global variable used for key box expiration
 var keytimer = 0;
+var keytime = new Date().getTime();
 
 //add entropy as forms are manipulated, reset key boxes after 5 minutes
 function ce() {
 	sjcl.random.addEntropy(Math.floor((((new Date).getMilliseconds()) * 255) / 999), 2, "loadtime");
+    if ((new Date().getTime()) - keytime > 300000) {
+        document.getElementById('pwd').value = '';
+    }
 };
 
 //now comes the code dealing with page formatting and such
@@ -4919,6 +4924,8 @@ function locknameKeyup(){
 function pwdKeyup(){
 	clearTimeout(keytimer);
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000);
+	keytime = new Date().getTime();
+		
 	if (event.keyCode == 13){exitKey()} else return keyStrength(document.getElementById('pwd').value,true);
 }
 function introKeyup(){
@@ -4974,10 +4981,18 @@ function lock2main(){
 	openClose('lockscr');
 	openClose('mainscr');
 	fromMain = true;
-	if(document.getElementById('lockBox').value != '') document.getElementById("mainmsg").innerHTML = 'Item ready';
-	if(document.getElementById('lockBox').value.split(' ').length >= keystr.length){
-		newcover(document.getElementById('lockBox').value);					//this for loading cover text from lock screen
-		document.getElementById("mainmsg").innerHTML = 'Cover text changed'
+	if(document.getElementById('lockBox').value != ''){
+		var listArray = document.getElementById('lockBox').value.split('\n');
+		if(document.getElementById('lockBox').value.split(' ').length >= keystr.length){
+			newcover(document.getElementById('lockBox').value);							//this for loading cover text from lock screen
+			document.getElementById("mainmsg").innerHTML = 'New Cover text ready'
+		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
+			document.getElementById("mainmsg").innerHTML = 'List ready'
+		} else if(striptags(document.getElementById('lockBox').value).length == 87){
+			document.getElementById("mainmsg").innerHTML = 'Lock ready'		
+		} else {
+			document.getElementById("mainmsg").innerHTML = 'Shared Key ready'
+		}
 	}
 }
 
@@ -5004,7 +5019,8 @@ function any2key(){
 function key2any(){
 	clearTimeout(keytimer);
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
-	
+	keytime = new Date().getTime();
+		
 	closebox();
 	var mykey = document.getElementById('pwd').value.trim();
 	if(lockDB['myself'] == null && mykey != ''){					//if "myself" lockDB entry containing the Key's matching Lock is not present, add it
@@ -6586,6 +6602,7 @@ function remChromeLock(name) {
 		isAndroidTablet = (navigator.userAgent.match(/mobile/i) == null && navigator.userAgent.match(/Android/i) != null && !isiPad && !isiPhone),
 		isAndroidPhone= (navigator.userAgent.match(/mobile/i) != null && navigator.userAgent.match(/Android/i) != null && !isiPad && !isiPhone),
 		angle = window.orientation;
+	if((angle==90)||(angle==-90)){rowheight = rowheight*0.78}				//correction in case device starts in landscape
 	if(isAndroidPhone || isAndroidTablet){rowheight = rowheight*1.1}		//Android rows are fatter
 	textrows();
 
@@ -6593,8 +6610,8 @@ function remChromeLock(name) {
 function textrows(){
 	if(isiPad || isAndroidTablet){												//first for iPad. Don't know how to detect other tablets
 		if((angle==90)||(angle==-90)){
-			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight-11					//landscape
-		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.2-11}			//portrait
+			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.1-11				//landscape
+		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.4-11}			//portrait
 	}else{
 		if((angle==90)||(angle==-90)){
 			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*0.9-11				//smartphone here and line below
@@ -6602,11 +6619,6 @@ function textrows(){
 		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.27-14}}				//non-mobile
 	document.getElementById('mainBox').rows = document.getElementById('mainBox').rows*0.8;			//tweak factor for development
 	if(document.getElementById('lockBox')!=null) document.getElementById('lockBox').rows = document.getElementById('mainBox').rows
-	
-	//fix for fat text in landscape mode
-	if((angle==90)||(angle==-90)){
-		document.getElementById('modes').innerHTML = '<span style="font-size:50%;color:red">' + document.getElementById('modes').innerHTML + '</span>'
-	}
 }
 	
 //functions for reading a file into the box, and for saving it later
