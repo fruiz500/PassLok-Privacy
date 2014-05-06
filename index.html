@@ -3525,7 +3525,7 @@ function makesalt(iv,leng){
 		if ((document.getElementById('decoyPwdIn').value.trim() == "")||(document.getElementById('decoyText').value.trim() == "")){ //stop to display the decoy entry form if there is no hidden message or key
 			document.getElementById("decoyIn").style.display = "block";					//display decoy form, and back shadow
 			document.getElementById("shadow").style.display = "block";
-			document.getElementById('decoyPwdIn').focus();	
+			document.getElementById('decoyText').focus();	
 			throw ("stopped for decoy input")				
 		}
 		var key = document.getElementById('decoyPwdIn').value,
@@ -3542,11 +3542,14 @@ function makesalt(iv,leng){
 		text = text.slice(0,leng);
 		var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key,'',iter,8,1,33));
 		var cipherj = JSON.parse(sjcl.encrypt(keyStretched,text,{"iv":iv,"salt":"","ks":256,"iter":101}));
+		document.getElementById('decoyPwdIn').value = "";
+		document.getElementById('decoyText').value = "";
 		return cipherj.ct;
 };
 
 //AES decryption process: determines which kind of encryption by looking at first character after the initial tag. Calls Encrypt_text as appropriate
 function Decrypt_text(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	encrypting = true;
 	var decoyOn = document.getElementById("decoymode").checked,
 		learnOn = document.getElementById("learnmode").checked,
@@ -3933,6 +3936,7 @@ function Signhash(){
 
 //verifies the ECDSA signature of a hash of the plaintext, calls Signhash as appropriate. Algorithm from SJCL ecc.js, but not the latest version
 function Verifyhash(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	encrypting = false;
 	var keymsg = document.getElementById("keymsg"),
 		lockmsg = document.getElementById("lockmsg"),
@@ -4033,6 +4037,7 @@ function charsLeft(){
 
 //formats results depending on tags present and sends to default email
 function sendMail() {
+	if(document.getElementById('mainscr').style.display=='none') return;
 	var	mainmsg = document.getElementById("mainmsg");
 		mainmsg.innerHTML = "";
 	if (document.getElementById("learnmode").checked === true){
@@ -4089,6 +4094,7 @@ if (document.getElementById("notags").checked === false){							//add tags if ch
 
 //calls texting app (works on mobile only), or the image hiding functions (non-mobile)
 function sendSMS() {
+	if(document.getElementById('mainscr').style.display=='none') return;
 	if(typeof window.orientation != 'undefined'){
 		if (document.getElementById("learnmode").checked === true){
 			var reply = confirm("The default texting app will now open. You need to have copied your short locked message to the clipboard before doing this, if you want to send one. This only works in smartphones. Cancel if this is not what you want.");
@@ -4108,10 +4114,11 @@ function sendSMS() {
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	var learnOn = document.getElementById("learnmode").checked,
 		mainmsg = document.getElementById("mainmsg"),
 		main = document.getElementById('mainBox').value.trim();
-	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/\n\nA/) && main.slice(0,1)=='A')){		//main box has parts: join parts or make one more part
+	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/\n\nA/) && main.slice(0,1)=='A')){		//main box has parts: join parts
 		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = main.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
@@ -4224,6 +4231,7 @@ if (typeof code == 'undefined'){			//default text for base64 to words conversion
 
 //This function checks for words or spaces encoding and calls the approrpiate decoders. If no encoding is detected, it calls the words encoder
 function words(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	var mainmsg = document.getElementById("mainmsg");
 		mainmsg.innerHTML = "";
 	if(document.getElementById('mainBox').value.match(/  +/g) != null) {								//detect double spaces and if there are any invoke spaces decoder
@@ -4255,6 +4263,7 @@ function words(){
 
 //this is almost the same as above, but if it doesn't detect encoding present, it calls the spaces encoder instead
 function spaces(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	var mainmsg = document.getElementById("mainmsg");
 		mainmsg.innerHTML = "";
 	if(document.getElementById('mainBox').value.match(/  +/g) != null) {								//detect double spaces and if there are any invoke spaces decoder
@@ -4822,6 +4831,7 @@ function showIntro(){
 };
 
 function box2cover(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	newcover(document.getElementById('mainBox').value)
 }
 
@@ -4835,6 +4845,7 @@ function clearMain(){
 	document.getElementById('mainmsg').innerHTML = '';
 }
 function clearLocks(){
+	if(document.getElementById('lockscr').style.display=='none') return;
 	document.getElementById('lockBox').value='';
 	document.getElementById('locknameBox').value='';
 	document.getElementById('lockmsg').innerHTML='';
@@ -4943,7 +4954,7 @@ function submitDecoyIn(){
 	if(encrypting){Decrypt_text()}else{Verifyhash()};
 }
 function decoyKeyupOut(){
-	if (event.keyCode == 13){submitDecoyout()};
+	if (event.keyCode == 13){submitDecoyOut()};
 }
 function submitDecoyOut(){
 	closebox();
@@ -4961,12 +4972,14 @@ function submitParts(){
 
 //for switching between windows
 function main2extra(){
+	if(document.getElementById('mainscr').style.display=='none') return;
 	openClose("mainbuttonstop");
 	openClose("mainbuttonsbot");
 	openClose("extrabuttonstop");
 	openClose("extrabuttonsbot");
 }
 function main2lock(){
+	if(document.getElementById('mainscr').style.display=='none' && document.getElementById('lockscr').style.display=='none') return;
 	openClose("mainscr");
 	openClose("lockscr");
 	decryptLock();
@@ -4998,8 +5011,9 @@ function image2extra(){
 	}
 }
 
-fromMain = true;						//directory frame was accessed from Lock screen unless set otherwise
+fromMain = true;						//directory frame was accessed from main screen unless set otherwise
 function lock2dir(){
+	if(document.getElementById('mainscr').style.display=='none' && document.getElementById('lockscr').style.display=='none' && document.getElementById('lockdir').style.display=='none' || document.getElementById('keyscr').style.display=='block') return;
 	loadLockDir();
 	if(fromMain){openClose('mainscr')} else {openClose('lockscr')};
 	openClose('lockdir');
@@ -5015,10 +5029,10 @@ function any2key(){
 	document.getElementById("pwd").focus()
 }
 function key2any(){
+	if(document.getElementById('mainscr').style.display=='none' && document.getElementById('lockscr').style.display=='none') return;
 	clearTimeout(keytimer);
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
-
 var mykey = document.getElementById('pwd').value.trim();
 	openClose('keyscr');
 	openClose('shadow');
@@ -5263,12 +5277,12 @@ function remChromeLock(name) {
 </div>
        
 <div id="decoyIn" class="white_content" align="center">
-    	<p>Enter the Decoy Password</p> 
-		<span id="decoymsg"></span><br /> 
-    	<input type="password" class="cssbox" id="decoyPwdIn" style="width: 98%" name="key"/>
-		<p>Enter the Hidden Message</p>      
+		<p>Enter the Hidden Message</p>
+        <span id="decoymsg"></span><br /> 
 		<textarea id="decoyText" class="cssbox" style="width: 98%" name="text" rows="3"></textarea>
-        <input type="checkbox" id="showdecIn" title="reveals Password"> Show
+       <p>Enter the Decoy Password</p> 
+    	<input type="password" class="cssbox" id="decoyPwdIn" style="width: 98%" name="key"/>
+        <input type="checkbox" id="showdecIn" title="reveal Password"> Show
     	<button class="cssbutton" id="submitDecoyButton" value="OK" title="go on with locking">OK</button>
 		<button class="cssbutton" id="cancelDecoyButton" value="Cancel" title="do not lock">Cancel</button>  
 </div>
@@ -5276,7 +5290,7 @@ function remChromeLock(name) {
 <div id="decoyOut" class="white_content" align="center">
 		<p>Enter the Decoy Password</p> 
     	<input type="password" class="cssbox" id="decoyPwdOut" style="width: 98%" name="key"/>
-        <input type="checkbox" id="showdecOut" title="reveals Password"> Show   
+        <input type="checkbox" id="showdecOut" title="reveal Password"> Show   
     	<button class="cssbutton" id="submitDecoy2Button" value="OK" title="go on with unlocking">OK</button>
 		<button class="cssbutton" id="cancelDecoy2Button" value="Cancel" title="stop unlocking">Cancel</button>
     	<p>The Hidden message will appear on the main screen</p>  
