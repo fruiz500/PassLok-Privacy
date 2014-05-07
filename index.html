@@ -4912,6 +4912,8 @@ function makelockIntro(){
 	fillkeys();
 	key2any();
 	openClose('introscr');
+	openClose('keyscr');
+	openClose('shadow');
 	openClose('mainscr');
 }
 //closes input divs
@@ -5029,7 +5031,7 @@ function any2key(){
 	document.getElementById("pwd").focus()
 }
 function key2any(){
-	if(document.getElementById('mainscr').style.display=='none' && document.getElementById('lockscr').style.display=='none') return;
+	if(document.getElementById('mainscr').style.display=='none' && document.getElementById('lockscr').style.display=='none' && document.getElementById('introscr').style.display=='none') return;
 	clearTimeout(keytimer);
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
