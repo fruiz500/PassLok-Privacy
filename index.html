@@ -3091,7 +3091,7 @@ function Encrypt_text(){
 	var	pubstr = striptags(secstr);
 	if (secstr === ""){
 		main2lock();
-		lockmsg.innerHTML = 'Enter a Lock, shared Key, or List in the lower box. If it has a name, enter it in the upper box. Then click Back.';
+		lockmsg.innerHTML = 'Enter a Lock, shared Key, or List in the lower box. If it has a name, enter it in the upper box. Then click Done.';
 		throw("lock box empty");
 	}
 	var listArray = secstr.split('\n');
@@ -5253,7 +5253,7 @@ function remChromeLock(name) {
 -webkit-border-radius:0;
 	-moz-border-radius:0;
 	border-radius:0;" title="switch to Basic mode">Basic</button><!--
---><button class="cssbutton" id="main2extraButton" value="More" style="color:orange;padding-top:10px" title="replace main buttons with those for extra functions (alt-.)" accesskey="."><strong>&#9002;&#9002;</strong></button>
+--><button class="cssbutton" id="main2extraButton" value="More" style="color:orange;padding-top:10px" title="replace main buttons with those for extra functions (alt-.)" accesskey="."><strong>&#x25B6;</strong></button>
 </div>
 <div id="extrabuttonstop" class="texter" style="display: none;">
 		<button class="cssbutton" id="sendMailButton" value="Mail" style="" title="put the box contents in an email using the default client (alt-B)" accesskey="b">Mail</button><!--
@@ -5262,7 +5262,7 @@ function remChromeLock(name) {
 	-moz-border-radius:0;
 	border-radius:0;" title="mobile: open the default Texting app | PC: open image hiding functions (alt-I)">Text/Img</button><!--
 --><button class="cssbutton" id="secretshareButton" value="Split/Join" style="" title="split plain box contents into several random-looking parts, or rejoin parts in the box (alt-J)" accesskey="j">Split/Join</button><!--
---><button class="cssbutton" id="extra2mainButton" value="Less" style="color:orange;padding-top:10px" title="return main buttons (alt-.)"><strong>&#9001;&#9001;</strong></button>
+--><button class="cssbutton" id="extra2mainButton" value="Less" style="color:orange;padding-top:10px" title="return main buttons (alt-.)"><strong>&#x25C0;</strong></button>
 </div>
     </div>
     <div align="center">
@@ -5302,7 +5302,7 @@ function remChromeLock(name) {
 </div>
     
 <div id='imagescr' class="texter" style="display: none;" align="center">
-    <button class="cssbutton" id="image2extraButton" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#9001; Back</button>&nbsp;
+    <button class="cssbutton" id="image2extraButton" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#x25C0; Back</button>&nbsp;
     <button class="cssbutton" id="encode" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
     <button class="cssbutton" id="decode" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
        
@@ -5317,17 +5317,17 @@ function remChromeLock(name) {
 </div> 
 
 <div id="lockscr" class="white_content" style="display: none;
-			top: 5%;
+			top: 4%;
 			left: 10%;
 			width: 80%;
-			height: 90%;" align="center">
+			height: 92%;" align="center">
     <div id="basiclocktop" class="texter" style="display: block;" align="center">
        <button class="cssbutton" id="lock2mainButtonBasic" value="< Back" style="float: left;font-size:22px;padding-left:14px;padding-right:14px" title="return to main screen (alt-L)">Done</button>
        <button class="cssbutton" id="clearLocksButtonBasic" value="Clear" style="float: right;font-size:22px;padding-left:14px;padding-right:14px;margin-right:0" title="clear both boxes (alt-C)" accesskey="c">Clear</button><br /><br /><br />
     </div>
     <div id="locktop" class="texter" style="display: none;" align="center">
        <button class="cssbutton" id="lock2mainButton" value="< Back" style="float: left" title="return to main screen (alt-L)">Done</button>
-       <button class="cssbutton" id="lock2dirButton" value="Directory" style="" title="open a screen containing the general PassLok directory (alt-G)" accesskey="g">&#9002; gen. dir.</button>
+       <button class="cssbutton" id="lock2dirButton" value="Directory" style="" title="open a screen containing the general PassLok directory (alt-G)" accesskey="g">&#x25B6; gen. dir.</button>
        <button class="cssbutton" id="clearLocksButton" value="Clear" style="float: right;margin-right:0" title="clear both boxes (alt-C)" accesskey="c">Clear</button>
     </div> 
     <div align="center">
@@ -5347,7 +5347,7 @@ title="delete the item whose name is displayed">Del.</button><!--
     </div>
 		<textarea class="cssbox" id="lockBox" style="" name="text" rows="9" placeholder="Enter Locks and shared Keys here.   If you want to save it, first enter a name for it in the box above."></textarea>
 	<div align="center" id="basiclockbuttonsbot" class="texter" style="display: block;">
-        <button class="cssbutton" id="lock2dirButtonBasic" value="Directory" style="font-size:22px;padding-left:14px;padding-right:14px" title="open a screen containing the general PassLok directory (alt-G)" accesskey="g">&#9002; general Lock dir.</button>
+        <button class="cssbutton" id="lock2dirButtonBasic" value="Directory" style="font-size:22px;padding-left:14px;padding-right:14px" title="open a screen containing the general PassLok directory (alt-G)" accesskey="g">&#x25B6; general Lock dir.</button>
     </div>
 	<div align="center" id="lockbuttonsbot" class="texter" style="display: none;">
         <button class="cssbutton" id="openlockhelpButton" value="Help" style="color: #009400;" title="help about local Lock directory">Help</button><!--
@@ -5372,7 +5372,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 		<input type="checkbox" id="showKey" title="reveal box contents"> Show 
         <button class="cssbutton" id="makelockButton" value="Make Lock" style="color:blue;padding:12px;" title="show matching Lock on the main screen(alt-M)" accesskey="m">Make Lock</button>&nbsp;
         <button class="cssbutton" id="openkeyhelpButton" value="Help" style="color: #009400;padding:12px;" title="help on secret Key">Help</button><br /><br />
-        <button class="cssbutton" id="makelockpostButton" value="Make Lock post" style="padding:12px;" title="open matching Lock in general PassLok directory, ready to be posted" accesskey="m">Lock &#9002; general directory</button>
+        <button class="cssbutton" id="makelockpostButton" value="Make Lock post" style="padding:12px;" title="open matching Lock in general PassLok directory, ready to be posted" accesskey="m">Lock &#x25B6; general directory</button>
 	</div>
     <div id="keyhelp" class="texter" align="left" style="width:98%;display: none;">        
       	<p>This is your secret Key, which gives you access to the rest of PassLok. You must memorize it and never write it down. As you type your Key, a text above it will tell you the strength of the Key based on simple rules. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mispelingss.</strong> Initial capitals and numbers at start and end are not helpful and will be ignored for the strength score.</p>
@@ -5460,7 +5460,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 </div>
 
 <div id="basichelp" class="texter" style="display: none;">
- 	<button class="cssbutton" id="closemainhelpButtonBasic" value="< Back" style="font-size:22px;padding:14px" title="returns to main screen">&#9001; Back</button>
+ 	<button class="cssbutton" id="closemainhelpButtonBasic" value="< Back" style="font-size:22px;padding:14px" title="returns to main screen">&#x25C0; Back</button>
     <p>To get information on every button as you press it, check this box: <strong> Learn Mode <input type="checkbox" id="learnmode" title="get explanatory messages after buttons are pressed, but before functions are executed"/></strong></p>    
 	<p>For instructions on how to do things, click on each title below. Click again to hide.</p>
     <hr style="background-color: #c0c0c0">
@@ -5521,7 +5521,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   if you want to display it, check the Show checkbox.</p>
 <p>2. Click the <strong>Make Lock</strong> button. The lock matching that Key will appear
   in the main box, ready to be emailed or sent by texting.</p>
-<p>3. If instead you click the big button labeled <strong>Lock &#9002; general directory</strong>, the general Lock directory screen will open with the lower box filled with the Lock you just made. The general Lock directory is a website accessible to the public, where people post their Locks so others can find them. If you supply your email, you'll be able to use the buttons on that screen to post it to the directory or check that it has not changed.</p>
+<p>3. If instead you click the big button labeled <strong>Lock &#x25B6; general directory</strong>, the general Lock directory screen will open with the lower box filled with the Lock you just made. The general Lock directory is a website accessible to the public, where people post their Locks so others can find them. If you supply your email, you'll be able to use the buttons on that screen to post it to the directory or check that it has not changed.</p>
   <p>Most of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=xPRiuBd9Co0" target="_blank">https://www.youtube.com/watch?v=xPRiuBd9Co0</a></p></div>
   <hr style="background-color: #c0c0c0">
       
@@ -5638,11 +5638,11 @@ title="delete the item whose name is displayed">Del.</button><!--
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address> 
 
 	<hr style="background-color: #c0c0c0">
-    <button class="cssbutton" id="closemainhelpButton2Basic" style="font-size:22px;padding:14px" value="< Back" title="returns to main screen">&#9001; Back</button>     
+    <button class="cssbutton" id="closemainhelpButton2Basic" style="font-size:22px;padding:14px" value="< Back" title="returns to main screen">&#x25C0; Back</button>     
 </div>
 
 <div id="mainhelp" class="texter" style="display: none;">
- 	<button class="cssbutton" id="closemainhelpButton" value="< Back" title="returns to main screen">&#9001; Back</button>
+ 	<button class="cssbutton" id="closemainhelpButton" value="< Back" title="returns to main screen">&#x25C0; Back</button>
     <p>This screen contains advanced help. To get basic help, go back, then click <strong>Basic</strong>, and then <strong>Help</strong> again.</p>
     <p>If you are proficient with PassLok and would like to take the quiz, click this button: 
 <button class="cssbutton" id="openquizButton" value="Quiz" style="width:140px" title="opens quiz">Go to Quiz</button>
@@ -5663,7 +5663,7 @@ title="delete the item whose name is displayed">Del.</button><!--
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead of the Lock itself.</p>
         <p>5. Write or paste your message in the main box. Click the <strong>Lock/Unl</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
-          communications program or click <strong>&#9002;&#9002;</strong>, followed by Mail to open your default email. 
+          communications program or click <strong>&#x25B6;</strong>, followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
           PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
           also okay to split the locked message with spaces, line returns, and
@@ -5699,7 +5699,7 @@ title="delete the item whose name is displayed">Del.</button><!--
         <p>4. To lock a message so it can be read by several people, place their respective Locks in the box, one per line. If a Lock was previously stored, you can write the name associated with that Lock, instead of the Lock itself.</p>
         <p>5. Write or paste your message in the main box. Click the <strong>Lock/Unl</strong> button. The
           locked message will appear in the main box, replacing the original message. Copy it and paste it into your
-          communications program or click <strong>&#9002;&#9002;</strong>, followed by Mail to open your default email. 
+          communications program or click <strong>&#x25B6;</strong>, followed by Mail to open your default email. 
           It is okay to strip the tags up to the "=" sign, but not recommended. 
           PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
           also okay to split the locked message with spaces, line returns, and
@@ -5736,7 +5736,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 <p>3. To lock a message so it can be read by several people, place their respective shared Keys in the box, one per line. If a Key was previously stored, you can write the name associated with that Key, instead. You can mix shared Keys and Locks.</p>
 <p>4. Write or paste the message in the main box. Click the <strong>Lock/Unl</strong> button. The
   locked message will appear in the main box, replacing the original text. Copy it and paste it into your
-  communications program or click <strong>&#9002;&#9002;</strong>, and then <strong>Mail</strong> to open your default email program. 
+  communications program or click <strong>&#x25B6;</strong>, and then <strong>Mail</strong> to open your default email program. 
   It is okay to strip the tags up to the "=" sign, but not recommended; 
   PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
   also okay to split the locked message with spaces, line returns, and
@@ -5794,7 +5794,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 <p>1. Write your secret Key in the box that is accessed with the <strong>myKey</strong> button. It is masked by default, so if you want to display it, check the Show checkbox.</p>
 <p>2. Write or paste the text to be signed in the main box. Click the <strong>Sig/Ver</strong>
   button (abbreviated from Sign/Verify). A signature matching the text and your Key will be appended at the end of the text in the main box. Copy
-  it and use it as appropriate. If you click <strong>&#9002;&#9002;</strong> followed by Mail the text with its signature
+  it and use it as appropriate. If you click <strong>&#x25B6;</strong> followed by Mail the text with its signature
   will be placed into an email using the default program.
   It is okay to strip the tags up to the "="
   sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. 
@@ -5943,7 +5943,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>I want to know PassLok in depth. Is there more information?</h3>
  </div>
   <div id="a21" class="texter">
-    <p>You can start by looking at the help pages that open from the Locks screen (about Locks and Keys) and after clicking the <strong>&#9002;&#9002;</strong> button (about disguising the output, files, and other neat tricks other than locking/unlocking). If this is not enough for you, here are a couple more sources you may want to check out:</p>
+    <p>You can start by looking at the help pages that open from the Locks screen (about Locks and Keys) and after clicking the <strong>&#x25B6;</strong> button (about disguising the output, files, and other neat tricks other than locking/unlocking). If this is not enough for you, here are a couple more sources you may want to check out:</p>
     <p>The PassLok <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual17.pdf" target="_blank">manual in PDF form.</a></p>
     <p>The PassLok informational website at <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a>. It contains a number of videos and more PDF documents.</p>
   </div>
@@ -6014,11 +6014,11 @@ title="delete the item whose name is displayed">Del.</button><!--
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address> 
 
 	<hr style="background-color: #c0c0c0">    
-  <button class="cssbutton" id="closemainhelpButton2" value="< Back" title="returns to main screen">&#9001; Back</button>
+  <button class="cssbutton" id="closemainhelpButton2" value="< Back" title="returns to main screen">&#x25C0; Back</button>
 </div>
 
 <div id="basiclockhelp" class="texter" style="display: none;">
-	<button class="cssbutton" id="closelockhelpButtonBasic" style="font-size:22px;padding:14px" value="< Back" title="returns to lock screen">&#9001; Back</button>
+	<button class="cssbutton" id="closelockhelpButtonBasic" style="font-size:22px;padding:14px" value="< Back" title="returns to lock screen">&#x25C0; Back</button>
     <hr style="background-color: #c0c0c0">    
     
   <div id="bb1" style="cursor:pointer">  
@@ -6082,11 +6082,11 @@ title="delete the item whose name is displayed">Del.</button><!--
   </div>
   <hr style="background-color: #c0c0c0"/>
   
-  <button class="cssbutton" id="closelockhelpButton2Basic" style="font-size:22px;padding:14px" value="< Back" title="returns to main screen">&#9001; Back</button>
+  <button class="cssbutton" id="closelockhelpButton2Basic" style="font-size:22px;padding:14px" value="< Back" title="returns to main screen">&#x25C0; Back</button>
 </div>
 
 <div id="lockhelp" class="texter" style="display: none;">
-	<button class="cssbutton" id="closelockhelpButton" value="< Back" title="returns to lock screen">&#9001; Back</button>
+	<button class="cssbutton" id="closelockhelpButton" value="< Back" title="returns to lock screen">&#x25C0; Back</button>
     <p>This screen contains advanced help on Locks and other stored items. To get basic help, close this, go back to the main screen, and then click <strong>Basic</strong>, <strong>Locks</strong>, and <strong>Help</strong> again.</p>
     <hr style="background-color: #c0c0c0">
         
@@ -6188,11 +6188,11 @@ title="delete the item whose name is displayed">Del.</button><!--
 
 	<hr style="background-color: #c0c0c0">
   
-  <button class="cssbutton" id="closelockhelpButton2" value="< Back" title="returns to main screen">&#9001; Back</button>
+  <button class="cssbutton" id="closelockhelpButton2" value="< Back" title="returns to main screen">&#x25C0; Back</button>
 </div>
 
 <div id="extrahelp" class="texter" style="display: none;">
-	<button class="cssbutton" id="closeextrahelpButton" value="< Back" title="returns to main screen">&#9001; Back</button>
+	<button class="cssbutton" id="closeextrahelpButton" value="< Back" title="returns to main screen">&#x25C0; Back</button>
 	<hr style="background-color: #c0c0c0">
      
   <div id="cc1" style="cursor:pointer">
@@ -6200,8 +6200,8 @@ title="delete the item whose name is displayed">Del.</button><!--
   </div>
   <div id="c1" class="texter">  
 <p>1. Check that the item is in the main box.</p>
-<p>2. Click the <strong>&#9002;&#9002;</strong> button in order to reveal the button dealing with email, which is above the text box.</p>
-<p>3. Click the <strong>Mail</strong> button. If so configured in the device, a window appears containing the item and some explanatory text. You only need to supply the recipient's email address and a subject line before clicking the Send button. If you do not want any explanatory text, check the No tags checkbox in the main screen before clicking <strong>&#9002;&#9002;</strong>.</p>
+<p>2. Click the <strong>&#x25B6;</strong> button in order to reveal the button dealing with email, which is above the text box.</p>
+<p>3. Click the <strong>Mail</strong> button. If so configured in the device, a window appears containing the item and some explanatory text. You only need to supply the recipient's email address and a subject line before clicking the Send button. If you do not want any explanatory text, check the No tags checkbox in the main screen before clicking <strong>&#x25B6;</strong>.</p>
 <p>4. This only works for sending messages, not for receiving them. If you receive a PassLok-locked message, you must copy it into the clipboard and then paste it into the main screen of PassLok, so it can be unlocked. Be also aware that webmail services, such as Gmail, limit the length of messages that can be composed this way. If you get an error from the mail host, you can always copy the box and paste it into a normal mail compose screen.</p>
 <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=2zxCkA4rDN8" target="_blank">https://www.youtube.com/watch?v=2zxCkA4rDN8</a></p>
 </div>
@@ -6212,7 +6212,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   </div>
   <div id="c2" class="texter">  
 <p>1. Check that the item to be sent is in the main box.</p>
-<p>2. Click the <strong>&#9002;&#9002;</strong> button in order to reveal the button dealing with text messaging, which is labeled Text/Img.</p>
+<p>2. Click the <strong>&#x25B6;</strong> button in order to reveal the button dealing with text messaging, which is labeled Text/Img.</p>
 <p>3. Click the <strong>Select</strong> button so the text can be selected.</p>
 <p>4. Then click the Copy label as it appears on screen. The item is copied to clipboard.</p>
 <p>5. Now you can click the <strong>Text/Img</strong> button. A window appears with the default texting app.</p>
@@ -6227,7 +6227,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>Split an item into several random-looking parts</h3>
 </div>
 <div id="c3" class="texter">
-  <p>1. Put the item in the box on the main screen, and then click the <strong>&#9002;&#9002;</strong> button.</p>
+  <p>1. Put the item in the box on the main screen, and then click the <strong>&#x25B6;</strong> button.</p>
   <p>2. The item should remain in the box as the buttons around it change. Then click the <strong>Split/Join</strong> button.</p>
   <p>3. A popup asks for the total number of parts to be made, and the minimum number required to retrieve the original. Write those numbers, which must be between 2 and 255, and click <strong>OK</strong>. The parts appear in the main box, replacing the original item, and a message confirms it. Copy the parts one by one and send/store them as needed. It is okay to strip the tags up to the "=" sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the parts with spaces and punctuation other than = + / or line returns.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=3-6CNa6iNKc" target="_blank">https://www.youtube.com/watch?v=3-6CNa6iNKc</a></p>
@@ -6239,7 +6239,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 </div>
 <div id="c4" class="texter">
   <p>1. Paste a sufficient number of parts on separate lines of the main box. Make sure that each part is unique. You need as many parts as the second number entered when the item was split, which is written at the end of each PL**p tag. Having more parts than the minimum is okay, so long as they belong to the same set and are not corrupt. They don't need to be placed in any particular order.</p>
-  <p>2. Click the <strong>&#9002;&#9002;</strong> button, and then the  <strong>Split/Join</strong> button. If all goes well, the reconstructed item appears in the box, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
+  <p>2. Click the <strong>&#x25B6;</strong> button, and then the  <strong>Split/Join</strong> button. If all goes well, the reconstructed item appears in the box, otherwise nothing happens. Likely problems include: insufficient number of parts, incomplete or corrupt parts, parts belonging to different sets.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=3-6CNa6iNKc" target="_blank">https://www.youtube.com/watch?v=3-6CNa6iNKc</a></p>
   </div>
   <hr style="background-color: #c0c0c0">
@@ -6248,7 +6248,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 <h3>Convert a PassLok item (Lock, message, etc.) into fake text</h3>
   </div>
   <div id="c5" class="texter">  
-<p>1. Check that the item to be converted into fake text is in the main box. Then click the <strong>&#9002;&#9002;</strong> button.</p>
+<p>1. Check that the item to be converted into fake text is in the main box. Then click the <strong>&#x25B6;</strong> button.</p>
 <p>2. If you wish to make fake text that is not English, you will have to change the cover text using the process described in the next help item.</p>
 <p>3. The <strong>Words</strong> button replaces each character of the text with a word from the cover text; the recipient of the message thus encoded must have the same cover text. The <strong>Spaces</strong> button encodes the text into the spaces of the cover text; the recipient does not need to have the original cover text, but it takes seven times more words than with the other mode. When you click either button, the contents of the box are converted into fake text using the current cover, replacing the previous contents.</p>
 <p>4. You can now email the fake text, which to an email scanner will be nearly indistinguishable from real text. You can change the punctuation and merge or split lines without changing the encoded material. If you used Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is okay to add more text to complete the last sentence, which may contain additional spaces.</p>
@@ -6259,7 +6259,7 @@ title="delete the item whose name is displayed">Del.</button><!--
 <h3>Retrieve the original PassLok item from fake text</h3>
   </div>
   <div id="c6" class="texter">
-<p>1. Put the fake text in the box on the main screen. Then click the <strong>&#9002;&#9002;</strong> button.</p>
+<p>1. Put the fake text in the box on the main screen. Then click the <strong>&#x25B6;</strong> button.</p>
 <p>2. If the fake text was encoded with the Words method, you will have to load first the cover text used to do the encoding, using the process described in the next help item.</p>
 <p>3. Now click either the <strong>Words</strong> button or the <strong>Spaces</strong> button, it doesn't matter which. If successful, the fake text in the box is converted back into the original item and displayed in the box, replacing the fake text.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=KwAETd2pgy4" target="_blank">https://www.youtube.com/watch?v=KwAETd2pgy4</a></p></div>
@@ -6269,10 +6269,10 @@ title="delete the item whose name is displayed">Del.</button><!--
 <h3>Display or change the cover text used for fake text</h3>
   </div>
   <div id="c7" class="texter">
-<p>To display the current cover text (which is the default cover text after reloading PassLok), click the <strong>&#9002;&#9002;</strong> button, and then the <strong>Cover</strong> button (short for Cover Text) with the box empty.</p>
+<p>To display the current cover text (which is the default cover text after reloading PassLok), click the <strong>&#x25B6;</strong> button, and then the <strong>Cover</strong> button (short for Cover Text) with the box empty.</p>
 <p>To change the cover text (this is necessary to make fake text in a language that is not English):</p>
 <p>1. Copy a sufficiently long text (must have at least 70 different words) and paste it into the main box.</p>
-<p>2. Click the <strong>&#9002;&#9002;</strong> button, and then the <strong>Cover</strong> button.</p>
+<p>2. Click the <strong>&#x25B6;</strong> button, and then the <strong>Cover</strong> button.</p>
 <p>3. If the change is successful, the box goes blank. If the change is unsuccessful, a message above the box will say why. Typically, failure to change the cover text is due to not having a sufficient number of different words. Use a longer text and try again.</p>
 <p>4. The recipient of your messages turned into fake text must have the same cover text in order to retrieve a text encoded with the<strong> Words</strong> button. One way to ensure this when using a non-English language is to display the default cover text, copy it into a translation utility such as Google Translate, and then use the translation as the new cover text.</p>
 <p>5. Since the cover text is a (weak) sort of password for a Words-encoded item, it may be good to put special cover texts in your local directory. To do this, go to the <strong>Locks</strong> screen , write a new name in the upper box, then paste the cover text in the lower box, and click <strong>Save</strong>. The cover text can be retrieved like any other stored item, and it will be automatically loaded if displayed on the Locks screen.</p>
@@ -6283,7 +6283,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>Load a file (image, on mobile devices) to be locked, signed, or split</h3>
   </div>
   <div id="c8" class="texter">
-  <p>1. Click the <strong>&#9002;&#9002;</strong> button, and then the button at the bottom of the screen. Different browsers put different labels on it, such as <strong>"Browse"</strong>, <strong>"Choose File"</strong>, and so forth.</p>
+  <p>1. Click the <strong>&#x25B6;</strong> button, and then the button at the bottom of the screen. Different browsers put different labels on it, such as <strong>"Browse"</strong>, <strong>"Choose File"</strong>, and so forth.</p>
   <p>2. A dialog will appear so you can navigate to the file. Mobile devices, unless they are jailbroken or rooted, restrict the user to images stored in the device or acquired with the built-in camera. Be aware that pictures taken by the camera are usually too large for PassLok to handle. If all goes well, the file or image loads into the box as a (long) piece of gibberish text, with some identifying information at the top.</p>
   <p>3. Now you can lock it, sign it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=v6jnKzzlwS0" target="_blank">https://www.youtube.com/watch?v=v6jnKzzlwS0</a></p>
@@ -6294,7 +6294,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>Retrieve a file (image, on mobile devices) from encoded text</h3>
   </div>
     <div id="c9" class="texter">
-  <p>1. Make sure the encoded file, which presumably has been obtained by unlocking or merging parts, is in the main box. Click the <strong>&#9002;&#9002;</strong> button.</p>
+  <p>1. Make sure the encoded file, which presumably has been obtained by unlocking or merging parts, is in the main box. Click the <strong>&#x25B6;</strong> button.</p>
   <p>2. Click the <strong>Save</strong> button at the bottom of the screen. What happens next depends on the browser. Chrome and Firefox will save the file, using the original name if not already taken by another file, into the default location for downloads. Safari does the same, but gives it a generic name that you will have to edit later. Internet Explorer doesn't do anything. Mobile browsers normally open another tab displaying the file contents if the file type is recognized, from where you can send it to another app.</p>
   <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=v6jnKzzlwS0" target="_blank">https://www.youtube.com/watch?v=v6jnKzzlwS0</a></p>
   </div>
@@ -6304,7 +6304,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>Hide a PassLok item inside an image (non-mobile only)</h3>
  </div>
   <div id="c10" class="texter">
- <p>1. Make sure the item to be hidden is in the main box, and it remains in the box after clicking the <strong>&#9002;&#9002;</strong> button . Then click the <strong>Text/Img</strong> button above the box.</p>
+ <p>1. Make sure the item to be hidden is in the main box, and it remains in the box after clicking the <strong>&#x25B6;</strong> button . Then click the <strong>Text/Img</strong> button above the box.</p>
 <p>2. A new screen appears to load the image where the text is to be hidden. To do so, click the <strong>"Choose File"</strong> or <strong>"Browse"</strong> button (browsers vary on the name). A dialog will appear, where you can choose the image. Bear in mind that images taken with a mobile camera are usually too large for PassLok to be able to use them for hiding items, because of the processing required.</p>
     <p>3. When you see the image, click the <strong>Hide</strong> button. Processing will start, and a message will say when it is completed. At this point, you can right-click on the image and another dialog will offer to save the image. This image now contains the item from the main box, even though it looks the same as before.</p>
     <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=lRIYi6IDNzY" target="_blank">https://www.youtube.com/watch?v=lRIYi6IDNzY</a></p>
@@ -6315,7 +6315,7 @@ title="delete the item whose name is displayed">Del.</button><!--
   <h3>Retrieve the PassLok item hidden inside an image (non-mobile only)</h3>
  </div>
   <div id="c11" class="texter">
-      <p>1. Navigate to the image hiding screen by clicking <strong>&#9002;&#9002;</strong>, and then <strong>Text/Img</strong>.</p>
+      <p>1. Navigate to the image hiding screen by clicking <strong>&#x25B6;</strong>, and then <strong>Text/Img</strong>.</p>
       <p>2. Click <strong>Choose File</strong> or <strong>Browse</strong> (browsers vary on this) and select the image containing the hidden item.</p>
       <p>3. When the image displays on the screen, click the <strong>Reveal</strong> button. Processing begins, and a message appears when it concludes, saying that the hidden item has been retrieved. If you click <strong>Back</strong> at this point, you will see the item in the big box. If the image contained nothing, a message will tell you.</p>
       <p>All of this is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=lRIYi6IDNzY" target="_blank">https://www.youtube.com/watch?v=lRIYi6IDNzY</a></p>
@@ -6333,11 +6333,11 @@ title="delete the item whose name is displayed">Del.</button><!--
 </div>
 
 	<hr style="background-color: #c0c0c0">
-  <button class="cssbutton" id="closeextrahelpButton2" value="< Back" title="returns to main screen">&#9001; Back</button>
+  <button class="cssbutton" id="closeextrahelpButton2" value="< Back" title="returns to main screen">&#x25C0; Back</button>
 </div>
 
 <div id="quiz" class="texter" style="display: none;">
-	<button class="cssbutton" id="closequizButton1" value="< Back" style="width:185px" title="returns to help screen">&#9001; Back to main Help</button>
+	<button class="cssbutton" id="closequizButton1" value="< Back" style="width:185px" title="returns to help screen">&#x25C0; Back to main Help</button>
 	<hr style="background-color: #c0c0c0">
     
 <div id='qq1' style="cursor:pointer"> 
@@ -6878,11 +6878,11 @@ title="delete the item whose name is displayed">Del.</button><!--
 <strong>D</strong>. Files can be converted into base64 text and loaded into the main box, from where they can be locked or signed like any piece of text. Once unlocked, the file can be saved to the default Downloads area (or viewed, on mobile devices) with the click of a button. Current mobile  browsers are restricted to loading only images, unless they are rooted or jailbroken. Results vary ccording to the browser used. Chrome, Firefox, and Opera are the best. Safari loads files but saves them with a generic name, which must be edited later. Internet Explorer, as usual, has a lot of problems.</div>
 </div>
 <hr style="background-color: #c0c0c0">
-  <button class="cssbutton" id="closequizButton2" value="< Back" style="width:185px" title="returns to help screen">&#9001; Back to main Help</button>
+  <button class="cssbutton" id="closequizButton2" value="< Back" style="width:185px" title="returns to help screen">&#x25C0; Back to main Help</button>
 </div>
 
 <div id="lockdir" class="texter" style="display: none;" align="center">
-  <button class="cssbutton" id="closelockdirButton" value="< Back" style="float: left;width:180px" title="returns to Locks screen (alt-G)">&#9001; Back to PassLok</button>
+  <button class="cssbutton" id="closelockdirButton" value="< Back" style="float: left;width:180px" title="returns to Locks screen (alt-G)">&#x25C0; Back to PassLok</button>
     
     <iframe seamless id="lockdirframe" src="" style="width:100%;height:900px"></iframe>
 
