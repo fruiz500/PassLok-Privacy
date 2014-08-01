@@ -30,6 +30,8 @@
     <false/>
 </gap:config-file>
 
+<icon src="icon.png" />
+
     <!-- Define app splash screen for each platform. -->
     <gap:splash src="phonegap/screen/android/screen-ldpi-portrait.png"       gap:platform="android" gap:density="ldpi" />
     <gap:splash src="phonegap/screen/android/screen-mdpi-portrait.png"       gap:platform="android" gap:density="mdpi" />
