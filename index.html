@@ -8416,11 +8416,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 function textrows(){
 	if(isiPad || isAndroidTablet){												//first for iPad. Don't know how to detect other tablets
 		if((angle==90)||(angle==-90)){
-			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*2-30				//landscape
+			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*3-30				//landscape
 		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*2-30}			//portrait
 	}else{
 		if((angle==90)||(angle==-90)){
-			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*1.5-25			//smartphone here and line below
+			document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*2-25			//smartphone here and line below
 		}else if(isMobile) {document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*2.2-30
 		}else{document.getElementById('mainBox').rows=document.documentElement.clientHeight/rowheight*2-30}}				//non-mobile
 	document.getElementById('mainBox').rows = document.getElementById('mainBox').rows*0.6;			//tweak factor for development
