@@ -19,6 +19,8 @@
 <gap:plugin name="com.phonegap.plugin.statusbar" />
 
 <preference name="StatusBarOverlaysWebView" value="false" />
+<preference name="stay-in-webview" value="true" />
+<access origin="*" />
 
 <gap:config-file platform="ios" parent="UIStatusBarHidden">
     <true/>
