@@ -7707,8 +7707,12 @@ function loadLockDir(){
 //loads the chat frame
 function main2chat(token){
 	var chatframe = document.getElementById('chatframe');
+	if(isAndroid){
+		window.open('https://www.passlok.com/chat/index.html#' + token,'_blank')
+	}else{
 	chatframe.src = 'https://www.passlok.com/chat/index.html#' + token;
-	document.getElementById('chatscr').style.display='block';
+	document.getElementById('chatscr').style.display = 'block';
+	}
 }
 
 //called when the Key box is empty
