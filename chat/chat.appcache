@@ -1,0 +1,13 @@
+CACHE MANIFEST 
+# last edited for v2.0.04
+
+CACHE:
+index.html
+firebase.js
+getMediaElement.js
+RTCMultiConnection.js
+FileBufferReader.js
+getIceServers.html
+
+NETWORK:
+*
