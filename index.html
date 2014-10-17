@@ -7708,11 +7708,11 @@ function loadLockDir(){
 function main2chat(token){
 	var chatframe = document.getElementById('chatframe');
 	if(isAndroid){
-		window.open('https://www.passlok.com/chat/index.html#' + token,'_blank')
-	}else{
-	chatframe.src = 'https://www.passlok.com/chat/index.html#' + token;
-	document.getElementById('chatscr').style.display = 'block';
+		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
+		if(!reply) throw('chat canceled by user');
 	}
+	chatframe.src = 'chat/index.html#' + token;
+	document.getElementById('chatscr').style.display = 'block';
 }
 
 //called when the Key box is empty
@@ -9412,7 +9412,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Chat dialog, to enter the chat type and date or other information-->
 <div id="chatDialog" class="white_content" align="center">
 <br><br><br>
-		<span id="chatmsg">Choose the type of chat, then write in the box the date and time, if any</span><br/><br />
+		<span id="chatmsg">Choose the type of chat, then write in the box the date and time</span><br/><br />
     	<input type="radio" name="chatmodes" id="datachat"  title="chat with text messages and file exchange" checked/>&nbsp; Text and files&nbsp;&nbsp;
         <input type="radio" name="chatmodes" id="audiochat" title="like Text chat, plus audio"/>&nbsp; Audio&nbsp;&nbsp;
         <input type="radio" name="chatmodes" id="videochat" title="like audio chat, plus video"/>&nbsp; Video
