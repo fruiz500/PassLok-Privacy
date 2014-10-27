@@ -18,6 +18,7 @@
 		}
 	    body {
 		font-family: Sans-Serif;
+		font-size:18px;
 		margin-left: 1%;
 		margin-right: 1%;
 		background-color: #FFFFFF;
@@ -45,7 +46,7 @@ table {
 
 	</style>
     
-        <!-- webrtc library used for streaming -->
+        <!-- webrtc libraries used for setting up chat and streaming -->
         <script src="firebase.js"> </script>
         <script src="getMediaElement.js"> </script>
         <script src="RTCMultiConnection.js"> </script>
@@ -59,7 +60,7 @@ table {
                   
                     <p>You are the first to arrive. Write your name and then click the button to start the chat&nbsp;
                     <input type="text" id="user-name-start" placeholder="Write your name here">
-                    <button id="setup-new-session" class="setup">Start</button></p>
+                    <button id="setup-new-session" class="setup" style="font-size:18px;">Start</button></p>
                     <p>Once you leave, no one else can join the conversation. If this is not OK, wait for someone else to start, then join.</p>
                     </div>
                 
@@ -73,13 +74,13 @@ table {
                     <tr>
                         <td style="vertical-align: top;width: 55%;">
                             <h2 style="display: block; text-align: center;">Text Chat</h2>                      
-                           <input type="text" id="chat-input" style="width: 100%;" placeholder="chat message" disabled>
+                           <input type="text" id="chat-input" style="width: 100%;font-size:18px;" placeholder="chat message" disabled>
                            
                             <div id="chat-output"></div>
                         </td>
                         <td style="background: white;vertical-align: top;">
                             <h2 style="display: block; text-align: center;">Share Files</h2>
-                            <input type="file" id="file" disabled>
+                            <input type="file" class="setup" id="file"  style="font-size:18px;" disabled>
 
                             <div id="file-progress"></div>
                         </td>
@@ -90,6 +91,7 @@ table {
                 // Muaz Khan     - www.MuazKhan.com
                 // MIT License   - www.WebRTC-Experiment.com/licence
                 // Documentation - www.RTCMultiConnection.org
+				  // with some changes by F. Ruiz
 				
 				var chatpwd = location.hash.slice(2,45);
 
@@ -108,7 +110,7 @@ table {
                     var tr = document.createElement('tr');
 						tr.innerHTML = 'The chat session has started. Write your name and then click the button to join. ' +						
 						'<input type="text" id="user-name" placeholder="Write your name here">' +
-                        '<button class="join">Join</button>';
+                        '<button class="join" style="font-size:18px;">Join</button>';
                     roomsList.insertBefore(tr, roomsList.firstChild);
 					
 				document.getElementById('user-name').addEventListener('keyup', function(e) {
@@ -183,12 +185,6 @@ table {
                         mediaElement.media.volume = 0;
                     }
                 };
-
-/*                connection.onstreamended = function(e) {
-                    if (e.mediaElement.parentNode && e.mediaElement.parentNode.parentNode && e.mediaElement.parentNode.parentNode.parentNode) {
-                        e.mediaElement.parentNode.parentNode.parentNode.removeChild(e.mediaElement.parentNode.parentNode);
-                    }
-                };*/
 				
 				  connection.onstreamended = function(e) {
                     e.mediaElement.style.opacity = 0;
@@ -208,7 +204,7 @@ table {
                     setupNewSession.disabled = true;
 
 					  var direction = 'many-to-many';
-//                    var _session is assigned from last character in the URL
+//                    var _session is assigned from first character in the URL
                     var splittedSession = _session.split('+');
 
                     var session = { };

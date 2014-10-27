@@ -4311,7 +4311,8 @@
             iframe.isLoaded = true;
             log('Screen Capturing frame is loaded.');
         };
-        iframe.src = 'https://www.webrtc-experiment.com/getSourceId/';
+//        iframe.src = 'https://www.webrtc-experiment.com/getSourceId/';		edited by  F. Ruiz
+		iframe.src = 'getSourceId.html';
         iframe.style.display = 'none';
         (document.body || document.documentElement).appendChild(iframe);
 
