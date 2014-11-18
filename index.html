@@ -10906,7 +10906,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 		isAndroid = (isMobile && !isiOS),
 		isAndroidTablet = (navigator.userAgent.match(/mobile/i) == null && isAndroid),
 		isAndroidPhone= (navigator.userAgent.match(/mobile/i) != null && isAndroid);
-	if(isiOS){rowheight = rowheight*0.92}		//correction for iOS
+	if(isiOS){rowheight = rowheight*0.92}			//correction for iOS
+	if(isAndroid){rowheight = rowheight*1.04}		//correction for Android
 	textrows();
 	chatResize();
 
