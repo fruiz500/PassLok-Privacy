@@ -11131,13 +11131,16 @@ function textheight(){
 	var	fullheight = document.documentElement.clientHeight,
 		offsetheight = 380,
 		toolbarheight = 48;
-	if(isMobile && !isAndroid) offsetheight = offsetheight - 60;
-	if(isAndroid) offsetheight = offsetheight + 30;
+	if(isMobile && !isAndroid) offsetheight = offsetheight - 30;
 	document.getElementById('lockBox').style.height = fullheight - offsetheight + 'px';
 	if(niceEditor){
 		document.getElementById('mainBox').style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
-		document.getElementById('mainBox').style.height = document.getElementById('lockBox').style.height	
+		if(isMobile){
+			document.getElementById('mainBox').style.height = fullheight - offsetheight + 30 + 'px';
+		}else{
+			document.getElementById('mainBox').style.height = fullheight - offsetheight + 'px';
+		}
 	}
 }
 
@@ -11147,8 +11150,9 @@ function chatResize(){
 
 //functions for reading a file into the box, and for saving it later
 function saveURLAsFile(){
-	var URLToWriteSplit = document.getElementById('mainBox').innerHTML.trim().split('\n');
-	var fileNameToSaveAs = URLToWriteSplit[0].split(':')[1];
+	var URLToWrite = XSSfilter(document.getElementById('mainBox').innerHTML.replace(/&nbsp;/g,'').replace(/<\/div>/g,'').replace(/<div>/g,'\n').replace(/<br>/g,'\n')).replace(/\n+/g,'\n').trim(),
+		URLToWriteSplit = URLToWrite.split('\n'),
+		fileNameToSaveAs = URLToWriteSplit[0].split(':')[1];
 	if(URLToWriteSplit.length > 1){
 		var content = URLToWriteSplit[1].trim()
 	} else {
