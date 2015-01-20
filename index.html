@@ -11218,7 +11218,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  <p>2. Click the <strong>&#9660;</strong> button, if needed, and then the <strong>Image</strong> button.</p>
 <p>3. A new screen appears where you can load the image where the item is to be hidden. To do so, click the <strong>"Choose File"</strong> or <strong>"Browse"</strong> button (browsers vary on the name). A dialog will appear, where you can navigate to the image and open it. A message will tell you how much data you can hide in the image.</p>
     <p>4. When you see the image, click the <strong>Hide</strong> button. A message will say when processing is completed, although the image will not appear to have changed.</p>
-    <p>5. Right-click or long-press on the image in order to save it or send it somewhere.</p>
+    <p>5. Right-click or long-press on the image in order to save it or send it somewhere. You can also save it to the default downloads area by clicking the <strong>Save</strong> button.</p>
     <p>This and more is explained in this video tutorial: <a href="https://www.youtube.com/watch?v=_iXIyH6AnMI" target="_blank">https://www.youtube.com/watch?v=_iXIyH6AnMI</a></p>
 <div id='bb45' style="cursor:pointer">
 <p><em>Click here for More:</em></p>
@@ -11403,7 +11403,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <button class="cssbutton" id="encode" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
     <button class="cssbutton" id="decode" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
 
-    <input class="custom-file-input" type='file' id='imagefile' style="" title="open a dialog to select the cover image"/><br /><br />
+    <input class="custom-file-input" type='file' id='imagefile' style="" title="open a dialog to select the cover image"/>
+    <button class="cssbutton" id="saveimageButton" value="Save" title="save image to default Downloads folder in PNG format">Save</button>
+    <br /><br />
 
     <span id="imagemsg"></span><br /><br />
 
@@ -11750,6 +11752,36 @@ function loadFileAsURL()
 	}
 	document.getElementById('filemsg').innerHTML = 'File <strong>' + fileToLoad.name + '</strong> loaded on the Main tab'
 }
+
+//for saving image on the Image screen
+function saveImageAsFile(){
+	var content = document.getElementById('preview').src,
+		downloadLink = document.createElement("a"),
+		fileNameToSaveAs = prompt("The image will be saved in PNG format. Please enter a name for it.");
+	if(fileNameToSaveAs.indexOf('.') == -1){
+		downloadLink.download = fileNameToSaveAs + '.png';
+	}else{
+		downloadLink.download = fileNameToSaveAs;
+	}
+	downloadLink.innerHTML = "Download File";
+	if (window.webkitURL != null)
+	{
+		// Chrome allows the link to be clicked
+		// without actually adding it to the DOM.
+		downloadLink.href = content;
+	}
+	else
+	{
+		// Firefox requires the link to be added to the DOM
+		// before it can be clicked.
+		downloadLink.href = content;
+		downloadLink.onclick = destroyClickedElement;
+		downloadLink.style.display = "none";
+		document.body.appendChild(downloadLink);
+	}
+	downloadLink.click();
+	document.getElementById('imagemsg').innerHTML = 'Image saved with filename ' + downloadLink.download
+}
 </script>
 
 <!--initialization, button connections-->
@@ -11917,6 +11949,11 @@ window.onload = function() {
    	savefileButton.addEventListener('click', saveURLAsFile);
 	savefileButton.addEventListener('blur', ce);
 	savefileButton.addEventListener('focus', ce);
+	
+	var saveimageButton = document.getElementById('saveimageButton');
+   	saveimageButton.addEventListener('click', saveImageAsFile);
+	saveimageButton.addEventListener('blur', ce);
+	saveimageButton.addEventListener('focus', ce);
 
 	var image2mainButton = document.getElementById('image2mainButton');
    	image2mainButton.addEventListener('click', image2main);
