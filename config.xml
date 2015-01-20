@@ -20,8 +20,10 @@
 <preference name="permissions" value="none"/>
 <feature name="http://api.phonegap.com/1.0/file"/>
 
+<gap:plugin name="org.apache.cordova.file" version="1.0.1" />
 <gap:plugin name="com.phonegap.plugin.statusbar" />
 
+<preference name="AndroidPersistentFileLocation" value="Compatibility" />
 <preference name="StatusBarOverlaysWebView" value="false" />
 <preference name="stay-in-webview" value="true" />
 <access origin="*" />
