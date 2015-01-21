@@ -18,8 +18,8 @@
 
 <!--Don't ask for any permissions other than file access-->	
 <preference name="permissions" value="none"/>
+<feature name="http://api.phonegap.com/1.0/file"/>
 
-<gap:plugin name="org.apache.cordova.file" version="1.0.1" />
 <gap:plugin name="com.phonegap.plugin.statusbar" />
 
 <preference name="StatusBarOverlaysWebView" value="false" />
