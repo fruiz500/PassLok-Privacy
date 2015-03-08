@@ -28,6 +28,10 @@ function applyRScode(string,isMsg){									//string also contains the checksum 
 	var hexRS = getRScode(string);
 	string = string.split("=");																//split into segments
 	string = string.sort(function (a, b) { return b.length - a.length; })[0];				//get largest
+	if(string.length > 100000 && hexRS.length > 100){
+			var reply = confirm("Checking error correction code for an item this long will take a long time. Cancel if you'd rather not wait.");
+			if(reply == false) return string;
+	}
 	var groups = Math.ceil(string.length / 245);
 	if (hexRS.length == groups * 20 && string.length != 87 && string.length != 100){		//found a complete checksum, so now use it, but not for a Lock
 		if(isMsg){																			//flag invalid characters

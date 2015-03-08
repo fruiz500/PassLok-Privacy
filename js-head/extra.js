@@ -175,11 +175,6 @@ function sendSMS(){
 
 //decrypts a chat invite if found, then open chat screen, otherwise make one. If the chat screen is open, returns to it
 function Chat(){
-	if(document.getElementById('extrabuttonstop').style.display == 'block'){	//do nothing if the button is not visible
-		box2cover();
-		return
-	}
-	
 	if(document.getElementById('chatframe').src.match('#')){			//chat already open, so open that screen
 		document.getElementById('chatscr').style.display = 'block';
 		return
@@ -222,9 +217,36 @@ function makeChat(){
 		var type = 'C'
 	}
 	var date = (document.getElementById('chatdate').value + '                                           ').slice(0,43);
-	document.getElementById('mainBox').innerHTML = date + type + sjcl.codec.base64.fromBits(sjcl.random.randomWords('16','0')).replace(/=/g,'');
+	var password = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')).replace(/=/g,'');
+	var chatroom = makeChatRoom();
+	document.getElementById('mainBox').innerHTML = date + type + chatroom + password;
 	var listArray = document.getElementById('lockBox').value.trim().split('\n');
 	Encrypt_List(listArray);
 	document.getElementById('mainBox').innerHTML = document.getElementById('mainBox').innerHTML.replace(/PL21msa|PL21mss|PL21msp|PL21mso/g,'PL21chat');			//change the tags
 	mainmsg.innerHTML = 'Invitation to chat in the box.<br>Send it to the recipients.';
+}
+
+//makes a mostly anonymous chatroom name from words on the blacklist
+function makeChatRoom(){
+	var name = document.getElementById('chatroom').value;
+	if(name == ''){
+		name = replaceVariants(blacklist[randomBlackIndex()]);
+		//75% chance to add a second word
+		if((sjcl.bn.random(4).limbs[0])) name = name + ' ' + replaceVariants(blacklist[randomBlackIndex()]);
+	}
+	return (name + '                   ').slice(0,20);
+}
+
+//replaces back variant characters, opposite of reduceVariants
+function replaceVariants(string){
+	return string.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g')
+}
+
+//returns a random index for blacklist, excluding disallowed indices
+function randomBlackIndex(){
+	var index = 1;
+	while(index == 1 || index == 2){						//excluded indices
+		index = sjcl.bn.random(blacklist.length).limbs[0];
+	}
+	return index
 }

@@ -38,7 +38,7 @@ function textStego(){
 	if(legalItem(text)){										//legal item found: encode it
 		if(document.getElementById('phrasemode').checked){
 			toPhrases(text);
-			mainmsg.innerHTML = 'Message encoded as sentences of varying length. Decoding does not require a Cover text'
+			mainmsg.innerHTML = 'Message encoded as sentences of varying length. Decoding requires no Cover text'
 		}else if(document.getElementById('wordmode').checked){
 			toWords(text);
 			mainmsg.innerHTML = 'Message encoded into words of this text. Decoding requires the same Cover text'
@@ -60,7 +60,7 @@ function textStego(){
 		}
 		if(text.match(':') != null){				//detect colons and if there are any invoke Sentences decoder
 			fromPhrases(text);
-			mainmsg.innerHTML = 'Message extracted from Sentences encoding'
+			mainmsg.innerHTML = 'Message extracted from Sentences'
 		}else if(text.match(/[\?\uFF1A]/g) != null){		//detect question marks or Chinese colons, if present call chains decoder
 			fromChains(text);
 			mainmsg.innerHTML = 'Message extracted from Chains encoding'
@@ -213,7 +213,7 @@ function encoder(bin){
 			spaces = textsplit.length - 1;
 			turns = turns + 1
 		}
-		mainmsg.innerHTML = 'The cover text was too short. It was repeated ' + turns + ' times. If this is not acceptable, repeat with a larger cover.';
+		mainmsg.innerHTML = 'Message encoded into spaces of this text. It was repeated ' + turns + ' times.';
 	}
 		textsplit = textsplit.slice(0,bin.length+2);
 	var newtext = textsplit[0];
@@ -284,7 +284,7 @@ function makePhraseMatrix(cover){
 	}
 	for(var i = 0; i < 12; i++){
 		if(bins[i].length == 0){
-			document.getElementById('mainmsg').innerHTML = 'Please use a Cover text with more different sentences.';
+			document.getElementById('mainmsg').innerHTML = 'Please use a Cover text with more variation.';
 			throw('Insufficient variety in covertext')
 		}
 	}

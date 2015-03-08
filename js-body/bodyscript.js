@@ -155,3 +155,33 @@ function loadFileAsURL()
 		document.getElementById('mainmsg').innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>'
 	}
 }
+
+//for saving image on the Image screen
+function saveImageAsFile(){
+	var content = document.getElementById('preview').src,
+		downloadLink = document.createElement("a"),
+		fileNameToSaveAs = prompt("The image will be saved in PNG format. Please enter a name for it.");
+	if(fileNameToSaveAs.indexOf('.') == -1){
+		downloadLink.download = fileNameToSaveAs + '.png';
+	}else{
+		downloadLink.download = fileNameToSaveAs;
+	}
+	downloadLink.innerHTML = "Download File";
+	if (window.webkitURL != null)
+	{
+		// Chrome allows the link to be clicked
+		// without actually adding it to the DOM.
+		downloadLink.href = content;
+	}
+	else
+	{
+		// Firefox requires the link to be added to the DOM
+		// before it can be clicked.
+		downloadLink.href = content;
+		downloadLink.onclick = destroyClickedElement;
+		downloadLink.style.display = "none";
+		document.body.appendChild(downloadLink);
+	}
+	downloadLink.click();
+	document.getElementById('imagemsg').innerHTML = 'Image saved with filename ' + downloadLink.download
+}

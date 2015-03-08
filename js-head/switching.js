@@ -157,7 +157,6 @@ function suggestIntro(){
 
 //makes a new user account
 function newUser(){
-//	document.getElementById('videotutorial').src = "https://www.youtube.com/embed/UxgrES_CGcg";
 	document.getElementById('introscr').style.display = "block";
 	BasicButtons = true;
 }
@@ -561,7 +560,7 @@ function main2lock(){
 	openClose("lockscr");
 	openClose('shadow');
 	if(Object.keys(lockDB).length == 1 || Object.keys(lockDB).length == 0){				//new user, so display a fuller message
-		document.getElementById('lockmsg').innerHTML = 'Please enter a Lock or shared Key in the lower box. If you wish to store it, write a name in the top box and click <strong>Save</strong>.'
+		document.getElementById('lockmsg').innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
 	var string = document.getElementById('lockBox').value;
 	if(string.length > 500){							//cover text detected, so replace the currently selected one

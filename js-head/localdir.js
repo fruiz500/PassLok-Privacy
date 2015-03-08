@@ -383,7 +383,8 @@ function realNulls(object){
 
 //makes encrypted backup of the whole DB, then if allowed clears lockDB object, then stores
 function moveLockDB(){
-	var optionmsg = document.getElementById("optionmsg");
+	var mainmsg = document.getElementById("mainmsg"),
+		optionmsg = document.getElementById("optionmsg");
 	if(!fullAccess){
 		optionmsg.innerHTML = 'Move not allowed after Key cancel<br>Please restart PassLok';
 		throw('DB move canceled')
@@ -395,7 +396,8 @@ function moveLockDB(){
 	showLockDB();
 	var datacrypt = keyEncrypt(key,document.getElementById('lockBox').value.trim());
 	document.getElementById('mainBox').innerHTML = triple('PL21dir=' + datacrypt + '=' + calcRScode(datacrypt) + '=PL21dir');
-	optionmsg.innerHTML = '<span>Database in Main tab</span>'
+	optionmsg.innerHTML = '<span>Database in Main tab</span>';
+	mainmsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Lock/Unlock';
 
 	//now check that the user really wants to delete the database
 	var answer = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
@@ -449,12 +451,12 @@ function moveMyself(){
 		var key = readKey();
 		var datacrypt = keyEncrypt(key,document.getElementById('mainBox').innerHTML.trim());
 		document.getElementById('mainBox').innerHTML = triple('PL21bak=' + datacrypt + "=" + calcRScode(datacrypt) + '=PL21bak');
-		var msg = 'The item in the box contains your backed-up settings<br>To restore them, click Lock/Unlock';
-		mainmsg.innerHTML = msg;
+		var msg = 'The item in the box contains your settings<br>To restore them, click Lock/Unlock';
 	}else{
 		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
 	}
 	optionmsg.innerHTML = 'Backed-up settings on Main tab';
+	mainmsg.innerHTML = msg;
 	
 	//now check that the user really wants to delete the database
 	var answer = confirm("Your settings, including the email/token, have been backed up. If you click OK, they will now be erased from this device. This cannot be undone.");

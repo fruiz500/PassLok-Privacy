@@ -152,6 +152,11 @@ window.onload = function() {
    	savefileButton.addEventListener('click', saveURLAsFile);
 	savefileButton.addEventListener('blur', ce);
 	savefileButton.addEventListener('focus', ce);
+	
+	var saveimageButton = document.getElementById('saveimageButton');
+   	saveimageButton.addEventListener('click', saveImageAsFile);
+	saveimageButton.addEventListener('blur', ce);
+	saveimageButton.addEventListener('focus', ce);
 
 	var image2mainButton = document.getElementById('image2mainButton');
    	image2mainButton.addEventListener('click', image2main);
@@ -704,7 +709,7 @@ window.onload = function() {
 	document.getElementById('bb43').addEventListener('click', function() {openClose('b43')});
 //	document.getElementById('bb44').addEventListener('click', function() {openClose('b44')});
 	document.getElementById('bb45').addEventListener('click', function() {openClose('b45')});
-//	document.getElementById('bb46').addEventListener('click', function() {openClose('b46')});
+	document.getElementById('bb46').addEventListener('click', function() {openClose('b46')});
 //	document.getElementById('bb47').addEventListener('click', function() {openClose('b47')});
 //	document.getElementById('bb48').addEventListener('click', function() {openClose('b48')});
 //	document.getElementById('bb49').addEventListener('click', function() {openClose('b49')});

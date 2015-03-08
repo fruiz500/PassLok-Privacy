@@ -21,7 +21,7 @@ function Encrypt_single(){
 	}
 	var listArray = lockBoxItem.split('\n');		//see if this is actually several Locks rather than one
 
-	if(document.getElementById('mainBox').innerHTML.length == 130){		//same length as a chat invite. Give warning and stop
+	if(document.getElementById('mainBox').innerHTML.length == 107){		//same length as a chat invite. Give warning and stop
 		mainmsg.innerHTML = 'This message can be mistaken for a chat invite<br>Make it shorter or longer';
 		return
 	}
@@ -380,19 +380,24 @@ function Encrypt_List(listArray){
 	if (tagsOff) {
 			document.getElementById('mainBox').innerHTML = outString
 	} else {
+		if(outString.length > 100000){
+			var reply = confirm("Adding error correction code for output this long will take a long time. Cancel if you'd rather not wait.");
+			if(reply == true) outString = outString + "=" + calcRScode(outString);
+		}
 		if(anonOn){
-			document.getElementById('mainBox').innerHTML = triple(outString + "=" + calcRScode(outString) + "=PL21msa")
+			document.getElementById('mainBox').innerHTML = triple(outString + "=PL21msa")
 		} else if (pfsOn){
-			document.getElementById('mainBox').innerHTML = triple(outString + "=" + calcRScode(outString) + "=PL21msp")
+			document.getElementById('mainBox').innerHTML = triple(outString + "=PL21msp")
 		} else if(onceOn){
-			document.getElementById('mainBox').innerHTML = triple(outString + "=" + calcRScode(outString) + "=PL20mso")
+			document.getElementById('mainBox').innerHTML = triple(outString + "=PL20mso")
 		} else {
-			document.getElementById('mainBox').innerHTML = triple(outString + "=" + calcRScode(outString) + "=PL21mss")
+			document.getElementById('mainBox').innerHTML = triple(outString + "=PL21mss")
 		}
 	}
 	if(fullAccess) localStorage[userName] = JSON.stringify(lockDB);
 	smallOutput();
-	mainmsg.innerHTML = 'Locking successful. Select and copy.'
+	mainmsg.innerHTML = 'Locking successful. Right-click and copy.';
+	selectMain();
 	callKey = '';
 }
 
@@ -499,7 +504,7 @@ function Decrypt_single(){
 			Decrypt_List(cipherArray);
 			
 			var typetoken = document.getElementById('mainBox').innerHTML;
-			if (typetoken.length == 130){											//chat invite detected, so open chat
+			if (typetoken.length == 107){											//chat invite detected, so open chat
 				document.getElementById('mainBox').innerHTML = '';
 				var date = typetoken.slice(0,43).trim();				//the first 43 characters are for the date and time etc.
 				if(date != ''){
@@ -507,7 +512,7 @@ function Decrypt_single(){
 				}else{
 					var msgStart = ""
 				}
-				var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might leak metadata.");
+				var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might give away your location.");
 				if(reply===false){
 					document.getElementById('mainBox').innerHTML = '';
 					throw("chat start canceled");
@@ -882,7 +887,7 @@ function applySignature(){
 	var secstr = readKey();
 	var email = readEmail();
 	var pubstr = striptags(secstr),
-		hash = sjcl.hash.sha512.hash(document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim()),				//take SHA512 hash of trimmed text, with some things replaced by newlines
+		hash = sjcl.hash.sha512.hash(document.getElementById('mainBox').innerHTML.replace(/(<(.*?)>)+/i,"").replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim()),				//take SHA512 hash of trimmed text, with some things replaced by newlines
 		sec = toexponent(secstr,email),
 		curve = sjcl.ecc.curves["c521"],
 		R = curve.r,
@@ -911,7 +916,7 @@ function verifySignature(){
 		mainmsg = document.getElementById("mainmsg");
 		keymsg.innerHTML = "";
 		mainmsg.innerHTML = "";
-	var text = document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim();					//newline-related formatting is ignored
+	var text = document.getElementById('mainBox').innerHTML.replace(/(<(.*?)>)+/i,"").replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim();					//newline-related formatting is ignored
 	if (text == ""){																				//nothing in text box
 		mainmsg.innerHTML = '<span style="color:red">Nothing to sign or verify</span>';
 		throw("no text")
