@@ -224,6 +224,7 @@ function makeChat(){
 	Encrypt_List(listArray);
 	document.getElementById('mainBox').innerHTML = document.getElementById('mainBox').innerHTML.replace(/PL21msa|PL21mss|PL21msp|PL21mso/g,'PL21chat');			//change the tags
 	mainmsg.innerHTML = 'Invitation to chat in the box.<br>Send it to the recipients.';
+	selectMain();
 }
 
 //makes a mostly anonymous chatroom name from words on the blacklist

@@ -1744,25 +1744,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 --><button class="cssbutton" id="resetLockDBButton" value="Reset all" style="" title="reset extra data for all items">Reset All</button><br />
     </div>
     </div>
-    
-<!--Image screen-->
-<div id='imagescr' class="block_page" align="center" style="display: none;">
-    <button class="cssbutton" id="image2mainButton" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#9668; Back</button>&nbsp;
-    <button class="cssbutton" id="encode" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
-    <button class="cssbutton" id="decode" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
-
-    <input class="custom-file-input" type='file' id='imagefile' style="" title="open a dialog to select the cover image"/>
-    <button class="cssbutton" id="saveimageButton" value="Save" title="save image to default Downloads folder in PNG format">Save</button>
-    <br /><br />
-
-    <span id="imagemsg"></span><br /><br />
-
-    <img id="preview" src="" width="100%"/>
-</div>
-
-<!--Shadow backdrop-->
-<div id="shadow" class="black_overlay" style="display: block;">
-</div>
 
 <!--Key dialog-->
 <div id="keyscr" class="white_content" align="center" style="display: block;">
@@ -1779,31 +1760,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><strong>PassLok will be very slow</strong> if your Key is worse than Medium.</p>
         <p>To display or refresh your Lock, click myLock on the Main tab.</p>
         <p>Cancel for limited functionality.</p>
-</div>
-
-<!--email dialog-->
-<div id="emailscr" class="white_content" align="center" style="display: none;">
-    <br />
-    <div align="center">
-<span id="emailmsg">Please enter your email or other public data or token you entered when you made your Lock</span><br /><br />
-		<button class="cssbutton" id="randomEmailButton" value="random" style="" title="insert random token">Random</button><br /><br />
-		<input type="text" class="cssbox" autocomplete="off" id="email" onKeyUp="emailKeyup(event);" style="" name="email" placeholder="Enter your email or some other not secret personal info here." align="center"><br /><br />
-       <button class="cssbutton" id="cancelEmailButton" value="cancel" style="" title="close email dialog">Cancel</button>&nbsp;
-	 	<button class="cssbutton" id="acceptEmailButton" value="OK" style="" title="accept email">OK</button>
-        <p>Your Lock will change if this is not the same you entered before.</p>
-        <p>If you use a random token, make sure to back it up from Options.</p>
-	</div>
-</div>
-
-<!--name dialog-->
-<div id="namescr" class="white_content" align="center" style="display: none;">
-    <br />
-    <div align="center">
-<span id="emailmsg">Please enter a new User name for this account</span><br /><br />
-		<input type="text" class="cssbox" autocomplete="off" id="userName" onKeyUp="nameKeyup(event);" style="" name="name" placeholder="Enter your new User Name here." align="center"><br /><br />
-       <button class="cssbutton" id="cancelNameButton" value="cancel" style="" title="close name change dialog">Cancel</button>&nbsp;
-	 	<button class="cssbutton" id="acceptNameButton" value="OK" style="" title="accept new user name">OK</button>
-	</div>
 </div>
 
 <!--Intro wizard, split into five-->
@@ -1878,6 +1834,17 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
 </div>
 
+<!--name dialog-->
+<div id="namescr" class="white_content" align="center" style="display: none;">
+    <br />
+    <div align="center">
+<span id="emailmsg">Please enter a new User name for this account</span><br /><br />
+		<input type="text" class="cssbox" autocomplete="off" id="userName" onKeyUp="nameKeyup(event);" style="" name="name" placeholder="Enter your new User Name here." align="center"><br /><br />
+       <button class="cssbutton" id="cancelNameButton" value="cancel" style="" title="close name change dialog">Cancel</button>&nbsp;
+	 	<button class="cssbutton" id="acceptNameButton" value="OK" style="" title="accept new user name">OK</button>
+	</div>
+</div>
+
 <!--Key change dialog-->
 <div id="keyChange" class="white_content" align="center" style="">
 <br /><br />
@@ -1888,6 +1855,20 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
        <input type="password" id="newKey2" class="cssbox" style="" name="newkey2" placeholder="Enter the new Key again."/><br /><br />
     	<button class="cssbutton" id="cancelKeychange" value="Cancel" title="do not change the Key">Cancel</button>&nbsp;
        <button class="cssbutton" id="submitKeychange" value="OK" title="go on with Key change">OK</button>
+</div>
+
+<!--email dialog-->
+<div id="emailscr" class="white_content" align="center" style="display: none;">
+    <br />
+    <div align="center">
+<span id="emailmsg">Please enter your email or other public data or token you entered when you made your Lock</span><br /><br />
+		<button class="cssbutton" id="randomEmailButton" value="random" style="" title="insert random token">Random</button><br /><br />
+		<input type="text" class="cssbox" autocomplete="off" id="email" onKeyUp="emailKeyup(event);" style="" name="email" placeholder="Enter your email or some other not secret personal info here." align="center"><br /><br />
+       <button class="cssbutton" id="cancelEmailButton" value="cancel" style="" title="close email dialog">Cancel</button>&nbsp;
+	 	<button class="cssbutton" id="acceptEmailButton" value="OK" style="" title="accept email">OK</button>
+        <p>Your Lock will change if this is not the same you entered before.</p>
+        <p>If you use a random token, make sure to back it up from Options.</p>
+	</div>
 </div>
 
 <!--Decoy In dialog-->
@@ -1940,6 +1921,21 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     	<button class="cssbutton" id="cancelChatButton" value="Cancel" title="cancel chat invitation">Cancel</button>&nbsp;
        <button class="cssbutton" id="submitChatButton" value="OK" title="make chat invitation">OK</button>
 </div>
+    
+<!--Image screen-->
+<div id='imagescr' class="block_page" align="center" style="display: none;">
+    <button class="cssbutton" id="image2mainButton" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#9668; Back</button>&nbsp;
+    <button class="cssbutton" id="encode" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
+    <button class="cssbutton" id="decode" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
+
+    <input class="custom-file-input" type='file' id='imagefile' style="" title="open a dialog to select the cover image"/>
+    <button class="cssbutton" id="saveimageButton" value="Save" title="save image to default Downloads folder in PNG format">Save</button>
+    <br /><br />
+
+    <span id="imagemsg"></span><br /><br />
+
+    <img id="preview" src="" width="100%"/>
+</div>
 
 <!--General Lock directory screen, just an iframe for https://passlok.com/lockdir-->
 <div id="lockdir" class="block_page" style="display: none;" align="center">
@@ -1956,6 +1952,10 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
     <iframe seamless id="chatframe" src="" style="width:100%;height:900px" border=0 frameborder=0 allowfullscreen></iframe>
   
+</div>
+
+<!--Shadow backdrop-->
+<div id="shadow" class="black_overlay" style="display: block;">
 </div>
 
 <!--Body script: window reformatting, special functions-->

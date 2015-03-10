@@ -354,7 +354,7 @@ function showLock(){
 		if (document.getElementById("notags").checked == false) mylocktemp = "PL21lok=" + mylocktemp + "=" + calcRScode(mylocktemp) + "=PL21lok"
 	}
 	document.getElementById('mainBox').innerHTML = triple(mylocktemp);
-	mainmsg.innerHTML = "The Lock matching your Key is in the box. Copy or email from here.";
+	mainmsg.innerHTML = "The Lock matching your Key is in the box.";
 	callKey = '';
 };
 
