@@ -410,7 +410,7 @@ function keyDecrypt(cipherstring){
 			ct = cipherstring.slice(11,cipherstring.length),
 			iter = keyStrength(key,false);
 		var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key,'',iter,8,1,33));
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + '' + '","ct":"' + ct + '","ks":256,"iter":101}';
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"","ct":"' + ct + '","ks":256,"iter":101}';
 		try{
 			return sjcl.decrypt(keyStretched,cipherstr2)
 		}catch(err){failedDecrypt()}
@@ -867,7 +867,7 @@ function decoydecrypt(iv,dummylock,ct){
 		iter = 2;
 	}
 	var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key2,'',iter,8,1,33))
-	var	cipherstr2 = '{"iv":"' + iv + '","salt":"' + "" + '","ct":"' + ct + '","ks":256,"iter":101}';
+	var	cipherstr2 = '{"iv":"' + iv + '","salt":"","ct":"' + ct + '","ks":256,"iter":101}';
 	try{
 		mainmsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(sjcl.decrypt(keyStretched,cipherstr2)) + '</span>'
 	}catch(err){failedDecrypt()}
@@ -887,7 +887,7 @@ function applySignature(){
 	var secstr = readKey();
 	var email = readEmail();
 	var pubstr = striptags(secstr),
-		hash = sjcl.hash.sha512.hash(document.getElementById('mainBox').innerHTML.replace(/(<(.*?)>)+/i,"").replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim()),				//take SHA512 hash of trimmed text, with some things replaced by newlines
+		hash = sjcl.hash.sha512.hash(document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim()),				//take SHA512 hash of trimmed text, with some things replaced by newlines
 		sec = toexponent(secstr,email),
 		curve = sjcl.ecc.curves["c521"],
 		R = curve.r,
@@ -916,7 +916,7 @@ function verifySignature(){
 		mainmsg = document.getElementById("mainmsg");
 		keymsg.innerHTML = "";
 		mainmsg.innerHTML = "";
-	var text = document.getElementById('mainBox').innerHTML.replace(/(<(.*?)>)+/i,"").replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim();					//newline-related formatting is ignored
+	var text = document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim();					//newline-related formatting is ignored
 	if (text == ""){																				//nothing in text box
 		mainmsg.innerHTML = '<span style="color:red">Nothing to sign or verify</span>';
 		throw("no text")
