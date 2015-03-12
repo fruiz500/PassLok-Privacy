@@ -54,8 +54,8 @@ function Encrypt_single(){
 		if (text.length > 58) clipped = true;
 			text = text + "                                                         ";  //clip or add spaces to make a 58 char message
 			text = text.slice(0,58);
-		var keystr = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(sharedKey,salt,iter,8,1,33));				//scrypt key-stretching is applied here
-		var cipherj = JSON.parse(sjcl.encrypt(keystr,text,{"iv":iv,"salt":salt,"ks":256,"iter":101}).replace(/=/g,''));
+		var keyStretched = sjcl.misc.scrypt(sharedKey,salt,iter,8,1,32);					//scrypt key-stretching is applied here
+		var cipherj = JSON.parse(sjcl.encrypt(keyStretched,text,{"iv":iv,"salt":salt,"ks":256,"iter":0}).replace(/=/g,''));
 		if (learnOn){
 			alert(name + " will need to place the same Key in the Locks box to unlock the message in the main box.");
 		};
@@ -83,11 +83,11 @@ function Encrypt_single(){
 			var sharedKeycipher = lockDB[name][1];
 		}
 		if (sharedKeycipher != null && fullAccess){
-			var sharedKey = keyDecrypt(sharedKeycipher)
+			var sharedKey = sjcl.codec.base64.toBits(keyDecrypt(sharedKeycipher))
 		} else {
-			var sharedKey = makeshared(key,Lock,email);								//add email to the key
+			var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,Lock,email),0,256);								//add email to the key
 			if (lockDB[name] && fullAccess){
-				lockDB[name][1] = keyEncrypt(key,sharedKey);
+				lockDB[name][1] = keyEncrypt(key,sjcl.codec.base64.fromBits(sharedKey));
 				localStorage[userName] = JSON.stringify(lockDB)
 
 				if(ChromeSyncOn){											//if Chrome sync is available, change in sync storage
@@ -101,7 +101,7 @@ function Encrypt_single(){
 		if (text.length > 58) clipped = true;
 			text = text + "                                                         ";  //clip or add spaces to make a 58 char message
 			text = text.slice(0,58);
-		var cipherj = JSON.parse(sjcl.encrypt(sharedKey,text,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,''));
+		var cipherj = JSON.parse(sjcl.encrypt(sharedKey,text,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,''));
 		if (learnOn){
 			alert(lockmsg + " will need your Lock and his/her secret Key to unlock the message in the main box.");
 		};
@@ -120,14 +120,14 @@ function Encrypt_single(){
 		if(name == '') name = "the recipient";
 		var secstrdum = sjcl.codec.base64.fromBits(sjcl.random.randomWords('17','0')).slice(0,86),	//make dummy Key
 			pubstrdum = makepub(secstrdum,'');														//makes 87 char dummy public key, initial A stripped
-		var keystr = makeshared(secstrdum,Lock,'');											//make AES key from dummy secret and recipient's Lock
+		var sharedKey = sjcl.bitArray.bitSlice(makeshared(secstrdum,Lock,''),0,256);											//make AES key from dummy secret and recipient's Lock
 		var iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),						//11 char serial in short mode, no salt
 			salt = "",
 			text = encodeURI(document.getElementById('mainBox').innerHTML).replace(/%20/g, ' ');
 		if (text.length > 38) clipped = true;
 			text = text + "                                                         ";  			//clip or add spaces to make a 38 char message
 			text = text.slice(0,38);
-		var cipherj = JSON.parse(sjcl.encrypt(keystr,text,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,''));   //use 256 bit keys, min stretching for random key
+		var cipherj = JSON.parse(sjcl.encrypt(sharedKey,text,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,''));   //use 256 bit keys, min stretching for random key
 		if (learnOn){
 			alert(name + " will need to place his/her secret Key in the key box to unlock the message in the main box.");
 		}
@@ -179,8 +179,8 @@ function Encrypt_List(listArray){
 		var agree = confirm('The names on the list below were not found in your local directory. If you click OK, they will be used as shared Keys for locking and unlocking the message. This could be a serious security hazard:\n\n' + warningList);
 		if (!agree) throw('list encryption terminated by user')
 	}
-
-	var	msgkey = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')).slice(0,43),		//message key a little over 256-bit
+	var	msgkey = sjcl.random.randomWords('8','0'),
+		msgkeystr = sjcl.codec.base64.fromBits(msgkey).slice(0,43),
 		iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('4','0')),
 		text = document.getElementById('mainBox').innerHTML;
 	if (anonOn) {
@@ -239,7 +239,7 @@ function Encrypt_List(listArray){
 	}
 	
 	if(XSSfilter(text).slice(0,9) != 'filename:') text = LZString.compressToBase64(text);									//compress unless it's a file, which would grow on compression
-	var cipherj = JSON.parse(sjcl.encrypt(msgkey,text,{"iv":iv,"salt":salt,"ks":256,"iter":101}).replace(/=/g,''));		//main encryption event, but don't add it yet
+	var cipherj = JSON.parse(sjcl.encrypt(msgkey,text,{"iv":iv,"salt":salt,"ks":256,"iter":0}).replace(/=/g,''));		//main encryption event, but don't add it yet
 	outString = outString + cipherj.iv + cipherj.salt;
 	if (anonOn) outString = outString + pubstrdum;						//for anonymous mode, add the dummy lock to the output string
 
@@ -257,25 +257,25 @@ function Encrypt_List(listArray){
 					if(lockDB[name]!=null && fullAccess){
 						var sharedKeycipher = lockDB[name][1];			//permanent key shared with recipient, for encrypting the new dummy Lock
 						if (sharedKeycipher != null){
-							var sharedKey = keyDecrypt(sharedKeycipher);
+							var sharedKey = sjcl.codec.base64.toBits(keyDecrypt(sharedKeycipher))
 						} else {
-							var sharedKey = makeshared(key,Lock,email);
-							lockDB[name][1] = keyEncrypt(key,sharedKey);
+							var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,Lock,email),0,256);
+							lockDB[name][1] = keyEncrypt(key,sjcl.codec.base64.fromBits(sharedKey));
 							
 							if(ChromeSyncOn){
 								syncChromeLock(name,JSON.stringify(lockDB[name]))
 							}
 						}
 					} else {											//if the name is not in the directory, make it fresh
-						var sharedKey = makeshared(key,Lock,email)
+						var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,Lock,email),0,256);
 					}
-					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkey,{"iv":iv,"salt":salt,"ks":256,"iter": 101})),
-						idtag = JSON.parse(sjcl.encrypt(sharedKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 101}));
+					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkeystr,{"iv":iv,"salt":salt,"ks":256,"iter": 0})),
+						idtag = JSON.parse(sjcl.encrypt(sharedKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 0}));
 
 				} else if (anonOn){
-					var sharedKey = makeshared(secstrdum,Lock,'');		//no asymmetric salt used with random keys
-					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkey,{"iv":iv,"salt":salt,"ks":256,"iter": 101})),
-						idtag = JSON.parse(sjcl.encrypt(sharedKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 101}));
+					var sharedKey = sjcl.bitArray.bitSlice(makeshared(secstrdum,Lock,''),0,256);		//no asymmetric salt used with random keys
+					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkeystr,{"iv":iv,"salt":salt,"ks":256,"iter": 0})),
+						idtag = JSON.parse(sjcl.encrypt(sharedKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 0}));
 
 				} else if (pfsOn || onceOn){
 					if(lockDB[name] == null){
@@ -298,10 +298,10 @@ function Encrypt_List(listArray){
 					}
 					if (Lock.length == 87){
 						if (dualKeycipher != null){
-							var dualKey = keyDecrypt(dualKeycipher);
+							var dualKey = sjcl.codec.base64.toBits(keyDecrypt(dualKeycipher));
 						} else {
-							var dualKey = makeshared(key,Lock,email);
-							lockDB[name][1] = keyEncrypt(key,dualKey);
+							var dualKey = sjcl.bitArray.bitSlice(makeshared(key,Lock,email),0,256);
+							lockDB[name][1] = keyEncrypt(key,sjcl.codec.base64.fromBits(dualKey));
 							
 							if(ChromeSyncOn){
 								syncChromeLock(name,JSON.stringify(lockDB[name]))
@@ -309,7 +309,8 @@ function Encrypt_List(listArray){
 						}
 						var pfsSalt = ''
 					}else{
-						var dualKey = Lock;							//actually, a permanent shared Key, unstripped
+						var iter = keyStrength(Lock,false);
+						var dualKey = sjcl.misc.scrypt(Lock,salt,iter,8,1,32);							//actually, a permanent shared Key, unstripped
 						var pfsSalt = '';
 					}
 				  if(name != 'myself'){								//can't do PFS or Read-once to myself, so do a signed one, below
@@ -326,7 +327,7 @@ function Encrypt_List(listArray){
 					var secstrdum = sjcl.codec.base64.fromBits(sjcl.random.randomWords('17','0')).slice(0,87),		//different dummy key for each recipient
 						pubstrdum = makepub(secstrdum,'');
 					if (pfsOn){
-						var sharedKey = makeshared(secstrdum,lastLock,pfsSalt);		//in PFS, use new dummy Key and stored Lock
+						var sharedKey = sjcl.bitArray.bitSlice(makeshared(secstrdum,lastLock,pfsSalt),0,256);		//in PFS, use new dummy Key and stored Lock
 					}else{
 						var lastKeycipher = lockDB[name][2];						//read-once mode uses previous Key and previous Lock
 						if (lastKeycipher != null){
@@ -336,7 +337,7 @@ function Encrypt_List(listArray){
 							var lastKey = secstrdum;
 							var pfsSalt = ''
 						}
-						var sharedKey = makeshared(lastKey,lastLock,pfsSalt);
+						var sharedKey = sjcl.bitArray.bitSlice(makeshared(lastKey,lastLock,pfsSalt),0,256);
 					}
 					lockDB[name][2] = keyEncrypt(key,secstrdum);				//new Key is stored in the permanent database
 					lockDB[name][4] = 'next unlock';
@@ -345,24 +346,24 @@ function Encrypt_List(listArray){
 						syncChromeLock(name,JSON.stringify(lockDB[name]))
 					}
 				//sharedKey depends on the newLock, so use the permanent shared Key instead for making the idtag and encrypting the newLock
-					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkey,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,'')),
-						idtag = JSON.parse(sjcl.encrypt(dualKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 101})),
-						newLockcipher = JSON.parse(sjcl.encrypt(dualKey,pubstrdum,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,''));
+					var	cipherj2 = JSON.parse(sjcl.encrypt(sharedKey,msgkeystr,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,'')),
+						idtag = JSON.parse(sjcl.encrypt(dualKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 0})),
+						newLockcipher = JSON.parse(sjcl.encrypt(dualKey,pubstrdum,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,''));
 						
 				  }else{														//don't do PFS to 'myself'; use signed mode instead
-					var	cipherj2 = JSON.parse(sjcl.encrypt(dualKey,msgkey,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,'')),
-						idtag = JSON.parse(sjcl.encrypt(dualKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 101})),
+					var	cipherj2 = JSON.parse(sjcl.encrypt(dualKey,msgkeystr,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,'')),
+						idtag = JSON.parse(sjcl.encrypt(dualKey,Lock,{"iv":iv,"salt":salt,"ks":256,"iter": 0})),
 						dummyLock = sjcl.codec.base64.fromBits(sjcl.random.randomWords('17','0')).slice(0,87),
-						newLockcipher = JSON.parse(sjcl.encrypt(dualKey,dummyLock,{"iv":iv,"salt":salt,"ks":256,"iter": 101}).replace(/=/g,''));	//filler
+						newLockcipher = JSON.parse(sjcl.encrypt(dualKey,dummyLock,{"iv":iv,"salt":salt,"ks":256,"iter": 0}).replace(/=/g,''));	//filler
 				  }
 				}
 				
-			} else {													//if it's not a Lock (and not PFS or Read-Once), do a symmetric encryption instead, with appropriate key stretching. ID tag based on the shared Key encrypted by itself
+			} else {													//if it's not a Lock (and not PFS or Read-Once), do a symmetric encryption instead, with appropriate key stretching. ID tag based on the shared Key encrypted by itself (stretched)
 				var sharedKey = Lock;
 				var iter = keyStrength(sharedKey,false),
-					keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(sharedKey,salt,iter,8,1,33)),
-					cipherj2 = JSON.parse(sjcl.encrypt(keyStretched,msgkey,{"iv":iv,"salt":salt,"ks":256,"iter":101}).replace(/=/g,'')),
-					idtag = JSON.parse(sjcl.encrypt(sharedKey,sharedKey,{"iv":iv,"salt":salt,"ks":256,"iter":101}));
+					keyStretched = sjcl.misc.scrypt(sharedKey,salt,iter,8,1,32),
+					cipherj2 = JSON.parse(sjcl.encrypt(keyStretched,msgkeystr,{"iv":iv,"salt":salt,"ks":256,"iter":0}).replace(/=/g,'')),
+					idtag = JSON.parse(sjcl.encrypt(keyStretched,sharedKey,{"iv":iv,"salt":salt,"ks":256,"iter":0}));
 			}
 			
 			//now add the id and encrypted strings to the output string, and go to the next recipient
@@ -409,8 +410,8 @@ function keyDecrypt(cipherstring){
 		var	iv = cipherstring.slice(0,11),
 			ct = cipherstring.slice(11,cipherstring.length),
 			iter = keyStrength(key,false);
-		var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key,'',iter,8,1,33));
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"","ct":"' + ct + '","ks":256,"iter":101}';
+		var keyStretched = sjcl.misc.scrypt(key,'',iter,8,1,32);
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"","ct":"' + ct + '","ks":256,"iter":0}';
 		try{
 			return sjcl.decrypt(keyStretched,cipherstr2)
 		}catch(err){failedDecrypt()}
@@ -423,8 +424,8 @@ function keyDecrypt(cipherstring){
 function keyEncrypt(key,plainstring){
 	var	iv = sjcl.codec.base64.fromBits(sjcl.random.randomWords('2','0')),				//minimum iterations = 101
 		iter = keyStrength(key,false);
-	var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key,'',iter,8,1,33));
-	var cipherj2 = JSON.parse(sjcl.encrypt(keyStretched,plainstring,{"iv":iv,"salt":"","ks":256,"iter":101}).replace(/=/g,''));
+	var keyStretched = sjcl.misc.scrypt(key,'',iter,8,1,32);
+	var cipherj2 = JSON.parse(sjcl.encrypt(keyStretched,plainstring,{"iv":iv,"salt":"","ks":256,"iter":0}).replace(/=/g,''));
 	return '~' + cipherj2.iv + cipherj2.ct
 }
 
@@ -449,28 +450,26 @@ function makesalt(iv,dummykey,leng,keyLocked){
 		if (keyStripped.length == 87 || keyStripped.length == 100){						//the key is a Lock, so do asymmetric encryption
 			if (keyStripped.length == 100) keyStripped = changeBase(keyStripped.toLowerCase(), BASE38, BASE64, true) //ezLok replaced by regular Lock			
 			if (keyLocked || document.getElementById('anonmode').checked){		//anonymous or Key-locked mode, make shared key from given Lock and dummy key
-				key = makeshared(dummykey,keyStripped,'');
+				var keyStretched = sjcl.bitArray.bitSlice(makeshared(dummykey,keyStripped,''),0,256);
 			}else{															//signed/PFS mode, make shared key from given Lock and regular Key
 				var mykey = readKey();
 				var email = readEmail();
-				key = makeshared(mykey,keyStripped,email);
+				var keyStretched = sjcl.bitArray.bitSlice(makeshared(mykey,keyStripped,email),0,256);
 			}			
-			var iter = 2;
 		}else{																		//symmetric encryption
 			var iter = keyStrength(key,false);										//key may be weak, so stretch it
+			var keyStretched = sjcl.misc.scrypt(key,'',iter,8,1,32);
 		}
 		
 	} else {																		//no decoy mode, so salt comes from random text and key, no extra stretching
-		var key = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')),
-			text = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214),
-			iter = 2;
+		var keyStretched = sjcl.random.randomWords('8','0'),
+			text = sjcl.codec.base64.fromBits(sjcl.random.randomWords('57','0')).slice(0,214);
 	};
 	while (text.length < leng) {															//clip or add spaces to make the number of characters required
 			text = text + "          ";
 	};
-	text = text.slice(0,leng);		
-	var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key,'',iter,8,1,33));
-	var cipherj = JSON.parse(sjcl.encrypt(keyStretched,text,{"iv":iv,"salt":"","ks":256,"iter":101}).replace(/=/g,''));
+	text = text.slice(0,leng);	
+	var cipherj = JSON.parse(sjcl.encrypt(keyStretched,text,{"iv":iv,"salt":"","ks":256,"iter":0}).replace(/=/g,''));
 	document.getElementById('decoyPwdIn').value = "";
 	document.getElementById('decoyText').value = "";
 	return cipherj.ct;
@@ -542,11 +541,11 @@ function Decrypt_single(){
 		var	iv = cipherstr.slice(0,11),												//get iv, salt, and later ct data and dummy Lock
 			salt = "";
 		var pubstrdum = cipherstr.slice(11,98);
-		var keystr = makeshared(key,pubstrdum,email);
+		var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,pubstrdum,email),0,256);
 		var	ct = cipherstr.slice(98,cipherstr.length);
-		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';	//add labels and keylength to data, minimum keystretching
+		cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":0}';	//add labels and keylength to data, minimum keystretching
 		try{
-			document.getElementById('mainBox').innerHTML = decodeURI(sjcl.decrypt(keystr,cipherstr)).trim();
+			document.getElementById('mainBox').innerHTML = decodeURI(sjcl.decrypt(sharedKey,cipherstr)).trim();
 		}catch(err){failedDecrypt()};
 		if(!decoyOn) mainmsg.innerHTML = 'Unlock successful'
 	}
@@ -591,13 +590,13 @@ function Decrypt_single(){
 		}
 		if (lockDB[name] && fullAccess) var sharedKeycipher = lockDB[name][1];
 		if (sharedKeycipher != null){
-			var sharedKey = keyDecrypt(sharedKeycipher)
+			var sharedKey = sjcl.codec.base64.toBits(keyDecrypt(sharedKeycipher))
 		} else {
 			strippedLockBox = replaceByItem(lockBoxItem,false);
 			if (strippedLockBox.length == 100) strippedLockBox = changeBase(strippedLockBox.toLowerCase(), BASE38, BASE64, true) 		//replace ezLok with standard
-			var sharedKey = makeshared(key,strippedLockBox,email)
+			var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,strippedLockBox,email),0,256);
 			if (lockDB[name] && fullAccess) {
-				lockDB[name][1] = keyEncrypt(key,sharedKey);
+				lockDB[name][1] = keyEncrypt(key,sjcl.codec.base64.fromBits(sharedKey));
 				localStorage[userName] = JSON.stringify(lockDB);
 
 				if(ChromeSyncOn){												//if Chrome sync is available, change in sync storage
@@ -609,7 +608,7 @@ function Decrypt_single(){
 			salt = cipherstr.slice(11,71),
 			ct = cipherstr.slice(71,cipherstr.length);
 		if (decoyOn) decoydecrypt(iv,strippedLockBox,salt);
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":0}';
 		try{
 		if (cipherstr.length == 159){
 			document.getElementById('mainBox').innerHTML = decodeURI(sjcl.decrypt(sharedKey,cipherstr2)).trim();
@@ -640,10 +639,10 @@ function Decrypt_single(){
 			decoydecrypt(iv,decoylock,salt);
 		}
 		var iter = keyStrength(keystr,false);										//get number of iterations from Key strength meter
-		var keystr=sjcl.codec.base64.fromBits(sjcl.misc.scrypt(keystr,salt,iter,8,1,33));
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';
+		var keyStretched=sjcl.misc.scrypt(keystr,salt,iter,8,1,32);
+		var cipherstr2 = '{"iv":"' + iv + '","ct":"' + ct + '","ks":256,"iter":0}';
 		try{
-			document.getElementById('mainBox').innerHTML = decodeURI(sjcl.decrypt(keystr,cipherstr2)).trim();
+			document.getElementById('mainBox').innerHTML = decodeURI(sjcl.decrypt(keyStretched,cipherstr2)).trim();
 		}catch(err){failedDecrypt()}
 		if (!decoyOn) mainmsg.innerHTML = 'Unlock successful'
 	}else{
@@ -674,8 +673,8 @@ function Decrypt_List(cipherArray){
 		var salt = cipherArray[0].slice(22,236)
 	}
 	var ct = cipherArray[cipherArray.length - 1],										//exclude the type flag
-		lockBoxItem = document.getElementById('lockBox').value.trim().split('\n')[0].trim();	//should be single Lock or shared Key, maybe a name
-	var Lock = replaceByItem(lockBoxItem,false);			//if it's a name, replace it with the decrypted item, no warning. Locks are stripped of their tags in any case.
+		lockBoxItem = document.getElementById('lockBox').value.trim().split('\n')[0].trim(),	//should be single Lock or shared Key, maybe a name
+		Lock = replaceByItem(lockBoxItem,false);			//if it's a name, replace it with the decrypted item, no warning. Locks are stripped of their tags in any case.
 
 	if (Lock.length == 100) Lock = changeBase(Lock.toLowerCase(), BASE38, BASE64, true) 				//ezLok case
 	if(lockDB['myself'] == null && fullAccess) key2any();									//make this entry if it has been deleted
@@ -714,11 +713,11 @@ function Decrypt_List(cipherArray){
 				var sharedKeycipher = lockDB[name][1];
 			}
 			if (sharedKeycipher != null){
-				var sharedKey = keyDecrypt(sharedKeycipher)
+				var sharedKey = sjcl.codec.base64.toBits(keyDecrypt(sharedKeycipher))
 			} else {																//no shared key found, so making a new one
-				var sharedKey = makeshared(key,Lock,email);
+				var sharedKey = sjcl.bitArray.bitSlice(makeshared(key,Lock,email),0,256);
 				if (lockDB[name] && fullAccess) {
-					lockDB[name][1] = keyEncrypt(key,sharedKey);
+					lockDB[name][1] = keyEncrypt(key,sjcl.codec.base64.fromBits(sharedKey));
 
 					if(ChromeSyncOn){												//if Chrome sync is available, change in sync storage
 						syncChromeLock(name,JSON.stringify(lockDB[name]))
@@ -727,8 +726,9 @@ function Decrypt_List(cipherArray){
 			}
 			var stuffForId = myLock;
 		} else {														//this when it's a regular shared Key in common with the sender
-			var sharedKey = Lock,
-				stuffForId = sharedKey;
+			var	stuffForId = Lock,
+				iter = keyStrength(Lock,false),										//should be 2 for everything except bad shared Keys
+				sharedKey = sjcl.misc.scrypt(Lock,salt,iter,8,1,32);
 		}
 
 	} else {										//anonymous mode
@@ -739,16 +739,15 @@ function Decrypt_List(cipherArray){
 		if (Lock.length == 87 || Lock == '' || Lock.split('\n').length > 1){		//test for Lock, empty, multiline(video URL, since Lists have been filtered by now) in Lock box, in order to do anonymous Diffie-Hellman using the dummy Lock
 			if (key == null) var key = readKey();
 			var email = readEmail(),
-				sharedKey = makeshared(key,pubstrdum,email),
+				sharedKey = sjcl.bitArray.bitSlice(makeshared(key,pubstrdum,email),0,256),
 				stuffForId = myLock;
 		} else {																//looks like a shared Key in the Lock box: use it as is
-			var sharedKey = Lock,
-				stuffForId = sharedKey;
+			var	stuffForId = Lock,
+				iter = keyStrength(Lock,false),
+				sharedKey = sjcl.misc.scrypt(Lock,salt,iter,8,1,32);
 		}
 	}
-	var iter = keyStrength(sharedKey,false);										//should be 2 for everything except bad shared Keys
-	var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(sharedKey,salt,iter,8,1,33));
-	var	idtag = JSON.parse(sjcl.encrypt(sharedKey,stuffForId,{"iv":iv,"salt":salt,"ks":256,"iter":101})).ct.slice(0,11);
+	var	idtag = JSON.parse(sjcl.encrypt(sharedKey,stuffForId,{"iv":iv,"salt":salt,"ks":256,"iter":0})).ct.slice(0,11);
 	
 	//look for the id tag and return the string that follows it
 	for (i = 1; i < cipherArray.length; i++){
@@ -763,17 +762,16 @@ function Decrypt_List(cipherArray){
 	//got the encrypted message key, now decrypt it, and finally the main message. The process for PFS and read-once modes is more involved. There is an overall try object in order to collect errors caused by sjcl.decrypt
 try{
 	if (Lock.length != 87 && Lock.length != 0 && type != '$' && type != '*'){
-		var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(sharedKey,salt,iter,8,1,33)),
-			cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":101}',
-			msgkey = sjcl.decrypt(keyStretched,cipherstr2).trim();
+		var	cipherstr2 = '{"iv":"' + iv + '","ct":"' + msgkeycipher + '","ks":256,"iter":0}',
+			msgkey = sjcl.codec.base64.toBits(sjcl.decrypt(sharedKey,cipherstr2));
 	} else if (type != '$' && type != '*'){
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":101}',
-			msgkey = sjcl.decrypt(sharedKey,cipherstr2).trim();
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":0}',
+			msgkey = sjcl.codec.base64.toBits(sjcl.decrypt(sharedKey,cipherstr2));
 
 	} else if(name == 'myself'){		//encrypted to 'myself' in PFS or Read-once mode is actually in signed mode, but there is a dummy Lock to get rid of first
 		msgkeycipher = msgkeycipher.slice(127,msgkeycipher.length);
-		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":101}',
-			msgkey = sjcl.decrypt(sharedKey,cipherstr2).trim();		
+		var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":0}',
+			msgkey = sjcl.codec.base64.toBits(sjcl.decrypt(sharedKey,cipherstr2));		
 		
 //for PFS mode, first we separate the encrypted new Lock from the proper message key, then decrypt the new Lock and combine it with the stored Key (if any) to get the ephemeral shared Key, which unlocks the message Key
 	} else {
@@ -806,7 +804,7 @@ try{
 			}
 		}
 		if(type == '$'){																//PFS mode
-			var	keystr = makeshared(lastKey,newLock,pfsSalt);
+			var	sharedKey = sjcl.bitArray.bitSlice(makeshared(lastKey,newLock,pfsSalt),0,256);
 		}else{																			//Read-once mode
 																
 			var lastLockcipher = lockDB[name][3];										//read-once mode uses last Key and last Lock
@@ -815,10 +813,10 @@ try{
 			} else {																	//use new dummy if stored dummy doesn't exist
 				var lastLock = newLock
 			}
-			var	keystr = makeshared(lastKey,lastLock,pfsSalt);
+			var	sharedKey = sjcl.bitArray.bitSlice(makeshared(lastKey,lastLock,pfsSalt),0,256);
 		}
-			var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":101}';
-		var	msgkey = sjcl.decrypt(keystr,cipherstr2).trim();
+			var cipherstr2 = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + msgkeycipher + '","ks":256,"iter":0}';
+		var	msgkey = sjcl.codec.base64.toBits(sjcl.decrypt(sharedKey,cipherstr2));
 		lockDB[name][3] = keyEncrypt(key,newLock);										//store the new dummy Lock
 		lockDB[name][4] = 'next lock';
 
@@ -826,7 +824,7 @@ try{
 			syncChromeLock(name,JSON.stringify(lockDB[name]))
 		}
 	}
-	var cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":101}';
+	var cipherstr = '{"iv":"' + iv + '","salt":"' + salt + '","ct":"' + ct + '","ks":256,"iter":0}';
 	var plainstr = sjcl.decrypt(msgkey,cipherstr);
 	
 }catch(err){failedDecrypt()}			//no more AES decryptions 
@@ -858,16 +856,15 @@ function decoydecrypt(iv,dummylock,ct){
 	dummylock = replaceByItem(dummylock,false);
 	var lockstripped = striptags(dummylock);
 	if (lockstripped.length == 100) lockstripped = changeBase(lockstripped.toLowerCase(), BASE38, BASE64, true);
-	var keyold = key2;
-	var	iter = keyStrength(key2,false);
 	document.getElementById('decoyPwdOut').value = ""
 	if(!document.getElementById('shareddecOut').checked){							//asymmetric mode, so now make the real encryption key
 		var email = readEmail();
-		key2 = makeshared(key2,lockstripped,email);
-		iter = 2;
+		var keyStretched = sjcl.bitArray.bitSlice(makeshared(key2,lockstripped,email),0,256);
+	}else{
+		var	iter = keyStrength(key2,false);
+		var keyStretched = sjcl.misc.scrypt(key2,'',iter,8,1,32);
 	}
-	var keyStretched = sjcl.codec.base64.fromBits(sjcl.misc.scrypt(key2,'',iter,8,1,33))
-	var	cipherstr2 = '{"iv":"' + iv + '","salt":"","ct":"' + ct + '","ks":256,"iter":101}';
+	var	cipherstr2 = '{"iv":"' + iv + '","ct":"' + ct + '","ks":256,"iter":0}';
 	try{
 		mainmsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(sjcl.decrypt(keyStretched,cipherstr2)) + '</span>'
 	}catch(err){failedDecrypt()}
@@ -887,7 +884,7 @@ function applySignature(){
 	var secstr = readKey();
 	var email = readEmail();
 	var pubstr = striptags(secstr),
-		hash = sjcl.hash.sha512.hash(document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim()),				//take SHA512 hash of trimmed text, with some things replaced by newlines
+		hash = sjcl.hash.sha512.hash(reallyTrim(document.getElementById('mainBox').innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,''))),		//take SHA512 hash of trimmed text, with some things replaced by newlines
 		sec = toexponent(secstr,email),
 		curve = sjcl.ecc.curves["c521"],
 		R = curve.r,
@@ -951,7 +948,7 @@ function verifySignature(){
 		throw("invalid public key")
 	};
 		text = text.replace(/\r?\n?[^\r\n]*$/, "");												//remove last line
-	var hash = sjcl.hash.sha512.hash(text.trim().replace(/[\s\&nbsp;]+$/,'')),					//take SHA512 hash of plaintext, ignoring initial and end spaces
+	var hash = sjcl.hash.sha512.hash(reallyTrim(text)),						//take SHA512 hash of plaintext, ignoring initial and end spaces
 		curve = sjcl.ecc.curves["c521"],
 		xstr = pubstr.slice(0,pubstr.length);
 	var	pub = pointFromX(xstr),
@@ -979,3 +976,8 @@ function verifySignature(){
 		decoydecrypt(iv, pubstr, padding);
 	};
 };
+
+//remove non-breaking spaces as well as spaces when trimming; useful for signatures
+function reallyTrim(string){
+	return string.trim().replace(/^(\&nbsp; )+/,'').replace(/(\&nbsp;)+$/,'').trim().replace(/^(\&nbsp;)+/,'').replace(/( \&nbsp;)+$/,'').trim()
+}

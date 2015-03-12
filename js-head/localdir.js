@@ -320,7 +320,7 @@ function mergeLockDB(){
 			if(reply===false) throw("merge canceled");
 		};
 		if (lockstr2.length == 100) lockstr2 = changeBase(lockstr2.toLowerCase(), BASE38, BASE64, true); 		//ezLok replaced by regular Lock
-		document.getElementById('mainBox').innerHTML = makeshared(mainstr,lockstr2,'');
+		document.getElementById('mainBox').innerHTML = sjcl.codec.base64.fromBits(makeshared(mainstr,lockstr2,''));
 		document.getElementById('lockBox').value = document.getElementById('mainBox').innerHTML;
 		lockmsg.innerHTML = 'Lock merged with Key in main box';
 		return
@@ -330,7 +330,7 @@ function mergeLockDB(){
 			if(reply===false) throw("merge canceled");
 		};
 		if (mainstr2.length == 100) mainstr2 = changeBase(mainstr2.toLowerCase(), BASE38, BASE64, true)
-		document.getElementById('mainBox').innerHTML = makeshared(lockstr,mainstr2,'');
+		document.getElementById('mainBox').innerHTML = sjcl.codec.base64.fromBits(makeshared(lockstr,mainstr2,''));
 		document.getElementById('lockBox').value = document.getElementById('mainBox').innerHTML;
 		lockmsg.innerHTML = 'Key merged with Lock in main box';
 		return

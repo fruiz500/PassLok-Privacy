@@ -390,22 +390,16 @@ var B, X, SIZE_MAX = Math.pow(2, 32) - 1;
 //key reformatting and stretching for secret Key (shared key is formatted automatically by sjcl) for 521 bit keys
 function toexponent(string,salt){
 	var iter = keyStrength(string,false);						//get number of iterations from Key strength meter, Key only
-	var w = sjcl.bitArray;
-	return sjcl.bn.fromBits(w.bitSlice(sjcl.misc.scrypt(string,salt,iter,8,1,66)))	//iteration number variable according to Key strength, 528 bits
+	return sjcl.bn.fromBits(sjcl.misc.scrypt(string,salt,iter,8,1,66))	//iteration number variable according to Key strength, 528 bits
 };
 
-//this one makes the shared secret
+//this one makes the shared secret, output as a 528-bit bitarray, which is the x coordinate of the product of sec and point, defined by its x coordinate
 function makeshared(secstr,xstr,salt){
 	var	sec = toexponent(secstr,salt),
 		pub = pointFromX(xstr);
-	try{									//in case the Lock is invalid 
-		var	sharedsec = pub.mult(sec);
+	try{									//in case the Lock is invalid
+		return pub.mult(sec).x.toBits()
 	}catch(err){document.getElementById("mainmsg").innerHTML = 'Invalid Lock'};
-	var	sharedstr = sjcl.codec.base64.fromBits(sharedsec.toBits());
-	sharedstr = sharedstr.slice(1,88);  								//strip spurious initial "A", only x part. The result is a valid Lock
-	var parity = sharedsec.y.mod(2).limbs[0];
-	if(parity == 1) sharedstr = BASE64.charAt(BASE64.indexOf(sharedstr.charAt(0)) + 32) + sharedstr.slice(1);
-	return sharedstr
 };
 
 //the following to retrieve a point from x coordinate
