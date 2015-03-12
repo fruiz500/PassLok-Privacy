@@ -42,6 +42,7 @@ The PassLok original code is in directories js-head and js-body:
 Full documentation can be found at: <http://passlok.weebly.com/>
 
 License
+-------
 
   Copyright (C) 2015 Francisco Ruiz
 
@@ -59,12 +60,14 @@ License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Acknowledgements
+----------------
 
   PassLok contains and/or links to code from a number of open source
   projects on GitHub, including the Stanford JavaScript
   Cryptography Library (SJCL), and others.
 
 Cryptography Notice
+-------------------
 
   This distribution includes cryptographic software. The country in
   which you currently reside may have restrictions on the import,
