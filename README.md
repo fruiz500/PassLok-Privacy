@@ -1,6 +1,7 @@
-README for PassLok Github page
+PassLok Privacy
+===============
 
-PassLok is a privacy app that implements public key cryptography functions on a browser.
+PassLok is a toolkit to implement public key cryptography functions on a browser.
 
 These are the principles guiding the design of PassLok:
 o	Perfect portability. Runs on any computer or mobile device.
@@ -12,7 +13,7 @@ o	Easy to understand and use by novices. Graphical interface,
 
 Because of this, PassLok is pure html code consisting mostly of javascript instructions. Its cryptography code is based on the SJCL code, also on Github. It uses AES for symmetric encryption and elliptic curves (NIST-p521 curve) for public-key functions.
 
-PassLok was started as URSA, also by F. Ruiz, and developed privately up to version 1.3.03, made on 8/15/13. Commits on Github begin seriously with this version.
+PassLok was started as URSA, also by F. Ruiz, and developed privately up to version 1.3.03, made on 8/15/13. Commits on Github began seriously with this version.
 
 These are the open source libraries used in PassLok, which can be found in the js-opensrc directory:
 * Shamir Secret Sharing Scheme. Edited so SJCL RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
