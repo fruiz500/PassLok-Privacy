@@ -1,7 +1,7 @@
 PassLok Privacy
 ===============
 
-PassLok is a toolkit to implement public key cryptography to supplement ANY communications program.
+PassLok is a toolkit that implements public key cryptography to supplement ANY communications program.
 
 These are the principles guiding the design of PassLok:
 * Perfect portability. Runs on any computer or mobile device.
@@ -15,7 +15,7 @@ Because of this, PassLok is pure html code consisting mostly of JavaScript instr
 PassLok was started as URSA, also by F. Ruiz, and developed privately up to version 1.3.03, made on 8/15/13. Commits on GitHub began seriously with this version. The engine was based on the SJCL library up to version 2.1.03, which has been forked out on this repo in order to preserve it.
 
 These are the open source libraries used in PassLok, which can be found in the js-opensrc directory:
-* Shamir Secret Sharing Scheme. Edited so SJCL RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
+* Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
 * For hiding data in images: https://github.com/petereigenschink/steganography.js
 * FastClick, used only in mobile devices: https://github.com/ftlabs/fastclick
 * Tweet NaCl in JavaScript: https://github.com/dchest/tweetnacl-js
