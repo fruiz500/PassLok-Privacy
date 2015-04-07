@@ -1229,31 +1229,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
 
-   <div id="aa29" style="cursor:pointer">
-<h3>Check the authenticity of the code</h3>
-</div>
-<div id="a29" class="texter">
-<p>If you got PassLok from an app store, that app store is ensuring that the code you have is what the author gave to them. The following is to check the integrity of an html version of PassLok running in a browser:</p>
-<p>1. Direct your browser to "view source." If your browser has a command to save the source (Chrome, Firefox, and Safari do), go ahead and save it to file.</p>
-<p>2. Now you have to take the SHA256 of the code using a program different from PassLok. You have several options:</p>
-<ul>
-<li>Use a local program or online utility to take the SHA256 of the source saved to a file.</li>
-<li>Use an online utility where you paste the text on a box and click a button. You must make sure that pasting does not add extra space at the top or the bottom of the file, which would affect the result.</li>
-</ul>
-<p>3. Look up the SHA256 for this version of PassLok, which is published on the PassLok information website at passlok.weebly.com and a number of other places. If this value and the one obtained in step 2 are not the same, the program has been tampered with.</p>
-<p>4. Now, a hacker who could alter the source code at the server might also be able to change the published SHA256 so it matches the tampered code. To make sure that the value is authentic you should watch the one-minute video where the author or PassLok, Francisco Ruiz, reads it aloud. A link to the video usually accompanies the published SHA256 value.</p>
-<p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=NrAfSo2xjnY" target="_blank">https://www.youtube.com/watch?v=NrAfSo2xjnY</a></p>
-<div id='bb29' style="cursor:pointer">
-<p><em>Click here for More:</em></p>
-</div>
-<div id="b29" class="texter">
-<p>Typically, you load the source on a separate tab by typing CTRL-U (Windows) or option-cmd-u (OSX). Another way to save the source is to copy it by first selecting the the whole source code (CTRL-A or cmd-a), then copy to clipboard (CTRL-C or cmd-c), and then paste it into a text editor (CTRL-V or cmd-v), and save it from there. DO NOT save the code using the "save" command when the working PassLok page is displayed, since then the browser would modify the source code before saving it. The correct encoding is UTF-8, no BOM (notes: Windows Notepad is unable to save text in the correct format. Cut and paste from Chrome introduces artifacts for big items like the source code).</p>
-<p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload the file and get the hash. Online-convert (http://hash.online-convert.com/sha256-generator), fileformat.info (http://www.fileformat.info/tool/hash.htm) and freeformatter.com (http://www.freeformatter.com/sha256-generator.html) have worked well in our tests.</p>
-<p>If you want a clipboard-based SHA256 utility, the one at Xorbin (http://www.xorbin.com/tools/sha256-hash-calculator) has worked quite well in our tests. Don't copy and paste from Chrome, since it introduces artifacts.</p>
-</div>
-</div>
-<hr>
-
 <div id='advancedHelp' style="display: none;">
  
   <div id="aa53" style="cursor:pointer">
@@ -1684,6 +1659,31 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
    <hr>  
 
 </div><!--end of advanced help-->
+
+   <div id="aa29" style="cursor:pointer">
+<h3>Check the authenticity of the code</h3>
+</div>
+<div id="a29" class="texter">
+<p>If you got PassLok from an app store, that app store is ensuring that the code you have is what the author gave to them. The following is to check the integrity of an html version of PassLok running in a browser:</p>
+<p>1. Direct your browser to "view source." If your browser has a command to save the source (Chrome, Firefox, and Safari do), go ahead and save it to file.</p>
+<p>2. Now you have to take the SHA256 of the code using a program different from PassLok. You have several options:</p>
+<ul>
+<li>Use a local program or online utility to take the SHA256 of the source saved to a file.</li>
+<li>Use an online utility where you paste the text on a box and click a button. You must make sure that pasting does not add extra space at the top or the bottom of the file, which would affect the result.</li>
+</ul>
+<p>3. Look up the SHA256 for this version of PassLok, which is published on the PassLok information website at passlok.weebly.com and a number of other places. If this value and the one obtained in step 2 are not the same, the program has been tampered with.</p>
+<p>4. Now, a hacker who could alter the source code at the server might also be able to change the published SHA256 so it matches the tampered code. To make sure that the value is authentic you should watch the one-minute video where the author or PassLok, Francisco Ruiz, reads it aloud. A link to the video usually accompanies the published SHA256 value.</p>
+<p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=NrAfSo2xjnY" target="_blank">https://www.youtube.com/watch?v=NrAfSo2xjnY</a></p>
+<div id='bb29' style="cursor:pointer">
+<p><em>Click here for More:</em></p>
+</div>
+<div id="b29" class="texter">
+<p>Typically, you load the source on a separate tab by typing CTRL-U (Windows) or option-cmd-u (OSX). Another way to save the source is to copy it by first selecting the the whole source code (CTRL-A or cmd-a), then copy to clipboard (CTRL-C or cmd-c), and then paste it into a text editor (CTRL-V or cmd-v), and save it from there. DO NOT save the code using the "save" command when the working PassLok page is displayed, since then the browser would modify the source code before saving it. The correct encoding is UTF-8, no BOM (notes: Windows Notepad is unable to save text in the correct format. Cut and paste from Chrome introduces artifacts for big items like the source code).</p>
+<p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload the file and get the hash. Online-convert (http://hash.online-convert.com/sha256-generator), fileformat.info (http://www.fileformat.info/tool/hash.htm) and freeformatter.com (http://www.freeformatter.com/sha256-generator.html) have worked well in our tests.</p>
+<p>If you want a clipboard-based SHA256 utility, the one at Xorbin (http://www.xorbin.com/tools/sha256-hash-calculator) has worked quite well in our tests. Don't copy and paste from Chrome, since it introduces artifacts.</p>
+</div>
+</div>
+<hr>
 
 	<div id="aa47" style="cursor:pointer">
   <h3>I have an item that was locked/signed with a previous version of PassLok, and the current version cannot handle it</h3>
