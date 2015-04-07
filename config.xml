@@ -15,6 +15,8 @@
     <author href="https://passlok.com" email="passlokprivacy@gmail.com">
         Francisco Ruiz 
     </author>
+    
+<preference name="phonegap-version" value="3.7.0" />
 
 <!--Don't ask for any permissions other than file access-->	
 <preference name="permissions" value="none"/>
