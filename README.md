@@ -8,7 +8,7 @@ These are the principles guiding the design of PassLok:
 * Completely self-contained so it runs offline. No servers.
 * Nothing should be installed. No required secrets saved.
 * Highest-level security at every step. No compromises.
-* Easy to understand and use by novices. Graphical interface, as clean and simple as possible. No cryptographic jargon.
+* Easy to understand and use by novices. Graphical interface, as clean and simple as possible. No crypto jargon.
 
 Because of this, PassLok is pure html code consisting mostly of JavaScript instructions. Its cryptography code is based on Tweet NaCl, also on GitHub. It uses Salsa20 for symmetric encryption and elliptic curves (Curve25519 and Ed25519) for public-key functions.
 
