@@ -79,9 +79,12 @@ function clearLocks(){
 }
 function clearIntro(){
 	document.getElementById('pwdIntro').value = '';
-	document.getElementById('keyIntromsg').innerHTML = '';
+	document.getElementById('intromsg').innerHTML = '';
 	document.getElementById('pwd').value = '';
 	document.getElementById('keymsg').innerHTML = '';
+}
+function clearIntroEmail(){
+	document.getElementById('emailIntro').value = '';
 }
 
 //for selecting the Main box contents
@@ -103,50 +106,11 @@ function selectMain(){
     }
 }
 
-//to exit the special intro screen
-function showlockIntro(){
-	var key = document.getElementById('pwdIntro').value,
-		email = document.getElementById('emailIntro').value;
-	userName = document.getElementById('nameIntro').value;
-	if (key.trim() == '' || userName.trim() == ''){
-		document.getElementById('intromsg2').innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
-		return
-	}
-	document.getElementById('pwd').value = key;
-	if (email == '') email = ' ';
-	document.getElementById('email').value = email;
-	
-	if(ChromeSyncOn){
-		var syncName = userName+'.myself';
-		var mySettings = [];
-		chrome.storage.sync.get(syncName.toLowerCase(), function (obj) {
-			var lockdata = obj[syncName.toLowerCase()];
-			if(lockdata){
-				mySettings = JSON.parse(lockdata);
-				lockDB['myself'] = mySettings;
-				localStorage[userName] = JSON.stringify(lockDB);
-				lockNames = Object.keys(lockDB);
-				document.getElementById('email').value = keyDecrypt(lockDB['myself'][2]);
-				setTimeout(function(){
-					retrieveAllSync();
-				}, 0);
-			}
-		});				
-	}	
-	
-	initUser();
-	openClose('introscr5');
-	if(!ChromeSyncOn) showLock();
-	key2any();
-	if(!ChromeSyncOn && fullAccess) storeEmail();
-	if(document.getElementById('inviteBox').checked) sendMail();
-}
-
 //writes five random dictionary words in the intro Key box
 function suggestIntro(){
 	var output = '';
 	for(var i = 1; i <=5 ; i++){
-		var rand = wordlist[sjcl.bn.random(wordlist.length).limbs[0]];
+		var rand = wordlist[Math.floor(Math.random()*wordlist.length)];
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
 		output = output + ' ' + rand;
 	}
@@ -163,39 +127,35 @@ function newUser(){
 
 //store email entered on email screen
 function storeEmail(){
-	var email = document.getElementById('email').value;
+	var email = document.getElementById('email').value;		//if initiated, this box will contain at least a space, and the program won't stop to have it filled
 	if (email == ''){
 		any2email();
 		throw('no email');
 	}
-	if(lockDB['myself'] && fullAccess){
-		var key = readKey(),
-			emailcrypt = keyEncrypt(key,email);
-		lockDB['myself'][2] = emailcrypt;
-		for(var name in lockDB){					//this has likely changed for each entry, so delete it. It will be remade later
-			delete lockDB[name][1]
+	if(locDir['myself'] && fullAccess){
+		var emailcrypt = keyEncrypt(email.trim());
+		locDir['myself'][2] = emailcrypt;
+		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
+			delete locDir[name][1]
 		}
 	}
-	localStorage[userName] = JSON.stringify(lockDB);
+	localStorage[userName] = JSON.stringify(locDir);
 	
 	if(ChromeSyncOn){
-		for(var name in lockDB){
-			syncChromeLock(name,JSON.stringify(lockDB[name]))
+		for(var name in locDir){
+			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 	}
 }
 
-//shows email screen so it can be changed
+//shows email screen so email/token can be changed
 function showEmail(){
-	var optionmsg = document.getElementById("optionmsg"),
-		email = document.getElementById('email').value;
 	if(!fullAccess){
-		optionmsg.innerHTML = 'Email change not allowed after Key cancel';
+		document.getElementById("optionmsg").innerHTML = 'Email change not allowed after Key cancel';
 		throw('Email change canceled')
-	};
-	if(email.length == 86) document.getElementById('email').value = '';
+	}
 	document.getElementById('shadow').style.display = 'block';
-	document.getElementById('emailscr').style.display = 'block'
+	document.getElementById('emailscr').style.display = 'block';
 }
 
 //shows user name so it can be changed
@@ -216,19 +176,23 @@ function showName(){
 //changes the name of the complete database, syncs if possible
 function changeName(){
 	var oldUserName = userName,
-		userNameTemp = document.getElementById('userName').value;
+		userNameTemp = document.getElementById('userName').value,
+		key = readKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
 	}
+	recryptDB(key,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
 	delete localStorage[userName];
 	userName = userNameTemp;
 	
 	if(ChromeSyncOn){
-		for(var name in lockDB){
-			syncChromeLock(name,JSON.stringify(lockDB[name]));
+		for(var name in locDir){
+			syncChromeLock(name,JSON.stringify(locDir[name]));
 			chrome.storage.sync.remove((oldUserName+'.'+name).toLowerCase());
 		}
+		updateChromeSyncList();
+		chrome.storage.sync.remove(oldUserName.toLowerCase()+'.ChromeSyncList');
 	}
 }
 
@@ -275,17 +239,17 @@ function cancelKey(){
 				userName = x.options[i].value
     		}
   		}
-		initUser();
+		getSettings();
 		fillList();																	//put names in selection box
-		if(lockDB['myself']){
-			lockDB['myself'][7] = 'limited access';
-			localStorage[userName] = JSON.stringify(lockDB);
+		if(locDir['myself']){
+			locDir['myself'][8] = 'limited access';
+			localStorage[userName] = JSON.stringify(locDir);
 		
 			if(ChromeSyncOn){
-				syncChromeLock(userName+'.myself',JSON.stringify(lockDB['myself']));
+				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}			
 		}
-		if(Object.keys(lockDB).length == 1 || Object.keys(lockDB).length == 0){		//new user, so display a fuller message
+		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
 			document.getElementById('mainmsg').innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 		}else{
 			document.getElementById('mainmsg').innerHTML = 'You have limited access to functions<br>For full access, reload and enter the Key'
@@ -298,8 +262,8 @@ function cancelName(){
 	closebox()
 }
 function cancelEmail(){
+	document.getElementById('email').value = '';
 	closebox();
-	if(lockDB['myself']) document.getElementById('email').value = keyDecrypt(lockDB['myself'][2]);
 }
 function cancelDecoyIn(){
 	document.getElementById('decoyPwdIn').value = '';
@@ -416,7 +380,7 @@ function newKey2up(evt){
 //activated when the user clicks OK on a decoy screen
 function submitDecoyIn(){
 	closebox();
-	if(encrypting){Decrypt_single()}else{verifySignature()};
+	Decrypt_single()
 }
 
 //Enter has the same effect as clicking OK in decoy and parts box
@@ -426,7 +390,7 @@ function decoyKeyupOut(evt){
 }
 function submitDecoyOut(){
 	closebox();
-	if(encrypting){Decrypt_single()}else{verifySignature()};
+	Decrypt_single()
 }
 function partsKeyup(evt){
 	evt = evt || window.event
@@ -455,102 +419,117 @@ function main2extra(){
 	fillList();
 }
 
-var fromRadioSel = false
-//switch to Advanced mode, and back
-function basic2main(){
-	if(document.getElementById('mainbuttonstop').style.display == 'block' || document.getElementById('basicbuttonstop').style.display == 'block'){
-		openClose("mainbuttonstop");
-	}else{
-		openClose("extrabuttonstop");
-	}
-	openClose("mainbuttonsbot");
-	openClose("basicbuttonstop");
-	openClose("basicbuttonsbot");
-	openClose("basiclockbuttonstop");
-	openClose("advlockmodes");
-	openClose("lockbuttonstop");
-	openClose("lockbuttonsbot");
-	openClose('advancedModes');
-	openClose('advancedHelp');
-	if(document.getElementById('basicmode').checked){
-		if(!fromRadioSel){
-			document.getElementById('basicmode').checked = false;
-			document.getElementById('advancedmode').checked = true;
-		}
-		BasicButtons = false
-	}else{
-		if(!fromRadioSel){
-			document.getElementById('basicmode').checked = true;
-			document.getElementById('advancedmode').checked = false;
-		}
-		BasicButtons = true
-	}	
-	if(lockDB['myself']){		
-		if (lockDB['myself'][3] == 'advanced' || lockDB['myself'][3] == null){
-			lockDB['myself'][3] = 'basic';
-		}else{
-			lockDB['myself'][3] = 'advanced';
-		}
-		localStorage[userName] = JSON.stringify(lockDB);
-		
+//switch to Advanced mode
+function basic2adv(){
+	document.getElementById('mainbuttonstop').style.display = 'block';
+	document.getElementById('basicbuttonstop').style.display = 'none'
+	document.getElementById('lockbuttonstop').style.display = 'block';
+	document.getElementById('basiclockbuttonstop').style.display = 'none';
+	document.getElementById('lockbuttonsbot').style.display = 'block';
+	document.getElementById('advlockmodes').style.display = 'block';
+	document.getElementById('advancedModes').style.display = 'block';
+	document.getElementById('advancedHelp').style.display = 'block';
+	document.getElementById('basicmode').checked = false;
+	document.getElementById('advancedmode').checked = true;
+
+	BasicButtons = false
+	
+	if(locDir['myself'] && fullAccess){		
+		locDir['myself'][3] = 'advanced';
+		localStorage[userName] = JSON.stringify(locDir);
 		if(ChromeSyncOn){
-			syncChromeLock('myself',JSON.stringify(lockDB['myself']));
+			syncChromeLock('myself',JSON.stringify(locDir['myself']));
 		}
 	};
-	fillList();
 }
 
-function modeClick(){
-	fromRadioSel = true;
-	basic2main();
-	fromRadioSel = false;
+//switch to Basic mode
+function adv2basic(){
+	document.getElementById('mainbuttonstop').style.display = 'none';
+	document.getElementById('extrabuttonstop').style.display = 'none';
+	document.getElementById('basicbuttonstop').style.display = 'block'
+	document.getElementById('lockbuttonstop').style.display = 'none';
+	document.getElementById('basiclockbuttonstop').style.display = 'block';
+	document.getElementById('lockbuttonsbot').style.display = 'none';
+	document.getElementById('advlockmodes').style.display = 'none';
+	document.getElementById('advancedModes').style.display = 'none';
+	document.getElementById('advancedHelp').style.display = 'none';
+	document.getElementById('basicmode').checked = true;
+	document.getElementById('advancedmode').checked = false;
+
+	BasicButtons = true
+	
+	if(locDir['myself'] && fullAccess){		
+		locDir['myself'][3] = 'basic';
+		localStorage[userName] = JSON.stringify(locDir);
+		if(ChromeSyncOn){
+			syncChromeLock('myself',JSON.stringify(locDir['myself']));
+		}
+	};
+	fillList()
 }
 
 //makes the ezLok choice permanent
 function ezLokStore(){
-	if(lockDB['myself']){
+	if(locDir['myself']){
 		if (document.getElementById('ezLok').checked){
-			lockDB['myself'][4] = 'ezLok on'
+			locDir['myself'][4] = 'ezLok on'
 		} else {
-			lockDB['myself'][4] = 'ezLok off'
+			locDir['myself'][4] = 'ezLok off'
 		}
 	}
-	localStorage[userName] = JSON.stringify(lockDB);
+	localStorage[userName] = JSON.stringify(locDir);
 		
 	if(ChromeSyncOn){
-		syncChromeLock(userName+'.myself',JSON.stringify(lockDB['myself']));
+		syncChromeLock('myself',JSON.stringify(locDir['myself']));
 	}
 }
 
 //makes the encrypt Locks choice permanent
 function encryptLocksStore(){
-	if(lockDB['myself']){
+	if(locDir['myself']){
 		if (document.getElementById('encryptLocks').checked){
-			lockDB['myself'][5] = 'encrypt Locks'
+			locDir['myself'][5] = 'encrypt Locks'
 		} else {
-			lockDB['myself'][5] = 'do not encrypt Locks'
+			locDir['myself'][5] = 'do not encrypt Locks'
 		}
 	}
-	localStorage[userName] = JSON.stringify(lockDB);
+	localStorage[userName] = JSON.stringify(locDir);
 		
 	if(ChromeSyncOn){
-		syncChromeLock(userName+'.myself',JSON.stringify(lockDB['myself']));
+		syncChromeLock('myself',JSON.stringify(locDir['myself']));
 	}
 }
 
 //makes the small Output choice permanent
 function smallOutStore(){
-	if(lockDB['myself']){
+	if(locDir['myself']){
 		if (document.getElementById('smallOut').checked){
-			lockDB['myself'][6] = 'small Output'
+			locDir['myself'][6] = 'small Output'
 		} else {
-			lockDB['myself'][6] = 'normal Output'
+			locDir['myself'][6] = 'normal Output'
 		}
 	}
-	localStorage[userName] = JSON.stringify(lockDB);
+	localStorage[userName] = JSON.stringify(locDir);
 		
 	if(ChromeSyncOn){
-		syncChromeLock(userName+'.myself',JSON.stringify(lockDB['myself']));
+		syncChromeLock('myself',JSON.stringify(locDir['myself']));
+	}
+}
+
+//makes the RS code choice permanent
+function RScodeStore(){
+	if(locDir['myself']){
+		if (document.getElementById('ReedSol').checked){
+			locDir['myself'][7] = 'RS code on'
+		} else {
+			locDir['myself'][7] = 'RS code off'
+		}
+	}
+	localStorage[userName] = JSON.stringify(locDir);
+		
+	if(ChromeSyncOn){
+		syncChromeLock('myself',JSON.stringify(locDir['myself']));
 	}
 }
 
@@ -559,7 +538,7 @@ function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
 	openClose("lockscr");
 	openClose('shadow');
-	if(Object.keys(lockDB).length == 1 || Object.keys(lockDB).length == 0){				//new user, so display a fuller message
+	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		document.getElementById('lockmsg').innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
 	var string = document.getElementById('lockBox').value;
@@ -598,7 +577,7 @@ function lock2dir(){
 	if(document.getElementById('keyscr').style.display=='block') return;
 	if(document.getElementById('lockdir').style.display=='none') loadLockDir();
 	var locklength = striptags(XSSfilter(document.getElementById('mainBox').innerHTML.replace(/\&nbsp;/g,''))).length;
-	if ((locklength == 87 || locklength == 100) && document.getElementById('lockdir').style.display != "block"){
+	if ((locklength == 43 || locklength == 50) && document.getElementById('lockdir').style.display != "block"){
 
 //if populated, send Lock to directory
 		var lockdirframe = document.getElementById('lockdirframe');
@@ -648,6 +627,7 @@ function any2key(){
 function any2email(){
 	document.getElementById('shadow').style.display = 'block';
 	document.getElementById('emailscr').style.display = 'block';
+	document.getElementById('emailmsg').innerHTML = 'Please enter your new email or similar item, or a new random token';
 	if(!isMobile) document.getElementById("email").focus()
 }
 
@@ -656,61 +636,33 @@ function key2any(){
 	clearTimeout(keytimer);
 	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
-	var myKey = document.getElementById('pwd').value.trim();
+	var key = document.getElementById('pwd').value.trim();
 	document.getElementById('keyscr').style.display = 'none';
 	document.getElementById('shadow').style.display = 'none';
-	if(lockDB['myself'] == null && myKey != ''){		//if "myself" lockDB entry containing the Key's matching Lock is not present, add it
-		if(myLock != ''){
-			var mylocktemp = myLock
-		}else{
-			var email = readEmail(),
-				mylocktemp = makepub(myKey,email);
-		}
-		if(fullAccess) storemyself(myKey,mylocktemp);
-		myLock = mylocktemp;
-		myezLock = changeBase(myLock, BASE64, BASE38, true);
-	};
-	if (callKey == 'encrypt'){						//now complete whatever was being done when the Key was found missing
-		Encrypt_single()
-	}else if(callKey == 'decrypt'){
-		Decrypt_single()
-	}else if(callKey == 'sign'){
-		applySignature()
-	}else if(callKey == 'addlock'){
-		openClose('lockscr');
-		openClose('shadow');
-		addLock()
-	}else if(callKey == 'decryptitem'){
-		decryptItem()
-	}else if(callKey == 'decryptlock'){
-		decryptLock()
-	}else if(callKey == 'mergedb'){
-		mergeLockDB()
-	}else if(callKey == 'movedb'){
-		moveLockDB()
-	} else if(callKey == 'showlock'){
-		showLock()
-	} else if(callKey == 'fillbox'){
-		fillBox()
-	} else if(callKey == 'changekey'){
-		changeKey()
-	} else if(callKey == 'movemyself'){
-		moveMyself()
-	}
-	focusBox()
 }
 
 //leave email screen
 function email2any(){
-	if(document.getElementById('email').value == '') document.getElementById('email').value = ' ';		//use a space so it's OK to use an empty email
-	var email = document.getElementById('email').value,
-		myKey = document.getElementById('pwd').value.trim();
-	myLock = makepub(myKey,email);
-	myezLock = changeBase(myLock, BASE64, BASE38, true);
-	if(fullAccess) storemyself(myKey,myLock);
+	var email = document.getElementById('email').value.trim();
+	if(myEmail.length == 43 && fullAccess){
+		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
+		if(!result){
+			document.getElementById('emailmsg').innerHTML = 'Random token overwrite canceled';
+			throw ('random token overwrite canceled')
+		}
+	}
+	myEmail = email;
+	document.getElementById('email').value = '';
+	var	key = readKey();
+	if(!KeyDir) KeyDir = wiseHash(key,userName);
+	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,myEmail)).secretKey;			//do this regardless in case email has changed
+	KeyDH = ed2curve.convertSecretKey(KeySgn);
+	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
+	myezLock = changeBase(myLock, BASE64, BASE36, true);
+
+	if(fullAccess) storemyLock();										//this also stores the email
 	document.getElementById('emailscr').style.display = 'none';
-	if(fullAccess && lockDB['myself']) checkKey(document.getElementById('pwd').value);
-	key2any();
+	key2any();															//close key dialog too, if it was open
 	if(tabLinks['optionsTab'].className == 'selected') document.getElementById('optionmsg').innerHTML = '<span style="color:green">Email/token changed</span>';
 }
 
@@ -877,12 +829,10 @@ var niceEditor = false;
 function toggleRichText() {
 	if(niceEditor) {
 		document.getElementById('toolBar1').style.display = 'none';
-		document.getElementById('niceEditBasic').innerHTML = 'Rich';
 		document.getElementById('niceEditButton').innerHTML = 'Rich';
 		niceEditor = false
 	} else {
 		document.getElementById('toolBar1').style.display = 'block';
-		document.getElementById('niceEditBasic').innerHTML = 'Plain';
 		document.getElementById('niceEditButton').innerHTML = 'Plain';
 		niceEditor = true
 	}

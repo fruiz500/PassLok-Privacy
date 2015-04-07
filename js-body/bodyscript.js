@@ -1,9 +1,8 @@
 ﻿//this is the part of the javascript code that must be within the body
 
-	sjcl.random.startCollectors();										//start SJCL's built-in entropy collectors
-
 //  Clear out "sorry, no JavaScript" warning and display the type of source
 	showGreeting();
+	
 //detect browser and device
 	var	isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1,
 		isFirefox = typeof InstallTrigger !== 'undefined',   						// Firefox 1.0+
@@ -51,13 +50,13 @@ function textheight(){
 	var	fullheight = document.documentElement.clientHeight,
 		offsetheight = 400,
 		toolbarheight = 48;
-	if(isMobile && !isAndroid) offsetheight = offsetheight - 30;
+	if(isMobile && !isAndroid) offsetheight = offsetheight - 70;
 	document.getElementById('lockBox').style.height = fullheight - offsetheight + 'px';
 	if(niceEditor){
 		document.getElementById('mainBox').style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
 		if(isMobile){
-			document.getElementById('mainBox').style.height = fullheight - offsetheight + 30 + 'px';
+			document.getElementById('mainBox').style.height = fullheight - offsetheight + 40 + 'px';
 		}else{
 			document.getElementById('mainBox').style.height = fullheight - offsetheight + 'px';
 		}
@@ -154,34 +153,4 @@ function loadFileAsURL()
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
 		document.getElementById('mainmsg').innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>'
 	}
-}
-
-//for saving image on the Image screen
-function saveImageAsFile(){
-	var content = document.getElementById('preview').src,
-		downloadLink = document.createElement("a"),
-		fileNameToSaveAs = prompt("The image will be saved in PNG format. Please enter a name for it.");
-	if(fileNameToSaveAs.indexOf('.') == -1){
-		downloadLink.download = fileNameToSaveAs + '.png';
-	}else{
-		downloadLink.download = fileNameToSaveAs;
-	}
-	downloadLink.innerHTML = "Download File";
-	if (window.webkitURL != null)
-	{
-		// Chrome allows the link to be clicked
-		// without actually adding it to the DOM.
-		downloadLink.href = content;
-	}
-	else
-	{
-		// Firefox requires the link to be added to the DOM
-		// before it can be clicked.
-		downloadLink.href = content;
-		downloadLink.onclick = destroyClickedElement;
-		downloadLink.style.display = "none";
-		document.body.appendChild(downloadLink);
-	}
-	downloadLink.click();
-	document.getElementById('imagemsg').innerHTML = 'Image saved with filename ' + downloadLink.download
 }

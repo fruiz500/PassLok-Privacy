@@ -2,9 +2,9 @@
 window.onload = function() {
 
 	if(isMobile){
-		document.getElementById('niceEditBasic').style.display = 'none';		//no rich text editing on mobile
-		document.getElementById('niceEditButton').style.display = 'none';
+		document.getElementById('niceEditButton').style.display = 'none';		//no rich text editing on mobile
 		document.getElementById('filebuttons').style.display = 'none';
+		document.getElementById('selectMainButton').style.display = 'none';
 	} else {
 		document.getElementById('preview').style.width = "40%";					//smaller image on PCs
 		document.getElementById('sendSMSButton').style.display = 'none';
@@ -18,536 +18,218 @@ window.onload = function() {
 	window.addEventListener("resize", function() { textheight();chatResize();}, false)	    	//resize if the window changes
 
 	//this one for loading files into extra screen
-	var fileinput = document.getElementById('fileToLoad');
-    fileinput.addEventListener('change', loadFileAsURL, false);
-	fileinput.addEventListener('blur', ce);
-	fileinput.addEventListener('focus', ce);
+    document.getElementById('fileToLoad').addEventListener('change', loadFileAsURL, false);
 
     // add action to the file input
-    var input = document.getElementById('imagefile');
-    input.addEventListener('change', importImage);
-	input.addEventListener('blur', ce);
-	input.addEventListener('focus', ce);
+    document.getElementById('imagefile').addEventListener('change', importImage);
 
     // add action to the encode button
-    var encodeButton = document.getElementById('encode');
-    encodeButton.addEventListener('click', encodeImage);
-	encodeButton.addEventListener('blur', ce);
-	encodeButton.addEventListener('focus', ce);
+    document.getElementById('encode').addEventListener('click', encodeImage);
 
     // add action to the decode button
-    var decodeButton = document.getElementById('decode');
-    decodeButton.addEventListener('click', decodeImage);
-	decodeButton.addEventListener('blur', ce);
-	decodeButton.addEventListener('focus', ce);
+    document.getElementById('decode').addEventListener('click', decodeImage);
 
 //button code moved from html page, used to be inline
 
-	var showlockButton = document.getElementById('showlockButton');
-   	showlockButton.addEventListener('click', showLock);
-	showlockButton.addEventListener('blur', ce);
-	showlockButton.addEventListener('focus', ce);
+   	document.getElementById('showlockButton').addEventListener('click', showLock);
 
-	var basicmodeBox = document.getElementById('basicmode');
-   	basicmodeBox.addEventListener('click', modeClick);
-	basicmodeBox.addEventListener('blur', ce);
-	basicmodeBox.addEventListener('focus', ce);
+   	document.getElementById('basicmode').addEventListener('click', adv2basic);
 
-	var advancedmodeBox = document.getElementById('advancedmode');
-   	advancedmodeBox.addEventListener('click', modeClick);
-	advancedmodeBox.addEventListener('blur', ce);
-	advancedmodeBox.addEventListener('focus', ce);
-
-	var clearMainButton = document.getElementById('clearMainButton');
-   	clearMainButton.addEventListener('click', clearMain);
-	clearMainButton.addEventListener('blur', ce);
-	clearMainButton.addEventListener('focus', ce);
-
-	var showlockButtonBasic = document.getElementById('showlockButtonBasic');
-   	showlockButtonBasic.addEventListener('click', showLock);
-	showlockButtonBasic.addEventListener('blur', ce);
-	showlockButtonBasic.addEventListener('focus', ce);
-
-	var clearMainButtonBasic = document.getElementById('clearMainButtonBasic');
-   	clearMainButtonBasic.addEventListener('click', clearMain);
-	clearMainButtonBasic.addEventListener('blur', ce);
-	clearMainButtonBasic.addEventListener('focus', ce);
-
-	var decryptButton = document.getElementById('decryptButton');
-   	decryptButton.addEventListener('click', Decrypt_single);
-	decryptButton.addEventListener('blur', ce);
-	decryptButton.addEventListener('focus', ce);
-
-	var verifyButton = document.getElementById('verifyButton');
-   	verifyButton.addEventListener('click', verifySignature);
-	verifyButton.addEventListener('blur', ce);
-	verifyButton.addEventListener('focus', ce);
-
-	var main2extraButton = document.getElementById('main2extraButton');
-   	main2extraButton.addEventListener('click', main2extra);
-	main2extraButton.addEventListener('blur', ce);
-	main2extraButton.addEventListener('focus', ce);
-
-	var decryptButtonBasic = document.getElementById('decryptButtonBasic');
-   	decryptButtonBasic.addEventListener('click', Decrypt_single);
-	decryptButtonBasic.addEventListener('blur', ce);
-	decryptButtonBasic.addEventListener('focus', ce);
-
-	var extra2mainButton = document.getElementById('extra2mainButton');
-   	extra2mainButton.addEventListener('click', main2extra);
-	extra2mainButton.addEventListener('blur', ce);
-	extra2mainButton.addEventListener('focus', ce);
+   	document.getElementById('advancedmode').addEventListener('click', basic2adv);
 	
-	var niceEditButton = document.getElementById('niceEditButton');
-   	niceEditButton.addEventListener('click', toggleRichText);
-	niceEditButton.addEventListener('blur', ce);
-	niceEditButton.addEventListener('focus', ce);
-	
-	var niceEditBasic = document.getElementById('niceEditBasic');
-   	niceEditBasic.addEventListener('click', toggleRichText);
-	niceEditBasic.addEventListener('blur', ce);
-	niceEditBasic.addEventListener('focus', ce);
+	document.getElementById('selectMainButton').addEventListener('click', selectMain);
 
-	var sendMailButton = document.getElementById('sendMailButton');
-   	sendMailButton.addEventListener('click', sendMail);
-	sendMailButton.addEventListener('blur', ce);
-	sendMailButton.addEventListener('focus', ce);
-	
-	var chatButton = document.getElementById('chatButton');
-   	chatButton.addEventListener('click', Chat);
-	chatButton.addEventListener('blur', ce);
-	chatButton.addEventListener('focus', ce);
-	
-	var chatButtonBasic = document.getElementById('chatButtonBasic');
-   	chatButtonBasic.addEventListener('click', Chat);
-	chatButtonBasic.addEventListener('blur', ce);
-	chatButtonBasic.addEventListener('focus', ce)
+   	document.getElementById('clearMainButton').addEventListener('click', clearMain);
 
-	var sendMailButtonBasic = document.getElementById('sendMailButtonBasic');
-   	sendMailButtonBasic.addEventListener('click', sendMail);
-	sendMailButtonBasic.addEventListener('blur', ce);
-	sendMailButtonBasic.addEventListener('focus', ce);
+   	document.getElementById('showlockButtonBasic').addEventListener('click', showLock);
 
-	var sendSMSButton = document.getElementById('sendSMSButton');
-   	sendSMSButton.addEventListener('click', sendSMS);
-	sendSMSButton.addEventListener('blur', ce);
-	sendSMSButton.addEventListener('focus', ce);
+   	document.getElementById('decryptButton').addEventListener('click', Decrypt_single);
 
-	var imageButton = document.getElementById('imageButton');
-   	imageButton.addEventListener('click', main2image);
-	imageButton.addEventListener('blur', ce);
-	imageButton.addEventListener('focus', ce);
+	document.getElementById('verifyButton').addEventListener('click', verifySignature);
 
-	var secretshareButton = document.getElementById('secretshareButton');
-   	secretshareButton.addEventListener('click', secretshare);
-	secretshareButton.addEventListener('blur', ce);
-	secretshareButton.addEventListener('focus', ce);
+   	document.getElementById('main2extraButton').addEventListener('click', main2extra);
 
-	var stegoButton = document.getElementById('stegoButton');
-   	stegoButton.addEventListener('click', textStego);
-	stegoButton.addEventListener('blur', ce);
-	stegoButton.addEventListener('focus', ce);
+   	document.getElementById('decryptButtonBasic').addEventListener('click', Decrypt_single);
 
-	var savefileButton = document.getElementById('savefileButton');
-   	savefileButton.addEventListener('click', saveURLAsFile);
-	savefileButton.addEventListener('blur', ce);
-	savefileButton.addEventListener('focus', ce);
-	
-	var saveimageButton = document.getElementById('saveimageButton');
-   	saveimageButton.addEventListener('click', saveImageAsFile);
-	saveimageButton.addEventListener('blur', ce);
-	saveimageButton.addEventListener('focus', ce);
+   	document.getElementById('extra2mainButton').addEventListener('click', main2extra);
 
-	var image2mainButton = document.getElementById('image2mainButton');
-   	image2mainButton.addEventListener('click', image2main);
-	image2mainButton.addEventListener('blur', ce);
-	image2mainButton.addEventListener('focus', ce);
+   	document.getElementById('niceEditButton').addEventListener('click', toggleRichText);
 
-	var lock2dirButton = document.getElementById('lock2dirButton');
-   	lock2dirButton.addEventListener('click', lock2dir);
-	lock2dirButton.addEventListener('blur', ce);
-	lock2dirButton.addEventListener('focus', ce);
+   	document.getElementById('sendMailButton').addEventListener('click', sendMail);
 
-	var clearLocksButton = document.getElementById('clearLocksButton');
-   	clearLocksButton.addEventListener('click', clearLocks);
-	clearLocksButton.addEventListener('blur', ce);
-	clearLocksButton.addEventListener('focus', ce);
+   	document.getElementById('chatButton').addEventListener('click', Chat);
 
-	var clearLocksButtonBasic = document.getElementById('clearLocksButtonBasic');
-   	clearLocksButtonBasic.addEventListener('click', clearLocks);
-	clearLocksButtonBasic.addEventListener('blur', ce);
-	clearLocksButtonBasic.addEventListener('focus', ce);
+   	document.getElementById('sendSMSButton').addEventListener('click', sendSMS);
 
-	var addLockButton = document.getElementById('addLockButton');
-   	addLockButton.addEventListener('click', addLock);
-	addLockButton.addEventListener('blur', ce);
-	addLockButton.addEventListener('focus', ce);
+   	document.getElementById('imageButton').addEventListener('click', main2image);
 
-	var removeLockButton = document.getElementById('removeLockButton');
-   	removeLockButton.addEventListener('click', removeLock);
-	removeLockButton.addEventListener('blur', ce);
-	removeLockButton.addEventListener('focus', ce);
+   	document.getElementById('secretshareButton').addEventListener('click', secretshare);
 
-	var resetPFSButton = document.getElementById('resetPFSButton');
-   	resetPFSButton.addEventListener('click', resetPFS);
-	resetPFSButton.addEventListener('blur', ce);
-	resetPFSButton.addEventListener('focus', ce);
+	document.getElementById('stegoButton').addEventListener('click', textStego);
 
-	var addToListButton = document.getElementById('addToListButton');
-   	addToListButton.addEventListener('click', addToList);
-	addToListButton.addEventListener('blur', ce);
-	addToListButton.addEventListener('focus', ce);
+   	document.getElementById('savefileButton').addEventListener('click', saveURLAsFile);
 
-	var addLockButtonBasic = document.getElementById('addLockButtonBasic');
-   	addLockButtonBasic.addEventListener('click', addLock);
-	addLockButtonBasic.addEventListener('blur', ce);
-	addLockButtonBasic.addEventListener('focus', ce);
+   	document.getElementById('image2mainButton').addEventListener('click', image2main);
 
-	var removeLockButtonBasic = document.getElementById('removeLockButtonBasic');
-   	removeLockButtonBasic.addEventListener('click', removeLock);
-	removeLockButtonBasic.addEventListener('blur', ce);
-	removeLockButtonBasic.addEventListener('focus', ce);
+   	document.getElementById('lock2dirButton').addEventListener('click', lock2dir);
 
-	var showLockDBButton = document.getElementById('showLockDBButton');
-   	showLockDBButton.addEventListener('click', showLockDB);
-	showLockDBButton.addEventListener('blur', ce);
-	showLockDBButton.addEventListener('focus', ce);
+   	document.getElementById('clearLocksButton').addEventListener('click', clearLocks);
 
-	var mergeLockDBButton = document.getElementById('mergeLockDBButton');
-   	mergeLockDBButton.addEventListener('click', mergeLockDB);
-	mergeLockDBButton.addEventListener('blur', ce);
-	mergeLockDBButton.addEventListener('focus', ce);
-	
-	var resetLockDBButton = document.getElementById('resetLockDBButton');
-   	resetLockDBButton.addEventListener('click', resetLockDB);
-	resetLockDBButton.addEventListener('blur', ce);
-	resetLockDBButton.addEventListener('focus', ce);
-	
-	var moveLockDBButton = document.getElementById('moveLockDBButton');
-   	moveLockDBButton.addEventListener('click', moveLockDB);
-	moveLockDBButton.addEventListener('blur', ce);
-	moveLockDBButton.addEventListener('focus', ce);
+   	document.getElementById('clearLocksButtonBasic').addEventListener('click', clearLocks);
 
-	var acceptKeyButton = document.getElementById('acceptKeyButton');
-   	acceptKeyButton.addEventListener('click', acceptKey);
+   	document.getElementById('addLockButton').addEventListener('click', addLock);
 
-	var cancelKeyButton = document.getElementById('cancelKeyButton');
-   	cancelKeyButton.addEventListener('click', cancelKey);
-	
-	var skipintro = document.getElementById('skipintro');
-   	skipintro.addEventListener('click', cancelKey);
-	
-	var changeNameButton = document.getElementById('changeNameButton');
-   	changeNameButton.addEventListener('click', showName);
-	changeNameButton.addEventListener('blur', ce);
-	changeNameButton.addEventListener('focus', ce);
+   	document.getElementById('removeLockButton').addEventListener('click', removeLock);
 
-	var changeKeyButton = document.getElementById('changeKeyButton');
-   	changeKeyButton.addEventListener('click', changeKey);
-	changeKeyButton.addEventListener('blur', ce);
-	changeKeyButton.addEventListener('focus', ce);
-	
-	var changeEmailButton = document.getElementById('changeEmailButton');
-   	changeEmailButton.addEventListener('click', showEmail);
-	changeEmailButton.addEventListener('blur', ce);
-	changeEmailButton.addEventListener('focus', ce);
+   	document.getElementById('resetPFSButton').addEventListener('click', resetPFS);
 
-	var backupSettings = document.getElementById('backupSettings');
-   	backupSettings.addEventListener('click', moveMyself);
-	backupSettings.addEventListener('blur', ce);
-	backupSettings.addEventListener('focus', ce);
+   	document.getElementById('addToListButton').addEventListener('click', addToList);
 
-	var ezLok = document.getElementById('ezLok');
-   	ezLok.addEventListener('click', ezLokStore);
-	ezLok.addEventListener('blur', ce);
-	ezLok.addEventListener('focus', ce);
-	
-	var encryptLocks = document.getElementById('encryptLocks');
-   	encryptLocks.addEventListener('click', encryptLocksStore);
-	encryptLocks.addEventListener('blur', ce);
-	encryptLocks.addEventListener('focus', ce);
-	
-	var smallOut = document.getElementById('smallOut');
-   	smallOut.addEventListener('click', smallOutStore);
-	smallOut.addEventListener('blur', ce);
-	smallOut.addEventListener('focus', ce);
+   	document.getElementById('addLockButtonBasic').addEventListener('click', addLock);
 
-	var showKey = document.getElementById('showKey');
-   	showKey.addEventListener('click', showsec);
-	showKey.addEventListener('blur', ce);
-	showKey.addEventListener('focus', ce);
+   	document.getElementById('removeLockButtonBasic').addEventListener('click', removeLock);
 
-	var introRandomButton = document.getElementById('introRandomButton');
-   	introRandomButton.addEventListener('click', randomToken);
-	introRandomButton.addEventListener('blur', ce);
-	introRandomButton.addEventListener('focus', ce);
+   	document.getElementById('showLockDBButton').addEventListener('click', showLockDB);
 
-	var randomEmailButton = document.getElementById('randomEmailButton');
-   	randomEmailButton.addEventListener('click', randomToken);
-	randomEmailButton.addEventListener('blur', ce);
-	randomEmailButton.addEventListener('focus', ce);
+   	document.getElementById('mergeLockDBButton').addEventListener('click', mergeLockDB);
 
-	var acceptEmailButton = document.getElementById('acceptEmailButton');
-   	acceptEmailButton.addEventListener('click', email2any);
-	acceptEmailButton.addEventListener('blur', ce);
-	acceptEmailButton.addEventListener('focus', ce);
+   	document.getElementById('resetLockDBButton').addEventListener('click', resetLockDB);
 
-	var cancelEmailButton = document.getElementById('cancelEmailButton');
-   	cancelEmailButton.addEventListener('click', cancelEmail);
-	cancelEmailButton.addEventListener('blur', ce);
-	cancelEmailButton.addEventListener('focus', ce);
-	
-	var acceptNameButton = document.getElementById('acceptNameButton');
-   	acceptNameButton.addEventListener('click', name2any);
-	acceptNameButton.addEventListener('blur', ce);
-	acceptNameButton.addEventListener('focus', ce);
+   	document.getElementById('moveLockDBButton').addEventListener('click', moveLockDB);
 
-	var cancelNameButton = document.getElementById('cancelNameButton');
-   	cancelNameButton.addEventListener('click', cancelName);
-	cancelNameButton.addEventListener('blur', ce);
-	cancelNameButton.addEventListener('focus', ce);
-	
-	var showIntroKey = document.getElementById('showIntroKey');
-   	showIntroKey.addEventListener('click', showIntro);
-	showIntroKey.addEventListener('blur', ce);
-	showIntroKey.addEventListener('focus', ce);
+   	document.getElementById('acceptKeyButton').addEventListener('click', acceptKey);
 
-	var clearIntroButton = document.getElementById('clearIntroButton');
-   	clearIntroButton.addEventListener('click', clearIntro);
-	clearIntroButton.addEventListener('blur', ce);
-	clearIntroButton.addEventListener('focus', ce);
+   	document.getElementById('cancelKeyButton').addEventListener('click', cancelKey);
 
-	var suggestIntroButton = document.getElementById('suggestIntroButton');
-   	suggestIntroButton.addEventListener('click', suggestIntro);
-	suggestIntroButton.addEventListener('blur', ce);
-	suggestIntroButton.addEventListener('focus', ce);
+   	document.getElementById('skipintro').addEventListener('click', cancelKey);
 
-	var showlockIntroButton = document.getElementById('showlockIntroButton');
-   	showlockIntroButton.addEventListener('click', showlockIntro);
-	showlockIntroButton.addEventListener('blur', ce);
-	showlockIntroButton.addEventListener('focus', ce);
+   	document.getElementById('changeNameButton').addEventListener('click', showName);
 
-	var showdecIn = document.getElementById('showdecIn');
-   	showdecIn.addEventListener('click', showdecoyIn);
-	showdecIn.addEventListener('blur', ce);
-	showdecIn.addEventListener('focus', ce);
+   	document.getElementById('changeKeyButton').addEventListener('click', changeKey);
 
-	var submitDecoyButton = document.getElementById('submitDecoyButton');
-   	submitDecoyButton.addEventListener('click', submitDecoyIn);
-	submitDecoyButton.addEventListener('blur', ce);
-	submitDecoyButton.addEventListener('focus', ce);
+   	document.getElementById('changeEmailButton').addEventListener('click', showEmail);
 
-	var cancelDecoyButton = document.getElementById('cancelDecoyButton');
-   	cancelDecoyButton.addEventListener('click', cancelDecoyIn);
-	cancelDecoyButton.addEventListener('blur', ce);
-	cancelDecoyButton.addEventListener('focus', ce);
+   	document.getElementById('backupSettings').addEventListener('click', moveMyself);
 
-	var showdecOut = document.getElementById('showdecOut');
-   	showdecOut.addEventListener('click', showdecoyOut);
-	showdecOut.addEventListener('blur', ce);
-	showdecOut.addEventListener('focus', ce);
+   	document.getElementById('ezLok').addEventListener('click', ezLokStore);
 
-	var submitDecoy2Button = document.getElementById('submitDecoy2Button');
-   	submitDecoy2Button.addEventListener('click', submitDecoyOut);
-	submitDecoy2Button.addEventListener('blur', ce);
-	submitDecoy2Button.addEventListener('focus', ce);
+   	document.getElementById('encryptLocks').addEventListener('click', encryptLocksStore);
 
-	var cancelDecoy2Button = document.getElementById('cancelDecoy2Button');
-   	cancelDecoy2Button.addEventListener('click', cancelDecoyOut);
-	cancelDecoy2Button.addEventListener('blur', ce);
-	cancelDecoy2Button.addEventListener('focus', ce);
+   	document.getElementById('smallOut').addEventListener('click', smallOutStore);
 
-	var submitPartsButton = document.getElementById('submitPartsButton');
-   	submitPartsButton.addEventListener('click', submitParts);
-	submitPartsButton.addEventListener('blur', ce);
-	submitPartsButton.addEventListener('focus', ce);
+	document.getElementById('ReedSol').addEventListener('click', RScodeStore);
 
-	var cancelPartsButton = document.getElementById('cancelPartsButton');
-   	cancelPartsButton.addEventListener('click', cancelPartsIn);
-	cancelPartsButton.addEventListener('blur', ce);
-	cancelPartsButton.addEventListener('focus', ce);
+   	document.getElementById('showKey').addEventListener('click', showsec);
 
-	var learnmodeCheck = document.getElementById('learnmode');
-   	learnmodeCheck.addEventListener('click', setlearnmode);
-	learnmodeCheck.addEventListener('blur', ce);
-	learnmodeCheck.addEventListener('focus', ce);
+   	document.getElementById('introRandomButton').addEventListener('click', randomToken);
 
-	var closelockdirButton = document.getElementById('closelockdirButton');
-   	closelockdirButton.addEventListener('click', lock2dir);
-	closelockdirButton.addEventListener('blur', ce);
-	closelockdirButton.addEventListener('focus', ce);
+	document.getElementById('clearIntroRandomButton').addEventListener('click', clearIntroEmail);
 
-	var closechatButton = document.getElementById('closechatButton');
-   	closechatButton.addEventListener('click', chat2main);
-	closechatButton.addEventListener('blur', ce);
-	closechatButton.addEventListener('focus', ce);
-	
-	var resetchatButton = document.getElementById('resetchatButton');
-   	resetchatButton.addEventListener('click', resetChat);
-	resetchatButton.addEventListener('blur', ce);
-	resetchatButton.addEventListener('focus', ce);
-	
-	var cancelChatButton = document.getElementById('cancelChatButton');
-   	cancelChatButton.addEventListener('click', closebox);
-	cancelChatButton.addEventListener('blur', ce);
-	cancelChatButton.addEventListener('focus', ce);
-	
-	var submitChatButton = document.getElementById('submitChatButton');
-   	submitChatButton.addEventListener('click', makeChat);
-	submitChatButton.addEventListener('blur', ce);
-	submitChatButton.addEventListener('focus', ce);
+   	document.getElementById('randomEmailButton').addEventListener('click', randomToken);
 
-	var lockListBox = document.getElementById('locklist');
-   	lockListBox.addEventListener('click', ce);
-	lockListBox.addEventListener('change', fillBox);
-	lockListBox.addEventListener('blur', ce);
-	lockListBox.addEventListener('focus', ce);
+   	document.getElementById('acceptEmailButton').addEventListener('click', email2any);
 
-	var resetListButton = document.getElementById('resetListButton');
-   	resetListButton.addEventListener('click', resetList);
-	resetListButton.addEventListener('blur', ce);
-	resetListButton.addEventListener('focus', ce);
+   	document.getElementById('cancelEmailButton').addEventListener('click', cancelEmail);
 
-	var main2lockButton = document.getElementById('main2lockButton');
-    main2lockButton.addEventListener('click', main2lock);
-	main2lockButton.addEventListener('blur', ce);
-	main2lockButton.addEventListener('focus', ce);
-	
-	var lock2mainButton = document.getElementById('lock2mainButton');
-    lock2mainButton.addEventListener('click', main2lock);
-	lock2mainButton.addEventListener('blur', ce);
-	lock2mainButton.addEventListener('focus', ce);
-	
-	var newUserButton = document.getElementById('newUserButton');
-   	newUserButton.addEventListener('click', newUser);
-	newUserButton.addEventListener('blur', ce);
-	newUserButton.addEventListener('focus', ce);
+   	document.getElementById('acceptNameButton').addEventListener('click', name2any);
 
-	var submitKeychange = document.getElementById('submitKeychange');
-   	submitKeychange.addEventListener('click', changeKey);
-	submitKeychange.addEventListener('blur', ce);
-	submitKeychange.addEventListener('focus', ce);
+   	document.getElementById('cancelNameButton').addEventListener('click', cancelName);
 
-	var cancelKeychange = document.getElementById('cancelKeychange');
-   	cancelKeychange.addEventListener('click', cancelKeyChange);
-	cancelKeychange.addEventListener('blur', ce);
-	cancelKeychange.addEventListener('focus', ce);
+   	document.getElementById('showIntroKey').addEventListener('click', showIntro);
 
-	var showNewKeyCheckbox = document.getElementById('showNewKey');
-   	showNewKeyCheckbox.addEventListener('click', showNewKey);
-	showNewKeyCheckbox.addEventListener('blur', ce);
-	showNewKeyCheckbox.addEventListener('focus', ce);
+   	document.getElementById('clearIntroButton').addEventListener('click', clearIntro);
 
-	var gotointro2 = document.getElementById('gotointro2');
-   	gotointro2.addEventListener('click', go2intro2);
-	gotointro2.addEventListener('blur', ce);
-	gotointro2.addEventListener('focus', ce);
+   	document.getElementById('suggestIntroButton').addEventListener('click', suggestIntro);
 
-	var backtointro1 = document.getElementById('backtointro1');
-   	backtointro1.addEventListener('click', go2intro2);
-	backtointro1.addEventListener('blur', ce);
-	backtointro1.addEventListener('focus', ce);
-	
-	var gotointro3 = document.getElementById('gotointro3');
-   	gotointro3.addEventListener('click', go2intro3);
-	gotointro3.addEventListener('blur', ce);
-	gotointro3.addEventListener('focus', ce);
+   	document.getElementById('showlockIntroButton').addEventListener('click', initUser);
 
-	var backtointro2 = document.getElementById('backtointro2');
-   	backtointro2.addEventListener('click', go2intro3);
-	backtointro2.addEventListener('blur', ce);
-	backtointro2.addEventListener('focus', ce);
-	
-	var gotointro4 = document.getElementById('gotointro4');
-   	gotointro4.addEventListener('click', go2intro4);
-	gotointro4.addEventListener('blur', ce);
-	gotointro4.addEventListener('focus', ce);
+   	document.getElementById('showdecIn').addEventListener('click', showdecoyIn);
 
-	var backtointro3 = document.getElementById('backtointro3');
-   	backtointro3.addEventListener('click', go2intro4);
-	backtointro3.addEventListener('blur', ce);
-	backtointro3.addEventListener('focus', ce);
-	
-	var gotointro5 = document.getElementById('gotointro5');
-   	gotointro5.addEventListener('click', go2intro5);
-	gotointro5.addEventListener('blur', ce);
-	gotointro5.addEventListener('focus', ce);
+   	document.getElementById('submitDecoyButton').addEventListener('click', submitDecoyIn);
 
-	var backtointro4 = document.getElementById('backtointro4');
-   	backtointro4.addEventListener('click', go2intro5);
-	backtointro4.addEventListener('blur', ce);
-	backtointro4.addEventListener('focus', ce);
+   	document.getElementById('cancelDecoyButton').addEventListener('click', cancelDecoyIn);
 
-	var mainBox = document.getElementById('mainBox');
-   	mainBox.addEventListener('keyup', charsLeft);
-	mainBox.addEventListener('keydown', ce);
-	mainBox.addEventListener('blur', ce);
-	mainBox.addEventListener('focus', ce);
-	
-	var decoyText = document.getElementById('decoyText');
-   	decoyText.addEventListener('keyup', charsLeft);
-	decoyText.addEventListener('keydown', ce);
-	decoyText.addEventListener('blur', ce);
-	decoyText.addEventListener('focus', ce);
-	
-	var chatdate = document.getElementById('chatdate');
-   	chatdate.addEventListener('keyup', charsLeft);
-	chatdate.addEventListener('keydown', ce);
-	chatdate.addEventListener('blur', ce);
-	chatdate.addEventListener('focus', ce)
+   	document.getElementById('showdecOut').addEventListener('click', showdecoyOut);
+
+   	document.getElementById('submitDecoy2Button').addEventListener('click', submitDecoyOut);
+
+   	document.getElementById('cancelDecoy2Button').addEventListener('click', cancelDecoyOut);
+
+   	document.getElementById('submitPartsButton').addEventListener('click', submitParts);
+
+   	document.getElementById('cancelPartsButton').addEventListener('click', cancelPartsIn);
+
+   	document.getElementById('learnmode').addEventListener('click', setlearnmode);
+
+   	document.getElementById('closelockdirButton').addEventListener('click', lock2dir);
+
+   	document.getElementById('closechatButton').addEventListener('click', chat2main);
+
+   	document.getElementById('resetchatButton').addEventListener('click', resetChat);
+
+   	document.getElementById('cancelChatButton').addEventListener('click', closebox);
+
+   	document.getElementById('submitChatButton').addEventListener('click', makeChat);
+
+	document.getElementById('locklist').addEventListener('change', fillBox);
+
+   	document.getElementById('resetListButton').addEventListener('click', resetList);
+
+	document.getElementById('main2lockButton').addEventListener('click', main2lock);
+
+	document.getElementById('lock2mainButton').addEventListener('click', main2lock);
+
+   	document.getElementById('newUserButton').addEventListener('click', newUser);
+
+   	document.getElementById('submitKeychange').addEventListener('click', changeKey);
+
+   	document.getElementById('cancelKeychange').addEventListener('click', cancelKeyChange);
+
+   	document.getElementById('showNewKey').addEventListener('click', showNewKey);
+
+	document.getElementById('gotointro2').addEventListener('click', go2intro2);
+
+   	document.getElementById('backtointro1').addEventListener('click', go2intro2);
+
+   	document.getElementById('gotointro3').addEventListener('click', go2intro3);
+
+   	document.getElementById('backtointro2').addEventListener('click', go2intro3);
+
+   	document.getElementById('gotointro4').addEventListener('click', go2intro4);
+
+   	document.getElementById('backtointro3').addEventListener('click', go2intro4);
+
+   	document.getElementById('gotointro5').addEventListener('click', go2intro5);
+
+   	document.getElementById('backtointro4').addEventListener('click', go2intro5);
+
+   	document.getElementById('mainBox').addEventListener('keyup', charsLeft);
+
+   	document.getElementById('decoyText').addEventListener('keyup', charsLeft);
+
+   	document.getElementById('chatdate').addEventListener('keyup', charsLeft);
 
 //Firefox requires the keyup code to be inline if it refers to the event
 //but this must be removed for the Chrome app and replaced with those commented below
-	var pwdBox = document.getElementById('pwd');
-//	pwdBox.addEventListener('keyup', function() {pwdKeyup(event)}, false);
 
-	var pwdIntroBox = document.getElementById('pwdIntro');
-   	pwdIntroBox.addEventListener('keyup', introKeyup);
-	pwdIntroBox.addEventListener('blur', ce);
-	pwdIntroBox.addEventListener('focus', ce);
+//	document.getElementById('pwd').addEventListener('keyup', function() {pwdKeyup(event)}, false);
 
-	var decoyPwdIn = document.getElementById('decoyPwdIn');
-//	decoyPwdIn.addEventListener('keyup', function() {decoyKeyup(event)}, false);
-	decoyPwdIn.addEventListener('keydown', ce);
-	decoyPwdIn.addEventListener('blur', ce);
-	decoyPwdIn.addEventListener('focus', ce);
+   	document.getElementById('pwdIntro').addEventListener('keyup', introKeyup);
 
-	var decoyPwdOut = document.getElementById('decoyPwdOut');
-//	decoyPwdOut.addEventListener('keyup', function() {decoyKeyupOut(event)}, false);
-	decoyPwdOut.addEventListener('keydown', ce);
-	decoyPwdOut.addEventListener('blur', ce);
-	decoyPwdOut.addEventListener('focus', ce);
+//	document.getElementById('decoyPwdIn').addEventListener('keyup', function() {decoyKeyup(event)}, false);
 
-	var partsIn = document.getElementById('partsIn');
-//	partsIn.addEventListener('keyup', function() {partsKeyup(event)}, false);
-	partsIn.addEventListener('keydown', ce);
-	partsIn.addEventListener('blur', ce);
-	partsIn.addEventListener('focus', ce);
+//	document.getElementById('decoyPwdOut').addEventListener('keyup', function() {decoyKeyupOut(event)}, false);
 
-	var newKeyBox = document.getElementById('newKey');
-	newKeyBox.addEventListener('keyup', newKeyup);
-	newKeyBox.addEventListener('keydown', ce);
-	newKeyBox.addEventListener('blur', ce);
-	newKeyBox.addEventListener('focus', ce);
+//	document.getElementById('partsIn').addEventListener('keyup', function() {partsKeyup(event)}, false);
 
-	var newKey2Box = document.getElementById('newKey2');
-//	newKey2Box.addEventListener('keyup', function() {newKey2up(event)}, false);
-	newKey2Box.addEventListener('keydown', ce);
-	newKey2Box.addEventListener('blur', ce);
-	newKey2Box.addEventListener('focus', ce);
+	document.getElementById('newKey').addEventListener('keyup', newKeyup);
 
-	var locknameBox = document.getElementById('locknameBox');
-//	locknameBox.addEventListener('keyup', function() {locknameKeyup(event)}, false);
-	locknameBox.addEventListener('keydown', ce);
-	locknameBox.addEventListener('blur', ce);
-	locknameBox.addEventListener('focus', ce);
+//	document.getElementById('newKey2').addEventListener('keyup', function() {newKey2up(event)}, false);
+
+//	document.getElementById('locknameBox').addEventListener('keyup', function() {locknameKeyup(event)}, false);
 	
-	var lockBox = document.getElementById('lockBox');
-	lockBox.addEventListener('keyup', applyRStoLock);
-	lockBox.addEventListener('keydown', ce);
-	lockBox.addEventListener('blur', ce);
-	lockBox.addEventListener('focus', ce);
-	lockBox.addEventListener('paste', pasteLock);
+	document.getElementById('lockBox').addEventListener('keyup', applyRStoLock);
+	document.getElementById('lockBox').addEventListener('paste', pasteLock);
 	
 	function pasteLock() {
     setTimeout(function(){
@@ -555,22 +237,11 @@ window.onload = function() {
     }, 0); //or 4
 	}
 
-	var nameBox = document.getElementById('userName');
-//	nameBox.addEventListener('keyup', function() {nameKeyup(event)}, false);
-	nameBox.addEventListener('keydown', ce);
-	nameBox.addEventListener('blur', ce);
-	nameBox.addEventListener('focus', ce);
+//	document.getElementById('userName').addEventListener('keyup', function() {nameKeyup(event)}, false);
 		
-	var emailBox = document.getElementById('email');
-//	emailBox.addEventListener('keyup', function() {emailKeyup(event)}, false);
-	emailBox.addEventListener('keydown', ce);
-	emailBox.addEventListener('blur', ce);
-	emailBox.addEventListener('focus', ce);
+//	document.getElementById('email').addEventListener('keyup', function() {emailKeyup(event)}, false);
 
-	var neverbox = document.getElementById('never');
-	neverbox.addEventListener('click', hide5min);
-	neverbox.addEventListener('blur', ce);
-	neverbox.addEventListener('focus', ce);
+	document.getElementById('never').addEventListener('click', hide5min);
 	
 //for the rich text editor boxes and buttons
 	document.getElementById('formatblock').addEventListener("change", function() {formatDoc('formatblock',this[this.selectedIndex].value);this.selectedIndex=0;});
@@ -661,6 +332,9 @@ window.onload = function() {
 	document.getElementById('aa57').addEventListener('click', function() {openClose('a57')});
 	document.getElementById('aa58').addEventListener('click', function() {openClose('a58')});
 	document.getElementById('aa59').addEventListener('click', function() {openClose('a59')});
+	document.getElementById('aa60').addEventListener('click', function() {openClose('a60')});
+	document.getElementById('aa61').addEventListener('click', function() {openClose('a61')});
+	document.getElementById('aa62').addEventListener('click', function() {openClose('a62')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -723,7 +397,9 @@ window.onload = function() {
 	document.getElementById('bb57').addEventListener('click', function() {openClose('b57')});
 	document.getElementById('bb58').addEventListener('click', function() {openClose('b58')});
 	document.getElementById('bb59').addEventListener('click', function() {openClose('b59')});
-
+	document.getElementById('bb60').addEventListener('click', function() {openClose('b60')});
+	document.getElementById('bb61').addEventListener('click', function() {openClose('b61')});
+	document.getElementById('bb62').addEventListener('click', function() {openClose('b62')});
 };
 
 //this one is for mobile only. Remove for the Chrome app
@@ -748,5 +424,7 @@ if(localStorage.length == 0) newUser();
 fillNameList();
 
 initTabs();																	//initialize tabs
+
+var time10 = hashTime10();													//get milliseconds for 10 wiseHash at iter = 10
 
 //end of body script.

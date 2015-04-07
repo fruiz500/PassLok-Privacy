@@ -1,7 +1,7 @@
 PassLok Privacy
 ===============
 
-PassLok is a toolkit to implement public key cryptography functions on a browser.
+PassLok is a toolkit to implement public key cryptography to supplement ANY communications program.
 
 These are the principles guiding the design of PassLok:
 * Perfect portability. Runs on any computer or mobile device.
@@ -10,16 +10,17 @@ These are the principles guiding the design of PassLok:
 * Highest-level security at every step. No compromises.
 * Easy to understand and use by novices. Graphical interface, as clean and simple as possible. No cryptographic jargon.
 
-Because of this, PassLok is pure html code consisting mostly of javascript instructions. Its cryptography code is based on the SJCL code, also on Github. It uses AES for symmetric encryption and elliptic curves (NIST-p521 curve) for public-key functions.
+Because of this, PassLok is pure html code consisting mostly of JavaScript instructions. Its cryptography code is based on Tweet NaCl, also on GitHub. It uses Salsa20 for symmetric encryption and elliptic curves (Curve25519 and Ed25519) for public-key functions.
 
-PassLok was started as URSA, also by F. Ruiz, and developed privately up to version 1.3.03, made on 8/15/13. Commits on Github began seriously with this version.
+PassLok was started as URSA, also by F. Ruiz, and developed privately up to version 1.3.03, made on 8/15/13. Commits on GitHub began seriously with this version. The engine was based on the SJCL library up to version 2.1.03, which has been forked out on this repo in order to preserve it.
 
 These are the open source libraries used in PassLok, which can be found in the js-opensrc directory:
 * Shamir Secret Sharing Scheme. Edited so SJCL RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
 * For hiding data in images: https://github.com/petereigenschink/steganography.js
 * FastClick, used only in mobile devices: https://github.com/ftlabs/fastclick
-* SJCL original libraries (many files): https://github.com/bitwiseshiftleft/sjcl
-* SCRYPT key stretching: https://github.com/joe-invincible/sjcl-scrypt
+* Tweet NaCl in JavaScript: https://github.com/dchest/tweetnacl-js
+* ed2curve-js conversion of curve coordinates: https://github.com/dchest/ed2curve-js
+* SCRYPT key stretching, edited to make it synchronous. https://github.com/dchest/scrypt-async-js
 * Reed-Solomon error correction: https://github.com/louismullie/erc-js
 * lz-string compression algorithm: https://github.com/pieroxy/lz-string
 * Markov chain text steganography. Edited RegEx: https://github.com/jthuraisamy/markovTextStego.js
@@ -38,7 +39,7 @@ The PassLok original code is in directories js-head and js-body:
 * window reformatting, special functions: bodyscript.js
 * initialization, button connections: initbuttons.js
 
-Full documentation can be found at: <http://passlok.weebly.com/>
+Full documentation can be found at: <http://passlok.weebly.com/> including a user manual, a technical design document, and a number of articles and video tutorials.
 
 License
 -------

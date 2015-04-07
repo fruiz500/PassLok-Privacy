@@ -30,7 +30,7 @@ function uniq(a) {
 function textStego(){
 	var mainmsg = document.getElementById("mainmsg");
 		mainmsg.innerHTML = "";
-	var text = XSSfilter(document.getElementById('mainBox').innerHTML).replace(/_/g,'');
+	var text = XSSfilter(document.getElementById('mainBox').innerHTML).replace(/-/g,'');
 	if(text == ""){
 		mainmsg.innerHTML = '<span style="color:red">No text in the box</span>';
 		throw("no text")
@@ -62,8 +62,12 @@ function textStego(){
 			fromPhrases(text);
 			mainmsg.innerHTML = 'Message extracted from Sentences'
 		}else if(text.match(/[\?\uFF1A]/g) != null){		//detect question marks or Chinese colons, if present call chains decoder
-			fromChains(text);
-			mainmsg.innerHTML = 'Message extracted from Chains encoding'
+			try{
+				fromChains(text);
+				mainmsg.innerHTML = 'Message extracted from Chains encoding'
+			}catch(err){
+				mainmsg.innerHTML = 'Decoding has failed. Try with a different cover text'
+			}
 		}else{												//no special characters detected: words decoder
 			fromWords(text);
 			mainmsg.innerHTML = 'Message extracted from Words encoding'
@@ -101,7 +105,7 @@ function fromChains(text){
 		corpus = covertext.split('.');
 	model.import(corpus);
 	var codec = new stego.Codec(model);
-	document.getElementById('mainBox').innerHTML = codec.decode(text);
+	document.getElementById('mainBox').innerHTML = codec.decode(text)
 }
 
 //the following two are to encode or decode each character of the main box into a word from the covertext
@@ -331,7 +335,7 @@ function newcover(string){
 	mainmsg.innerHTML = "";
 	
 //remove multiple spaces, spaces after linefeed
-	var newcovertext = string.replace(/   +/g, "\t").replace(/  +/g, " ").replace(/ &nbsp;+/g, " ").replace(/\n /g,"\n\t").replace(/--/g,', ').replace(/_/g,'');
+	var newcovertext = string.replace(/   +/g, "\t").replace(/  +/g, " ").replace(/ &nbsp;+/g, " ").replace(/\n /g,"\n\t").replace(/--/g,', ').replace(/-/g,'');
 	
 //add spaces if Chinese, Korean, or Japanese
 	if (newcovertext.match(/[\u3400-\u9FBF]/) != null) newcovertext = newcovertext.split('').join(' ').replace(/\s+/g, ' ');														
@@ -376,7 +380,7 @@ function encodeImage(){
 		var reply = confirm("The text in the previous box will be encoded into this image, which can then be copied and sent to others. Cancel if this is not what you want.");
 		if(reply==false) throw("encode image canceled");
 	}
-	var text = document.getElementById('mainBox').innerHTML;
+	var text = XSSfilter(document.getElementById('mainBox').innerHTML).replace(/-/g,'');
 	var imagemsg = document.getElementById('imagemsg');
 
 	//bail out if this is not a PassLok string. Otherwise, this method can handle the full UTF-16 character set

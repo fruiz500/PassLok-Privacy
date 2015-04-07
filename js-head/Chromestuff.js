@@ -37,12 +37,12 @@ function getChromeLock(name) {
 
 //this one is called by the above function
 function storeChromeLock(name,lockdata){
-	lockDB[name] = JSON.parse(lockdata);
-	document.getElementById("lockBox").value = lockDB[name][0];
+	locDir[name] = JSON.parse(lockdata);
+	document.getElementById("lockBox").value = locDir[name][0];
 	document.getElementById("lockmsg").innerHTML = XSSfilter(name) + ' added from your Chrome sync area';
-	lockDB = sortObject(lockDB);
-	localStorage[userName] = JSON.stringify(lockDB);
-	lockNames = Object.keys(lockDB);
+	locDir = sortObject(locDir);
+	localStorage[userName] = JSON.stringify(locDir);
+	lockNames = Object.keys(locDir);
 	fillList();
 	updateChromeSyncList();
 }
@@ -74,7 +74,7 @@ function retrieveAllSync(){
 		if(lockdata){
 			var ChromeSyncList = lockdata.split('|');
 				
-//asynchronous loop to fill Locks directory				
+//asynchronous loop to fill local directory				
 			asyncLoop({
 				length : ChromeSyncList.length,
 	
@@ -84,10 +84,10 @@ function retrieveAllSync(){
 						var lockdata2 = {};
 						chrome.storage.sync.get(syncName2.toLowerCase(), function (obj) {
 							lockdata2 = obj[syncName2.toLowerCase()];
-							lockDB[ChromeSyncList[i]] = JSON.parse(lockdata2);
-							lockDB = sortObject(lockDB);
-							localStorage[userName] = JSON.stringify(lockDB);
-							lockNames = Object.keys(lockDB);
+							locDir[ChromeSyncList[i]] = JSON.parse(lockdata2);
+							locDir = sortObject(locDir);
+							localStorage[userName] = JSON.stringify(locDir);
+							lockNames = Object.keys(locDir);
 							fillList();
 						});
 					};

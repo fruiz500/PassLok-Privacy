@@ -1,4 +1,4 @@
-//edit in lines 273-274 by F. Ruiz in order to use SJCL RNG function rather than the built-in RNG. Chunks of code commented out as a consequence.
+//edit in lines 152-155 by F. Ruiz in order to use NaCl RNG function rather than the built-in RNG. Chunks of code commented out as a consequence.
 // secrets.js - by Alexander Stetsyuk - released under MIT License
 (function(exports, global){
 var defaults = {
@@ -23,7 +23,7 @@ var defaults = {
 var config = {};
 
 /** @expose **/
-/*edit by F. Ruiz. This function is removed since it does not get called
+/*edit by F. Ruiz. This function is turned off since it does not get called
 exports.getConfig = function(){
 	return {
 		'bits': config.bits,
@@ -68,132 +68,12 @@ function isInited(){
 	return true;
 };
 
-/*Edit by F. Ruiz. The RNG code in this library is turned off and the one in SJCL is used instead
+//Edit by F. Ruiz. The RNG code in this library is removed and the one in SJCL is used instead
 
-// Returns a pseudo-random number generator of the form function(bits){}
-// which should output a random string of 1's and 0's of length `bits`
-function getRNG(){
-	var randomBits, crypto;
-	
-	function construct(bits, arr, radix, size){
-		var str = '',
-			i = 0,
-			len = arr.length-1;
-		while( i<len || (str.length < bits) ){
-			str += padLeft(parseInt(arr[i], radix).toString(2), size);
-			i++;
-		}
-		str = str.substr(-bits);
-		if( (str.match(/0/g)||[]).length === str.length){ // all zeros?
-			return null;
-		}else{
-			return str;
-		}
-	}
-	
-	// node.js crypto.randomBytes()
-	if(typeof require === 'function' && (crypto=require('crypto')) && (randomBits=crypto['randomBytes'])){
-		return function(bits){
-			var bytes = Math.ceil(bits/8),
-				str = null;
-		
-			while( str === null ){
-				str = construct(bits, randomBits(bytes).toString('hex'), 16, 4);
-			}
-			return str;
-		}
-	}
-	
-	// browsers with window.crypto.getRandomValues()
-	if(global['crypto'] && typeof global['crypto']['getRandomValues'] === 'function' && typeof global['Uint32Array'] === 'function'){
-		crypto = global['crypto'];
-		return function(bits){
-			var elems = Math.ceil(bits/32),
-				str = null,
-				arr = new global['Uint32Array'](elems);
+//about 100 lines removed here
 
-			while( str === null ){
-				crypto['getRandomValues'](arr);
-				str = construct(bits, arr, 10, 32);
-			}
-			
-			return str;	
-		}
-	}
-
-	// A totally insecure RNG!!! (except in Safari)
-	// Will produce a warning every time it is called.
-	config.unsafePRNG = true;
-	warn();
-	
-	var bitsPerNum = 32;
-	var max = Math.pow(2,bitsPerNum)-1;
-	return function(bits){
-		var elems = Math.ceil(bits/bitsPerNum);
-		var arr = [], str=null;
-		while(str===null){
-			for(var i=0; i<elems; i++){
-				arr[i] = Math.floor(Math.random() * max + 1); 
-			}
-			str = construct(bits, arr, 10, bitsPerNum);
-		}
-		return str;
-	};
-};
-
-// Warn about using insecure rng.
-// Called when Math.random() is being used.
-function warn(){
-	global['console']['warn'](defaults.warning);
-	if(typeof global['alert'] === 'function' && config.alert){
-		global['alert'](defaults.warning);
-	}
-}
-
-// Set the PRNG to use. If no RNG function is supplied, pick a default using getRNG()
-/** @expose **/
-/*
-exports.setRNG = function(rng, alert){
-	if(!isInited()){
-		this.init();
-	}
-	config.unsafePRNG=false;
-	rng = rng || getRNG();
-	
-	// test the RNG (5 times)
-	if(typeof rng !== 'function' || typeof rng(config.bits) !== 'string' || !parseInt(rng(config.bits),2) || rng(config.bits).length > config.bits || rng(config.bits).length < config.bits){
-		throw new Error("Random number generator is invalid. Supply an RNG of the form function(bits){} that returns a string containing 'bits' number of random 1's and 0's.")
-	}else{
-		config.rng = rng;
-	}
-	config.alert = !!alert;
-	
-	return !!config.unsafePRNG;
-};
-
-function isSetRNG(){
-	return typeof config.rng === 'function'; 
-};
-
-// Generates a random bits-length number string using the PRNG
-/** @expose **/
-/*
-exports.random = function(bits){
-	if(!isSetRNG()){
-		this.setRNG();
-	}
-	
-	if(typeof bits !== 'number' || bits%1 !== 0 || bits < 2){
-		throw new Error('Number of bits must be an integer greater than 1.')
-	}
-	
-	if(config.unsafePRNG){
-		warn();
-	}
-	return bin2hex(config.rng(bits));
-}
 //End of F. Ruiz edits for this block. There are two more edits: 1. a RNG check that is removed. 2. built-in RNG call replaced by SJCL RNG call
-*/
+
 
 // Divides a `secret` number String str expressed in radix `inputRadix` (optional, default 16) 
 // into `numShares` shares, each expressed in radix `outputRadix` (optional, default to `inputRadix`), 
@@ -271,7 +151,7 @@ exports._getShares = function(secret, numShares, threshold){
 	for(var i=1; i<threshold; i++){
 //Edit by F. Ruiz
 //		coeffs[i] = parseInt(config.rng(config.bits),2);							//original random decimal number of maximum size 2^config.bits
-		coeffs[i] = sjcl.bn.random(Math.pow(2,config.bits)).limbs[0];				//using SJCL RNG instead
+		coeffs[i] = nacl.randomBytes(1)[0];											//using NaCl, for config.bits = 8
 //End of F. Ruiz edit
 	}
 	for(var i=1, len = numShares+1; i<len; i++){

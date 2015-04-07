@@ -1,26 +1,12 @@
 ﻿var detectLock = true;
-//displays how many characters are left, in Short mode and in Decoy In box
+//displays how many characters are left, in Short mode and Decoy In box
 function charsLeft(){
 	var mainmsg = document.getElementById("mainmsg");
 	var chatmsg = document.getElementById("chatmsg");
 	var decoymsg = document.getElementById("decoymsg");	
 	if(document.getElementById('decoyIn').style.display == 'block'){					//for decoy message box
 		var chars = encodeURI(document.getElementById('decoyText').value).replace(/%20/g, ' ').length;
-		if(!encrypting){
-			var limit = 36																//signature, 36 chars
-		} else {
-			if(document.getElementById("shortmode").checked){
-				var limit = 37															//short, signed or key-locked, 37 chars
-			} else {
-				if(document.getElementById("anonmode").checked){						//anonymous mode, 87 chars
-					var limit = 87
-				} else if(document.getElementById("signedmode").checked){				//signed mode, 152 chars
-					var limit = 152
-				} else if(document.getElementById("pfsmode").checked){					//pfs mode, 87 chars
-				var limit = 87
-				}
-			}
-		}
+		var limit = 59																//locked message, 59 chars
 		if (chars <= limit){
 			decoymsg.innerHTML = chars + " characters out of " + limit + " used"
 		} else {
@@ -49,11 +35,11 @@ function charsLeft(){
 	
 	var lockDetected = false;																	//now detect if this is a Lock
 	if(stringsplit[1]){						//tags found
-		if((stringsplit[0].length == 87 || stringsplit[0].length == 100) && (stringsplit[0] != myLock) && (stringsplit[0].toLowerCase() != myezLock) && (stringsplit[1].length == 20 || stringsplit[1].slice(0,2) == 'PL')){
+		if((stringsplit[0].length == 43 || stringsplit[0].length == 50) && (stringsplit[0] != myLock) && (stringsplit[0].toLowerCase() != myezLock) && (stringsplit[1].length == 10 || stringsplit[1].slice(0,2) == 'PL')){
 			lockDetected = true;
 		}
 	}else{								//no tags found
-		if((stringsplit[0].length == 87 || stringsplit[0].length == 100) && (stringsplit[0] != myLock) && (stringsplit[0].toLowerCase() != myezLock) && (strlength == 87 || strlength == 100)){
+		if((stringsplit[0].length == 43 || stringsplit[0].length == 50) && (stringsplit[0] != myLock) && (stringsplit[0].toLowerCase() != myezLock) && (strlength == 43 || strlength == 50)){
 			lockDetected = true;
 		}
 	}
@@ -67,12 +53,16 @@ function charsLeft(){
 		addLock();
 	} else if(document.getElementById("shortmode").checked){
 		var chars = encodeURI(document.getElementById('mainBox').innerHTML).replace(/%20/g, ' ').length;
-		if(document.getElementById("anonmode").checked){								//anonymous mode, 38 chars
-			var limit = 38
-		} else if(document.getElementById("signedmode").checked){						//signed mode, 58 chars
-			var limit = 58
-		} else if(document.getElementById("pfsmode").checked){							//pfs mode, 37 chars
-			var limit = 37
+		var sharedKey = striptags(replaceByItem(document.getElementById('lockBox').value,false));
+		if(!sharedKey) return;
+		if(sharedKey.length != 43 && sharedKey.length != 50 && !document.getElementById("pfsmode").checked && !document.getElementById("oncemode").checked){	//Key-locked mode, 94 chars
+			var limit = 94
+		} else if(document.getElementById("anonmode").checked){						//anonymous mode, 62 chars
+			var limit = 62
+		} else if(document.getElementById("signedmode").checked){						//signed mode, 94 chars
+			var limit = 94
+		} else if(document.getElementById("pfsmode").checked || document.getElementById("oncemode").checked){		//pfs mode, 35 chars
+			var limit = 35
 		}
 		if (chars <= limit){
 			mainmsg.innerHTML = chars + " characters out of " + limit + " used"
@@ -99,15 +89,15 @@ function sendMail() {
 		var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a title. Only Locks and locked or signed text are allowed. Cancel if this is not what you want.");
 		if(reply===false) throw("email canceled");
 	};
-	if (lockDB['myself']){
+	if (locDir['myself']){
 		var key = document.getElementById("pwd").value;
 		if (key.trim() == '') {any2key(); return}
 		if(document.getElementById('ezLok').checked){
-			var mylock2 = changeBase(myLock,BASE64,BASE38,true);
-			mylock2 = triple('PL21ezLok=' + mylock2 + '=PL21ezLok')		//this contains my Lock
+			var mylock2 = changeBase(myLock,BASE64,BASE36,true);
+			mylock2 = triple('PL22ezLok=' + mylock2 + '=PL22ezLok')		//this contains my Lock
 		}else{
 			var mylock2 = myLock;
-			mylock2 = triple('PL21lok=' + mylock2 + '=PL21lok')
+			mylock2 = triple('PL22lok=' + mylock2 + '=PL22lok')
 		}
 	} else {
 		var mylock2 = 'Lock not attached'
@@ -116,40 +106,41 @@ function sendMail() {
 	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	var type = cipherstr.slice(0,1);
 if (document.getElementById("notags").checked === false){							//add tags if checked, add explanatory text
-	if(type==="!"){
-    	var link = "mailto:"+ "?subject=" + "&body=Anonymous message locked with PassLok v.2.1 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (type==="@"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.2.1 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (type==="#"){
-		var link = "mailto:"+ "?subject=" + "&body=Signed message locked with PassLok v.2.1 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (type==="$"){
-		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.2.1 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (type==="~"){
-		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.2.1 %0D%0A%0D%0AUnlock with my secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML);
-	} else if (cipherstr.length==87 || cipherstr.replace(/_/g,'').length==100){
-		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0AAs soon as you start PassLok, you will be asked to come up with a secret Key, from which a matching Lock is made, and then you can send me that Lock anyway you want because it is impossible to get your Key from the Lock. To send it by email, just click the Email button in PassLok. Your secret Key will not be sent or saved anywhere.%0D%0A%0D%0AOn the line below is my PassLok v.2.1 Lock. Use it to send me private messages and verify my signature, or invite me to a private real-time chat involving text, files, audio, and even video. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) +"%0D%0A%0D%0AOnce again, you can get PassLok for free at https://passlok.com, plus the Chrome, Android, and iOS app stores.";
-	} else if (cipherstr.length===160){
-		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.2.1 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (cipherstr.length===245){
-		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.1. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML);
-
+	if(type=="!"){
+    	var link = "mailto:"+ "?subject=" + "&body=Anonymous message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+	} else if (type=="@"){
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+	} else if (type=="#"){
+		var link = "mailto:"+ "?subject=" + "&body=Signed message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+	} else if (type=="$"){
+		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+	} else if (type=="~"){
+		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with my secret Key. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML);
+	} else if (cipherstr.length==43 || cipherstr.replace(/-/g,'').length==50){
+		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0AAs soon as you start PassLok, you will be asked to come up with a secret Key, from which a matching Lock is made, and then you can send me that Lock anyway you want because it is impossible to get your Key from the Lock. To send it by email, just click the Email button in PassLok. Your secret Key will not be sent or saved anywhere.%0D%0A%0D%0AOn the line below is my PassLok v.2.2 Lock. Use it to send me private messages and verify my signature, or invite me to a private real-time chat involving text, files, audio, and even video. %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) +"%0D%0A%0D%0AOnce again, you can get PassLok for free at https://passlok.com, plus the Chrome, Android, and iOS app stores.";
+	} else if (cipherstr.length==160){
+		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.2.2 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+	} else if (type=="%" && cipherstr.length==159){
+		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML);
+	} else if (type=="%"){
+		var link = "mailto:"+ "?subject=" + "&body=The following is a text sealed with PassLok v.2.2. It is not encrypted. Extract it and verify my authorship using my Lock %0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AHere's my Lock:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else {																		//may be a longish signed text, so try a little harder
 		var cipherstrArray = document.getElementById('mainBox').innerHTML.split('\n'),
 			length = cipherstrArray.length,
 			cipherstr = cipherstrArray[length-1];
 		cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
-		if (cipherstr.length==245){
-			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.1. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+		if (cipherstr.length==159){
+			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AHere's the signed text:%0D%0A%0D%0A" + encodeURIComponent(document.getElementById('mainBox').innerHTML) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 		} else {
 			mainmsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
 			throw("illegal text")
 		}
 	}
 }else{																				//tags unchecked, no extra text
-	if((type=="!")||(type=="@")||(type=="#")||(type=="$")||(cipherstr.length==87)||(cipherstr.length==100)||(cipherstr.length==245)||(cipherstr.length==160)){
+	if((type=="!")||(type=="@")||(type=="#")||(type=="$")||(cipherstr.length==43)||(cipherstr.length==50)||(cipherstr.length==160)){
 		var link = "mailto:"+ "?subject=" + "&body=" + encodeURIComponent(document.getElementById('mainBox').innerHTML);
 	}else{
-		mainmsg.innerHTML = '<span style="color:red">Only Locks, and locked or signed text are allowed for Email</span>';
+		mainmsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
 		throw("illegal text")
 	}
 }
@@ -217,12 +208,12 @@ function makeChat(){
 		var type = 'C'
 	}
 	var date = (document.getElementById('chatdate').value + '                                           ').slice(0,43);
-	var password = sjcl.codec.base64.fromBits(sjcl.random.randomWords('8','0')).replace(/=/g,'');
+	var password = nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,'');
 	var chatroom = makeChatRoom();
 	document.getElementById('mainBox').innerHTML = date + type + chatroom + password;
 	var listArray = document.getElementById('lockBox').value.trim().split('\n');
 	Encrypt_List(listArray);
-	document.getElementById('mainBox').innerHTML = document.getElementById('mainBox').innerHTML.replace(/PL21msa|PL21mss|PL21msp|PL21mso/g,'PL21chat');			//change the tags
+	document.getElementById('mainBox').innerHTML = document.getElementById('mainBox').innerHTML.replace(/PL22msa|PL22mss|PL22msp|PL22mso/g,'PL22chat');			//change the tags
 	mainmsg.innerHTML = 'Invitation to chat in the box.<br>Send it to the recipients.';
 	selectMain();
 }
@@ -233,7 +224,7 @@ function makeChatRoom(){
 	if(name == ''){
 		name = replaceVariants(blacklist[randomBlackIndex()]);
 		//75% chance to add a second word
-		if((sjcl.bn.random(4).limbs[0])) name = name + ' ' + replaceVariants(blacklist[randomBlackIndex()]);
+		if(Math.floor(Math.random()*4)) name = name + ' ' + replaceVariants(blacklist[randomBlackIndex()]);
 	}
 	return (name + '                   ').slice(0,20);
 }
@@ -247,7 +238,7 @@ function replaceVariants(string){
 function randomBlackIndex(){
 	var index = 1;
 	while(index == 1 || index == 2){						//excluded indices
-		index = sjcl.bn.random(blacklist.length).limbs[0];
+		index = Math.floor(Math.random()*blacklist.length);
 	}
 	return index
 }

@@ -13,7 +13,7 @@ function secretshare(){
 		for (var i=0; i < shares.length; i++) {
 			shares[i] = bestOfThree(shares[i]);										//undo triples, if any
 			shares[i] = applyRScode(shares[i],false);								//RS error correction
-			shares[i] = "8" + sjcl.codec.hex.fromBits(sjcl.codec.base64.toBits(shares[i].replace(/[^a-zA-Z0-9+/ ]+/g, '')));	//retrieve from base64 back to hex and add initial "8" to each item
+			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(shares[i].replace(/[^a-zA-Z0-9+/ ]+/g, '')));	//retrieve from base64 back to hex and add initial "8" to each item
 		};
 		if (learnOn){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");
@@ -24,7 +24,7 @@ function secretshare(){
 			throw("insufficient parts")
 		};
 		var	sechex = secrets.combine(shares),
-			secret = sjcl.codec.utf8String.fromBits(sjcl.codec.hex.toBits(sechex));
+			secret = nacl.util.encodeUTF8(hex2charArray(sechex));
 			if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.decompressFromBase64(secret);
 		document.getElementById('mainBox').innerHTML = secret;
 		mainmsg.innerHTML = 'Join successful';
@@ -56,7 +56,7 @@ function secretshare(){
 		if (quorum > number) quorum = number;
 		var secret = document.getElementById('mainBox').innerHTML.trim();
 		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret);
-		var	sechex = sjcl.codec.hex.fromBits(sjcl.codec.utf8String.toBits(secret)),
+		var	sechex = charArray2hex(nacl.util.decodeUTF8(secret)),
 			shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
 		mainmsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
@@ -74,19 +74,19 @@ function displayshare(shares,quorum){
 
 	//strip initial "8" and display each share in a new line, base 64, with tags
 	if(!tagsOff){
-		var dataitem = sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, '');
-		var	output = triple("PL21p" + quorumst + "=" + dataitem + '=' + calcRScode(dataitem) + "=PL21p" + quorumst);
+		var dataitem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '')
+		var	output = triple("PL22p" + quorumst + "=" + dataitem + calcRStag(dataitem) + "=PL22p" + quorumst);
 
 	//trim final "=" and display with tags
 	}else{
-		var	output = triple(sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[0].slice(1,length))).replace(/=+/g, ''))
+		var output = triple(nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, ''))
 	}
 	for (var i=1; i < shares.length; i++) {
 		if(!tagsOff){
-			dataitem = sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, '');
-			output = output + "<br><br>" + triple("PL21p" + quorumst + "=" + dataitem + '=' + calcRScode(dataitem) + "=PL21p" + quorumst);
+			dataitem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
+			output = output + "<br><br>" + triple("PL22p" + quorumst + "=" + dataitem + calcRStag(dataitem) + "=PL22p" + quorumst);
 		}else{
-			output = output + "<br><br>" + triple(sjcl.codec.base64.fromBits(sjcl.codec.hex.toBits(shares[i].slice(1,length))).replace(/=+/g, ''))
+			output = output + "<br><br>" + triple(nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, ''))
 		}
 	};
 	document.getElementById('mainBox').innerHTML = output;

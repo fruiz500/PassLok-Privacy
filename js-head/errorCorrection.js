@@ -1,9 +1,25 @@
-﻿//calculate the RS checksum for the item
+﻿//optionally call RS code regenerator. If too long, ask the user first
+function calcRStag(string){
+	var RStag = '';
+	if(document.getElementById('ReedSol').checked){
+		if(string.length < 100000){
+			RStag = '=' + calcRScode(string)
+		}else{
+			var reply = confirm("Adding error correction code for output this long will take a long time. Cancel if you'd rather not wait.");
+			if(reply == true) {
+				RStag = '=' + calcRScode(string) 
+			}
+		}
+	}
+	return RStag
+}
+
+//calculate the RS checksum for the item
 function calcRScode(string){
 	string = string.replace(/\s/g,'').replace(/[^a-zA-Z0-9+/~!@#$*%=]+/g,'');				//remove tags, spaces, etc.
 	string = string.split("=");
 	string = string.sort(function (a, b) { return b.length - a.length; })[0];
-	if (string.length == 100) string = string.toLowerCase();								//ezLoks are case-insensitive
+	if (string.length == 50) string = string.toLowerCase();								//ezLoks are case-insensitive
 	if (string != '') {
 		return extractRScode(string);
 	}
@@ -11,7 +27,7 @@ function calcRScode(string){
 
 //extract the second largest segment of a '=' separated string, which should be the RS checksum
 function getRScode(string){
-	string = string.replace(/[\s_]/g,'');														//remove spaces and line feeds
+	string = string.replace(/[\s-]/g,'');														//remove spaces and line feeds
 	string = string.split("=")																	//split into segments
 	string = string.sort(function (a, b) { return b.length - a.length; })[1];				//get the second largest piece
 	if (string == null) return '';
@@ -24,7 +40,8 @@ function getRScode(string){
 
 //verifies the RS checksum, if it exists, of the string and replaces the string with the stripped and corrected item
 function applyRScode(string,isMsg){									//string also contains the checksum and possibly tags
-	string = string.replace(/[\s_]/g,'');													//cleanup spaces etc
+	var n = 5;
+	string = string.replace(/[\s-]/g,'');													//cleanup spaces etc
 	var hexRS = getRScode(string);
 	string = string.split("=");																//split into segments
 	string = string.sort(function (a, b) { return b.length - a.length; })[0];				//get largest
@@ -32,10 +49,10 @@ function applyRScode(string,isMsg){									//string also contains the checksum 
 			var reply = confirm("Checking error correction code for an item this long will take a long time. Cancel if you'd rather not wait.");
 			if(reply == false) return string;
 	}
-	var groups = Math.ceil(string.length / 245);
-	if (hexRS.length == groups * 20 && string.length != 87 && string.length != 100){		//found a complete checksum, so now use it, but not for a Lock
+	var groups = Math.ceil(string.length / (255 - n));
+	if (hexRS.length == groups * (2 * n) && string.length != 43 && string.length != 50){		//found a complete checksum, so now use it, but not for a Lock
 		if(isMsg){																			//flag invalid characters
-			string = string.charAt(0).replace(/[^~!@#$*]/g,'ã') + string.slice(1).replace(/[^a-zA-Z0-9+/%]/g,'ã')	//locked msg
+			string = string.charAt(0).replace(/[^~!@#$*%]/g,'ã') + string.slice(1).replace(/[^a-zA-Z0-9+/%]/g,'ã')	//locked msg or sig
 		}else{
 			string = string.replace(/[^a-zA-Z0-9+/]/g,'ã')									//not a locked msg
 		}
@@ -61,29 +78,29 @@ function applyRStoLock(){
 	}
 	lock = bestOfThree(lock);
 	var hexRS = getRScode(lock);
-	var lockstripped = lock.replace(/[\s_]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
+	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	
-	if (lockstripped.length == 120){											//correct checksum, if written as part of ezLok
-		hexRS = lockstripped.slice(100,120);
-		lockstripped = lockstripped.slice(0,100);
+	if (lockstripped.length == 60){											//correct checksum, if written as part of ezLok
+		hexRS = lockstripped.slice(50,60);
+		lockstripped = lockstripped.slice(0,50);
 		if(document.getElementById('notags').checked){
-			document.getElementById('lockBox').value = lockstripped.match(/.{1,5}/g).join("_") + '=' + hexRS
+			document.getElementById('lockBox').value = lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS
 		}else{
-			document.getElementById('lockBox').value = 'PL21ezLok=' + lockstripped.match(/.{1,5}/g).join("_") + '=' + hexRS +'=PL21ezLok'
+			document.getElementById('lockBox').value = 'PL22ezLok=' + lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS +'=PL22ezLok'
 		}
 	}
-	if (lockstripped.length == 107){											//correct checksum, if written as part of regular lock
-		hexRS = lockstripped.slice(87,107);
-		lockstripped = lockstripped.slice(0,87);
+	if (lockstripped.length == 53){											//correct checksum, if written as part of regular lock
+		hexRS = lockstripped.slice(43,53);
+		lockstripped = lockstripped.slice(0,43);
 		if(document.getElementById('notags').checked){
 			document.getElementById('lockBox').value = lockstripped + '=' + hexRS
 		}else{
-			document.getElementById('lockBox').value = 'PL21lok=' + lockstripped + '=' + hexRS + '=PL21lok'
+			document.getElementById('lockBox').value = 'PL22lok=' + lockstripped + '=' + hexRS + '=PL22lok'
 		}
 	}
 	suspendFindLock = true;															//allow writing a name without searching
-	if (lockstripped.length != 87 && lockstripped.length != 100) return				//do nothing if it's not a Lock	
-	if (hexRS.length == 20){														//found a complete code, so now check it
+	if (lockstripped.length != 43 && lockstripped.length != 50) return				//do nothing if it's not a Lock	
+	if (hexRS.length == 10){														//found a complete code, so now check it
 		lockstripped = lockstripped.replace(/[^a-zA-Z0-9+/]/g,'ã');					//flag invalid characters																
 		document.getElementById('lockBox').value = (restOfLocks.join('\n') + '\n' + useHexRScode(lockstripped,hexRS)).trim();
 		setTimeout(function(){lockmsg.innerHTML = "Lock detected and corrected per the tags";}, 500);		//add delay so this is seen
@@ -128,7 +145,7 @@ function hex2charArray(string){
 
 //extract the RS code appended to each 255-character piece of a string
 function extractRScode(string){
-	var n = 10;
+	var n = 5;
 	var rs = new ReedSolomon(n);
 	var enc = rs.encode(string);
 	if (string.length <= 255 - n){
@@ -149,7 +166,7 @@ function extractRScode(string){
 
 //use a hexadecimal RS code to correct its matching string
 function useHexRScode(string,hexRS){
-	var n = 10;
+	var n = 5;
 	var rs = new ReedSolomon(n);
 	var RSarray = hex2charArray(hexRS);
 	if (string.length <= 255 - n){
