@@ -63,8 +63,7 @@ Acknowledgements
 ----------------
 
   PassLok contains and/or links to code from a number of open source
-  projects on GitHub, including the Stanford JavaScript
-  Cryptography Library (SJCL), and others.
+  projects on GitHub, including the Tweet NaCl crypto library, and others.
 
 Cryptography Notice
 -------------------
