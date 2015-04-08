@@ -50,7 +50,7 @@ function textheight(){
 	var	fullheight = document.documentElement.clientHeight,
 		offsetheight = 400,
 		toolbarheight = 48;
-	if(isMobile && !isAndroid) offsetheight = offsetheight - 70;
+	if(isiPhone) offsetheight = offsetheight - 70;
 	document.getElementById('lockBox').style.height = fullheight - offsetheight + 'px';
 	if(niceEditor){
 		document.getElementById('mainBox').style.height = fullheight - offsetheight - toolbarheight + 'px'
