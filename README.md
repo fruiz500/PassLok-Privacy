@@ -39,6 +39,10 @@ The PassLok original code is in directories js-head and js-body:
 * window reformatting, special functions: bodyscript.js
 * initialization, button connections: initbuttons.js
 
+Two components run inside iframes and are served from different sources. They are not included here because we use Phonegap so generate automatically some versions from this repo, and they should not contain that code. Those components are:
+* PassLok General Directory: https://github.com/fruiz500/PassLok-GenDir
+* PassLok Chat: https://github.com/fruiz500/PassLok-Chat
+
 Full documentation can be found at: <http://passlok.weebly.com/> including a user manual, a technical design document, and a number of articles and video tutorials.
 
 License
