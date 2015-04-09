@@ -43,7 +43,10 @@ Two components run inside iframes and are served from different sources. They ar
 * PassLok General Directory: https://github.com/fruiz500/PassLok-GenDir
 * PassLok Chat: https://github.com/fruiz500/PassLok-Chat
 
-Full documentation can be found at: <http://passlok.weebly.com/> including a user manual, a technical design document, and a number of articles and video tutorials.
+Full documentation can be found at: <http://passlok.weebly.com/> including:
+* user manual: http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf
+* technical design document: http://www.weebly.com/uploads/2/4/1/8/24187628/passlok_technical_document.pdf
+* and a number of articles and video tutorials.
 
 License
 -------
