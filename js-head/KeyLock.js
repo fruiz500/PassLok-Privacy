@@ -1,6 +1,5 @@
-﻿//detect mobile and store in global Boolean variable. Learn mode detected by setlearnmode() below. Detect Basic mode. Who calls Key.
+﻿//detect mobile and store in global Boolean variable. Learn mode detected by setLearn() below. Detect Basic mode. Who calls Key.
 var isMobile = (typeof window.orientation != 'undefined');
-var learnOn = false;
 var callKey = '';
 var BasicButtons = true;
 var fullAccess = true;
@@ -20,11 +19,6 @@ var BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
 function keyStrength(pwd,display) {
-	var	keymsg = document.getElementById("keymsg"),
-		decoymsg = document.getElementById("decoymsg"),
-		intromsg = document.getElementById("intromsg"),
-		keychangemsg = document.getElementById("keychangemsg");
-
 	var entropy = entropycalc(pwd);
 
 	if(entropy == 0){
@@ -48,7 +42,7 @@ function keyStrength(pwd,display) {
 	var seconds = time10/10000*Math.pow(2,iter-8);			//to tell the user how long it will take, in seconds
 	
 	if(pwd.trim()==''){
-		if(document.getElementById("decoyIn").style.display=="block"){
+		if(decoyIn.style.display=="block"){
 			msg = 'Enter the Decoy Password below'
 		}else{
 			msg = 'Enter your Key below'
@@ -61,10 +55,10 @@ function keyStrength(pwd,display) {
 		}
 	}
 if(display){																//these are to display the appropriate messages
-	if(document.getElementById("keyscr").style.display=="block") keymsg.innerHTML = msg;
-	if(document.getElementById("decoyIn").style.display=="block") decoymsg.innerHTML = msg;
-	if(document.getElementById("introscr3").style.display=="block") intromsg.innerHTML = msg;
-	if(document.getElementById("keyChange").style.display=="block") keychangemsg.innerHTML = msg;
+	if(keyScr.style.display=="block") keyMsg.innerHTML = msg;
+	if(decoyIn.style.display=="block") decoyMsg.innerHTML = msg;
+	if(introscr3.style.display=="block") introMsg.innerHTML = msg;
+	if(keyChange.style.display=="block") keyChangeMsg.innerHTML = msg;
 }
 	return iter
 };
@@ -145,35 +139,37 @@ function readKey(){
 	var period = 300000;
 
 //start timer to erase Key
-	if(!document.getElementById('never').checked){
+	if(!neverMode.checked){
 		keytimer = setTimeout(function() {
 			resetKeys();
 		}, period);
 	}
 	
 //erase key at end of period, by a different way
-	if ((new Date().getTime() - keytime > period) && !document.getElementById('never').checked) {
+	if ((new Date().getTime() - keytime > period) && !neverMode.checked) {
 		resetKeys();
 	}
     keytime = new Date().getTime();
 
-	var key = document.getElementById('pwd').value.trim();
+	var key = pwd.value.trim();
 	if (key == ""){
 		any2key();
 		if(callKey == 'initkey'){
-			document.getElementById("keymsg").innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key';
+//			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key';
+			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key'
 		}else{
-			document.getElementById("keymsg").innerHTML = 'Please enter your secret Key';
-			document.getElementById('shadow').style.display = 'block'
+//			keyMsg.innerHTML = 'Please enter your secret Key';
+			keyMsg.innerHTML = 'Please enter your secret Key';
+			shadow.style.display = 'block'
 		}
 		throw ('secret Key needed')
-	};	
+	}
 	return key
 }
 
 //resets the Keys in memory when the timer ticks off
 function resetKeys(){
-	document.getElementById('pwd').value = '';
+	pwd.value = '';
 	KeyDir = '';
 	KeySgn = '';
 	KeyDH = '';
@@ -184,7 +180,7 @@ function resetKeys(){
 function readEmail(){
 	if(myEmail) return myEmail;
 	if(locDir['myself'] && fullAccess) return keyDecrypt(locDir['myself'][2]);
-	var email = document.getElementById('email').value;
+	var email = emailBox.value;
 	if (email == ""){											//won't trigger if there is a space, thus allowing for empty email strings
 		any2email();
 		throw ('email needed')
@@ -195,16 +191,17 @@ function readEmail(){
 var userName = '';
 //to initialize a new user
 function initUser(){
-	var key = document.getElementById('pwdIntro').value,
-		email = document.getElementById('emailIntro').value;
-	userName = document.getElementById('nameIntro').value;
+	var key = pwdIntro.value,
+		email = emailIntro.value;
+	userName = nameIntro.value;
 	myEmail = email.trim();
 
 	if (key.trim() == '' || userName.trim() == ''){
-		document.getElementById('intromsg2').innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
+		intromsg2.innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
+		intromsg2.innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
 		return
 	}
-	document.getElementById('pwd').value = key;
+	pwd.value = key;
 	openClose('introscr5');
 
 	if(!localStorage[userName]){
@@ -212,13 +209,13 @@ function initUser(){
 		localStorage[userName] = JSON.stringify(locDir)
 	}			
 	locDir = JSON.parse(localStorage[userName]);
-	document.getElementById('mainmsg').innerHTML = '<span class="blink" style="color:red">LOADING...</span> for best speed, use at least a Medium Key';
+	mainMsg.innerHTML = '<span class="blink" style="color:red">LOADING...</span> for best speed, use at least a Medium Key';
 	key2any();
 	
-setTimeout(function(){										//do the rest after a short while to give time for the key screen to show
+setTimeout(function(){									//do the rest after a short while to give time for the key screen to show
 	KeyDir = wiseHash(key,userName);							//storage stretched key loaded into memory, will be used right away
 
-	if(ChromeSyncOn){												//if sync is available, get settings only from sync, then the rest
+	if(ChromeSyncOn){											//if sync is available, get settings only from sync, then the rest
 		var syncName = userName+'.myself';
 		chrome.storage.sync.get(syncName.toLowerCase(), function (obj) {
 			var lockdata = obj[syncName.toLowerCase()];
@@ -226,10 +223,11 @@ setTimeout(function(){										//do the rest after a short while to give time f
 				locDir['myself'] = JSON.parse(lockdata);
 				email = keyDecrypt(locDir['myself'][2]);			
 				retrieveAllSync();
-				setTimeout(function(){fillList();document.getElementById("mainmsg").innerHTML = 'Settings synced from Chrome';}, 500);
+				setTimeout(function(){fillList();mainMsg.innerHTML = 'Settings synced from Chrome';}, 500);
 			}else{													//user never seen before: store settings
 				locDir['myself'] = [];
-				locDir['myself'][2] = keyEncrypt(email);			//the Lock will be stored later				
+				locDir['myself'][2] = keyEncrypt(email);			//the Lock will be stored later	
+				setTimeout(function(){fillList();mainMsg.innerHTML = 'To lock a message for someone, enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);			
 			}
 			if(email) myEmail = email;
 			localStorage[userName] = JSON.stringify(locDir);
@@ -241,70 +239,65 @@ setTimeout(function(){										//do the rest after a short while to give time f
 	}else{															//if not, store the email; the Lock will be made and stored by showLock()
 		if(!locDir['myself']) locDir['myself'] = [];
 		locDir['myself'][2] = keyEncrypt(email);
-		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
-			delete locDir[name][1]
-		}
 		localStorage[userName] = JSON.stringify(locDir);
 		lockNames = Object.keys(locDir);
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		showLock();
-		setTimeout(function(){fillList();document.getElementById('mainmsg').innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);
-	}
-	fillList();	
+		setTimeout(function(){fillList();mainMsg.innerHTML = 'To lock a message for someone, enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);
+	}	
 	getSettings();
-	if(document.getElementById('inviteBox').checked) sendMail();
+	if(inviteBox.checked) sendMail();
 },20);
 }
 
 //checks that the Key is the same as before, resumes operation
 function acceptKey(){
-	var key = document.getElementById('pwd').value.trim();
-	var keymsg = document.getElementById('keymsg');
+	var key = pwd.value.trim();
 	if(key == ''){
-		keymsg.innerHTML = 'Please enter your Key';
+		keyMsg.innerHTML = 'Please enter your Key';
 		throw("no Key")
 	}
 	if(key.length < 4){
-		keymsg.innerHTML = '<span style="color:red">This Key is too short</span>';
+		keyMsg.innerHTML = '<span style="color:red">This Key is too short</span>';
 		throw("short Key")
 	}
 	if(striptags(key).length == 43 || striptags(key).length == 50){
-		keymsg.innerHTML = '<span style="color:red">This is a Lock. Enter your Key here</span>';
+		keyMsg.innerHTML = '<span style="color:red">This is a Lock. Enter your Key here</span>';
 		throw("lock instead of Key")
 	}
 	
-	var x = document.getElementById("namelist");
+	var x = document.getElementById('nameList');
 	if (x.options.length == 2){						//only one user, no need to select it
 		userName = x.options[1].value
 	}else{												//several users
 		for (var i = 0; i < x.options.length; i++) {
-    		if(x.options[i].selected == true){
+    		if(x.options[i].selected){
 				userName = x.options[i].value
     		}
   		}
 	}
 	if (userName == ''){
-		keymsg.innerHTML = 'Please select a user name, or make a new one';
+		keyMsg.innerHTML = 'Please select a user name, or make a new one';
 		throw("no userName")
 	}
 	if(Object.keys(locDir).length == 0) locDir = JSON.parse(localStorage[userName]);
-	document.getElementById('mainmsg').innerHTML = '<span class="blink" style="color:red">LOADING...</span> for best speed, use at least a Medium Key';
+	if(firstInit) mainMsg.innerHTML = '<span class="blink" style="color:red">LOADING...</span> for best speed, use at least a Medium Key';
 	key2any();
 	
 setTimeout(function(){									//execute after a delay so the key entry dialog can go away
 	if(locDir['myself']){
-		if(fullAccess){									//OK so far, now check that the Key is good; at the same time populate email and generate stretched Keys
-			checkKey(key);
-			
-			if(ChromeSyncOn){
-				syncChromeLock('myself',JSON.stringify(locDir['myself']))
-			}
-		}else{												//store warning for next time after restart
-			locDir['myself'][8] = 'limited access';
+		if(!fullAccess){									//OK so far, now check that the Key is good; at the same time populate email and generate stretched Keys
+			locDir['myself'][4] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
-			document.getElementById('mainmsg').innerHTML = 'You have limited access to functions<br>For full access, reload and enter the Key'
+			mainMsg.innerHTML = 'You have limited access to functions<br>For full access, reload and enter the Key'
 		}
+		checkKey(key);
+			
+		if(ChromeSyncOn){
+			syncChromeLock('myself',JSON.stringify(locDir['myself']))
+		}
+		
 		getSettings();
 	}else{													//if stored settings are not present: ask for email, compute stretched Keys. Store stuff if full access
 		if(firstInit) KeyDir = wiseHash(key,userName);
@@ -319,7 +312,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 					if(email) myEmail = email;
 					localStorage[userName] = JSON.stringify(locDir);			
 					retrieveAllSync();
-					setTimeout(function(){document.getElementById("mainmsg").innerHTML = 'Settings retrieved from your Chrome sync area';}, 500);
+					setTimeout(function(){mainMsg.innerHTML = 'Settings retrieved from your Chrome sync area';}, 500);
 				}else{													//user missing in sync: store settings
 					var email = readEmail();
 					locDir['myself'] = [];
@@ -340,18 +333,19 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 			locDir['myself'][2] = keyEncrypt(email);
 			localStorage[userName] = JSON.stringify(locDir);
 		}
+		checkboxStore();
 	}
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-		document.getElementById('mainmsg').innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+		mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 	}
 	if (callKey == 'encrypt'){						//now complete whatever was being done when the Key was found missing
 		Encrypt_single()
 	}else if(callKey == 'decrypt'){
-		Decrypt_single()
+		lockUnlock()
 	}else if(callKey == 'sign'){
 		applySignature()
 	}else if(callKey == 'addlock'){
-		openClose('lockscr');
+		openClose('lockScr');
 		openClose('shadow');
 		addLock()
 	}else if(callKey == 'decryptitem'){
@@ -368,6 +362,10 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		fillBox()
 	} else if(callKey == 'changekey'){
 		changeKey()
+	} else if(callKey == 'changename'){
+		name2any()
+	} else if(callKey == 'changeemail'){
+		email2any()
 	} else if(callKey == 'movemyself'){
 		moveMyself()
 	}
@@ -383,8 +381,7 @@ var locDir = {},
 
 //sticky settings are stored in array 'myself' on directory; here is a breakdown of what each index contains:
 //0: user's Lock, encrypted by Key; 1: shared Key resulting from combining the user's Key and Lock, encrypted by Key;
-//2: email/token, encrypted by Key; 3: basic or advanced interface flag, plain; 4: ezLok on or off, plain;
-//5: encrypted Locks on or off, plain; 6: small output on or off, plain; 7: RS codes on or off, plain; 8: full access on or off, plain
+//2: email/token, encrypted by Key; 3: checkbox code, plain; 4: full access on or off, plain
 
 //function to initialize locDir and interface for the user
 function getSettings(){
@@ -397,60 +394,25 @@ function getSettings(){
 			myezLock = changeBase(myLock, BASE64, BASE36, true);
 			}
 			if(!firstInit) return;														//skip the rest if it's not the first time
-			BasicButtons = (locDir['myself'][3] != 'advanced');
-			if(!BasicButtons){															//retrieve last interface
-				openClose("basicbuttonstop");
-				openClose("mainbuttonstop");
-				openClose("basiclockbuttonstop");
-				openClose("advlockmodes");
-				openClose("lockbuttonstop");
-				openClose("lockbuttonsbot");
-				openClose('advancedModes');
-				openClose('advancedHelp');
-				document.getElementById('basicmode').checked = false;
-				document.getElementById('advancedmode').checked = true;
-				locDir['myself'][3] = 'advanced';
-			} else {
-				locDir['myself'][3] = 'basic'
-			}
-			if(locDir['myself'][4] == 'ezLok off'){
-				document.getElementById('ezLok').checked = false
-			} else {
-				document.getElementById('ezLok').checked = true
-			}
-			if(locDir['myself'][5] == 'encrypt Locks'){
-				document.getElementById('encryptLocks').checked = true
-			} else {
-				document.getElementById('encryptLocks').checked = false
-			}
-			if(locDir['myself'][6] == 'small Output'){
-				document.getElementById('smallOut').checked = true
-			} else {
-				document.getElementById('smallOut').checked = false
-			}
-			if(locDir['myself'][7] == 'RS code on'){
-				document.getElementById('ReedSol').checked = true
-			} else {
-				document.getElementById('ReedSol').checked = false
-			}
-			if(locDir['myself'][8] == 'limited access'){
+			if(locDir['myself'][4] == 'guest mode'){
 				setTimeout(function(){				//add delay so messages are seen and recrypt doesn't get in the way
-					var mainmsg = document.getElementById("mainmsg");	
 					if(fullAccess){
 						var reply = confirm("Last user did not enter the right Key. Would you like to re-encrypt the local directory?");
 						if(reply){
-							recryptDB(document.getElementById('pwd').value,userName);
-							mainmsg.innerHTML = 'The local directory has been re-encrypted'
+							recryptDB(pwd.value,userName);
+							mainMsg.innerHTML = 'The local directory has been re-encrypted'
 						}else{
-							mainmsg.innerHTML = '<span style="color:red"><strong>Warning: last session was limited</strong></span>'
+							mainMsg.innerHTML = '<span style="color:red"><strong>Warning: last session was in Guest mode</strong></span>'
 						}
 					}else{
-						mainmsg.innerHTML = 'Last session was limited, like this one'
+						mainMsg.innerHTML = 'Last session was in Guest mode, like this one'
 					}
 				}, 500);			
-				locDir['myself'][8] = 'full access';
+				locDir['myself'][4] = 'full access';
 				localStorage[userName] = JSON.stringify(locDir);
 			}
+			code2checkbox();										//set checkboxes
+
 			if(ChromeSyncOn) retrieveAllSync();
 		}
 	}
@@ -462,19 +424,31 @@ function getSettings(){
 var checkingKey = false;
 function checkKey(key){
 	checkingKey = true;
-	var myEmailcrypt = locDir['myself'][2];
 	KeyDir = wiseHash(key,userName);
-	var email = keyDecrypt(myEmailcrypt);					//try/catch statement in keyDecrypt() triggers if KeyDir is wrong
-	if(email) myEmail = email;
-	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
+	if(fullAccess){
+		var myEmailcrypt = locDir['myself'][2];
+		var email = keyDecrypt(myEmailcrypt);					//try/catch statement in keyDecrypt() triggers if KeyDir is wrong
+		if(email){
+			myEmail = email
+		}else{
+			myEmail = readEmail()
+		}
+	}else{
+		myEmail = readEmail();
+	}
+	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,myEmail)).secretKey;
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	if(!myLock){
-		if(locDir['myself'][0]){
-			myLock = keyDecrypt(locDir['myself'][0])
+		if(fullAccess){
+			if(locDir['myself'][0]){
+				myLock = keyDecrypt(locDir['myself'][0])
+			}else{
+				myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
+				locDir['myself'][0] = keyEncrypt(myLock);
+			localStorage[userName] = JSON.stringify(locDir);
+			}
 		}else{
 			myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-			locDir['myself'][0] = keyEncrypt(myLock);
-			localStorage[userName] = JSON.stringify(locDir);
 		}
 		myezLock = changeBase(myLock, BASE64, BASE36, true);
 	}
@@ -485,11 +459,10 @@ function checkKey(key){
 //display Lock in the lower box of the Main tab.
 function showLock(){
 	callKey = 'showlock';
-	var mainmsg = document.getElementById("mainmsg");				//for displaying messages above key box
-		mainmsg.innerHTML = "";
-	if (learnOn){
+	mainMsg.innerHTML = "";
+	if (learnMode.checked){
 		var reply = confirm("The Lock matching the Key in this box will be placed in the lower box, replacing its contents. Cancel if this is not what you want.");
-		if(reply===false) return;
+		if(!reply) return;
 	};
 	
 	readKey();
@@ -503,27 +476,27 @@ function showLock(){
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	
 	//done calculating, now display it
-	if(document.getElementById('ezLok').checked){
+	if(ezLokMode.checked){
 		var mylocktemp = myezLock.replace(/l/g,'L');					//change smallcase l into capital L for display
-		if(document.getElementById('ReedSol').checked){
+		if(ReedSolMode.checked){
 			var checksum = calcRScode(mylocktemp);
 			checksum = '=' + checksum.match(/.{1,5}/g).join("-")
 		}else{
 			var checksum = ''
 		}
 		mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading		
-		if (document.getElementById("notags").checked == false) mylocktemp = "PL22ezLok=" + mylocktemp +  checksum + "=PL22ezLok";
+		if (!noTagsMode.checked) mylocktemp = "PL22ezLok=" + mylocktemp +  checksum + "=PL22ezLok";
 	}else{
 		var mylocktemp = myLock;
-		if(document.getElementById('ReedSol').checked){
+		if(ReedSolMode.checked){
 			var checksum = '=' + calcRScode(mylocktemp);
 		}else{
 			var checksum = ''
 		}
-		if (document.getElementById("notags").checked == false) mylocktemp = "PL22lok=" + mylocktemp + checksum + "=PL22lok"
+		if (!noTagsMode.checked) mylocktemp = "PL22lok=" + mylocktemp + checksum + "=PL22lok"
 	}
-	document.getElementById('mainBox').innerHTML = triple(mylocktemp);
-	mainmsg.innerHTML = "The Lock matching your Key is in the box.";
+	mainBox.innerHTML = triple(mylocktemp);
+	mainMsg.innerHTML = "The Lock matching your Key is in the box.";
 	
 	if(ChromeSyncOn && fullAccess){
 		syncChromeLock('myself',JSON.stringify(locDir['myself']))			//sync the Lock
@@ -539,7 +512,11 @@ function storemyLock(){
 	locDir['myself'][0] = mylockcrypt;
 	locDir['myself'][2] = keyEncrypt(readEmail());
 	localStorage[userName] = JSON.stringify(locDir);
-	lockNames = Object.keys(locDir)
+	lockNames = Object.keys(locDir);
+	
+	if(ChromeSyncOn){
+		syncChromeLock('myself',JSON.stringify(locDir['myself']))
+	}
 }
 
 //stretches a password string with a salt string to make a 256-bit Uint8Array Key
@@ -677,29 +654,29 @@ function changeBase(number, inAlpha, outAlpha, isLock) {
     return result;
 }
 
-//puts an 43-character random string in the "email" boxes. New NaCl version
+//puts an 43-character random string in the 'emailBox' boxes
 function randomToken(){
 	var token = nacl.util.encodeBase64(nacl.randomBytes(32)).slice(0,43);
-	document.getElementById('emailIntro').value = token;
-	document.getElementById('email').value = token;
+	emailIntro.value = token;
+	emailBox.value = token;
 }
 
 //takes appropriate UI action if decryption fails
 function failedDecrypt(){
-	if(document.getElementById("lockBox").value.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){				
+	if(lockBox.value.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){				
 		any2key();					//this displays the Key entry dialog
-		document.getElementById("keymsg").innerHTML = "<span style='color:red'>This Key won't unlock the item </span>" + nameBeingUnlocked;
+		keyMsg.innerHTML = "<span style='color:red'>This Key won't unlock the item </span>" + nameBeingUnlocked;
 		allowCancelWfullAccess = true;
-	}else if(document.getElementById('keyChange').style.display == 'block'){
-		document.getElementById('keyChange').style.display = 'none';
-		document.getElementById("keymsg").innerHTML = "<span style='color:red'>The Old Key is wrong</span>"
+	}else if(keyChange.style.display == 'block'){
+		keyChange.style.display = 'none';
+		keyMsg.innerHTML = "<span style='color:red'>The Old Key is wrong</span>"
 	}else if (checkingKey){
-		document.getElementById('shadow').style.display = 'block';
-		document.getElementById('keyscr').style.display = 'block';
-		document.getElementById('keymsg').innerHTML = "<span style='color:red'>Please write the last Key you used</span><br>You can change the Key in Options";
+		shadow.style.display = 'block';
+		keyScr.style.display = 'block';
+		keyMsg.innerHTML = "<span style='color:red'>Please write the last Key you used</span><br>You can change the Key in Options";
 		checkingKey = false;
 	}else{
-		document.getElementById("mainmsg").innerHTML = '<span>Unlock has Failed</span>';
+		mainMsg.innerHTML = '<span>Unlock has Failed</span>';
 	}
 	throw('decryption failed')
 }

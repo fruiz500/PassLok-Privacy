@@ -1,106 +1,98 @@
 ﻿//this is for showing and hiding text in key box and other password input boxes
 function showsec(){
-  var showPasswordCheckBox = document.getElementById("showKey");
-  if(showPasswordCheckBox.checked){
-        document.getElementById('pwd').type="TEXT";
-  }else{
-      document.getElementById('pwd').type="PASSWORD";
-  }
+	if(showKey.checked){
+		pwd.type="TEXT";
+	}else{
+		pwd.type="PASSWORD";
+	}
 };
 
-function showdecoyIn(){
-  var showPasswordCheckBox = document.getElementById("showdecIn");
-  if(showPasswordCheckBox.checked){
-        document.getElementById('decoyPwdIn').type="TEXT";
-  }else{
-      document.getElementById('decoyPwdIn').type="PASSWORD";
-  }
+function showDecoyIn(){
+	if(showDecoyInCheck.checked){
+		decoyPwdIn.type="TEXT";
+	}else{
+		decoyPwdIn.type="PASSWORD";
+	}
 };
 
-function showdecoyOut(){
-  var showPasswordCheckBox = document.getElementById("showdecOut");
-  if(showPasswordCheckBox.checked){
-        document.getElementById('decoyPwdOut').type="TEXT";
-  }else{
-      document.getElementById('decoyPwdOut').type="PASSWORD";
-  }
+function showDecoyOut(){
+	if(showDecoyOutCheck.checked){
+		decoyPwdOut.type="TEXT";
+	}else{
+		decoyPwdOut.type="PASSWORD";
+	}
 };
 
 function showIntro(){
-  var showPasswordCheckBox = document.getElementById("showIntroKey");
-  if(showPasswordCheckBox.checked){
-        document.getElementById('pwdIntro').type="TEXT";
-  }else{
-      document.getElementById('pwdIntro').type="PASSWORD";
-  }
+	if(showIntroKey.checked){
+		pwdIntro.type="TEXT";
+	}else{
+		pwdIntro.type="PASSWORD";
+	}
 };
 
 function showNewKey(){
-  var showNewKeyCheckBox = document.getElementById("showNewKey");
-  if(showNewKeyCheckBox.checked){
-		document.getElementById('newKey').type="TEXT";
-		document.getElementById('newKey2').type="TEXT";
-  }else{
-		document.getElementById('newKey').type="PASSWORD";
-		document.getElementById('newKey2').type="PASSWORD";
-  }
+	if(showNewKeyCheck.checked){
+		newKey.type="TEXT";
+		newKey2.type="TEXT";
+	}else{
+		newKey.type="PASSWORD";
+		newKey2.type="PASSWORD";
+	}
 };
 
 //to display output in a small font
 function smallOutput(){
-	if (document.getElementById('smallOut').checked) document.getElementById('mainBox').innerHTML = "<span style='color:black;background-color:white;font-size:xx-small'>" + XSSfilter(document.getElementById('mainBox').innerHTML) + "</span>";
+	if(smallOutMode.checked) mainBox.innerHTML = "<span style='color:black;background-color:white;font-size:xx-small'>" + XSSfilter(mainBox.innerHTML) + "</span>";
 }
 
 function box2cover(){
-	newcover(XSSfilter(document.getElementById('mainBox').innerHTML.replace(/\&nbsp;/g,' ').trim()))
+	newcover(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,' ').trim()))
 }
 
 function chat2main(){
-	document.getElementById('chatscr').style.display = 'none'
+	chatScr.style.display = 'none'
 }
 
 function resetChat(){
-	var src = document.getElementById('chatframe').src;
-	document.getElementById('chatframe').src = '';
-	setTimeout(function(){document.getElementById('chatframe').src = src;}, 0);
+	var src = chatFrame.src;
+	chatFrame.src = '';
+	setTimeout(function(){chatFrame.src = src;}, 0);
 }
 
 //for clearing different boxes
 function clearMain(){
-	document.getElementById('mainBox').innerHTML = '';
-	document.getElementById('mainmsg').innerHTML = '';
+	mainBox.innerHTML = '';
+	mainMsg.innerHTML = '';
 	detectLock = true;
 }
 function clearLocks(){
-	document.getElementById('lockBox').value='';
-	document.getElementById('locknameBox').value='';
-	document.getElementById('lockmsg').innerHTML='';
+	lockBox.value='';
+	lockNameBox.value='';
+	lockMsg.innerHTML='';
 	suspendFindLock = false;
 }
 function clearIntro(){
-	document.getElementById('pwdIntro').value = '';
-	document.getElementById('intromsg').innerHTML = '';
-	document.getElementById('pwd').value = '';
-	document.getElementById('keymsg').innerHTML = '';
+	pwdIntro.value = '';
+	introMsg.innerHTML = '';
+	pwd.value = '';
+	keyMsg.innerHTML = '';
 }
 function clearIntroEmail(){
-	document.getElementById('emailIntro').value = '';
+	emailIntro.value = '';
 }
 
 //for selecting the Main box contents
 function selectMain(){
-    var doc = document
-        , text = doc.getElementById('mainBox')
-        , range, selection
-    ;    
-    if (doc.body.createTextRange) {
+    var range, selection;   
+    if (document.body.createTextRange) {
         range = document.body.createTextRange();
-        range.moveToElementText(text);
+        range.moveToElementText(mainBox);
         range.select();
     } else if (window.getSelection) {
         selection = window.getSelection();        
         range = document.createRange();
-        range.selectNodeContents(text);
+        range.selectNodeContents(mainBox);
         selection.removeAllRanges();
         selection.addRange(range);
     }
@@ -114,69 +106,43 @@ function suggestIntro(){
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
 		output = output + ' ' + rand;
 	}
-	document.getElementById('pwdIntro').type="TEXT";
-	document.getElementById('pwdIntro').value = output.trim();
-	document.getElementById('showIntroKey').checked = true
+	pwdIntro.type="TEXT";
+	pwdIntro.value = output.trim();
+	showIntroKey.checked = true
 }
 
 //makes a new user account
 function newUser(){
-	document.getElementById('introscr').style.display = "block";
+	introscr.style.display = "block";
 	BasicButtons = true;
-}
-
-//store email entered on email screen
-function storeEmail(){
-	var email = document.getElementById('email').value;		//if initiated, this box will contain at least a space, and the program won't stop to have it filled
-	if (email == ''){
-		any2email();
-		throw('no email');
-	}
-	if(locDir['myself'] && fullAccess){
-		var emailcrypt = keyEncrypt(email.trim());
-		locDir['myself'][2] = emailcrypt;
-		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
-			delete locDir[name][1]
-		}
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-	
-	if(ChromeSyncOn){
-		for(var name in locDir){
-			syncChromeLock(name,JSON.stringify(locDir[name]))
-		}
-	}
 }
 
 //shows email screen so email/token can be changed
 function showEmail(){
-	if(!fullAccess){
-		document.getElementById("optionmsg").innerHTML = 'Email change not allowed after Key cancel';
-		throw('Email change canceled')
-	}
-	document.getElementById('shadow').style.display = 'block';
-	document.getElementById('emailscr').style.display = 'block';
+	if(myEmail) emailBox.value = myEmail;
+	shadow.style.display = 'block';
+	emailScr.style.display = 'block';
 }
 
 //shows user name so it can be changed
 function showName(){
-	if(!fullAccess){
-		optionmsg.innerHTML = 'Name change not allowed after Key cancel';
-		throw('Name change canceled')
-	}
-	if (learnOn){
-		var reply = confirm("The current User Name will be changed. Cancel if this is not what you want.");
-		if(reply == false) throw("Name change canceled");
-	}
-	document.getElementById('userName').value = userName;
-	document.getElementById('shadow').style.display = 'block';
-	document.getElementById('namescr').style.display = 'block'	
+	userNameBox.value = userName;
+	shadow.style.display = 'block';
+	nameScr.style.display = 'block'	
 }
 
 //changes the name of the complete database, syncs if possible
 function changeName(){
+	if(!fullAccess){
+		namechangemsg.innerHTML = 'Name change not allowed after Key cancel';
+		throw('Name change canceled')
+	}
+	if (learnMode.checked){
+		var reply = confirm("The current User Name will be changed. Cancel if this is not what you want.");
+		if(!reply) throw("Name change canceled");
+	}
 	var oldUserName = userName,
-		userNameTemp = document.getElementById('userName').value,
+		userNameTemp = document.getElementById('userNameBox').value,
 		key = readKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
@@ -196,6 +162,51 @@ function changeName(){
 	}
 }
 
+//makes base64 code for checkboxes in Options and stores it
+function checkboxStore(){
+	if(fullAccess){
+		var checks = document.optionchecks;
+		var binCode = '', i;
+		for(i = 0; i < checks.length; i++){
+			binCode += checks[i].checked ? 1 : 0;
+		}
+		if(locDir['myself']){
+			locDir['myself'][3] = changeBase(binCode,'01',BASE64);
+			localStorage[userName] = JSON.stringify(locDir);
+		
+			if(ChromeSyncOn){
+				syncChromeLock('myself',JSON.stringify(locDir['myself']));
+			}
+		}
+	}
+}
+
+//resets checkboxes in Options according to the stored code
+function code2checkbox(){
+	var checks = document.optionchecks;
+	if(locDir['myself'][3]){
+		var binCode = changeBase(locDir['myself'][3],BASE64,'01'), i;
+		while(binCode.length < checks.length) binCode = '0' + binCode;
+		for(i = 0; i < checks.length; i++){
+			checks[i].checked = (binCode[i] == '1')
+		}
+		BasicButtons = checks[0].checked;
+	}
+	if(!BasicButtons){												//retrieve Advanced interface
+		openClose("basicBtnsTop");
+		openClose("mainBtnsTop");
+		openClose("basicLockBtnsTop");
+		openClose("advLockModes");
+		openClose("lockBtnsTop");
+		openClose("lockBtnsBottom");
+		openClose('advancedModes');
+		openClose('advancedBtns');
+		openClose('advancedHelp');
+		basicMode.checked = false;
+		advancedMode.checked = true;
+	}
+}
+
 //go to 2nd intro screen, and back. The others are similar
 function go2intro2(){
 	openClose('introscr');
@@ -210,39 +221,46 @@ function go2intro4(){
 	openClose('introscr4');
 }
 function go2intro5(){
-	document.getElementById('intromsg2').innerHTML = '';
+	intromsg2.innerHTML = '';
 	openClose('introscr4');
 	openClose('introscr5');
 }
 
 //these close input dialogs
-function closebox() {
-	document.getElementById("shadow").style.display = "none";
-	document.getElementById("keyscr").style.display = "none";
-	document.getElementById("lockscr").style.display = "none";
-	document.getElementById("decoyIn").style.display = "none";
-	document.getElementById("decoyOut").style.display = "none";
-	document.getElementById("partsIn").style.display = "none";
-	document.getElementById("keyChange").style.display = "none";
-	document.getElementById("emailscr").style.display = "none";
-	document.getElementById("chatDialog").style.display = "none";
-	document.getElementById("namescr").style.display = "none";
-	document.getElementById("introscr").style.display = "none";
+function closeBox() {
+	shadow.style.display = "none";
+	keyScr.style.display = "none";
+	lockScr.style.display = "none";
+	decoyIn.style.display = "none";
+	decoyOut.style.display = "none";
+	partsIn.style.display = "none";
+	keyChange.style.display = "none";
+	emailScr.style.display = "none";
+	chatDialog.style.display = "none";
+	nameScr.style.display = "none";
+	introscr.style.display = "none";
 }
+
+//Key entry is canceled, so record the limited access mode and otherwise start normally
 function cancelKey(){
-	if(allowCancelWfullAccess == false){
+	pwd.value = '';
+	if(!allowCancelWfullAccess){
 		fullAccess = false;
 		
-		var x = document.getElementById("namelist");
-		for (var i = 0; i < x.options.length; i++) {
-    		if(x.options[i].selected == true){
-				userName = x.options[i].value
-    		}
-  		}
+		if (nameList.options.length == 2){						//only one user, no need to select it
+			userName = nameList.options[1].value
+		}else{												//several users
+			for (var i = 0; i < nameList.options.length; i++) {
+    			if(nameList.options[i].selected){
+					userName = nameList.options[i].value
+    			}
+  			}
+		}
+
 		getSettings();
-		fillList();																	//put names in selection box
+		fillList();										//put names in selection box
 		if(locDir['myself']){
-			locDir['myself'][8] = 'limited access';
+			locDir['myself'][4] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
 		
 			if(ChromeSyncOn){
@@ -250,61 +268,63 @@ function cancelKey(){
 			}			
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-			document.getElementById('mainmsg').innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+			mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 		}else{
-			document.getElementById('mainmsg').innerHTML = 'You have limited access to functions<br>For full access, reload and enter the Key'
+			mainMsg.innerHTML = 'You are in Guest mode<br>For full access, reload and enter the Key'
 		}
 	}
 	allowCancelWfullAccess = false;
-	closebox()
+	closeBox()
 }
 function cancelName(){
-	closebox()
+	closeBox();
+	callKey = ''
 }
 function cancelEmail(){
-	document.getElementById('email').value = '';
-	closebox();
+	emailBox.value = '';
+	closeBox();
+	callKey = ''
 }
 function cancelDecoyIn(){
-	document.getElementById('decoyPwdIn').value = '';
-	closebox()
+	decoyPwdIn.value = '';
+	closeBox()
 }
 function cancelDecoyOut(){
-	document.getElementById('decoyPwdOut').value = '';
-	closebox()
+	decoyPwdOut.value = '';
+	closeBox()
 }
 function cancelPartsIn(){
-	document.getElementById('partsNumber').value = '';
-	closebox()
+	partsNumber.value = '';
+	closeBox()
 }
 function cancelChat(){
-	closebox()
+	closeBox()
 }
 function cancelKeyChange(){
-	document.getElementById('newKey').value = '';
-	closebox();
-	if(document.getElementById('keyscr').style.display == 'block') document.getElementById('keyscr').style.display = 'none'
+	newKey.value = '';
+	closeBox();
+	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
+	callKey = ''
 }
 function hide5min(){
-	if(document.getElementById('never').checked){
-		document.getElementById('5min').style.display = "none"
+	if(neverMode.checked){
+		fiveMin.style.display = "none"
 	}else{
-		document.getElementById('5min').style.display = "block"
+		fiveMin.style.display = "block"
 	}
 }
 
 //triggered if the user types Enter in the name box of the locks screen
-function locknameKeyup(evt){
+function lockNameKeyup(evt){
 	evt = evt || window.event												//IE6 compliance
 	if (evt.keyCode == 13) {												//sync from Chrome or decrypt if hit Return
-		if(document.getElementById("lockmsg").innerHTML == ''){				//found nothing, so try to get it from Chrome sync
+		if(lockMsg.innerHTML == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn){
-				var name = document.getElementById("locknameBox").value;
-				getChromeLock(name);
+				getChromeLock(lockNameBox.value);
 			}
 		} else {												//decrypt 1st time if found locally, 2nd time if synced from Chrome
-			if(!document.getElementById("lockmsg").innerHTML.match('not found in your Chrome')){
-				var firstchar = document.getElementById('lockBox').value.slice(0,1);
+			if(!lockMsg.innerHTML.match('not found in your Chrome')){
+				var firstchar = lockBox.value.slice(0,1);
 				if(firstchar == '~'){
 					decryptLock()
 				}
@@ -313,7 +333,7 @@ function locknameKeyup(evt){
 	} else if (!suspendFindLock){											//otherwise search database
 			return findLock()
 	} else {
-		if(document.getElementById('lockBox').value.trim() == ''){
+		if(lockBox.value.trim() == ''){
 			suspendFindLock = false;
 			return findLock()
 		}
@@ -323,24 +343,24 @@ function locknameKeyup(evt){
 //displays Keys strength and resets Key timer
 function pwdKeyup(evt){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000);
+	keytimer = setTimeout(function() {pwd.value = ''}, 300000);
 	keytime = new Date().getTime();
 	evt = evt || window.event
 	if (evt.keyCode == 13){acceptKey()} else{
-		 return keyStrength(document.getElementById('pwd').value,true);
+		 return keyStrength(pwd.value,true);
 	}
 }
 
 //Key strength display on intro screen
 function introKeyup(){
-	return keyStrength(document.getElementById('pwdIntro').value,true);
+	return keyStrength(pwdIntro.value,true);
 }
 
 //same but for decoy In screen
 function decoyKeyup(evt){
 	evt = evt || window.event
 	if (evt.keyCode == 13){submitDecoyIn()} else{
-		 return keyStrength(document.getElementById('decoyPwdIn').value,true);
+		 return keyStrength(decoyPwdIn.value,true);
 	}
 }
 
@@ -348,7 +368,7 @@ function decoyKeyup(evt){
 function newKeyup(evt){
 	evt = evt || window.event
 	if (evt.keyCode == 13){changeKey()} else{
-		 return keyStrength(document.getElementById('newKey').value,true);
+		 return keyStrength(newKey.value,true);
 	}
 }
 
@@ -356,22 +376,21 @@ function newKeyup(evt){
 function newKey2up(evt){
 	evt = evt || window.event
 	if (evt.keyCode == 13){changeKey()} else {
-		var msg = document.getElementById('keychangemsg'),
-			newkey = document.getElementById('newKey').value,
-			newkey2 = document.getElementById('newKey2').value,
+		var	newkey = newKey.value,
+			newkey2 = newKey2.value,
 			length = newkey.length,
 			length2 = newkey2.length;
 		if(length != length2){
 			if(newkey2 == newkey.slice(0,length2)){
-				msg.innerHTML = 'Keys match so far. ' + (length-length2) + ' characters to go'
+				keyChangeMsg.innerHTML = 'Keys match so far. ' + (length - length2) + ' characters to go'
 			} else {
-				msg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
+				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
 			}
 		}else{
 			if(newkey2 == newkey){
-				msg.innerHTML = "<span style='color:green'>Keys match!</span>"
+				keyChangeMsg.innerHTML = "<span style='color:green'>Keys match!</span>"
 			} else {
-				msg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
+				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
 			}
 		}
 	}
@@ -379,8 +398,8 @@ function newKey2up(evt){
 
 //activated when the user clicks OK on a decoy screen
 function submitDecoyIn(){
-	closebox();
-	Decrypt_single()
+	closeBox();
+	lockUnlock()
 }
 
 //Enter has the same effect as clicking OK in decoy and parts box
@@ -389,16 +408,16 @@ function decoyKeyupOut(evt){
 	if (evt.keyCode == 13){submitDecoyOut()};
 }
 function submitDecoyOut(){
-	closebox();
-	Decrypt_single()
+	closeBox();
+	lockUnlock()
 }
 function partsKeyup(evt){
 	evt = evt || window.event
 	if (evt.keyCode == 13){submitParts()};
 }
 function submitParts(){
-	if(!isNaN(document.getElementById('partsNumber').value)){
-	closebox();
+	if(!isNaN(partsNumber.value)){
+	closeBox();
 	secretshare();
 	}
 }
@@ -413,135 +432,59 @@ function nameKeyup(evt){
 
 //for switching between sets of buttons
 function main2extra(){
-	if(document.getElementById('basicmode').checked) return;
-	openClose("mainbuttonstop");
-	openClose("extrabuttonstop");
+	if(basicMode.checked) return;
+	openClose("mainBtnsTop");
+	openClose("extraButtonsTop");
 	fillList();
 }
 
 //switch to Advanced mode
 function basic2adv(){
-	document.getElementById('mainbuttonstop').style.display = 'block';
-	document.getElementById('basicbuttonstop').style.display = 'none'
-	document.getElementById('lockbuttonstop').style.display = 'block';
-	document.getElementById('basiclockbuttonstop').style.display = 'none';
-	document.getElementById('lockbuttonsbot').style.display = 'block';
-	document.getElementById('advlockmodes').style.display = 'block';
-	document.getElementById('advancedModes').style.display = 'block';
-	document.getElementById('advancedHelp').style.display = 'block';
-	document.getElementById('basicmode').checked = false;
-	document.getElementById('advancedmode').checked = true;
+	mainBtnsTop.style.display = 'block';
+	basicBtnsTop.style.display = 'none'
+	lockBtnsTop.style.display = 'block';
+	basicLockBtnsTop.style.display = 'none';
+	lockBtnsBottom.style.display = 'block';
+	advLockModes.style.display = 'block';
+	advancedModes.style.display = 'block';
+	advancedBtns.style.display = 'block';
+	advancedHelp.style.display = 'block';
+	basicMode.checked = false;
+	advancedMode.checked = true;
 
-	BasicButtons = false
-	
-	if(locDir['myself'] && fullAccess){		
-		locDir['myself'][3] = 'advanced';
-		localStorage[userName] = JSON.stringify(locDir);
-		if(ChromeSyncOn){
-			syncChromeLock('myself',JSON.stringify(locDir['myself']));
-		}
-	};
+	BasicButtons = false;
+	checkboxStore()
 }
 
 //switch to Basic mode
 function adv2basic(){
-	document.getElementById('mainbuttonstop').style.display = 'none';
-	document.getElementById('extrabuttonstop').style.display = 'none';
-	document.getElementById('basicbuttonstop').style.display = 'block'
-	document.getElementById('lockbuttonstop').style.display = 'none';
-	document.getElementById('basiclockbuttonstop').style.display = 'block';
-	document.getElementById('lockbuttonsbot').style.display = 'none';
-	document.getElementById('advlockmodes').style.display = 'none';
-	document.getElementById('advancedModes').style.display = 'none';
-	document.getElementById('advancedHelp').style.display = 'none';
-	document.getElementById('basicmode').checked = true;
-	document.getElementById('advancedmode').checked = false;
+	mainBtnsTop.style.display = 'none';
+	extraButtonsTop.style.display = 'none';
+	basicBtnsTop.style.display = 'block'
+	lockBtnsTop.style.display = 'none';
+	basicLockBtnsTop.style.display = 'block';
+	lockBtnsBottom.style.display = 'none';
+	advLockModes.style.display = 'none';
+	advancedModes.style.display = 'none';
+	advancedBtns.style.display = 'none';
+	advancedHelp.style.display = 'none';
+	basicMode.checked = true;
+	advancedMode.checked = false;
 
-	BasicButtons = true
-	
-	if(locDir['myself'] && fullAccess){		
-		locDir['myself'][3] = 'basic';
-		localStorage[userName] = JSON.stringify(locDir);
-		if(ChromeSyncOn){
-			syncChromeLock('myself',JSON.stringify(locDir['myself']));
-		}
-	};
+	BasicButtons = true;	
+	checkboxStore();
 	fillList()
-}
-
-//makes the ezLok choice permanent
-function ezLokStore(){
-	if(locDir['myself']){
-		if (document.getElementById('ezLok').checked){
-			locDir['myself'][4] = 'ezLok on'
-		} else {
-			locDir['myself'][4] = 'ezLok off'
-		}
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-		
-	if(ChromeSyncOn){
-		syncChromeLock('myself',JSON.stringify(locDir['myself']));
-	}
-}
-
-//makes the encrypt Locks choice permanent
-function encryptLocksStore(){
-	if(locDir['myself']){
-		if (document.getElementById('encryptLocks').checked){
-			locDir['myself'][5] = 'encrypt Locks'
-		} else {
-			locDir['myself'][5] = 'do not encrypt Locks'
-		}
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-		
-	if(ChromeSyncOn){
-		syncChromeLock('myself',JSON.stringify(locDir['myself']));
-	}
-}
-
-//makes the small Output choice permanent
-function smallOutStore(){
-	if(locDir['myself']){
-		if (document.getElementById('smallOut').checked){
-			locDir['myself'][6] = 'small Output'
-		} else {
-			locDir['myself'][6] = 'normal Output'
-		}
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-		
-	if(ChromeSyncOn){
-		syncChromeLock('myself',JSON.stringify(locDir['myself']));
-	}
-}
-
-//makes the RS code choice permanent
-function RScodeStore(){
-	if(locDir['myself']){
-		if (document.getElementById('ReedSol').checked){
-			locDir['myself'][7] = 'RS code on'
-		} else {
-			locDir['myself'][7] = 'RS code off'
-		}
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-		
-	if(ChromeSyncOn){
-		syncChromeLock('myself',JSON.stringify(locDir['myself']));
-	}
 }
 
 //opens local directory for input if something seems to be missing
 function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
-	openClose("lockscr");
+	openClose('lockScr');
 	openClose('shadow');
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
-		document.getElementById('lockmsg').innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
+		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
-	var string = document.getElementById('lockBox').value;
+	var string = lockBox.value;
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newcover(string);
 	}
@@ -549,13 +492,13 @@ function main2lock(){
 
 //open image screen
 function main2image(){
-	if (learnOn){
+	if (learnMode.checked){
 		var reply = confirm("A new screen will open so you can load an image and hide the contents of the box in it. This only works for valid PassLok output. Cancel if this is not what you want.");
-		if(reply == false) throw("Image canceled");
+		if(!reply) throw("Image canceled");
 	};
-	openClose('imagescr');
-	if(document.getElementById('preview').src.slice(0,4)!='data'){
-		document.getElementById('imagemsg').innerHTML='Click the button above to load an image'
+	openClose('imageScr');
+	if(preview.src.slice(0,4)!='data'){
+		imagemsg.innerHTML='Click the button above to load an image'
 	}else{
 		updateCapacity()
 	}
@@ -563,96 +506,94 @@ function main2image(){
 
 //return from image screen
 function image2main(){
-	if(document.getElementById('imagescr').style.display=='block'){
-		openClose('imagescr');
+	if(imageScr.style.display=='block'){
+		openClose('imageScr');
 	}
 }
 
 //go to general directory frame
 function lock2dir(){
-	if (learnOn){
+	if (learnMode.checked){
 		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
-		if(reply == false) throw("General Directory canceled");
+		if(!reply) throw("General Directory canceled");
 	};
-	if(document.getElementById('keyscr').style.display=='block') return;
-	if(document.getElementById('lockdir').style.display=='none') loadLockDir();
-	var locklength = striptags(XSSfilter(document.getElementById('mainBox').innerHTML.replace(/\&nbsp;/g,''))).length;
-	if ((locklength == 43 || locklength == 50) && document.getElementById('lockdir').style.display != "block"){
+	if(keyScr.style.display=='block') return;
+	if(lockdirScr.style.display=='none') loadLockDir();
+	var locklength = striptags(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
+	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
 //if populated, send Lock to directory
-		var lockdirframe = document.getElementById('lockdirframe');
-		lockdirframe.contentWindow.postMessage(XSSfilter(document.getElementById('mainBox').innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');
-		lockdirframe.onload = function() {
-	    	lockdirframe.contentWindow.postMessage(XSSfilter(document.getElementById('mainBox').innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
+		lockdirFrame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');
+		lockdirFrame.onload = function() {
+	    	lockdirFrame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
 		};
-		document.getElementById('lockdir').style.display = "block";
+		lockdirScr.style.display = "block";
 		return
 	}
-	openClose('lockdir');
+	openClose('lockdirScr');
 	focusBox()
 }
 
 //return from general directory frame
 function dir2any(){
-	openClose('lockdir');
+	openClose('lockdirScr');
 	focusBox()
 }
 
 //to load general Lock directory only once
 function loadLockDir(){
-	if(document.getElementById('lockdirframe').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirframe').src = 'https://www.passlok.com/lockdir';
+	if(lockdirFrame.src != 'https://www.passlok.com/lockdirScr') lockdirFrame.src = 'https://www.passlok.com/lockdirScr';
 }
 
 //loads the chat frame
 function main2chat(token){
-	var chatframe = document.getElementById('chatframe');
 	if(isAndroid){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
 		if(!reply) throw('chat canceled by user');
 	}
-	chatframe.src = 'https://www.passlok.com/chat/index.html#' + token;
-	document.getElementById('chatscr').style.display = 'block';
+	chatFrame.src = 'https://www.passlok.com/chat/index.html#' + token;
+	chatScr.style.display = 'block';
 }
 
 //called when the Key box is empty
 function any2key(){
-	closebox();
-	document.getElementById('shadow').style.display = 'block';
-	document.getElementById('keyscr').style.display = 'block';
-	if(!isMobile) document.getElementById("pwd").focus();
+	closeBox();
+	shadow.style.display = 'block';
+	keyScr.style.display = 'block';
+	if(!isMobile) pwd.focus();
 	allowCancelWfullAccess = false
 }
 
 //called when the email box is empty
 function any2email(){
-	document.getElementById('shadow').style.display = 'block';
-	document.getElementById('emailscr').style.display = 'block';
-	document.getElementById('emailmsg').innerHTML = 'Please enter your new email or similar item, or a new random token';
-	if(!isMobile) document.getElementById("email").focus()
+	shadow.style.display = 'block';
+	emailScr.style.display = 'block';
+	emailMsg.innerHTML = 'Please enter your new email or similar item, or a new random token';
+	if(!isMobile) emailBox.focus()
 }
 
 //close screens and reset Key timer when leaving the Key box. Restarts whatever was being done when the Key was found missing.
 function key2any(){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {document.getElementById('pwd').value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
+	keytimer = setTimeout(function() {pwd.value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
-	var key = document.getElementById('pwd').value.trim();
-	document.getElementById('keyscr').style.display = 'none';
-	document.getElementById('shadow').style.display = 'none';
+	keyScr.style.display = 'none';
+	shadow.style.display = 'none';
 }
 
 //leave email screen
 function email2any(){
-	var email = document.getElementById('email').value.trim();
+	callKey = 'changeemail';
+	var email = emailBox.value.trim();
 	if(myEmail.length == 43 && fullAccess){
 		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
 		if(!result){
-			document.getElementById('emailmsg').innerHTML = 'Random token overwrite canceled';
+			emailMsg.innerHTML = 'Random token overwrite canceled';
 			throw ('random token overwrite canceled')
 		}
 	}
 	myEmail = email;
-	document.getElementById('email').value = '';
+	emailBox.value = '';
 	var	key = readKey();
 	if(!KeyDir) KeyDir = wiseHash(key,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,myEmail)).secretKey;			//do this regardless in case email has changed
@@ -660,36 +601,45 @@ function email2any(){
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 
-	if(fullAccess) storemyLock();										//this also stores the email
-	document.getElementById('emailscr').style.display = 'none';
+	if(fullAccess){
+		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
+			delete locDir[name][1];
+			
+			if(ChromeSyncOn) syncChromeLock(name,JSON.stringify(locDir[name]))
+		}
+		storemyLock();										//this also stores the email		
+	}
+	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
-	if(tabLinks['optionsTab'].className == 'selected') document.getElementById('optionmsg').innerHTML = '<span style="color:green">Email/token changed</span>';
+	if(tabLinks['optionsTab'].className == 'selected') optionMsg.innerHTML = '<span style="color:green">Email/token changed</span>';
+	callKey = ''
 }
 
 //leave name change screen
 function name2any(){
-	if(document.getElementById('userName').value == '') {}
-	if(fullAccess) changeName();
-	closebox();
-	document.getElementById('optionmsg').innerHTML = '<span style="color:green">The User Name has changed to: '+ userName +'</span>'
+	callKey = 'changename';
+	if(fullAccess){
+		changeName()
+	}else{
+		namechangemsg.innerHTML = 'Name change not allowed after Key cancel';
+		throw('Name change canceled')
+	}
+	closeBox();
+	optionMsg.innerHTML = '<span style="color:green">The User Name has changed to: '+ userName +'</span>';
+	callKey = ''
 }
 
 //put cursor in the box. Handy when using keyboard shortcuts
 function focusBox(){
 	if (!isMobile){															//on mobile, don't focus
-		if(document.getElementById('keyscr').style.display == 'block'){
-			document.getElementById("pwd").focus()
-		} else if(document.getElementById('lockscr').style.display == 'block'){
-			document.getElementById("locknameBox").focus()
+		if(keyScr.style.display == 'block'){
+			pwd.focus()
+		} else if(lockScr.style.display == 'block'){
+			lockNameBox.focus()
 		} else {
-			document.getElementById("mainBox").focus()
+			mainBox.focus()
 		}
 	}
-}
-
-//sets Learn mode when the appropriate box is checked
-function setlearnmode(){
-	if (document.getElementById("learnmode").checked) {learnOn = true} else {learnOn = false}
 }
 
 //simple XSS filter for use in innerHTML-editing statements. Removes stuff between angle brackets
@@ -721,7 +671,7 @@ function openClose(theID) {
           var tabLink = getFirstChildWithTagName( tabListItems[i], 'A' );
           var id = getHash( tabLink.getAttribute('href') );
           tabLinks[id] = tabLink;
-          contentDivs[id] = document.getElementById( id );
+          contentDivs[id] = document.getElementById(id);
         }
       }
 
@@ -812,28 +762,28 @@ function findString (str) {
   return;
  }
  if (!strFound){
-	 document.getElementById('helpmsg').innerHTML = 'Text not found in the titles'
+	 helpmsg.innerHTML = 'Text not found in the titles'
  }else{
-	 document.getElementById('helpmsg').innerHTML = 'Text highlighted below. Click again to see more results'
+	 helpmsg.innerHTML = 'Text highlighted below. Click again to see more results'
  }
  return;
 }
 
 //for rich text editing
 function formatDoc(sCmd, sValue) {
-	  document.execCommand(sCmd, false, sValue); document.getElementById("mainBox").focus(); 
+	  document.execCommand(sCmd, false, sValue); mainBox.focus(); 
 }
 
 var niceEditor = false;
 //function to toggle rich text editing on mainBox
 function toggleRichText() {
 	if(niceEditor) {
-		document.getElementById('toolBar1').style.display = 'none';
-		document.getElementById('niceEditButton').innerHTML = 'Rich';
+		toolBar1.style.display = 'none';
+		niceEditBtn.innerHTML = 'Rich';
 		niceEditor = false
 	} else {
-		document.getElementById('toolBar1').style.display = 'block';
-		document.getElementById('niceEditButton').innerHTML = 'Plain';
+		toolBar1.style.display = 'block';
+		niceEditBtn.innerHTML = 'Plain';
 		niceEditor = true
 	}
 	textheight();

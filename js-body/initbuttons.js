@@ -2,234 +2,262 @@
 window.onload = function() {
 
 	if(isMobile){
-		document.getElementById('niceEditButton').style.display = 'none';		//no rich text editing on mobile
-		document.getElementById('filebuttons').style.display = 'none';
-		document.getElementById('selectMainButton').style.display = 'none';
+		niceEditBtn.style.display = 'none';		//no rich text editing on mobile
+		fileBtns.style.display = 'none';
+		selectMainBtn.style.display = 'none';
 	} else {
-		document.getElementById('preview').style.width = "40%";					//smaller image on PCs
-		document.getElementById('sendSMSButton').style.display = 'none';
+		preview.style.width = "40%";					//smaller image on PCs
+		sendSMSBtn.style.display = 'none';
 	}
 	if(!isMobile || isChrome){							//search box in Help tab. Works on Android Chrome, but won't detect right
-		document.getElementById('helptopmobile').style.display = 'none';
-		document.getElementById('helptop').style.display = 'block';
-		document.getElementById('helpspace').style.display = 'block'
+		helpTopMobile.style.display = 'none';
+		helpTop.style.display = 'block';
+		helpSpace.style.display = 'block'
 	}
 
 	window.addEventListener("resize", function() { textheight();chatResize();}, false)	    	//resize if the window changes
 
 	//this one for loading files into extra screen
-    document.getElementById('fileToLoad').addEventListener('change', loadFileAsURL, false);
+    mainFile.addEventListener('change', loadFileAsURL, false);
 
     // add action to the file input
-    document.getElementById('imagefile').addEventListener('change', importImage);
+    imageFile.addEventListener('change', importImage);
 
     // add action to the encode button
-    document.getElementById('encode').addEventListener('click', encodeImage);
+    encodeImgBtn.addEventListener('click', encodeImage);
 
     // add action to the decode button
-    document.getElementById('decode').addEventListener('click', decodeImage);
+    decodeImgBtn.addEventListener('click', decodeImage);
 
 //button code moved from html page, used to be inline
 
-   	document.getElementById('showlockButton').addEventListener('click', showLock);
+   	showLockBtn.addEventListener('click', showLock);
 
-   	document.getElementById('basicmode').addEventListener('click', adv2basic);
+	selectMainBtn.addEventListener('click', selectMain);
 
-   	document.getElementById('advancedmode').addEventListener('click', basic2adv);
-	
-	document.getElementById('selectMainButton').addEventListener('click', selectMain);
+   	clearMainBtn.addEventListener('click', clearMain);
 
-   	document.getElementById('clearMainButton').addEventListener('click', clearMain);
+   	showLockBtnBasic.addEventListener('click', showLock);
 
-   	document.getElementById('showlockButtonBasic').addEventListener('click', showLock);
+   	decryptBtn.addEventListener('click', lockUnlock);
 
-   	document.getElementById('decryptButton').addEventListener('click', Decrypt_single);
+	verifyBtn.addEventListener('click', verifySignature);
 
-	document.getElementById('verifyButton').addEventListener('click', verifySignature);
+   	main2extraBtn.addEventListener('click', main2extra);
 
-   	document.getElementById('main2extraButton').addEventListener('click', main2extra);
+   	decryptBtnBasic.addEventListener('click', lockUnlock);
 
-   	document.getElementById('decryptButtonBasic').addEventListener('click', Decrypt_single);
+   	extra2mainBtn.addEventListener('click', main2extra);
 
-   	document.getElementById('extra2mainButton').addEventListener('click', main2extra);
+   	niceEditBtn.addEventListener('click', toggleRichText);
 
-   	document.getElementById('niceEditButton').addEventListener('click', toggleRichText);
+   	sendMailBtn.addEventListener('click', sendMail);
 
-   	document.getElementById('sendMailButton').addEventListener('click', sendMail);
+   	chatBtn.addEventListener('click', Chat);
 
-   	document.getElementById('chatButton').addEventListener('click', Chat);
+   	sendSMSBtn.addEventListener('click', sendSMS);
 
-   	document.getElementById('sendSMSButton').addEventListener('click', sendSMS);
+   	imageBtn.addEventListener('click', main2image);
 
-   	document.getElementById('imageButton').addEventListener('click', main2image);
+   	secretShareBtn.addEventListener('click', secretshare);
 
-   	document.getElementById('secretshareButton').addEventListener('click', secretshare);
+	stegoBtn.addEventListener('click', textStego);
 
-	document.getElementById('stegoButton').addEventListener('click', textStego);
+   	saveFileBtn.addEventListener('click', saveURLAsFile);
 
-   	document.getElementById('savefileButton').addEventListener('click', saveURLAsFile);
+   	image2mainBtn.addEventListener('click', image2main);
 
-   	document.getElementById('image2mainButton').addEventListener('click', image2main);
+   	lock2dirBtn.addEventListener('click', lock2dir);
 
-   	document.getElementById('lock2dirButton').addEventListener('click', lock2dir);
+   	clearLocksBtn.addEventListener('click', clearLocks);
 
-   	document.getElementById('clearLocksButton').addEventListener('click', clearLocks);
+   	clearLocksBtnBasic.addEventListener('click', clearLocks);
 
-   	document.getElementById('clearLocksButtonBasic').addEventListener('click', clearLocks);
+   	addLockBtn.addEventListener('click', addLock);
 
-   	document.getElementById('addLockButton').addEventListener('click', addLock);
+   	removeLockBtn.addEventListener('click', removeLock);
 
-   	document.getElementById('removeLockButton').addEventListener('click', removeLock);
+   	resetPFSBtn.addEventListener('click', resetPFS);
 
-   	document.getElementById('resetPFSButton').addEventListener('click', resetPFS);
+   	addToListBtn.addEventListener('click', addToList);
 
-   	document.getElementById('addToListButton').addEventListener('click', addToList);
+   	addLockBtnBasic.addEventListener('click', addLock);
 
-   	document.getElementById('addLockButtonBasic').addEventListener('click', addLock);
+   	removeLockBtnBasic.addEventListener('click', removeLock);
 
-   	document.getElementById('removeLockButtonBasic').addEventListener('click', removeLock);
+   	showLockDBBtn.addEventListener('click', showLockDB);
 
-   	document.getElementById('showLockDBButton').addEventListener('click', showLockDB);
+   	mergeLockDBBtn.addEventListener('click', mergeLockDB);
 
-   	document.getElementById('mergeLockDBButton').addEventListener('click', mergeLockDB);
+   	resetLockDBBtn.addEventListener('click', resetLockDB);
 
-   	document.getElementById('resetLockDBButton').addEventListener('click', resetLockDB);
+   	moveLockDBBtn.addEventListener('click', moveLockDB);
 
-   	document.getElementById('moveLockDBButton').addEventListener('click', moveLockDB);
+   	acceptKeyBtn.addEventListener('click', acceptKey);
 
-   	document.getElementById('acceptKeyButton').addEventListener('click', acceptKey);
+   	cancelKeyBtn.addEventListener('click', cancelKey);
 
-   	document.getElementById('cancelKeyButton').addEventListener('click', cancelKey);
+   	skipIntroBtn.addEventListener('click', cancelKey);
 
-   	document.getElementById('skipintro').addEventListener('click', cancelKey);
+   	changeNameBtn.addEventListener('click', showName);
 
-   	document.getElementById('changeNameButton').addEventListener('click', showName);
+   	changeKeyBtn.addEventListener('click', changeKey);
 
-   	document.getElementById('changeKeyButton').addEventListener('click', changeKey);
+   	changeEmailBtn.addEventListener('click', showEmail);
 
-   	document.getElementById('changeEmailButton').addEventListener('click', showEmail);
+   	backupSettingsBtn.addEventListener('click', moveMyself);
 
-   	document.getElementById('backupSettings').addEventListener('click', moveMyself);
+   	basicMode.addEventListener('click', adv2basic);
 
-   	document.getElementById('ezLok').addEventListener('click', ezLokStore);
+   	advancedMode.addEventListener('click', basic2adv);
 
-   	document.getElementById('encryptLocks').addEventListener('click', encryptLocksStore);
+	anonMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('smallOut').addEventListener('click', smallOutStore);
+	signedMode.addEventListener('click', checkboxStore);
 
-	document.getElementById('ReedSol').addEventListener('click', RScodeStore);
+	pfsMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('showKey').addEventListener('click', showsec);
+	onceMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('introRandomButton').addEventListener('click', randomToken);
+	learnMode.addEventListener('click', checkboxStore);
 
-	document.getElementById('clearIntroRandomButton').addEventListener('click', clearIntroEmail);
+	shortMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('randomEmailButton').addEventListener('click', randomToken);
+	decoyMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('acceptEmailButton').addEventListener('click', email2any);
+   	ezLokMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('cancelEmailButton').addEventListener('click', cancelEmail);
+	noTagsMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('acceptNameButton').addEventListener('click', name2any);
+   	smallOutMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('cancelNameButton').addEventListener('click', cancelName);
+   	encryptLocksMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('showIntroKey').addEventListener('click', showIntro);
+	ReedSolMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('clearIntroButton').addEventListener('click', clearIntro);
+	tripleMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('suggestIntroButton').addEventListener('click', suggestIntro);
+	attachedMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('showlockIntroButton').addEventListener('click', initUser);
+	sealMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('showdecIn').addEventListener('click', showdecoyIn);
+	sentenceMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('submitDecoyButton').addEventListener('click', submitDecoyIn);
+	wordMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('cancelDecoyButton').addEventListener('click', cancelDecoyIn);
+	spaceMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('showdecOut').addEventListener('click', showdecoyOut);
+	chainMode.addEventListener('click', checkboxStore);
 
-   	document.getElementById('submitDecoy2Button').addEventListener('click', submitDecoyOut);
+   	showKey.addEventListener('click', showsec);
 
-   	document.getElementById('cancelDecoy2Button').addEventListener('click', cancelDecoyOut);
+   	introRandomBtn.addEventListener('click', randomToken);
 
-   	document.getElementById('submitPartsButton').addEventListener('click', submitParts);
+	clearIntroRandomBtn.addEventListener('click', clearIntroEmail);
 
-   	document.getElementById('cancelPartsButton').addEventListener('click', cancelPartsIn);
+   	randomEmailBtn.addEventListener('click', randomToken);
 
-   	document.getElementById('learnmode').addEventListener('click', setlearnmode);
+   	acceptEmailBtn.addEventListener('click', email2any);
 
-   	document.getElementById('closelockdirButton').addEventListener('click', lock2dir);
+   	cancelEmailBtn.addEventListener('click', cancelEmail);
 
-   	document.getElementById('closechatButton').addEventListener('click', chat2main);
+   	acceptNameBtn.addEventListener('click', name2any);
 
-   	document.getElementById('resetchatButton').addEventListener('click', resetChat);
+   	cancelNameBtn.addEventListener('click', cancelName);
 
-   	document.getElementById('cancelChatButton').addEventListener('click', closebox);
+   	showIntroKey.addEventListener('click', showIntro);
 
-   	document.getElementById('submitChatButton').addEventListener('click', makeChat);
+   	clearIntroBtn.addEventListener('click', clearIntro);
 
-	document.getElementById('locklist').addEventListener('change', fillBox);
+   	suggestIntroBtn.addEventListener('click', suggestIntro);
 
-   	document.getElementById('resetListButton').addEventListener('click', resetList);
+   	showlockIntroBtn.addEventListener('click', initUser);
 
-	document.getElementById('main2lockButton').addEventListener('click', main2lock);
+   	showDecoyInCheck.addEventListener('click', showDecoyIn);
 
-	document.getElementById('lock2mainButton').addEventListener('click', main2lock);
+   	submitDecoyBtn.addEventListener('click', submitDecoyIn);
 
-   	document.getElementById('newUserButton').addEventListener('click', newUser);
+   	cancelDecoyBtn.addEventListener('click', cancelDecoyIn);
 
-   	document.getElementById('submitKeychange').addEventListener('click', changeKey);
+   	showDecoyOutCheck.addEventListener('click', showDecoyOut);
 
-   	document.getElementById('cancelKeychange').addEventListener('click', cancelKeyChange);
+   	submitDecoy2Btn.addEventListener('click', submitDecoyOut);
 
-   	document.getElementById('showNewKey').addEventListener('click', showNewKey);
+   	cancelDecoy2Btn.addEventListener('click', cancelDecoyOut);
 
-	document.getElementById('gotointro2').addEventListener('click', go2intro2);
+   	submitPartsBtn.addEventListener('click', submitParts);
 
-   	document.getElementById('backtointro1').addEventListener('click', go2intro2);
+   	cancelPartsBtn.addEventListener('click', cancelPartsIn);
 
-   	document.getElementById('gotointro3').addEventListener('click', go2intro3);
+   	closeLockdirBtn.addEventListener('click', lock2dir);
 
-   	document.getElementById('backtointro2').addEventListener('click', go2intro3);
+   	closeChatBtn.addEventListener('click', chat2main);
 
-   	document.getElementById('gotointro4').addEventListener('click', go2intro4);
+   	resetChatBtn.addEventListener('click', resetChat);
 
-   	document.getElementById('backtointro3').addEventListener('click', go2intro4);
+   	cancelChatBtn.addEventListener('click', closeBox);
 
-   	document.getElementById('gotointro5').addEventListener('click', go2intro5);
+   	submitChatBtn.addEventListener('click', makeChat);
 
-   	document.getElementById('backtointro4').addEventListener('click', go2intro5);
+	lockList.addEventListener('change', fillBox);
 
-   	document.getElementById('mainBox').addEventListener('keyup', charsLeft);
+   	resetListBtn.addEventListener('click', resetList);
 
-   	document.getElementById('decoyText').addEventListener('keyup', charsLeft);
+	main2lockBtn.addEventListener('click', main2lock);
 
-   	document.getElementById('chatdate').addEventListener('keyup', charsLeft);
+	lock2mainBtn.addEventListener('click', main2lock);
+
+   	newUserBtn.addEventListener('click', newUser);
+
+   	submitKeyChangeBtn.addEventListener('click', changeKey);
+
+   	cancelKeyChangeBtn.addEventListener('click', cancelKeyChange);
+
+   	showNewKeyCheck.addEventListener('click', showNewKey);
+
+	gotointro2.addEventListener('click', go2intro2);
+
+   	backtointro1.addEventListener('click', go2intro2);
+
+   	gotointro3.addEventListener('click', go2intro3);
+
+   	backtointro2.addEventListener('click', go2intro3);
+
+   	gotointro4.addEventListener('click', go2intro4);
+
+   	backtointro3.addEventListener('click', go2intro4);
+
+   	gotointro5.addEventListener('click', go2intro5);
+
+   	backtointro4.addEventListener('click', go2intro5);
+
+   	mainBox.addEventListener('keyup', charsLeft);
+
+   	decoyText.addEventListener('keyup', charsLeft);
+
+   	chatDate.addEventListener('keyup', charsLeft);
 
 //Firefox requires the keyup code to be inline if it refers to the event
 //but this must be removed for the Chrome app and replaced with those commented below
 
-//	document.getElementById('pwd').addEventListener('keyup', function() {pwdKeyup(event)}, false);
+//	pwd.addEventListener('keyup', function() {pwdKeyup(event)}, false);
 
-   	document.getElementById('pwdIntro').addEventListener('keyup', introKeyup);
+   	pwdIntro.addEventListener('keyup', introKeyup);
 
-//	document.getElementById('decoyPwdIn').addEventListener('keyup', function() {decoyKeyup(event)}, false);
+//	decoyPwdIn.addEventListener('keyup', function() {decoyKeyup(event)}, false);
 
-//	document.getElementById('decoyPwdOut').addEventListener('keyup', function() {decoyKeyupOut(event)}, false);
+//	decoyPwdOut.addEventListener('keyup', function() {decoyKeyupOut(event)}, false);
 
-//	document.getElementById('partsIn').addEventListener('keyup', function() {partsKeyup(event)}, false);
+//	partsIn.addEventListener('keyup', function() {partsKeyup(event)}, false);
 
-	document.getElementById('newKey').addEventListener('keyup', newKeyup);
+	newKey.addEventListener('keyup', newKeyup);
 
-//	document.getElementById('newKey2').addEventListener('keyup', function() {newKey2up(event)}, false);
+//	newKey2.addEventListener('keyup', function() {newKey2up(event)}, false);
 
-//	document.getElementById('locknameBox').addEventListener('keyup', function() {locknameKeyup(event)}, false);
+//	lockNameBox.addEventListener('keyup', function() {lockNameKeyup(event)}, false);
 	
-	document.getElementById('lockBox').addEventListener('keyup', applyRStoLock);
-	document.getElementById('lockBox').addEventListener('paste', pasteLock);
+	lockBox.addEventListener('keyup', applyRStoLock);
+	lockBox.addEventListener('paste', pasteLock);
 	
 	function pasteLock() {
     setTimeout(function(){
@@ -237,18 +265,18 @@ window.onload = function() {
     }, 0); //or 4
 	}
 
-//	document.getElementById('userName').addEventListener('keyup', function() {nameKeyup(event)}, false);
+//	userName.addEventListener('keyup', function() {nameKeyup(event)}, false);
 		
-//	document.getElementById('email').addEventListener('keyup', function() {emailKeyup(event)}, false);
+//	email.addEventListener('keyup', function() {emailKeyup(event)}, false);
 
-	document.getElementById('never').addEventListener('click', hide5min);
+	neverMode.addEventListener('click', hide5min);
 	
 //for the rich text editor boxes and buttons
-	document.getElementById('formatblock').addEventListener("change", function() {formatDoc('formatblock',this[this.selectedIndex].value);this.selectedIndex=0;});
-	document.getElementById('fontname').addEventListener("change", function() {formatDoc('fontname',this[this.selectedIndex].value);this.selectedIndex=0;});
-	document.getElementById('fontsize').addEventListener("change", function() {formatDoc('fontsize',this[this.selectedIndex].value);this.selectedIndex=0;});
-	document.getElementById('forecolor').addEventListener("change", function() {formatDoc('forecolor',this[this.selectedIndex].value);this.selectedIndex=0;});
-	document.getElementById('backcolor').addEventListener("change", function() {formatDoc('backcolor',this[this.selectedIndex].value);this.selectedIndex=0;});
+	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
+	fontName.addEventListener("change", function() {formatDoc('fontName',this[this.selectedIndex].value);this.selectedIndex=0;});
+	fontSize.addEventListener("change", function() {formatDoc('fontSize',this[this.selectedIndex].value);this.selectedIndex=0;});
+	foreColor.addEventListener("change", function() {formatDoc('foreColor',this[this.selectedIndex].value);this.selectedIndex=0;});
+	backColor.addEventListener("change", function() {formatDoc('backColor',this[this.selectedIndex].value);this.selectedIndex=0;});
 
 	document.images[0].addEventListener("click", function() {formatDoc('bold')});
 	document.images[1].addEventListener("click", function() {formatDoc('italic')});
@@ -262,7 +290,7 @@ window.onload = function() {
 	document.images[9].addEventListener("click", function() {formatDoc('justifyfull')});
 	document.images[10].addEventListener("click", function() {formatDoc('insertorderedlist')});
 	document.images[11].addEventListener("click", function() {formatDoc('insertunorderedlist')});
-	document.images[12].addEventListener("click", function() {formatDoc('formatblock','blockquote')});
+	document.images[12].addEventListener("click", function() {formatDoc('formatBlock','blockquote')});
 	document.images[13].addEventListener("click", function() {formatDoc('outdent')});
 	document.images[14].addEventListener("click", function() {formatDoc('indent')});
 	document.images[15].addEventListener("click", function() {formatDoc('inserthorizontalrule')});
@@ -273,133 +301,133 @@ window.onload = function() {
 	document.images[20].addEventListener("click", function() {formatDoc('redo')});
 	
 //for the help screens
-	document.getElementById('aa1').addEventListener('click', function() {openClose('a1')});
-	document.getElementById('aa2').addEventListener('click', function() {openClose('a2')});
-	document.getElementById('aa3').addEventListener('click', function() {openClose('a3')});
-	document.getElementById('aa4').addEventListener('click', function() {openClose('a4')});
-	document.getElementById('aa5').addEventListener('click', function() {openClose('a5')});
-	document.getElementById('aa6').addEventListener('click', function() {openClose('a6')});
-	document.getElementById('aa7').addEventListener('click', function() {openClose('a7')});
-	document.getElementById('aa8').addEventListener('click', function() {openClose('a8')});
-	document.getElementById('aa9').addEventListener('click', function() {openClose('a9')});
-	document.getElementById('aa10').addEventListener('click', function() {openClose('a10')});
-	document.getElementById('aa11').addEventListener('click', function() {openClose('a11')});
-	document.getElementById('aa12').addEventListener('click', function() {openClose('a12')});
-	document.getElementById('aa13').addEventListener('click', function() {openClose('a13')});
-	document.getElementById('aa14').addEventListener('click', function() {openClose('a14')});
-	document.getElementById('aa15').addEventListener('click', function() {openClose('a15')});
-	document.getElementById('aa16').addEventListener('click', function() {openClose('a16')});
-	document.getElementById('aa17').addEventListener('click', function() {openClose('a17')});
-	document.getElementById('aa18').addEventListener('click', function() {openClose('a18')});
-	document.getElementById('aa19').addEventListener('click', function() {openClose('a19')});
-	document.getElementById('aa20').addEventListener('click', function() {openClose('a20')});
-	document.getElementById('aa21').addEventListener('click', function() {openClose('a21')});
-	document.getElementById('aa22').addEventListener('click', function() {openClose('a22')});
-	document.getElementById('aa23').addEventListener('click', function() {openClose('a23')});
-	document.getElementById('aa24').addEventListener('click', function() {openClose('a24')});
-	document.getElementById('aa25').addEventListener('click', function() {openClose('a25')});
-	document.getElementById('aa26').addEventListener('click', function() {openClose('a26')});
-	document.getElementById('aa27').addEventListener('click', function() {openClose('a27')});
-	document.getElementById('aa28').addEventListener('click', function() {openClose('a28')});
-	document.getElementById('aa29').addEventListener('click', function() {openClose('a29')});
-	document.getElementById('aa30').addEventListener('click', function() {openClose('a30')});
-	document.getElementById('aa31').addEventListener('click', function() {openClose('a31')});
-	document.getElementById('aa32').addEventListener('click', function() {openClose('a32')});
-	document.getElementById('aa33').addEventListener('click', function() {openClose('a33')});
-	document.getElementById('aa34').addEventListener('click', function() {openClose('a34')});
-	document.getElementById('aa35').addEventListener('click', function() {openClose('a35')});
-	document.getElementById('aa36').addEventListener('click', function() {openClose('a36')});
-	document.getElementById('aa37').addEventListener('click', function() {openClose('a37')});
-	document.getElementById('aa38').addEventListener('click', function() {openClose('a38')});
-	document.getElementById('aa39').addEventListener('click', function() {openClose('a39')});
-	document.getElementById('aa40').addEventListener('click', function() {openClose('a40')});
-	document.getElementById('aa41').addEventListener('click', function() {openClose('a41')});
-	document.getElementById('aa42').addEventListener('click', function() {openClose('a42')});
-	document.getElementById('aa43').addEventListener('click', function() {openClose('a43')});
-	document.getElementById('aa44').addEventListener('click', function() {openClose('a44')});
-	document.getElementById('aa45').addEventListener('click', function() {openClose('a45')});
-	document.getElementById('aa46').addEventListener('click', function() {openClose('a46')});
-	document.getElementById('aa47').addEventListener('click', function() {openClose('a47')});
-	document.getElementById('aa48').addEventListener('click', function() {openClose('a48')});
-	document.getElementById('aa49').addEventListener('click', function() {openClose('a49')});
-	document.getElementById('aa50').addEventListener('click', function() {openClose('a50')});
-	document.getElementById('aa51').addEventListener('click', function() {openClose('a51')});
-	document.getElementById('aa52').addEventListener('click', function() {openClose('a52')});
-	document.getElementById('aa53').addEventListener('click', function() {openClose('a53')});
-	document.getElementById('aa54').addEventListener('click', function() {openClose('a54')});
-	document.getElementById('aa55').addEventListener('click', function() {openClose('a55')});
-	document.getElementById('aa56').addEventListener('click', function() {openClose('a56')});
-	document.getElementById('aa57').addEventListener('click', function() {openClose('a57')});
-	document.getElementById('aa58').addEventListener('click', function() {openClose('a58')});
-	document.getElementById('aa59').addEventListener('click', function() {openClose('a59')});
-	document.getElementById('aa60').addEventListener('click', function() {openClose('a60')});
-	document.getElementById('aa61').addEventListener('click', function() {openClose('a61')});
-	document.getElementById('aa62').addEventListener('click', function() {openClose('a62')});
+	aa1.addEventListener('click', function() {openClose('a1')});
+	aa2.addEventListener('click', function() {openClose('a2')});
+	aa3.addEventListener('click', function() {openClose('a3')});
+	aa4.addEventListener('click', function() {openClose('a4')});
+	aa5.addEventListener('click', function() {openClose('a5')});
+	aa6.addEventListener('click', function() {openClose('a6')});
+	aa7.addEventListener('click', function() {openClose('a7')});
+	aa8.addEventListener('click', function() {openClose('a8')});
+	aa9.addEventListener('click', function() {openClose('a9')});
+	aa10.addEventListener('click', function() {openClose('a10')});
+	aa11.addEventListener('click', function() {openClose('a11')});
+	aa12.addEventListener('click', function() {openClose('a12')});
+	aa13.addEventListener('click', function() {openClose('a13')});
+	aa14.addEventListener('click', function() {openClose('a14')});
+	aa15.addEventListener('click', function() {openClose('a15')});
+	aa16.addEventListener('click', function() {openClose('a16')});
+	aa17.addEventListener('click', function() {openClose('a17')});
+	aa18.addEventListener('click', function() {openClose('a18')});
+	aa19.addEventListener('click', function() {openClose('a19')});
+	aa20.addEventListener('click', function() {openClose('a20')});
+	aa21.addEventListener('click', function() {openClose('a21')});
+	aa22.addEventListener('click', function() {openClose('a22')});
+	aa23.addEventListener('click', function() {openClose('a23')});
+	aa24.addEventListener('click', function() {openClose('a24')});
+	aa25.addEventListener('click', function() {openClose('a25')});
+	aa26.addEventListener('click', function() {openClose('a26')});
+	aa27.addEventListener('click', function() {openClose('a27')});
+	aa28.addEventListener('click', function() {openClose('a28')});
+	aa29.addEventListener('click', function() {openClose('a29')});
+	aa30.addEventListener('click', function() {openClose('a30')});
+	aa31.addEventListener('click', function() {openClose('a31')});
+	aa32.addEventListener('click', function() {openClose('a32')});
+	aa33.addEventListener('click', function() {openClose('a33')});
+	aa34.addEventListener('click', function() {openClose('a34')});
+	aa35.addEventListener('click', function() {openClose('a35')});
+	aa36.addEventListener('click', function() {openClose('a36')});
+	aa37.addEventListener('click', function() {openClose('a37')});
+	aa38.addEventListener('click', function() {openClose('a38')});
+	aa39.addEventListener('click', function() {openClose('a39')});
+	aa40.addEventListener('click', function() {openClose('a40')});
+	aa41.addEventListener('click', function() {openClose('a41')});
+	aa42.addEventListener('click', function() {openClose('a42')});
+	aa43.addEventListener('click', function() {openClose('a43')});
+	aa44.addEventListener('click', function() {openClose('a44')});
+	aa45.addEventListener('click', function() {openClose('a45')});
+	aa46.addEventListener('click', function() {openClose('a46')});
+	aa47.addEventListener('click', function() {openClose('a47')});
+	aa48.addEventListener('click', function() {openClose('a48')});
+	aa49.addEventListener('click', function() {openClose('a49')});
+	aa50.addEventListener('click', function() {openClose('a50')});
+	aa51.addEventListener('click', function() {openClose('a51')});
+	aa52.addEventListener('click', function() {openClose('a52')});
+	aa53.addEventListener('click', function() {openClose('a53')});
+	aa54.addEventListener('click', function() {openClose('a54')});
+	aa55.addEventListener('click', function() {openClose('a55')});
+	aa56.addEventListener('click', function() {openClose('a56')});
+	aa57.addEventListener('click', function() {openClose('a57')});
+	aa58.addEventListener('click', function() {openClose('a58')});
+	aa59.addEventListener('click', function() {openClose('a59')});
+	aa60.addEventListener('click', function() {openClose('a60')});
+	aa61.addEventListener('click', function() {openClose('a61')});
+	aa62.addEventListener('click', function() {openClose('a62')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
-//	document.getElementById('bb1').addEventListener('click', function() {openClose('b1')});
-//	document.getElementById('bb2').addEventListener('click', function() {openClose('b2')});
-	document.getElementById('bb3').addEventListener('click', function() {openClose('b3')});
-//	document.getElementById('bb4').addEventListener('click', function() {openClose('b4')});
-	document.getElementById('bb5').addEventListener('click', function() {openClose('b5')});
-	document.getElementById('bb6').addEventListener('click', function() {openClose('b6')});
-	document.getElementById('bb7').addEventListener('click', function() {openClose('b7')});
-	document.getElementById('bb8').addEventListener('click', function() {openClose('b8')});
-	document.getElementById('bb9').addEventListener('click', function() {openClose('b9')});
-	document.getElementById('bb10').addEventListener('click', function() {openClose('b10')});
-	document.getElementById('bb11').addEventListener('click', function() {openClose('b11')});
-	document.getElementById('bb12').addEventListener('click', function() {openClose('b12')});
-	document.getElementById('bb13').addEventListener('click', function() {openClose('b13')});
-	document.getElementById('bb14').addEventListener('click', function() {openClose('b14')});
-	document.getElementById('bb15').addEventListener('click', function() {openClose('b15')});
-	document.getElementById('bb16').addEventListener('click', function() {openClose('b16')});
-	document.getElementById('bb17').addEventListener('click', function() {openClose('b17')});
-	document.getElementById('bb18').addEventListener('click', function() {openClose('b18')});
-	document.getElementById('bb19').addEventListener('click', function() {openClose('b19')});
-	document.getElementById('bb20').addEventListener('click', function() {openClose('b20')});
-	document.getElementById('bb21').addEventListener('click', function() {openClose('b21')});
-	document.getElementById('bb22').addEventListener('click', function() {openClose('b22')});
-	document.getElementById('bb23').addEventListener('click', function() {openClose('b23')});
-	document.getElementById('bb24').addEventListener('click', function() {openClose('b24')});
-	document.getElementById('bb25').addEventListener('click', function() {openClose('b25')});
-	document.getElementById('bb26').addEventListener('click', function() {openClose('b26')});
-//	document.getElementById('bb27').addEventListener('click', function() {openClose('b27')});
-	document.getElementById('bb28').addEventListener('click', function() {openClose('b28')});
-	document.getElementById('bb29').addEventListener('click', function() {openClose('b29')});
-	document.getElementById('bb30').addEventListener('click', function() {openClose('b30')});
-	document.getElementById('bb31').addEventListener('click', function() {openClose('b31')});
-	document.getElementById('bb32').addEventListener('click', function() {openClose('b32')});
-//	document.getElementById('bb33').addEventListener('click', function() {openClose('b33')});
-	document.getElementById('bb34').addEventListener('click', function() {openClose('b34')});
-	document.getElementById('bb35').addEventListener('click', function() {openClose('b35')});
-	document.getElementById('bb36').addEventListener('click', function() {openClose('b36')});
-	document.getElementById('bb37').addEventListener('click', function() {openClose('b37')});
-//	document.getElementById('bb38').addEventListener('click', function() {openClose('b38')});
-	document.getElementById('bb39').addEventListener('click', function() {openClose('b39')});
-	document.getElementById('bb40').addEventListener('click', function() {openClose('b40')});
-	document.getElementById('bb41').addEventListener('click', function() {openClose('b41')});
-	document.getElementById('bb42').addEventListener('click', function() {openClose('b42')});
-	document.getElementById('bb43').addEventListener('click', function() {openClose('b43')});
-//	document.getElementById('bb44').addEventListener('click', function() {openClose('b44')});
-	document.getElementById('bb45').addEventListener('click', function() {openClose('b45')});
-	document.getElementById('bb46').addEventListener('click', function() {openClose('b46')});
-//	document.getElementById('bb47').addEventListener('click', function() {openClose('b47')});
-//	document.getElementById('bb48').addEventListener('click', function() {openClose('b48')});
-//	document.getElementById('bb49').addEventListener('click', function() {openClose('b49')});
-	document.getElementById('bb50').addEventListener('click', function() {openClose('b50')});
-//	document.getElementById('bb51').addEventListener('click', function() {openClose('b51')});
-	document.getElementById('bb52').addEventListener('click', function() {openClose('b52')});
-	document.getElementById('bb53').addEventListener('click', function() {openClose('b53')});
-	document.getElementById('bb54').addEventListener('click', function() {openClose('b54')});
-	document.getElementById('bb55').addEventListener('click', function() {openClose('b55')});
-	document.getElementById('bb56').addEventListener('click', function() {openClose('b56')});
-	document.getElementById('bb57').addEventListener('click', function() {openClose('b57')});
-	document.getElementById('bb58').addEventListener('click', function() {openClose('b58')});
-	document.getElementById('bb59').addEventListener('click', function() {openClose('b59')});
-	document.getElementById('bb60').addEventListener('click', function() {openClose('b60')});
-	document.getElementById('bb61').addEventListener('click', function() {openClose('b61')});
-	document.getElementById('bb62').addEventListener('click', function() {openClose('b62')});
+//	bb1.addEventListener('click', function() {openClose('b1')});
+//	bb2.addEventListener('click', function() {openClose('b2')});
+	bb3.addEventListener('click', function() {openClose('b3')});
+//	bb4.addEventListener('click', function() {openClose('b4')});
+	bb5.addEventListener('click', function() {openClose('b5')});
+	bb6.addEventListener('click', function() {openClose('b6')});
+	bb7.addEventListener('click', function() {openClose('b7')});
+	bb8.addEventListener('click', function() {openClose('b8')});
+	bb9.addEventListener('click', function() {openClose('b9')});
+	bb10.addEventListener('click', function() {openClose('b10')});
+	bb11.addEventListener('click', function() {openClose('b11')});
+	bb12.addEventListener('click', function() {openClose('b12')});
+	bb13.addEventListener('click', function() {openClose('b13')});
+	bb14.addEventListener('click', function() {openClose('b14')});
+	bb15.addEventListener('click', function() {openClose('b15')});
+	bb16.addEventListener('click', function() {openClose('b16')});
+	bb17.addEventListener('click', function() {openClose('b17')});
+	bb18.addEventListener('click', function() {openClose('b18')});
+	bb19.addEventListener('click', function() {openClose('b19')});
+	bb20.addEventListener('click', function() {openClose('b20')});
+	bb21.addEventListener('click', function() {openClose('b21')});
+	bb22.addEventListener('click', function() {openClose('b22')});
+	bb23.addEventListener('click', function() {openClose('b23')});
+	bb24.addEventListener('click', function() {openClose('b24')});
+	bb25.addEventListener('click', function() {openClose('b25')});
+	bb26.addEventListener('click', function() {openClose('b26')});
+//	bb27.addEventListener('click', function() {openClose('b27')});
+	bb28.addEventListener('click', function() {openClose('b28')});
+	bb29.addEventListener('click', function() {openClose('b29')});
+	bb30.addEventListener('click', function() {openClose('b30')});
+	bb31.addEventListener('click', function() {openClose('b31')});
+	bb32.addEventListener('click', function() {openClose('b32')});
+//	bb33.addEventListener('click', function() {openClose('b33')});
+	bb34.addEventListener('click', function() {openClose('b34')});
+	bb35.addEventListener('click', function() {openClose('b35')});
+	bb36.addEventListener('click', function() {openClose('b36')});
+	bb37.addEventListener('click', function() {openClose('b37')});
+//	bb38.addEventListener('click', function() {openClose('b38')});
+	bb39.addEventListener('click', function() {openClose('b39')});
+	bb40.addEventListener('click', function() {openClose('b40')});
+	bb41.addEventListener('click', function() {openClose('b41')});
+	bb42.addEventListener('click', function() {openClose('b42')});
+	bb43.addEventListener('click', function() {openClose('b43')});
+//	bb44.addEventListener('click', function() {openClose('b44')});
+	bb45.addEventListener('click', function() {openClose('b45')});
+	bb46.addEventListener('click', function() {openClose('b46')});
+//	bb47.addEventListener('click', function() {openClose('b47')});
+//	bb48.addEventListener('click', function() {openClose('b48')});
+//	bb49.addEventListener('click', function() {openClose('b49')});
+	bb50.addEventListener('click', function() {openClose('b50')});
+//	bb51.addEventListener('click', function() {openClose('b51')});
+	bb52.addEventListener('click', function() {openClose('b52')});
+	bb53.addEventListener('click', function() {openClose('b53')});
+	bb54.addEventListener('click', function() {openClose('b54')});
+	bb55.addEventListener('click', function() {openClose('b55')});
+	bb56.addEventListener('click', function() {openClose('b56')});
+	bb57.addEventListener('click', function() {openClose('b57')});
+	bb58.addEventListener('click', function() {openClose('b58')});
+	bb59.addEventListener('click', function() {openClose('b59')});
+	bb60.addEventListener('click', function() {openClose('b60')});
+	bb61.addEventListener('click', function() {openClose('b61')});
+	bb62.addEventListener('click', function() {openClose('b62')});
 };
 
 //this one is for mobile only. Remove for the Chrome app
@@ -413,9 +441,9 @@ window.addEventListener('message', receiveMessage, false);
 //gets Lock from the general directory iframe and puts it in Lock screen
 function receiveMessage(evt){
   	if (evt.origin === 'https://www.passlok.com'){
-    	document.getElementById('lockBox').value = evt.data;
+    	lockBox.value = evt.data;
 		suspendFindLock = true;
-		document.getElementById('lockmsg').innerHTML='Give a name to this Lock and save it. Otherwise Clear.'
+		lockMsg.innerHTML='Give a name to this Lock and save it. Otherwise Clear.'
   	}
 }
 

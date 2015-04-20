@@ -317,33 +317,33 @@ img.intLink { border: 0; }
 <br /><br /><br />
 
 <!--message area and local directory box, plus buttons-->
-	<span id="mainmsg"><span>Welcome to PassLok</span></span><br /><br />
-    <select id='locklist' size='4' multiple style="padding:4px" title="Hold Ctrl or cmd to select several items"></select>
-    <button id="resetListButton" value="resetList" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="reset selection (alt-0)" accesskey="0">Reset</button>
-    <button id="main2lockButton" value="editLocks" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="edit the local directory (alt-D)" accesskey="d">Edit</button><br /><br />
+	<span id="mainMsg"><span>Welcome to PassLok</span></span><br /><br />
+    <select id='lockList' size='4' multiple style="padding:4px" title="Hold Ctrl or cmd to select several items"></select>
+    <button id="resetListBtn" value="resetList" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="reset selection (alt-0)" accesskey="0">Reset</button>
+    <button id="main2lockBtn" value="editLocks" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="edit the local directory (alt-D)" accesskey="d">Edit</button><br /><br />
     
 <!--buttons above the main box-->
-<div id="basicbuttonstop" class="texter" style="display: block;">
-   <button class="cssbutton" id="decryptButtonBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;color:blue;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="l">Lock/Unlock</button><!--
---><button class="cssbutton" id="showlockButtonBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock (alt-K)" accesskey="k">myLock</button>
+<div id="basicBtnsTop" class="texter" style="display: block;">
+   <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;color:blue;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="l">Lock/Unlock</button><!--
+--><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock (alt-K)" accesskey="k">myLock</button>
 </div>
-<div id="mainbuttonstop" class="texter" style="display: none;">
-   <button class="cssbutton" id="decryptButton" value="Lock/Unlock" style="color:blue;padding-right:6px;padding-left:6px;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="">Lock/Unlock</button><!--
---><button class="cssbutton" id="verifyButton" value="Sign/Verify" style="padding-right:5px;padding-left:5px;" title="add signature based on secret Key and box contents, or verify existing signature (alt-V)" accesskey="v">Sign/Verify</button><!--
---><button class="cssbutton" id="showlockButton" value="myLock" style="padding-right:5px;padding-left:5px;" title="display your Lock (alt-K)">myLock</button><!--
---><button class="cssbutton" id="main2extraButton" value="More" style="color:orange;padding-right:6px;padding-left:5px;" title="replace main buttons with those for extra functions (alt-.)" accesskey=".">&#9660;</button><br />
+<div id="mainBtnsTop" class="texter" style="display: none;">
+   <button class="cssbutton" id="decryptBtn" value="Lock/Unlock" style="color:blue;padding-right:6px;padding-left:6px;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="">Lock/Unlock</button><!--
+--><button class="cssbutton" id="verifyBtn" value="Sign/Verify" style="padding-right:5px;padding-left:5px;" title="add signature based on secret Key and box contents, or verify existing signature (alt-V)" accesskey="v">Sign/Verify</button><!--
+--><button class="cssbutton" id="showLockBtn" value="myLock" style="padding-right:5px;padding-left:5px;" title="display your Lock (alt-K)">myLock</button><!--
+--><button class="cssbutton" id="main2extraBtn" value="More" style="color:orange;padding-right:6px;padding-left:5px;" title="replace main buttons with those for extra functions (alt-.)" accesskey=".">&#9660;</button><br />
 </div>
-<div id="extrabuttonstop" class="texter" style="display: none;">
-<button class="cssbutton" id="stegoButton" value="Stego" style="padding-right:6px;padding-left:6px;" title="hide box contents as text, using method set in Options tab, or reveal hidden contents (alt-T)" accesskey="t">Text hide</button><!--
---><button class="cssbutton" id="imageButton" value="Image" style="padding-right:6px;padding-left:6px;" title="open image hiding functions (alt-I)" accesskey="i">Image hide</button><!--
---><button class="cssbutton" id="secretshareButton" value="Split/Join" style="padding-right:6px;padding-left:6px;" title="split plain box contents into several random-looking parts, or rejoin parts in the box (alt-J)" accesskey="j">Split/Join</button><!--
---><button class="cssbutton" id="extra2mainButton" value="Less" style="color:orange;padding-right:9px;padding-left:9px;" title="return main buttons (alt-.)">&#9650;</button><br />
+<div id="extraButtonsTop" class="texter" style="display: none;">
+<button class="cssbutton" id="stegoBtn" value="Stego" style="padding-right:6px;padding-left:6px;" title="hide box contents as text, using method set in Options tab, or reveal hidden contents (alt-T)" accesskey="t">Text hide</button><!--
+--><button class="cssbutton" id="imageBtn" value="Image" style="padding-right:6px;padding-left:6px;" title="open image hiding functions (alt-I)" accesskey="i">Image hide</button><!--
+--><button class="cssbutton" id="secretShareBtn" value="Split/Join" style="padding-right:6px;padding-left:6px;" title="split plain box contents into several random-looking parts, or rejoin parts in the box (alt-J)" accesskey="j">Split/Join</button><!--
+--><button class="cssbutton" id="extra2mainBtn" value="Less" style="color:orange;padding-right:9px;padding-left:9px;" title="return main buttons (alt-.)">&#9650;</button><br />
 </div>
 </div>
 
 <!--toolbar for rich text editing; this first section contains lists for style, fonts, etc.-->   
 <div id="toolBar1" style="display:none;">
-<select id="formatblock" title="headings, etc.">
+<select id="formatBlock" title="headings, etc.">
 <option selected>- formatting -</option>
 <option value="h1">Title 1 &lt;h1&gt;</option>
 <option value="h2">Title 2 &lt;h2&gt;</option>
@@ -354,7 +354,7 @@ img.intLink { border: 0; }
 <option value="p">Paragraph &lt;p&gt;</option>
 <option value="pre">Preformatted &lt;pre&gt;</option>
 </select>
-<select id="fontname" title="font type">
+<select id="fontName" title="font type">
 <option class="heading" selected>- font -</option>
 <option>Arial</option>
 <option>Arial Black</option>
@@ -366,7 +366,7 @@ img.intLink { border: 0; }
 <option>Trebuchet MS</option>
 <option>Symbol</option>
 </select>
-<select id="fontsize" title="font size">
+<select id="fontSize" title="font size">
 <option class="heading" selected>- size -</option>
 <option value="1">Very small</option>
 <option value="2">A bit small</option>
@@ -376,7 +376,7 @@ img.intLink { border: 0; }
 <option value="6">Very big</option>
 <option value="7">Maximum</option>
 </select>
-<select id="forecolor" title="text color">
+<select id="foreColor" title="text color">
 <option class="heading" selected>- color -</option>
 <option value="brown">Brown</option>
 <option value="red">Red</option>
@@ -391,7 +391,7 @@ img.intLink { border: 0; }
 <option value="gray">Gray</option>
 <option value="black">Black</option>
 </select>
-<select id="backcolor" title="color behind the text">
+<select id="backColor" title="color behind the text">
 <option class="heading" selected>- back color -</option>
 <option value="brown">Brown</option>
 <option value="red">Red</option>
@@ -436,18 +436,18 @@ img.intLink { border: 0; }
 <div align="center">
 <!--buttons below the main box-->
 <div id="mainbuttonsbot" class="texter" style="display: block;">
-<button class="cssbutton" id="niceEditButton" value="Rich" style="" title="toggle rich text editor (alt-R)" accesskey="r">Rich</button><!--
---><button class="cssbutton" id="selectMainButton" value="Select" style="" title="select the text in the box">Select</button><!--
---><button class="cssbutton" id="clearMainButton" value="Clear" style="" title="clear the text in the box">Clear</button><!--
---><button class="cssbutton" id="sendMailButton" value="Email" style="" title="put the box contents in an email using the default client (alt-E)">Email</button><!--
---><button class="cssbutton" id="chatButton" value="Chat" style="" title="make a chat invitation or open it (alt-C)" accesskey="c">Chat</button><!--
---><button class="cssbutton" id="sendSMSButton" value="SMS" style="" title="mobile: open the default Texting app">SMS</button>
+<button class="cssbutton" id="niceEditBtn" value="Rich" style="" title="toggle rich text editor (alt-R)" accesskey="r">Rich</button><!--
+--><button class="cssbutton" id="selectMainBtn" value="Select" style="" title="select the text in the box">Select</button><!--
+--><button class="cssbutton" id="clearMainBtn" value="Clear" style="" title="clear the text in the box">Clear</button><!--
+--><button class="cssbutton" id="sendMailBtn" value="Email" style="" title="put the box contents in an email using the default client (alt-E)">Email</button><!--
+--><button class="cssbutton" id="chatBtn" value="Chat" style="" title="make a chat invitation or open it (alt-C)" accesskey="c">Chat</button><!--
+--><button class="cssbutton" id="sendSMSBtn" value="SMS" style="" title="mobile: open the default Texting app">SMS</button>
 </div>
 
-<div id="filebuttons" class="texter" style="display: block;">
+<div id="fileBtns" class="texter" style="display: block;">
 <hr style="width:25%;">
-        <input class="custom-file-input" type="file" id="fileToLoad" style="" title="open dialog to select file to load"/>
-        <button class="cssbutton" id="savefileButton" value="Save" title="save file to default Downloads folder in original format, or as a text file if type is not recognized">Save</button>
+        <input class="custom-file-input" type="file" id="mainFile" style="" title="open dialog to select file to load"/>
+        <button class="cssbutton" id="saveFileBtn" value="Save" title="save file to default Downloads folder in original format, or as a text file if type is not recognized">Save</button>
   </div>
   </div>
   </div>
@@ -455,46 +455,51 @@ img.intLink { border: 0; }
 <!--Options tab-->
 <div class="tabContent" id="optionsTab" style="max-width:500px;">
 	<br /><br /><br />
-    &nbsp;&nbsp;Interface:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="interfacemodes" id="basicmode"  title="basic mode; only essential functions (alt-B)" accesskey="b" checked/>&nbsp; Basic&nbsp;&nbsp;
-        <input type="radio" name="interfacemodes" id="advancedmode" title="advanced mode; all functions available (alt-A)" accesskey="a"/>&nbsp; Advanced
+   <form name="optionchecks">    
+    &nbsp;&nbsp;Interface:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="interfacemodes" id="basicMode"  title="basic mode; only essential functions (alt-B)" accesskey="b" checked/>&nbsp; Basic&nbsp;&nbsp;
+        <input type="radio" name="interfacemodes" id="advancedMode" title="advanced mode; all functions available (alt-A)" accesskey="a"/>&nbsp; Advanced
         <hr>
-        &nbsp;&nbsp;Locking:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="anonmode"  title="anonymous locking mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>&nbsp; Anonymous
-        &nbsp;&nbsp;<input type="radio" name="lockmodes" id="signedmode" title="signed locking mode; recipient needs the sender's Lock (alt-S)" accesskey="s"/>&nbsp; Signed
-        <div id='advlockmodes' style="display: none;">
+        &nbsp;&nbsp;Locking:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="anonMode"  title="anonymous locking mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>&nbsp; Anonymous
+        &nbsp;&nbsp;<input type="radio" name="lockmodes" id="signedMode" title="signed locking mode; recipient needs the sender's Lock (alt-S)" accesskey="s"/>&nbsp; Signed
+        <div id='advLockModes' style="display: none;">
         <br />
-        &nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="pfsmode" title="Perfect Forward Secrecy: messages become unlockable after exchange (alt-P)" accesskey="p"/>&nbsp; PFS&nbsp;&nbsp;
-        <input type="radio" name="lockmodes" id="oncemode" title="Read-once: like PFS but messages become unreadable after being read once (alt-1)" accesskey="1"/>&nbsp; Read-once</div>
+        &nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="pfsMode" title="Perfect Forward Secrecy: messages become unlockable after exchange (alt-P)" accesskey="p"/>&nbsp; PFS&nbsp;&nbsp;
+        <input type="radio" name="lockmodes" id="onceMode" title="Read-once: like PFS but messages become unreadable after being read once (alt-1)" accesskey="1"/>&nbsp; Read-once
+        </div>
         <hr>
-        &nbsp;&nbsp;Other modes:&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="learnmode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>&nbsp; Learn<br /><br />
-    	&nbsp;&nbsp;<input type="checkbox" id="shortmode" title="locked message will fit within 160 characters" accesskey=""/>&nbsp; Short&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;<input type="checkbox" id="decoymode" title="second message added or retrieved" accesskey=""/>&nbsp; Decoy
-        &nbsp;&nbsp;<input type="checkbox" id="ezLok" title="display easy to read Lock" checked/>&nbsp; ezLok<br /><br />
+        &nbsp;&nbsp;Other modes:&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="learnMode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>&nbsp; Learn<br /><br />
+    	&nbsp;&nbsp;<input type="checkbox" id="shortMode" title="locked message will fit within 160 characters" accesskey=""/>&nbsp; Short&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;<input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>&nbsp; Decoy
+        &nbsp;&nbsp;<input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>&nbsp; ezLok<br /><br />
    <div id='advancedModes' style="display: none;">
-    	&nbsp;&nbsp;<input type="checkbox" id="notags" title="no identifying tags or preformatted text"/>&nbsp; No tags
-       &nbsp;&nbsp;<input type="checkbox" id="smallOut" title="output small and highlighted"/>&nbsp; Small
-       &nbsp;&nbsp;<input type="checkbox" id="encryptLocks" title="encrypt Locks in directory"/>&nbsp; Encr. Locks
+    	&nbsp;&nbsp;<input type="checkbox" id="noTagsMode" title="no identifying tags or preformatted text"/>&nbsp; No tags
+       &nbsp;&nbsp;<input type="checkbox" id="smallOutMode" title="output small and highlighted"/>&nbsp; Small
+       &nbsp;&nbsp;<input type="checkbox" id="encryptLocksMode" title="encrypt Locks in directory"/>&nbsp; Encr. Locks
        <hr>
     &nbsp;&nbsp;Error Correction:&nbsp;&nbsp;
-    	&nbsp;&nbsp;<input type="checkbox" id="ReedSol" title="hex code appended to output for automatic error correction"/>&nbsp; RS 
-      	&nbsp;&nbsp;<input type="checkbox" id="triple" title="triple output separated by commas, for automatic error correction"/>&nbsp; Triple
+    	&nbsp;&nbsp;<input type="checkbox" id="ReedSolMode" title="hex code appended to output for automatic error correction"/>&nbsp; RS 
+      	&nbsp;&nbsp;<input type="checkbox" id="tripleMode" title="triple output separated by commas, for automatic error correction"/>&nbsp; Triple
       <hr>
     &nbsp;&nbsp;Signature:&nbsp;&nbsp;
-    	&nbsp;&nbsp;<input type="radio" name="sigmodes" id="attached" title="signature is added after the text" checked/>&nbsp; Attached 
-      	&nbsp;&nbsp;<input type="radio" name="sigmodes" id="seal" title="signature is a seal concealing the text"/>&nbsp; Seal
+    	&nbsp;&nbsp;<input type="radio" name="sigmodes" id="attachedMode" title="signature is added after the text" checked/>&nbsp; Attached 
+      	&nbsp;&nbsp;<input type="radio" name="sigmodes" id="sealMode" title="signature is a seal concealing the text"/>&nbsp; Seal
       <hr>
    &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
-   <input type="radio" name="stegomodes" id="phrasemode" title="hide item as sentences" checked/>&nbsp; Sentences<br><br>
-   &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="stegomodes" id="wordmode"  title="hide item as individual words"/>&nbsp; Words&nbsp;&nbsp;
-        <input type="radio" name="stegomodes" id="spacemode" title="hide item in spaces between words"/>&nbsp; Spaces&nbsp;&nbsp;
-        <input type="radio" name="stegomodes" id="chainmode"  title="hide item as chains of words"/>&nbsp; Chains&nbsp;&nbsp;
+   <input type="radio" name="stegomodes" id="sentenceMode" title="hide item as sentences" checked/>&nbsp; Sentences<br><br>
+   &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="stegomodes" id="wordMode"  title="hide item as individual words"/>&nbsp; Words&nbsp;&nbsp;
+        <input type="radio" name="stegomodes" id="spaceMode" title="hide item in spaces between words"/>&nbsp; Spaces&nbsp;&nbsp;
+        <input type="radio" name="stegomodes" id="chainMode"  title="hide item as chains of words"/>&nbsp; Chains&nbsp;&nbsp;
+   </div>
+   </form>
+   <div id='advancedBtns' style="display: none;">
         <hr>
-      &nbsp;&nbsp;<span id="optionmsg">Change Name, Key, etc.</span><br />
-      <button class="cssbutton" id="changeNameButton" value="Change Name" style="" title="re-store directory under a new User Name">Name</button><!--
-   --><button class="cssbutton" id="changeKeyButton" value="Change Key" style="" title="re-encrypt directory with a new Key">Key</button><!--
-   --><button class="cssbutton" id="changeEmailButton" value="Change Email" style="" title="change email/token">Email/token</button><br />
+      &nbsp;&nbsp;<span id="optionMsg">Change Name, Key, etc.</span><br />
+      <button class="cssbutton" id="changeNameBtn" value="Change Name" style="" title="re-store directory under a new User Name">Name</button><!--
+   --><button class="cssbutton" id="changeKeyBtn" value="Change Key" style="" title="re-encrypt directory with a new Key">Key</button><!--
+   --><button class="cssbutton" id="changeEmailBtn" value="Change Email" style="" title="change email/token">Email/token</button><br />
    		&nbsp;&nbsp;Backup/Remove:<br />
-   		<button class="cssbutton" id="backupSettings" value="Backup" style="" title="backup and optionally reset options, including the email/token">Options only</button><!--
-	--><button class="cssbutton" id="moveLockDBButton" value="Move" style="" title="archive entire local directory, then delete it">Whole Directory</button>
+   		<button class="cssbutton" id="backupSettingsBtn" value="Backup" style="" title="backup and optionally reset options, including the email/token">Options only</button><!--
+	--><button class="cssbutton" id="moveLockDBBtn" value="Move" style="" title="archive entire local directory, then delete it">Whole Directory</button>
    </div>
 
     </div>
@@ -502,7 +507,7 @@ img.intLink { border: 0; }
 <!--Help tab-->
 <div class="tabContent" id="helpTab">
 <br />
-<div id="helptop" style="position:fixed; background-color: white; width: 100%; top: 41px; display: none">
+<div id="helpTop" style="position:fixed; background-color: white; width: 100%; top: 41px; display: none">
 <br />
 <span id='helpmsg'>For instructions on how to do things, click on each title below. Click again to hide.</span>
 <br />
@@ -515,11 +520,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <br /><!--space so the items aren't buried below the fixed stuff-->
 
-<div id="helpspace" style="background-color: white; display: none">
+<div id="helpSpace" style="background-color: white; display: none">
 <br /><br /><br /><br /><br />
 </div>
 
-<div id="helptopmobile" style="display: block">
+<div id="helpTopMobile" style="display: block">
 <p>For instructions on how to do things, click on each title below. Click again to hide.</p>
 <p>To get instructions as you click buttons in PassLok, check <strong>Learn</strong> in the <strong>Options</strong> tab.</p>
 </div>
@@ -592,7 +597,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b54" class="texter">
-<p>Hopefully the limited access mode will let you get by until you remember your old Key. But if you want to get full access to PassLok with a new Key, here are the steps:</p>
+<p>Hopefully Guest mode will let you get by until you remember your old Key. But if you want to get full access to PassLok with a new Key, here are the steps:</p>
 <p>1. Go to the <strong>Options</strong> tab.</p>
 <p>2. Click the Backup/Remove <strong>Options only</strong> box. When a popup asks for confirmation to delete your settings, click <strong>OK</strong>.</p>
 <p>3. Reload PassLok<strong></strong>.</p>
@@ -614,7 +619,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b55" class="texter">
-<p>You can do pretty much everything, except things that would have involved the permanent secret Key. You cannot modify anything in the local directory. When you reload PassLok and enter the correct Key, a warning will tell you that last session was run with limited access. If you don't select a user from the list, you won't have access to any stored Locks.</p>
+<p>You can do pretty much everything, except things that would have involved the permanent secret Key. You cannot modify anything in the local directory. When you reload PassLok and enter the correct Key, a warning will tell you that last session was run in Guest mode. If you don't select a user from the list, you won't have access to any stored Locks.</p>
 </div>
 </div>
   <hr>
@@ -660,9 +665,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b5" class="texter">
-  <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except the L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format, which is the format of all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks.</p>
-  <p>Like most other PassLok-generated items, Locks will correct themselves from errors if their tags are intact, but you can make PassLok omit the tags by first checking <strong>no Tags</strong> in the <strong>Options</strong> tab. If you are going to send your Lock by a very noisy channel, you may want to send three copies so PassLok can select the best automatically. You will get triple copies of any item by first checking <strong>Triple</strong> in the <strong>Options</strong> tab.</p>
-  <p>If you need to make a Lock for a different Key (for instance, in order to receive Decoy mode hidden messages), it is best if you start PassLok with limited access, by clicking <strong>Cancel</strong> when you first enter the Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply your email, if requested.</p>
+  <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format, which is the format of all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks.</p>
+  <p>Like most other PassLok-generated items, Locks will correct themselves from errors if their tags are intact, but you can make PassLok omit the tags by first checking <strong>No tags</strong> in the <strong>Options</strong> tab. If you are going to send your Lock by a very noisy channel, you may want to send three copies so PassLok can select the best automatically. You will get triple copies of any item by first checking <strong>Triple</strong> in the <strong>Options</strong> tab.</p>
+  <p>If you need to make a Lock for a different Key (for instance, in order to receive Decoy mode hidden messages), it is best if you start PassLok in Guest mode, by clicking <strong>Cancel</strong> when you first enter the Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply your email, if requested (if you use a random token you will need to copy it before, by clicking Change Email on Options).</p>
 </div>
 </div>
   <hr>
@@ -734,16 +739,15 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <div id="a30" class="texter">
 <p>1. Check that the item to be sent is displayed on the <strong>Main</strong> tab.</p>
-<p>2. Tap the <strong>Select</strong> button so the text can be selected.</p>
-<p>3. Then tap the Copy label as it appears on screen. The item is copied to clipboard.</p>
-<p>4. Tap the <strong>&#9660;</strong> button in order to reveal the button dealing with text messaging, which is labeled <strong>SMS</strong>, and tap it. A window appears with the default texting app.</p>
-<p>5. Tap the input box and then paste the clipboard. Send the message in the usual way.</p>
+<p>2. Long-tap the item so the selection dialog appears. Then select it and copy it to clipboard.</p>
+<p>3. Tap the button dealing with text messaging, which is labeled <strong>SMS</strong>. A window appears with the default texting app.</p>
+<p>4. Tap the input box and then paste the clipboard. Send the message in the usual way.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=LsljKvjAi9I" target="_blank">https://www.youtube.com/watch?v=LsljKvjAi9I</a></p>
 <div id='bb30' style="cursor:pointer">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b30" class="texter">
-<p>To unlock a locked message received by texting, you must first copy it to the clipboard, and then paste it on the <strong>Main</strong> tab of PassLok. If you use Short mode to lock a message, steps 2 and 3 are automatic.</p>
+<p>To unlock a locked message received by texting, you must first copy it to the clipboard, and then paste it on the <strong>Main</strong> tab of PassLok. A message will warn you if nothing is selected before the SMS button is tapped. Due to browser restrictions, there is no way to know whether the item has been copied to clipboard, but hopefully the process above is fairly foolproof.</p>
 </div>
   </div>
 <hr>
@@ -760,7 +764,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b23" class="texter">
-<p>Most mobile devices restrict the user to images stored in the device or acquired with the built-in camera, so this command is of limited usefulness and is removed. Be aware that pictures taken by the camera are usually too large for PassLok to handle. If the file is a text file, it will load as plain text rather than encoded.</p>
+<p> If the file is a text file, it will load as plain text rather than encoded. In our tests, Chrome has had difficulty loading  files larger than a few kB, but Firefox does fine. Most mobile devices restrict the user to images stored in the device or acquired with the built-in camera, so this command is of limited usefulness and is removed.</p>
 </div>
   </div>
     <hr>
@@ -931,7 +935,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="b15" class="texter">
 <p>The locked
   message, which has no tags, will fit within one SMS message (160
-  characters). The radio buttons don't matter if the message is being locked with a shared Key.   A message above the main box will tell you how much space is left, depending on the locking mode selected. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>Text/Img</strong> button, which will open your texting app.  Message length is limited to 94
+  characters). The radio buttons don't matter if the message is being locked with a shared Key.   A message above the main box will tell you how much space is left, depending on the locking mode selected. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>SMS</strong> button, which will open your texting app.  Message length is limited to 94
   ASCII characters when locking with a shared Key or in signed mode, 62 in anonymous mode, 35 in PFS and Read-once modes. Non-ASCII characters use 6 spaces each, so avoid them if
   you can. Any text beyond the limit will be lost.</p>
 </div>
@@ -1050,10 +1054,10 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <h3>Authenticate a Lock without using videos</h3>
   </div>
  <div id="a21" class="texter">
-   <p>The easy way: call the Lock's owner and ask him/her to read  a substantial portion of the Lock over the phone. But let's say you cannot establish a live conversation. If you are communicating exclusively by email, you can send a person whom you know and who knows you the following message, or something like it:</p>
-      <p><br />
-        <em>Dear So-and-So:</em><br />
-        <em>I just obtained your PassLok Lock from (cite source), but I still wonder if it is authentic since I am unable to view the authenticating video. Therefore, I ask you to help me authenticate it through the interlock protocol. Here's what I want you to do:</em></p>
+   <p>The easy way: call the Lock's owner and ask him/her to read  a substantial portion of the Lock over the phone. But if you are communicating exclusively by email you can send a person whom you know and who knows you the following message, or something like it:</p>
+   <p><br />
+     <em>Dear So-and-So:</em><br />
+     <em>I just obtained your PassLok Lock from (cite source), but I still wonder if it is authentic since I am unable to view the authenticating video. Therefore, I ask you to help me authenticate it through the interlock protocol. Here's what I want you to do:</em></p>
       <ol>
         <li><em>Write a message asking me to take a picture or video of myself doing something of your choice. Lock the message with my Lock, which is appended to this message, and copy it to a safe place. Then split it in two and send me the first half only.</em></li>
         <li><em>When I receive your first half, I will also write a message asking you to do something in a picture or short video. I'll lock that message with your Lock, and I'll send you half of the locked message first. When you get it, go ahead and send me the other half of your locked message.</em></li>
@@ -1103,7 +1107,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b57" class="texter">
-<p>Many mobile devices, unless they are jailbroken or rooted, restrict the user to saving images, so this process won't work.</p>
+<p>Many mobile devices restrict the user to saving images, and may place them in a location inaccessible to the user.</p>
 </div>
   </div>
     <hr>
@@ -1167,7 +1171,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b35" class="texter">
-<p>You can maintain multiple identities, using different Keys, thanks to this feature. The packup process is useful whenever you stop using a device or just want to transfer your data to another device. (<em>Chrome app only</em>) Even if the local directory is completely deleted, the items in your Chrome sync area remain available if you click <strong>Cancel</strong> when PassLok offers to remove them from sync as well. They load back automatically if you set up a user with the same user name.</p>
+<p>You can maintain multiple identities, using different Keys, thanks to this feature. The packup process is useful whenever you stop using a device or just want to transfer your data to another device. (<em>Chrome app only</em>) Even if the local directory is completely deleted, the items in your Chrome sync area remain available if you click <strong>Cancel</strong> when PassLok offers to remove them from sync as well. They will load back automatically, even on a different machine, if you set up a user with the same user name.</p>
 </div>
  </div>
  <hr>
@@ -1251,7 +1255,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
 <div id="a31" class="texter">
 <p>1. Write or paste the text to be signed in the lower box of the <strong>Main</strong> tab.</p>
-  <p>2. Make sure the Signature mode selected on the <strong>Options</strong> tab is <strong>Attached</strong> (this is the default, which resets when PassLok reloads).</p>
+  <p>2. Make sure the Signature mode selected on the <strong>Options</strong> tab is <strong>Attached</strong>.</p>
   <p>3. Click the <strong>Sign/Verify</strong>
     button. A signature matching the text and your Key will be appended at the end of the text. Copy
     it or email it from there.</p>
@@ -1342,12 +1346,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <h3>Ask the participants in a Chat session to authenticate themselves <em>(advanced)</em></h3>
 </div>
 <div id="a59" class="texter">
-<p>1. Inside the chat session, type a bunch of garbage. You should expect a signature for that bunch of garbage, or the garbage back as a sealed item from each participant who has not yet done so, after a short time.</p>
-<p>2a. When a signature is posted in the chat session, copy it, along with the original garbage you (or someone else) typed, and go back to the <strong>Main</strong> tab of PassLok, then paste it there.</p>
+<p>1. Inside the chat session, type a bunch of garbage. You should expect a signature for that bunch of garbage, or the garbage back as a sealed item from each participant who has not yet done so.</p>
+<p>2a. When a signature is posted in the chat session, copy it along with the original garbage you (or someone else) typed, and go back to the <strong>Main</strong> tab of PassLok, then paste it there. For best results with a signature, make sure there is a blank line between the string and the signature.</p>
 <ul>
   <li>If the poster's tagname was also pasted, remove it. Since the pasted text likely will have some formatting, you must also remove it before you can go ahead (select the entire text, click <strong>Rich</strong> to see the formatting buttons, then click the broom button).</li></ul>
 <p>2b. If instead a a sealed item is posted, copy it, go back to the <strong>Main</strong> tab of PassLok, then paste it there. Formatting doesn't matter in this case.</p>
-<p>3. In the local directory, select the Lock belonging to the person who posted the signature, and click the <strong>Sign/Verify</strong> button. For best results with a signature, make sure there is a blank line between the string and the signature.</p>
+<p>3. In the local directory, select the Lock belonging to the person who posted the signature, and click the <strong>Sign/Verify</strong> button.</p>
 <p>4. If the signature is verified, this means that the one who posted it is indeed who he/she claims to be. In the case of a sealed item, the original garbage string should be recovered, plus a message should indicated that the sealer has been verified.</p>
 <p>This is all explained in this video: <a href="https://www.youtube.com/watch?v=NlEJJpF-Wmo" target="_blank">https://www.youtube.com/watch?v=NlEJJpF-Wmo</a></p>
 <div id='bb59' style="cursor:pointer">
@@ -1383,7 +1387,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <hr>
       
   <div id="aa11" style="cursor:pointer">
-      <h3>Lock a message so that nobody can read it after the exchange is over (PFS and Read-once modes) <em>(advanced)</em></h3>
+      <h3>Lock a message so that nobody can read it after the exchange is over, or even link it with the correspondents (PFS and Read-once modes) <em>(advanced)</em></h3>
     </div>
     <div id="a11" class="texter">
       <p>1. On the <strong>Options</strong> tab, make sure the PFS or the Read-once button is selected.</p>
@@ -1402,11 +1406,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b11" class="texter">
-        <p>This message can be unlocked only by
-          someone having the Key matching one of the Locks selected, and your Lock. PFS and Read-once modes are not available for short messages. If you are restarting a PFS or Read-once conversation that was interrupted, you must first clear the old PFS data for that recipient by clicking the <strong>Reset</strong> button in the directory Edit dialog (visible in the Advanced interface) after the recipient's name is displayed above the upper box.   In Read-once mode, once a message is locked, the sender is not allowed to lock another message for the same recipient in the same mode, since this would corrupt the exchange. This restriction does not apply to PFS mode.  It is okay to strip the Lock tags up to the "=" sign, but not recommended.
-          PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is
-          also okay to split the locked message with spaces, line returns, and
-          punctuation other than = + / or %</p>
+        <p>This message can be unlocked only by someone having the Key matching one of the Locks selected, and your Lock. PFS and Read-once modes are not available for short messages. If you are restarting a PFS or Read-once conversation that was interrupted, you must first clear the old PFS data for that recipient by clicking the <strong>Reset</strong> button in the directory Edit dialog (visible in the Advanced interface) after the recipient's name is displayed above the upper box. All messages have forward secrecy, but the first message after a reset does not have forward deniability, so be careful with this one. In Read-once mode, once a message is locked, the sender is not allowed to lock another message for the same recipient in the same mode, since this would corrupt the exchange; this restriction does not apply to PFS mode. It is okay to strip the Lock tags up to the "=" sign, but not recommended. PassLok will do this automatically if the No tags checkbox is checked prior to locking. It is also okay to split the locked message with spaces, line returns, and punctuation other than = + / or %</p>
       </div>
     </div>
   <hr>
@@ -1424,9 +1424,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b12" class="texter">
-        <p>If the message was locked in Read-once mode, you can unlock it only once, since the ephemeral key needed to unlock it is overwritten in the process.  This restriction does not apply to PFS messages. It is okay if the message is broken up by
-          spaces, carriage returns, and special characters other than = + / or % or is
-          missing its tags.</p>
+        <p>If the message was locked in Read-once mode, you can unlock it only once, since the ephemeral key needed to unlock it is overwritten in the process; this restriction does not apply to PFS messages. It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags.</p>
       </div>
     </div>
       <hr>
@@ -1486,7 +1484,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b36" class="texter">
-<p>The format for the additional data must be the following: name, followed by a colon (:), new line, item data; then two new lines before the next name, and so forth. If a name also has hidden data and PFS data, those follow the item data, occupying consecutive lines. If the additional data contains names that were already in use in the directory, the new data replaces the original data. Items are added in encrypted form but are not checked as they are added, so it is possible that different items may need different Keys to be decrypted, if you changed your secret Key in the past. (<em>Chrome app only</em>) If the Chrome sync area is accessible from the computer, the additional data will also be added to that area, so it is accessible from other computers.</p>
+<p>The format for the additional data must be the following: name, followed by a colon (:), new line, item data; then two new lines before the next name, and so forth. If a name also has hidden data and PFS data, those follow the item data, occupying consecutive lines. If the additional data contains names that were already in use in the directory, the new data replaces the original data. Items are added in encrypted form but are not checked as they are added, so it is possible that different items may need different Keys to be decrypted, if you changed your secret Key in the past. (<em>Chrome app only</em>) If the Chrome sync area is accessible from the computer, the additional data will also be added to that area so it is accessible from other computers.</p>
 </div>
   </div>
   <hr>
@@ -1651,10 +1649,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <h3>What do the other checkboxes in the Options tab do? (advanced)</em></h3>
  </div>
   <div id="a44" class="texter">
-      <p><strong>No Tags:</strong> Items made by PassLok, which ordinarily begin and end with special tags, have no tags.</p>
+      <p><strong>No Tags:</strong> Items made by PassLok, which ordinarily begin and end with special tags, have no tags.      </p>
+      <p><strong>Small:</strong> Output items are displayed in a small font rather than normal font, suitable for quick copy/paste.</p>
+      <p><strong>Encrypted Locks:</strong> Locks are stored in the directory in encrypted form, rather than plain.</p>
+      <p><strong>RS:</strong> An error-correction code is added to the closing tag to keep noisy channels from corrupting the data.</p>
       <p><strong>Triple:</strong> Items are made in triplicate, with @@ separators between them, to prevent data corruption in very noisy channels.</p>
-      <p><strong>Small:</strong> Output items are displayed in a small font rather than normal font, suitable for quick copy/paste. This is a sticky option.</p>
-      <p><strong>Encrypted Locks:</strong> Locks are stored in the directory in encrypted form, rather than plain. This is a sticky option.</p>
   </div>
    <hr>  
 
@@ -1690,7 +1689,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
   <div id="a47" class="texter">
     <p>We do not recommend using old versions for new work. Newer versions have enhanced security and are more user-friendly. But sometimes you may need to handle an item that is incompatible with the current version. Here is a pretty complete list of PassLok versions with links to them.</p>
-    <p><strong>Current version</strong> of PassLok can be obtained from:</p>
+    <p><strong>Current version</strong> of PassLok can be obtained from the following servers (as always, be aware that following any link may reveal your location):</p>
 <p>source server: <a href="https://passlok.com" target="_blank">https://passlok.com</a></p>
 <p>information page: <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a></p>
 <p>GitHub page: <a href="https://github.com/fruiz500/passlok" target="_blank">https://github.com/fruiz500/passlok</a></p>
@@ -1759,7 +1758,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
   <div id="a48" class="texter">
     <p>Another way to learn is to check the <strong>Learn</strong> box in the <strong>Options</strong> tab, which will create a popup explaining what is about to happen, every time a button is clicked. If this is not enough for you, here are a couple more sources you may want to check out:</p>
-    <p>The PassLok <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf" target="_blank">manual in PDF form.</a></p>
+    <p>The PassLok <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf" target="_blank">manual in PDF format.</a></p>
     <p>The PassLok informational website at <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a>. It contains a number of videos and more PDF documents.</p>
     <p>If you want to learn what's under the hood, read the <a href="http://www.weebly.com/uploads/2/4/1/8/24187628/passlok_technical_document.pdf" target="_blank">PassLok technical document.</a></p>
   </div>
@@ -1769,7 +1768,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <h3>None of the help items answers my question / I want to give feedback</h3>
  </div>
   <div id="a49" class="texter">
-    <p>Then you can send us an email at <a href="mailto:passlokprivacy@gmail.com?subject=PassLok support request" target="_blank">passlokprivacy@gmail.com</a> (the link will open your email client). We'll do our best to reply in a timely fashion.</p>
+    <p>Then you can send us an email at <a href="mailto:passlokprivacy@gmail.com?subject=PassLok support request" target="_blank">passlokprivacy@gmail.com</a> (the link will open your email client). We'll do our best to reply in a timely fashion. If you are a GitHub user, you can also go to <a href="https://github.com/fruiz500/passlok" target="_blank">our page on GitHub</a> and post issues or submit improvements there.</p>
     <p>Good constructive feedback is hard to get, so let us <strong>thank you</strong> right now, before we read your email.</p>
   </div>
    <hr>
@@ -1778,17 +1777,17 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <h3>Privacy Statement</h3>
 </div>
 <div id="a51" class="texter">
-<p>PassLok provides excellent security, since it is a self-contained piece of code that neither relies on servers nor requires the storage of secret information to do its job. Therefore:</p>
+<p>PassLok  is a self-contained piece of code that neither relies on servers nor requires the storage of secret information to do its job. Therefore:</p>
 <p><strong>1. We cannot give your secret Key to anyone</strong> (not even yourself) because we don't have it. Your Key is never stored or transmitted, and by default gets deleted from memory  after five minutes of not being used.</p>
 <p><strong>2. We cannot give your private data to anyone</strong> because PassLok does not send anything out of your device. When you download the app from its server, you get only the code, without any cookies, plugins, or anything of that sort. We do store Locks that have been posted on our General Directory by their owners, but those are public by nature.</p>
-<p><strong>3. We cannot eavesdrop on your chat sessions, or enable anyone to do so.</strong> Establishing a chat session does involve contacting a signaling server (Firebase) and giving it some information that others can fetch, but this consists of a chatroom name that is discarded after use; the signaling server never sees the content of your chat, which is between participants only. The PassLok server doesn't even see the connection info. Connecting to a chat also involves a random key that is never transmitted unlocked.</p>
+<p><strong>3. We cannot eavesdrop on your chat sessions, or enable anyone to do so.</strong> Establishing a chat session does involve contacting a signaling server (Firebase) and giving it your IP address and a disposable chatRoom name so that others can contact you; the signaling server never sees the content of your chat, which is between participants only. The PassLok server doesn't even see the connection data.</p>
 <p><strong>3. We will never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We'd rather shut down PassLok than be forced to do this, which would betray the very essence of our efforts. If we learn that counterfeit versions of PassLok are circulating, whether placed by hackers or government agencies, we'll make the fact known to users.</p>
-<p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok violates free speech and copyright protection laws.</p>
+<p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
 <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
 </div>
 <hr>
 	<address>
-	PassLok v2.2.0 &#169; F. Ruiz 2015
+	PassLok v2.2.01 &#169; F. Ruiz 2015
   </address>
     <ul>
 	<li>
@@ -1822,51 +1821,51 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
 
 <!--Directory dialog-->
-<div id="lockscr" class="white_content" style="display: none;
+<div id="lockScr" class="white_content" style="display: none;
 			top: 5%;
 			left: 5%;
 			width: 90%;
 			height: 90%;" align="center">
     <div id="locktop" align="center">
-       <button class="cssbutton" id="lock2mainButton" value="< Back" style="float: left" title="return to main screen (alt-D)" accesskey="d">&#9664; Done</button>
-       <button class="cssbutton" id="lock2dirButton" value="Directory" style="float: right" title="open a screen containing the general PassLok directory (alt-G). WARNING: this involves going online, which might leak metadata" accesskey="g">&#9654; General Directory</button><br /><br /><br />
-    	<span id="lockmsg">Enter Locks in the lower box. The top box is for Lock names</span><br /><br />
-    	<input type="text" class="cssbox" id="locknameBox" onKeyUp="locknameKeyup(event,'locknameBox');" style="" name="text" placeholder="Enter the name here."/></div>
-    <div align="center" id="basiclockbuttonstop" class="texter" style="display: block;">
-     <button class="cssbutton" id="clearLocksButtonBasic" value="Clear" style="font-size:22px;padding:14px;" title="clear both boxes">Clear</button><!--
---><button class="cssbutton" id="addLockButtonBasic" value="Save" style="font-size:22px;padding:14px" title="save lower box into the local directory with the name given in the upper box | if lower box is empty, make random item">Save</button><!--
---><button class="cssbutton" id="removeLockButtonBasic" value="Del." style="font-size:22px;padding:14px" title="delete the item whose name is displayed">Delete</button>
+       <button class="cssbutton" id="lock2mainBtn" value="< Back" style="float: left" title="return to main screen (alt-D)" accesskey="d">&#9664; Done</button>
+       <button class="cssbutton" id="lock2dirBtn" value="Directory" style="float: right" title="open a screen containing the general PassLok directory (alt-G). WARNING: this involves going online, which might leak metadata" accesskey="g">&#9654; General Directory</button><br /><br /><br />
+    	<span id="lockMsg">Enter Locks in the lower box. The top box is for Lock names</span><br /><br />
+    	<input type="text" class="cssbox" id="lockNameBox" onKeyUp="lockNameKeyup(event,'lockNameBox');" style="" name="text" placeholder="Enter the name here."/></div>
+    <div align="center" id="basicLockBtnsTop" class="texter" style="display: block;">
+     <button class="cssbutton" id="clearLocksBtnBasic" value="Clear" style="font-size:22px;padding:14px;" title="clear both boxes">Clear</button><!--
+--><button class="cssbutton" id="addLockBtnBasic" value="Save" style="font-size:22px;padding:14px" title="save lower box into the local directory with the name given in the upper box | if lower box is empty, make random item">Save</button><!--
+--><button class="cssbutton" id="removeLockBtnBasic" value="Del." style="font-size:22px;padding:14px" title="delete the item whose name is displayed">Delete</button>
     </div>
-    <div align="center" id="lockbuttonstop" class="texter" style="display: none;">
-   <button class="cssbutton" id="clearLocksButton" value="Clear" style="" title="clear both boxes">Clear</button><!--
---><button class="cssbutton" id="addLockButton" value="Save" style="" title="save lower box into the local directory with the name given in the upper box | if lower box is empty, make random item">Save</button><!--
---><button class="cssbutton" id="removeLockButton" value="Delete" style="" title="delete the item whose name is displayed">Delete</button><!--
---><button class="cssbutton" id="resetPFSButton" value="Reset" style="" title="reset PFS data for the item whose name is displayed | if a List is displayed, clear the current List">Reset</button>
+    <div align="center" id="lockBtnsTop" class="texter" style="display: none;">
+   <button class="cssbutton" id="clearLocksBtn" value="Clear" style="" title="clear both boxes">Clear</button><!--
+--><button class="cssbutton" id="addLockBtn" value="Save" style="" title="save lower box into the local directory with the name given in the upper box | if lower box is empty, make random item">Save</button><!--
+--><button class="cssbutton" id="removeLockBtn" value="Delete" style="" title="delete the item whose name is displayed">Delete</button><!--
+--><button class="cssbutton" id="resetPFSBtn" value="Reset" style="" title="reset PFS data for the item whose name is displayed | if a List is displayed, clear the current List">Reset</button>
     </div>
 		<textarea class="cssbox" id="lockBox" style="" name="text" rows="9" placeholder="Enter Locks and shared Keys here.   To save it, enter a name in the box above."></textarea>
-	<div align="center" id="lockbuttonsbot" class="texter" style="display: none;">
-	<button class="cssbutton" id="addToListButton" value="List" style="" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button><!--
---><button class="cssbutton" id="showLockDBButton" value="All" style="" title="show the entire local directory">All</button><!--
---><button class="cssbutton" id="mergeLockDBButton" value="Merge" style="" title="merge lower box contents into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
---><button class="cssbutton" id="resetLockDBButton" value="Reset all" style="" title="reset extra data for all items">Reset All</button><br />
+	<div align="center" id="lockBtnsBottom" class="texter" style="display: none;">
+	<button class="cssbutton" id="addToListBtn" value="List" style="" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button><!--
+--><button class="cssbutton" id="showLockDBBtn" value="All" style="" title="show the entire local directory">All</button><!--
+--><button class="cssbutton" id="mergeLockDBBtn" value="Merge" style="" title="merge lower box contents into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
+--><button class="cssbutton" id="resetLockDBBtn" value="Reset all" style="" title="reset extra data for all items">Reset All</button><br />
     </div>
     </div>
 
 <!--Key dialog-->
-<div id="keyscr" class="white_content" align="center" style="display: block;">
+<div id="keyScr" class="white_content" align="center" style="display: block;">
 <br/>
-      	<span id="keymsg"><span style="color:red;font-weight:bold">JAVASCRIPT OFF, PASSLOK CANNOT RUN</span></span><br /><br />
-        <select id='namelist' size='4' style="padding:4px" title="select your user name"></select>
-        <button id="newUserButton" value="new user" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="set up a new user">New User</button><br /><br />
+      	<span id="keyMsg"><span style="color:red;font-weight:bold">JAVASCRIPT OFF, PASSLOK CANNOT RUN</span></span><br /><br />
+        <select id='nameList' size='4' style="padding:4px" title="select your user name"></select>
+        <button id="newUserBtn" value="new user" style="border:1px solid #dedede; color: #666666; background: #e6e6e6;font-size: 14px;" title="set up a new user">New User</button><br /><br />
 		<input type="password" class="cssbox" autocomplete="off" id="pwd" onKeyUp="pwdKeyup(event);" style="" name="text" placeholder="Enter your secret Key here." align="center"><br /><br />
 		<input type="checkbox" id="showKey" title="reveal box contents"> Show&nbsp;
-       <input type="checkbox" id="never" title="turn off Key timer"> Remember<br /><br />
-        <button class="cssbutton" id="cancelKeyButton" value="cancel" style="" title="close Key dialog">Cancel</button>&nbsp;
-	 	<button class="cssbutton" id="acceptKeyButton" value="OK" style="" title="accept Key">OK</button><br /><br />
-        <span id="5min"><p>You will need to re-enter your Key if you don't use it for 5 min.</p></span>
+       <input type="checkbox" id="neverMode" title="turn off Key timer"> Remember<br /><br />
+        <button class="cssbutton" id="cancelKeyBtn" value="cancel" style="" title="close Key dialog">Cancel</button>&nbsp;
+	 	<button class="cssbutton" id="acceptKeyBtn" value="OK" style="" title="accept Key">OK</button><br /><br />
+        <span id="fiveMin"><p>You will need to re-enter your Key if you don't use it for 5 min.</p></span>
         <p><strong>PassLok will be very slow</strong> if your Key is worse than Medium.</p>
         <p>To display or refresh your Lock, click myLock on the Main tab.</p>
-        <p>Cancel for limited functionality.</p>
+        <p>Cancel for limited functionality in Guest mode.</p>
 </div>
 
 <!--Intro wizard, split into five-->
@@ -1881,7 +1880,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <a href="https://www.youtube.com/watch?v=UxgrES_CGcg" target="_blank">
     <button class="cssbutton" id="introvideo" value="video" title="click this to load the introductory video">Alice & Bob Video</button></a></div>
 <button class="cssbutton" id="gotointro2" value="next" title="to step 2">Next &#9658;</button>
-<button class="cssbutton" id="skipintro" value="skip" title="skip this" style="float:right;">Exit</button>
+<button class="cssbutton" id="skipIntroBtn" value="skip" title="skip this" style="float:right;">Exit</button>
 
 </div></div>
 
@@ -1901,11 +1900,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   	<p>Now enter your secret Key in the box below. You will <strong>never give this Key to anyone</strong>. Make sure to <strong>use $ymbol$, numb3rs, caPiTals, unusual words and mespelingss</strong>. You should be able to remember it, because it won't get stored.</p>
     <p>The Suggest button will get you started with five words, which you can modify at will.</p>
   	<div align="center">
-      		<span id="intromsg" style="color:green">This is where the Key score will appear</span><br /><br />
+      		<span id="introMsg" style="color:green">This is where the Key score will appear</span><br /><br />
 		<input type="password" class="cssbox" autocomplete="off" id="pwdIntro" style="width: 90%" name="text" placeholder="Enter your secret Key here" align="center"><br />
         <input type="checkbox" id="showIntroKey" title="reveal box contents"> Show
-      <button class="cssbutton" id="suggestIntroButton" value="Suggest" title="suggest a Key made of five common words">Suggest</button>
-      <button class="cssbutton" id="clearIntroButton" value="Clear" title="clear box contents">Clear</button>
+      <button class="cssbutton" id="suggestIntroBtn" value="Suggest" title="suggest a Key made of five common words">Suggest</button>
+      <button class="cssbutton" id="clearIntroBtn" value="Clear" title="clear box contents">Clear</button>
       <br />
 	</div>
       	<p>If your Key score is below Medium, <strong>PassLok will be very slow.</strong></p>
@@ -1918,8 +1917,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>You will get better security if you also provide some public piece of data about yourself, such as your email address. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
     <div align="center">
     <input type="text" class="cssbox" id="emailIntro" style="width: 90%" name="text" placeholder="Optionally, enter your email or some other not secret personal info here" align="center"><br /><br />
-    <button class="cssbutton" id="introRandomButton" value="Random" title="display a random token">Random</button>
-      <button class="cssbutton" id="clearIntroRandomButton" value="Clear" title="clear box contents">Clear</button>
+    <button class="cssbutton" id="introRandomBtn" value="Random" title="display a random token">Random</button>
+      <button class="cssbutton" id="clearIntroRandomBtn" value="Clear" title="clear box contents">Clear</button>
       <br />
     </div>
 <p>For ultimate security (at the expense of portability), you may want to click the Random button to use a random token.</p>
@@ -1936,43 +1935,43 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div align="center">
     <input type="checkbox" id="inviteBox" checked/>&nbsp; Send by email&nbsp;&nbsp;<br><br>
-  <button class="cssbutton" id="showlockIntroButton" value="Make Lock" style="color:blue;" align="center" title="make matching Lock and opens main screen">Finish</button><br /><br />
+  <button class="cssbutton" id="showlockIntroBtn" value="Make Lock" style="color:blue;" align="center" title="make matching Lock and opens main screen">Finish</button><br /><br />
   <span id="intromsg2" style="color:red"></span>
   </div>
 </div>
 
 <!--name dialog-->
-<div id="namescr" class="white_content" align="center" style="display: none;">
+<div id="nameScr" class="white_content" align="center" style="display: none;">
     <br />
     <div align="center">
-<span id="emailmsg">Please enter a new User name for this account</span><br /><br />
-		<input type="text" class="cssbox" autocomplete="off" id="userName" onKeyUp="nameKeyup(event);" style="" name="name" placeholder="Enter your new User Name here." align="center"><br /><br />
-       <button class="cssbutton" id="cancelNameButton" value="cancel" style="" title="close name change dialog">Cancel</button>&nbsp;
-	 	<button class="cssbutton" id="acceptNameButton" value="OK" style="" title="accept new user name">OK</button>
+<span id="namechangemsg">Please enter a new User name for this account</span><br /><br />
+		<input type="text" class="cssbox" autocomplete="off" id="userNameBox" onKeyUp="nameKeyup(event);" style="" name="name" placeholder="Enter your new User Name here." align="center"><br /><br />
+       <button class="cssbutton" id="cancelNameBtn" value="cancel" style="" title="close name change dialog">Cancel</button>&nbsp;
+	 	<button class="cssbutton" id="acceptNameBtn" value="OK" style="" title="accept new user name">OK</button>
 	</div>
 </div>
 
 <!--Key change dialog-->
 <div id="keyChange" class="white_content" align="center" style="">
 <br /><br />
-        <span id="keychangemsg"></span><br /><br />
+        <span id="keyChangeMsg"></span><br /><br />
     	<input type="password" id="newKey" class="cssbox"  style="" name="newkey" placeholder="Enter the new Key here."/><br /><br />
-        <input type="checkbox" id="showNewKey" title="reveal new Key"> Show
+        <input type="checkbox" id="showNewKeyCheck" title="reveal new Key"> Show
         <br /><br />
        <input type="password" id="newKey2" class="cssbox"  onKeyUp="newKey2up(event);" style="" name="newkey2" placeholder="Enter the new Key again."/><br /><br />
-    	<button class="cssbutton" id="cancelKeychange" value="Cancel" title="do not change the Key">Cancel</button>&nbsp;
-       <button class="cssbutton" id="submitKeychange" value="OK" title="go on with Key change">OK</button>
+    	<button class="cssbutton" id="cancelKeyChangeBtn" value="Cancel" title="do not change the Key">Cancel</button>&nbsp;
+       <button class="cssbutton" id="submitKeyChangeBtn" value="OK" title="go on with Key change">OK</button>
 </div>
 
 <!--email change dialog-->
-<div id="emailscr" class="white_content" align="center" style="display: none;">
+<div id="emailScr" class="white_content" align="center" style="display: none;">
     <br />
     <div align="center">
-<span id="emailmsg">Please enter your new email or similar item, or a new random token</span><br /><br />
-		<button class="cssbutton" id="randomEmailButton" value="random" style="" title="insert random token">Random</button><br /><br />
-		<input type="text" class="cssbox" autocomplete="off" id="email" onKeyUp="emailKeyup(event);" style="" name="email" placeholder="Enter your email or some other not secret personal info here." align="center"><br /><br />
-       <button class="cssbutton" id="cancelEmailButton" value="cancel" style="" title="close email dialog">Cancel</button>&nbsp;
-	 	<button class="cssbutton" id="acceptEmailButton" value="OK" style="" title="accept email">OK</button>
+<span id="emailMsg">Please enter your new email or similar item, or a new random token</span><br /><br />
+		<button class="cssbutton" id="randomEmailBtn" value="random" style="" title="insert random token">Random</button><br /><br />
+		<input type="text" class="cssbox" autocomplete="off" id='emailBox' onKeyUp="emailKeyup(event);" style="" name='emailBox' placeholder="Enter your email or some other not secret personal info here." align="center"><br /><br />
+       <button class="cssbutton" id="cancelEmailBtn" value="cancel" style="" title="close email dialog">Cancel</button>&nbsp;
+	 	<button class="cssbutton" id="acceptEmailBtn" value="OK" style="" title="accept email">OK</button>
         <p>Your Lock will change if this is not the same you entered before.</p>
         <p>If you use a random token, make sure to back it up from Options.</p>
 	</div>
@@ -1982,13 +1981,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="decoyIn" class="white_content" align="center">
 <br />
 		<p>Enter the Hidden Message</p>
-        <span id="decoymsg"></span><br />
+        <span id="decoyMsg"></span><br />
 		<textarea id="decoyText" class="cssbox" style="" name="text" rows="3"></textarea>
        <p>Enter the Decoy Key/Lock</p>
     	<input type="password" class="cssbox" id="decoyPwdIn" onKeyUp="decoyKeyup(event);" style="" name="key"/><br />
-        <input type="checkbox" id="showdecIn" title="reveal Key">&nbsp; Show
-    	<button class="cssbutton" id="cancelDecoyButton" value="Cancel" title="do not lock">Cancel</button>&nbsp;
-       <button class="cssbutton" id="submitDecoyButton" value="OK" title="go on with locking">OK</button>
+        <input type="checkbox" id="showDecoyInCheck" title="reveal Key">&nbsp; Show
+    	<button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not lock">Cancel</button>&nbsp;
+       <button class="cssbutton" id="submitDecoyBtn" value="OK" title="go on with locking">OK</button>
 </div>
 
 <!--Decoy Out dialog-->
@@ -1996,11 +1995,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <br />
 		<p>Enter the Decoy Key</p>
     	<input type="password" class="cssbox" id="decoyPwdOut" onKeyUp="decoyKeyupOut(event);" style="" name="key"/><br /><br />
-        <input type="checkbox" id="showdecOut" title="reveal Password">&nbsp; Show&nbsp;
-        <input type="checkbox" id="shareddecOut" title="uncheck if this is not Shared" checked>&nbsp; Shared
+        <input type="checkbox" id="showDecoyOutCheck" title="reveal Password">&nbsp; Show&nbsp;
+        <input type="checkbox" id="sharedDecoyOut" title="uncheck if this is not Shared" checked>&nbsp; Shared
         <br /><br />
-    	<button class="cssbutton" id="cancelDecoy2Button" value="Cancel" title="stop unlock">Cancel</button>&nbsp;
-       <button class="cssbutton" id="submitDecoy2Button" value="OK" title="go on with unlock">OK</button>
+    	<button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop unlock">Cancel</button>&nbsp;
+       <button class="cssbutton" id="submitDecoy2Btn" value="OK" title="go on with unlock">OK</button>
     	<p>The Hidden message will appear on the Main tab</p>
 </div>
 
@@ -2011,31 +2010,31 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     	<input type="text" class="cssbox" id="partsNumber" onKeyUp="partsKeyup(event);" style="width: 30%" name="text" rows="1"/><br />
 		<p>And the number of parts needed to retrieve the item</p>
     	<input type="text" class="cssbox" id="partsQuorum" style="width: 30%" name="text" rows="1"/><br /> <br />
-    	<button class="cssbutton" id="cancelPartsButton" value="Cancel" title="do not split">Cancel</button>&nbsp;
-       <button class="cssbutton" id="submitPartsButton" value="OK" title="go on with splitting">OK</button>
+    	<button class="cssbutton" id="cancelPartsBtn" value="Cancel" title="do not split">Cancel</button>&nbsp;
+       <button class="cssbutton" id="submitPartsBtn" value="OK" title="go on with splitting">OK</button>
 </div>
 
 <!--Chat dialog, to enter the chat type and date or other information-->
 <div id="chatDialog" class="white_content" align="center">
 <br><br><br>
 		<span id="chatmsg">Choose the type of chat, then write in the box the date and time</span><br/><br />
-    	<input type="radio" name="chatmodes" id="datachat"  title="chat with text messages and file exchange" checked/>&nbsp; Text and files&nbsp;&nbsp;
-        <input type="radio" name="chatmodes" id="audiochat" title="like Text chat, plus audio"/>&nbsp; Audio&nbsp;&nbsp;
-        <input type="radio" name="chatmodes" id="videochat" title="like audio chat, plus video"/>&nbsp; Video
+    	<input type="radio" name="chatmodes" id="dataChat"  title="chat with text messages and file exchange" checked/>&nbsp; Text and files&nbsp;&nbsp;
+        <input type="radio" name="chatmodes" id="audioChat" title="like Text chat, plus audio"/>&nbsp; Audio&nbsp;&nbsp;
+        <input type="radio" name="chatmodes" id="videoChat" title="like audio chat, plus video"/>&nbsp; Video
         <br /><br />
-        <textarea id="chatdate" class="cssbox" style="" name="chatdate" rows="1" title="additional information" placeholder="Write here the date and time for the chat"></textarea><br /><br />
-        <textarea id="chatroom" class="cssbox" style="" name="chatroom" rows="1" title="chatroom name" placeholder="Write here a nondescript name for the chat; otherwise random words will be used"></textarea><br /><br />
-    	<button class="cssbutton" id="cancelChatButton" value="Cancel" title="cancel chat invitation">Cancel</button>&nbsp;
-       <button class="cssbutton" id="submitChatButton" value="OK" title="make chat invitation">OK</button>
+        <textarea id="chatDate" class="cssbox" style="" name="chatDate" rows="1" title="additional information" placeholder="Write here the date and time for the chat"></textarea><br /><br />
+        <textarea id="chatRoom" class="cssbox" style="" name="chatRoom" rows="1" title="chatRoom name" placeholder="Write here a nondescript name for the chat; otherwise random words will be used"></textarea><br /><br />
+    	<button class="cssbutton" id="cancelChatBtn" value="Cancel" title="cancel chat invitation">Cancel</button>&nbsp;
+       <button class="cssbutton" id="submitChatBtn" value="OK" title="make chat invitation">OK</button>
 </div>
     
 <!--Image screen-->
-<div id='imagescr' class="block_page" align="center" style="display: none;">
-    <button class="cssbutton" id="image2mainButton" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#9668; Back</button>&nbsp;
-    <button class="cssbutton" id="encode" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
-    <button class="cssbutton" id="decode" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
+<div id='imageScr' class="block_page" align="center" style="display: none;">
+    <button class="cssbutton" id="image2mainBtn" value="< Back" title="return to main screen (alt-I)" accesskey="i">&#9668; Back</button>&nbsp;
+    <button class="cssbutton" id="encodeImgBtn" value="Hide" title="hide main box contents into image">Hide</button>&nbsp;
+    <button class="cssbutton" id="decodeImgBtn" value="Reveal" title="extract hidden content and put it in main box">Reveal</button><br /><br />
 
-    <input class="custom-file-input" type='file' id='imagefile' style="" title="open a dialog to select the cover image"/>
+    <input class="custom-file-input" type='file' id='imageFile' style="" title="open a dialog to select the cover image"/>
     <br /><br />
 
     <span id="imagemsg"></span><br /><br />
@@ -2043,22 +2042,22 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <img id="preview" src="" width="100%"/>
 </div>
 
-<!--General Directory screen, just an iframe for https://www.passlok.com/lockdir-->
-<div id="lockdir" class="block_page" style="display: none;" align="center">
+<!--General Directory screen, just an iframe for https://www.passlok.com/lockdirScr-->
+<div id="lockdirScr" class="block_page" style="display: none;" align="center">
 <div style="max-width:1200px;margin-left:auto;margin-right:auto;">
 
-  <button class="cssbutton" id="closelockdirButton" value="< Back" style="float:left;" title="returns to Locks screen">&#9668; Back to PassLok</button>
+  <button class="cssbutton" id="closeLockdirBtn" value="< Back" style="float:left;" title="returns to Locks screen">&#9668; Back to PassLok</button>
 
-    <iframe seamless id="lockdirframe" src="" style="width:100%;height:900px" border=0 frameborder=0> </iframe>
+    <iframe seamless id="lockdirFrame" src="" style="width:100%;height:900px" border=0 frameborder=0> </iframe>
 </div>
 </div>
 
 <!--Chat screen, just an iframe for https://www.passlok.com/chat-->
-<div id="chatscr" class="block_page" style="display: none;" align="center">
-<button class="cssbutton" id="closechatButton" value="< Back" style="float:left;" title="returns to Main tab">&#9668; Back to PassLok</button>
-<button class="cssbutton" id="resetchatButton" value="Reset" style="float:right;" title="reset the chat">Reset Chat</button>
+<div id="chatScr" class="block_page" style="display: none;" align="center">
+<button class="cssbutton" id="closeChatBtn" value="< Back" style="float:left;" title="returns to Main tab">&#9668; Back to PassLok</button>
+<button class="cssbutton" id="resetChatBtn" value="Reset" style="float:right;" title="reset the chat">Reset Chat</button>
 
-    <iframe seamless id="chatframe" src="" style="width:100%;height:900px" border=0 frameborder=0 allowfullscreen></iframe>
+    <iframe seamless id="chatFrame" src="" style="width:100%;height:900px" border=0 frameborder=0 allowfullscreen></iframe>
   
 </div>
 

@@ -1,12 +1,12 @@
 ﻿//optionally call RS code regenerator. If too long, ask the user first
 function calcRStag(string){
 	var RStag = '';
-	if(document.getElementById('ReedSol').checked){
+	if(ReedSolMode.checked){
 		if(string.length < 100000){
 			RStag = '=' + calcRScode(string)
 		}else{
 			var reply = confirm("Adding error correction code for output this long will take a long time. Cancel if you'd rather not wait.");
-			if(reply == true) {
+			if(reply) {
 				RStag = '=' + calcRScode(string) 
 			}
 		}
@@ -40,14 +40,14 @@ function getRScode(string){
 
 //verifies the RS checksum, if it exists, of the string and replaces the string with the stripped and corrected item
 function applyRScode(string,isMsg){									//string also contains the checksum and possibly tags
-	var n = 5;
+	var n = 10;
 	string = string.replace(/[\s-]/g,'');													//cleanup spaces etc
 	var hexRS = getRScode(string);
 	string = string.split("=");																//split into segments
 	string = string.sort(function (a, b) { return b.length - a.length; })[0];				//get largest
 	if(string.length > 100000 && hexRS.length > 100){
 			var reply = confirm("Checking error correction code for an item this long will take a long time. Cancel if you'd rather not wait.");
-			if(reply == false) return string;
+			if(!reply) return string;
 	}
 	var groups = Math.ceil(string.length / (255 - n));
 	if (hexRS.length == groups * (2 * n) && string.length != 43 && string.length != 50){		//found a complete checksum, so now use it, but not for a Lock
@@ -64,9 +64,8 @@ function applyRScode(string,isMsg){									//string also contains the checksum 
 
 //replaces Lock in the local directory with its corrected version
 function applyRStoLock(){
-	var lockmsg = document.getElementById('lockmsg');
-		lockmsg.innerHTML = '';
-	var text = document.getElementById('lockBox').value;
+	lockMsg.innerHTML = '';
+	var text = lockBox.value;
 	var	strings = text.split(/\r?\n/);
 	var lastline = strings[strings.length-1];
 	if (lastline.slice(0,4) != 'http'){
@@ -80,32 +79,32 @@ function applyRStoLock(){
 	var hexRS = getRScode(lock);
 	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	
-	if (lockstripped.length == 60){											//correct checksum, if written as part of ezLok
-		hexRS = lockstripped.slice(50,60);
+	if (lockstripped.length == 70){											//correct checksum, if written as part of ezLok
+		hexRS = lockstripped.slice(50,70);
 		lockstripped = lockstripped.slice(0,50);
-		if(document.getElementById('notags').checked){
-			document.getElementById('lockBox').value = lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS
+		if(noTagsMode.checked){
+			lockBox.value = lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS
 		}else{
-			document.getElementById('lockBox').value = 'PL22ezLok=' + lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS +'=PL22ezLok'
+			lockBox.value = 'PL22ezLok=' + lockstripped.match(/.{1,5}/g).join('-') + '=' + hexRS +'=PL22ezLok'
 		}
 	}
-	if (lockstripped.length == 53){											//correct checksum, if written as part of regular lock
-		hexRS = lockstripped.slice(43,53);
+	if (lockstripped.length == 63){											//correct checksum, if written as part of regular lock
+		hexRS = lockstripped.slice(43,63);
 		lockstripped = lockstripped.slice(0,43);
-		if(document.getElementById('notags').checked){
-			document.getElementById('lockBox').value = lockstripped + '=' + hexRS
+		if(noTagsMode.checked){
+			lockBox.value = lockstripped + '=' + hexRS
 		}else{
-			document.getElementById('lockBox').value = 'PL22lok=' + lockstripped + '=' + hexRS + '=PL22lok'
+			lockBox.value = 'PL22lok=' + lockstripped + '=' + hexRS + '=PL22lok'
 		}
 	}
 	suspendFindLock = true;															//allow writing a name without searching
 	if (lockstripped.length != 43 && lockstripped.length != 50) return				//do nothing if it's not a Lock	
-	if (hexRS.length == 10){														//found a complete code, so now check it
+	if (hexRS.length == 20){														//found a complete code, so now check it
 		lockstripped = lockstripped.replace(/[^a-zA-Z0-9+/]/g,'ã');					//flag invalid characters																
-		document.getElementById('lockBox').value = (restOfLocks.join('\n') + '\n' + useHexRScode(lockstripped,hexRS)).trim();
-		setTimeout(function(){lockmsg.innerHTML = "Lock detected and corrected per the tags";}, 500);		//add delay so this is seen
+		lockBox.value = (restOfLocks.join('\n') + '\n' + useHexRScode(lockstripped,hexRS)).trim();
+		setTimeout(function(){lockMsg.innerHTML = "Lock detected and corrected per the tags";}, 500);		//add delay so this is seen
 	}else{
-		lockmsg.innerHTML = 'Lock detected';
+		lockMsg.innerHTML = 'Lock detected';
 	}
 }
 
@@ -145,7 +144,7 @@ function hex2charArray(string){
 
 //extract the RS code appended to each 255-character piece of a string
 function extractRScode(string){
-	var n = 5;
+	var n = 10;
 	var rs = new ReedSolomon(n);
 	var enc = rs.encode(string);
 	if (string.length <= 255 - n){
@@ -166,7 +165,7 @@ function extractRScode(string){
 
 //use a hexadecimal RS code to correct its matching string
 function useHexRScode(string,hexRS){
-	var n = 5;
+	var n = 10;
 	var rs = new ReedSolomon(n);
 	var RSarray = hex2charArray(hexRS);
 	if (string.length <= 255 - n){
@@ -184,10 +183,10 @@ function useHexRScode(string,hexRS){
 		return rs.decode(enc)
 	}catch(err){
 		var msg = 'Error correction failed. Maybe retry without tags.';
-		if(document.getElementById('lockscr').style.display == 'none'){
-			document.getElementById('mainmsg').innerHTML = msg
+		if(lockScr.style.display == 'none'){
+			mainMsg.innerHTML = msg
 		}else{
-			document.getElementById('lockmsg').innerHTML = msg
+			lockMsg.innerHTML = msg
 		}		
 	}
 }
@@ -202,7 +201,7 @@ function flagInvalidChars(array){
 
 //takes string three times, separated by @@ signs, if triple checkbox is on
 function triple(string){
-	if(document.getElementById('triple').checked){
+	if(tripleMode.checked){
 		return string + '@@' + string + '@@' + string
 	}else{
 		return string
@@ -214,57 +213,48 @@ function bestOfThree(text){
 	var string = text.split('@@');
 	if(string.length != 3) return text;													//if not three parts, return the original
 	
-	string = string.sort(function (x, y) { return x.length - y.length; });							//sort by size, longest first
+	string = string.sort(function (x, y) { return y.length - x.length; });				//sort by size, longest first
 	var result = '';
 	for (var i = 0;i <= string[0].length; i++){
-		if (string[0].charAt(i)==string[1].charAt(i)){												//find matches in two out of three
+		if (string[0].charAt(i)==string[1].charAt(i)){									//find matches in two out of three
 			result = result + string[0].charAt(i);
-			if (string[0].charAt(i)!=string[2].charAt(i)){							//if the third is different, we need to do some work
-				if(string[2].charAt(i)==string[0].charAt(i+1)){					//a character has been lost in string[2], so add it back
-					var length2 = string[2].length;
-					string[2] = [string[2].slice(0,i),string[0].charAt(i+1),string[2].slice(i,length2)].join('')
+			if (string[0].charAt(i)!=string[2].charAt(i)){					//if the third is different, we need to do some work
+				if(string[2].charAt(i)==string[0].charAt(i+1)){				//a character has been lost in string[2], so add it
+					string[2] = [string[2].slice(0,i),string[0].charAt(i+1),string[2].slice(i)].join('')
 				} else if(string[2].charAt(i)==string[1].charAt(i+1)){
-					var length2 = string[2].length;
-					string[2] = [string[2].slice(0,i),string[1].charAt(i+1),string[2].slice(i,length2)].join('')
+					string[2] = [string[2].slice(0,i),string[1].charAt(i+1),string[2].slice(i)].join('')
 				} else if(string[2].charAt(i+1)==string[0].charAt(i) || string[2].charAt(i+1)==string[1].charAt(i)){	//a character has been added to string[2], so remove it
-					var length2 = string[2].length;
-					string[2] = [string[2].slice(0,i-1),string[2].slice(i,length2)].join('')
+					string[2] = [string[2].slice(0,i-1),string[2].slice(i)].join('')
 				}
 			}
 		}else if (string[0].charAt(i)==string[2].charAt(i)){
 			result = result + string[0].charAt(i)
 			if (string[0].charAt(i)!=string[1].charAt(i)){
-				if(string[1].charAt(i)==string[0].charAt(i+1)){					//a character has been lost in string[1], so add it back
-					var length2 = string[1].length;
-					string[1] = [string[1].slice(0,i),string[0].charAt(i+1),string[1].slice(i,length2)].join('')
+				if(string[1].charAt(i)==string[0].charAt(i+1)){				//a character has been lost in string[1], so add it
+					string[1] = [string[1].slice(0,i),string[0].charAt(i+1),string[1].slice(i)].join('')
 				} else if(string[1].charAt(i)==string[2].charAt(i+1)){
-					var length2 = string[1].length;
-					string[1] = [string[1].slice(0,i),string[2].charAt(i+1),string[1].slice(i,length2)].join('')
+					string[1] = [string[1].slice(0,i),string[2].charAt(i+1),string[1].slice(i)].join('')
 				} else if(string[1].charAt(i+1)==string[0].charAt(i) || string[1].charAt(i+1)==string[2].charAt(i)){	//a character has been added to string[1], so remove it
-					var length2 = string[1].length;
-					string[1] = [string[1].slice(0,i-1),string[1].slice(i,length2)].join('')
+					string[1] = [string[1].slice(0,i-1),string[1].slice(i)].join('')
 				}
 			}			
 		}else if (string[1].charAt(i)==string[2].charAt(i)){
 			result = result + string[1].charAt(i)
 			if (string[1].charAt(i)!=string[0].charAt(i)){
-				if(string[0].charAt(i)==string[1].charAt(i+1)){					//a character has been lost in string[0], so add it back
-					var length2 = string[0].length;
-					string[0] = [string[0].slice(0,i),string[1].charAt(i+1),string[0].slice(i,length2)].join('')
+				if(string[0].charAt(i)==string[1].charAt(i+1)){					//a character has been lost in string[0], so add it
+					string[0] = [string[0].slice(0,i),string[1].charAt(i+1),string[0].slice(i)].join('')
 				} else if(string[0].charAt(i)==string[2].charAt(i+1)){
-					var length2 = string[0].length;
-					string[0] = [string[0].slice(0,i),string[2].charAt(i+1),string[0].slice(i,length2)].join('')
+					string[0] = [string[0].slice(0,i),string[2].charAt(i+1),string[0].slice(i)].join('')
 				} else if(string[0].charAt(i+1)==string[1].charAt(i) || string[0].charAt(i+1)==string[2].charAt(i)){	//a character has been added to string[0], so remove it
-					var length2 = string[0].length;
-					string[0] = [string[0].slice(0,i-1),string[0].slice(i,length2)].join('')
+					string[0] = [string[0].slice(0,i-1),string[0].slice(i)].join('')
 				}
 			}
-		} else {																	//no match found in all three, can't find a solution
+		} else {															//no match found in all three, can't find a solution
 			var msg = 'No match in triple item. Maybe retry with a single item';
-			if(document.getElementById('lockscr').style.display == 'none'){
-				document.getElementById('mainmsg').innerHTML = msg
+			if(lockScr.style.display == 'none'){
+				mainMsg.innerHTML = msg
 			}else{
-				document.getElementById('lockmsg').innerHTML = msg
+				lockMsg.innerHTML = msg
 			}
 			throw('no match in two out of three')
 		}

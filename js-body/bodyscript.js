@@ -34,14 +34,14 @@ function showGreeting(){
 	var msgStart = "<span style='color:green'><strong>Welcome to PassLok Privacy</strong></span><br />",
 		msgEnd = "<br />Select your user name and enter your Key. Then click OK";
 	if(protocol == 'file:'){
-		document.getElementById('keymsg').innerHTML = msgStart + 'running from a saved file' + msgEnd
+		keyMsg.innerHTML = msgStart + 'running from a saved file' + msgEnd
 	}else if(protocol == 'https:'){
-		document.getElementById('keymsg').innerHTML = msgStart + 'running from a secure server' + msgEnd
+		keyMsg.innerHTML = msgStart + 'running from a secure server' + msgEnd
 	}else if(protocol == 'chrome-extension:'){
-		document.getElementById('keymsg').innerHTML = msgStart + 'running as a Chrome app' + msgEnd
+		keyMsg.innerHTML = msgStart + 'running as a Chrome app' + msgEnd
 	}else{
-		document.getElementById('mainTab').style.backgroundColor = '#ffd0ff';
-		document.getElementById('keymsg').innerHTML = msgStart + '<span style="color:orange">WARNING: running from an insecure source!</span>' + msgEnd
+		mainTab.style.backgroundColor = '#ffd0ff';
+		keyMsg.innerHTML = msgStart + '<span style="color:orange">WARNING: running from an insecure source!</span>' + msgEnd
 	}
 }
 
@@ -51,25 +51,25 @@ function textheight(){
 		offsetheight = 400,
 		toolbarheight = 48;
 	if(isiPhone) offsetheight = offsetheight - 70;
-	document.getElementById('lockBox').style.height = fullheight - offsetheight + 'px';
+	lockBox.style.height = fullheight - offsetheight + 'px';
 	if(niceEditor){
-		document.getElementById('mainBox').style.height = fullheight - offsetheight - toolbarheight + 'px'
+		mainBox.style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
 		if(isMobile){
-			document.getElementById('mainBox').style.height = fullheight - offsetheight + 40 + 'px';
+			mainBox.style.height = fullheight - offsetheight + 40 + 'px';
 		}else{
-			document.getElementById('mainBox').style.height = fullheight - offsetheight + 'px';
+			mainBox.style.height = fullheight - offsetheight + 'px';
 		}
 	}
 }
 
 function chatResize(){
-	document.getElementById('chatframe').height = document.documentElement.clientHeight - 60
+	chatFrame.height = document.documentElement.clientHeight - 60
 }
 
 //functions for reading a file into the box, and for saving it later
 function saveURLAsFile(){
-	var URLToWrite = document.getElementById('mainBox').innerHTML.trim().replace(/<br>/g,'\n'),
+	var URLToWrite = mainBox.innerHTML.trim().replace(/<br>/g,'\n'),
 		URLToWriteSplit = URLToWrite.split('\n'),
 		fileNameToSaveAs = URLToWriteSplit[0].split(':')[1];
 	if(URLToWriteSplit.length > 1){
@@ -96,7 +96,7 @@ function saveURLAsFile(){
 		downloadLink.download = fileNameToSaveAs;
 		downloadLink.innerHTML = "Download File";
 	} else {																//to save contents as text file
-		var textFileAsBlob = new Blob([document.getElementById('mainBox').innerHTML.trim()], {type:'text/plain'});
+		var textFileAsBlob = new Blob([mainBox.innerHTML.trim()], {type:'text/plain'});
 		fileNameToSaveAs = prompt("The box contents will be saved as a text file. Please enter a name for it.");
 		if(fileNameToSaveAs.indexOf('.') == -1){
 			downloadLink.download = fileNameToSaveAs + '.txt';
@@ -122,7 +122,7 @@ function saveURLAsFile(){
 		document.body.appendChild(downloadLink);
 	}
 	downloadLink.click();
-	document.getElementById('mainmsg').innerHTML = 'File saved with filename ' + downloadLink.download
+	mainMsg.innerHTML = 'File saved with filename ' + downloadLink.download
 }
 
 function destroyClickedElement(event)
@@ -133,7 +133,7 @@ function destroyClickedElement(event)
 //this one is called by window.onload below
 function loadFileAsURL()
 {
-	var fileToLoad = document.getElementById("fileToLoad").files[0];
+	var fileToLoad = mainFile.files[0];
 
 	var fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent)
@@ -141,16 +141,16 @@ function loadFileAsURL()
 		var fileName = fileToLoad.name;
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		if(fileToLoad.type.slice(0,4) == "text"){
-			document.getElementById('mainBox').innerHTML = URLFromFileLoaded.replace(/  /g,' &nbsp;');
+			mainBox.innerHTML = URLFromFileLoaded.replace(/  /g,' &nbsp;');
 		}else{
-			document.getElementById('mainBox').innerHTML = "filename:" + fileName + "<br>" + URLFromFileLoaded;
+			mainBox.innerHTML = "filename:" + fileName + "<br>" + URLFromFileLoaded;
 		}
 	};
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8");
-		document.getElementById('mainmsg').innerHTML = 'This is the content of file <strong>' + fileToLoad.name + '</strong>'
+		mainMsg.innerHTML = 'This is the content of file <strong>' + fileToLoad.name + '</strong>'
 	}else{
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
-		document.getElementById('mainmsg').innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>'
+		mainMsg.innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>'
 	}
 }
