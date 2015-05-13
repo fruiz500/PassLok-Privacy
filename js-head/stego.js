@@ -350,17 +350,18 @@ var importImage = function(e) {
 
     reader.onload = function(event) {
         // set the preview
-        preview.style.display = 'block';
-        preview.src = XSSfilter(event.target.result);
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('preview').src = XSSfilter(event.target.result);
     };
 
     reader.readAsDataURL(e.target.files[0]);
-	preview.onload = function(){updateCapacity()}
+	document.getElementById('preview').onload = function(){updateCapacity()}
 };
 
 //show how much text can be hidden in the image
 function updateCapacity(){
-	var capacity = Math.floor(preview.naturalHeight*preview.naturalWidth*3/8);
+	var image = document.getElementById('preview');
+	var capacity = Math.floor(image.naturalHeight*image.naturalWidth*3/8);
 	var textsize = mainBox.innerHTML.length;
 	if(textsize <= capacity){
 	imagemsg.innerHTML='This image can hide ' + capacity + ' characters. The main box has ' + textsize + ' characters'
@@ -382,11 +383,11 @@ function encodeImage(){
 		imagemsg.innerHTML = '<span style="color:red">The text contains illegal characters for a PassLok string</span>';
 		throw("illegal characters in box")
 	}
-	var encodedImage = steganography.encode(text,preview.src,{"codeUnitSize": 8});
+	var encodedImage = steganography.encode(text,document.getElementById('preview').src,{"codeUnitSize": 8});
 
     // view the new image
-    preview.src = XSSfilter(encodedImage);
-	preview.onload = function(){
+	document.getElementById('preview').src = XSSfilter(encodedImage);
+	document.getElementById('preview').onload = function(){
 		imagemsg.innerHTML = 'Text hidden in the image. Save it now.'
 	}
 }
@@ -397,7 +398,7 @@ function decodeImage(){
 		var reply = confirm("The text hidden in this image, if any, will be extracted and placed in the previous box, replacing its contents. This does not yet work on mobile devices. Cancel if this is not what you want.");
 		if(!reply) throw("decode image canceled");
 	}
-	var loadedImage = XSSfilter(preview.src);
+	var loadedImage = XSSfilter(document.getElementById('preview').src);
 	var text = steganography.decode(loadedImage,{"codeUnitSize": 8});
 	if (text == ''){
 		imagemsg.innerHTML = 'This image does not contain any hidden text'

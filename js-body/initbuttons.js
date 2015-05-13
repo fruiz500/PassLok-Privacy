@@ -447,7 +447,7 @@ function receiveMessage(evt){
   	}
 }
 
-if(localStorage.length == 0) newUser();
+if(!localStorage){newUser();}else if(localStorage.length==0){newUser();};
 
 fillNameList();
 

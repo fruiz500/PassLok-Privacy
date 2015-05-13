@@ -520,6 +520,7 @@ function recryptDB(newKey,newUserName){
 				if(content){
 					if(content.slice(0,1) == '~'){										//do only encrypted items
 						KeyDir = oldKeyStretched;
+						nameBeingUnlocked = name;
 						content = keyDecrypt(content);
 						KeyDir = newKeyStretched;
 						content = keyEncrypt(content);

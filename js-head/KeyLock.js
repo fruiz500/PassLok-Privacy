@@ -155,10 +155,8 @@ function readKey(){
 	if (key == ""){
 		any2key();
 		if(callKey == 'initkey'){
-//			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key';
 			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key'
 		}else{
-//			keyMsg.innerHTML = 'Please enter your secret Key';
 			keyMsg.innerHTML = 'Please enter your secret Key';
 			shadow.style.display = 'block'
 		}
@@ -277,11 +275,11 @@ function acceptKey(){
     		}
   		}
 	}
-	if (userName == ''){
+	if (userName == '' && fullAccess){
 		keyMsg.innerHTML = 'Please select a user name, or make a new one';
 		throw("no userName")
 	}
-	if(Object.keys(locDir).length == 0) locDir = JSON.parse(localStorage[userName]);
+	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
 	if(firstInit) mainMsg.innerHTML = '<span class="blink" style="color:red">LOADING...</span> for best speed, use at least a Medium Key';
 	key2any();
 	
@@ -370,7 +368,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		moveMyself()
 	}
 	focusBox()
-},20);
+},30);
 }
 
 var locDir = {},
@@ -476,6 +474,17 @@ function showLock(){
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	
 	//done calculating, now display it
+	lockDisplay();
+	
+	if(ChromeSyncOn && fullAccess){
+		syncChromeLock('myself',JSON.stringify(locDir['myself']))			//sync the Lock
+	}
+	
+	callKey = '';
+};
+
+//just to display the Lock. Gets called above and in one more place
+function lockDisplay(){
 	if(ezLokMode.checked){
 		var mylocktemp = myezLock.replace(/l/g,'L');					//change smallcase l into capital L for display
 		if(ReedSolMode.checked){
@@ -496,13 +505,7 @@ function showLock(){
 		if (!noTagsMode.checked) mylocktemp = "PL22lok=" + mylocktemp + checksum + "=PL22lok"
 	}
 	mainBox.innerHTML = triple(mylocktemp);
-	mainMsg.innerHTML = "The Lock matching your Key is in the box.";
-	
-	if(ChromeSyncOn && fullAccess){
-		syncChromeLock('myself',JSON.stringify(locDir['myself']))			//sync the Lock
-	}
-	
-	callKey = '';
+	mainMsg.innerHTML = "The Lock matching your Key is in the box.";	
 };
 
 //stores new Lock into local directory, also email if missing

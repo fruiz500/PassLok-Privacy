@@ -55,9 +55,10 @@ function chat2main(){
 }
 
 function resetChat(){
-	var src = chatFrame.src;
-	chatFrame.src = '';
-	setTimeout(function(){chatFrame.src = src;}, 0);
+	var frame = document.getElementById('chatFrame');
+	var src = frame.src;
+	frame.src = '';
+	setTimeout(function(){frame.src = src;}, 0);
 }
 
 //for clearing different boxes
@@ -243,7 +244,7 @@ function closeBox() {
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
 function cancelKey(){
-	pwd.value = '';
+	if(firstInit) pwd.value = '';
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
 		
@@ -497,7 +498,7 @@ function main2image(){
 		if(!reply) throw("Image canceled");
 	};
 	openClose('imageScr');
-	if(preview.src.slice(0,4)!='data'){
+	if(document.getElementById('preview').src.slice(0,4)!='data'){
 		imagemsg.innerHTML='Click the button above to load an image'
 	}else{
 		updateCapacity()
@@ -523,9 +524,10 @@ function lock2dir(){
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
 //if populated, send Lock to directory
-		lockdirFrame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');
-		lockdirFrame.onload = function() {
-	    	lockdirFrame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
+		var frame = document.getElementById('lockdirFrame');
+		frame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');
+		frame.onload = function() {
+	    	frame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
 		};
 		lockdirScr.style.display = "block";
 		return
@@ -542,7 +544,7 @@ function dir2any(){
 
 //to load general Lock directory only once
 function loadLockDir(){
-	if(lockdirFrame.src != 'https://www.passlok.com/lockdirScr') lockdirFrame.src = 'https://www.passlok.com/lockdirScr';
+	if(document.getElementById('lockdirFrame').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirFrame').src = 'https://www.passlok.com/lockdir';
 }
 
 //loads the chat frame
@@ -551,7 +553,7 @@ function main2chat(token){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
 		if(!reply) throw('chat canceled by user');
 	}
-	chatFrame.src = 'https://www.passlok.com/chat/index.html#' + token;
+	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;
 	chatScr.style.display = 'block';
 }
 
@@ -583,6 +585,7 @@ function key2any(){
 
 //leave email screen
 function email2any(){
+	if(callKey = 'showlock') var dispLock = true;				//in case we were in the middle of displaying the Lock
 	callKey = 'changeemail';
 	var email = emailBox.value.trim();
 	if(myEmail.length == 43 && fullAccess){
@@ -600,7 +603,8 @@ function email2any(){
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
-
+	if(dispLock) lockDisplay();
+	
 	if(fullAccess){
 		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
 			delete locDir[name][1];
