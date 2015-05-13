@@ -265,9 +265,9 @@ window.onload = function() {
     }, 0); //or 4
 	}
 
-//	userName.addEventListener('keyup', function() {nameKeyup(event)}, false);
+//	userNameBox.addEventListener('keyup', function() {nameKeyup(event)}, false);
 		
-//	email.addEventListener('keyup', function() {emailKeyup(event)}, false);
+//	emailBox.addEventListener('keyup', function() {emailKeyup(event)}, false);
 
 	neverMode.addEventListener('click', hide5min);
 	

@@ -330,7 +330,7 @@ function mergeLockDB(){
 		fillList();
 		var reply = prompt("The items have been merged into the local directory. It might be a good idea to change the user name at this point. To do so, enter the new user name and click OK. Otherwise Cancel.");
 		if(reply){
-			userName.value = reply;
+			userNameBox.value = reply;
 			changeName()
 		}
 		
