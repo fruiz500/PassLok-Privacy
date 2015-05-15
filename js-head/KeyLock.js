@@ -593,17 +593,11 @@ nameBeingUnlocked = '';
 //this function replaces an item with its value on the locDir database, decrypted if necessary, if the name exists, otherwise if gives a warning that it isn't a Lock
 function replaceByItem(name,warning){
 	var warningList = "";
-	if(locDir[name] == null) {					//not on database; see if it's a Lock, and otherwise add to warning list
-		var namestr = striptags(name);
-		if(namestr.length != 43 && namestr.length != 50){
-			warningList = name
-		}
+	if(!locDir[name]) {							//not on database; strip it if it's a Lock, and otherwise add to warning list
+		var stripped = striptags(name);
+		if(stripped.length == 43 || stripped.length == 50){name = stripped} else {warningList = name};
 	} else if(name == 'myself'){
-		if(myLock != ''){
-			name = myLock
-		}else{
-			
-		}
+		if(myLock) name = myLock
 	} else {									//found name on DB, so get value from the database and decrypt if necessary
 		var string = locDir[name][0];
 		nameBeingUnlocked = name;
