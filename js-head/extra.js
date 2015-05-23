@@ -113,7 +113,7 @@ if (!noTagsMode.checked){							//add tags if checked, add explanatory text
 	} else if (type=="~"){
 		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with my secret Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML);
 	} else if (cipherstr.length==43 || cipherstr.replace(/-/g,'').length==50){
-		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0AAs soon as you start PassLok, you will be asked to come up with a secret Key, from which a matching Lock is made, and then you can send me that Lock any way you want because it is impossible to get your Key from the Lock. To send it by email, just click the Email button in PassLok. Your secret Key will not be sent or saved anywhere.%0D%0A%0D%0AOn the line below is my PassLok v.2.2 Lock. Use it to send me private messages and verify my signature, or invite me to a private real-time chat involving text, files, audio, and even video. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) +"%0D%0A%0D%0AOnce again, you can get PassLok for free at https://passlok.com, plus the Chrome, Android, and iOS app stores.";
+		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0AAs soon as you start PassLok, you will be asked to come up with a secret Key, from which a matching Lock is made, and then you can send me that Lock anyway you want because it is impossible to get your Key from the Lock. To send it by email, just click the Email button in PassLok. Your secret Key will not be sent or saved anywhere.%0D%0A%0D%0AOn the line below is my PassLok v.2.2 Lock. Use it to send me private messages and verify my signature, or invite me to a private real-time chat involving text, files, audio, and even video. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) +"%0D%0A%0D%0AOnce again, you can get PassLok for free at https://passlok.com, plus the Chrome, Android, and iOS app stores.";
 	} else if (cipherstr.length==160){
 		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.2.2 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
 	} else if (type=="%" && cipherstr.length==159){
@@ -177,18 +177,19 @@ function Chat(){
 		return
 	}
 
-	var text = mainBox.innerHTML.trim();	
+	var text = mainBox.innerHTML.trim();
+	
 	if(text.slice(4,8) == 'chat'){										//there is already a chat invitation, so open it
 		lockUnlock();
 		return
 	}
 	
+	var listArray = lockBox.value.trim().split('\n');
 	if (learnMode.checked){
 		var reply = confirm("A special locked item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
 		if(!reply) throw("chat invite canceled");
 	};
 	
-	var listArray = lockBox.value.trim().split('\n');	
 	if(listArray[0] == '' || (listArray[0] == 'myself' && listArray.length == 1)){
 		mainMsg.innerHTML = 'Please select those invited to chat';
 		throw("nobody invited to chat");

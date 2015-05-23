@@ -143,6 +143,8 @@ window.onload = function() {
 
 	sentenceMode.addEventListener('click', checkboxStore);
 
+	letterMode.addEventListener('click', checkboxStore);
+
 	wordMode.addEventListener('click', checkboxStore);
 
 	spaceMode.addEventListener('click', checkboxStore);

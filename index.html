@@ -485,6 +485,7 @@ img.intLink { border: 0; }
       	&nbsp;&nbsp;<input type="radio" name="sigmodes" id="sealMode" title="signature is a seal concealing the text"/>&nbsp; Seal
       <hr>
    &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
+   <input type="radio" name="stegomodes" id="letterMode" title="hide item into letters" checked/>&nbsp; Letters&nbsp;&nbsp;
    <input type="radio" name="stegomodes" id="sentenceMode" title="hide item as sentences" checked/>&nbsp; Sentences<br><br>
    &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="stegomodes" id="wordMode"  title="hide item as individual words"/>&nbsp; Words&nbsp;&nbsp;
         <input type="radio" name="stegomodes" id="spaceMode" title="hide item in spaces between words"/>&nbsp; Spaces&nbsp;&nbsp;
@@ -764,7 +765,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b23" class="texter">
-<p> If the file is a text file, it will load as plain text rather than encoded. In our tests, Chrome has had difficulty loading  files larger than a few kB, but Firefox does fine. Most mobile devices restrict the user to images stored in the device or acquired with the built-in camera, so this command is of limited usefulness and is removed.</p>
+<p> If the file is a text file, it will load as plain text rather than encoded. In our tests, Chrome has had difficulty loading  files larger than a few kB, but Firefox does fine. Most mobile devices restrict the user to images stored in the device or acquired with the built-in camera, so this command is of limited usefulness and is removed. If using a Chromebook, be aware that the Files extension does not load Google documents completely, so that the encrypted file won't be complete.</p>
 </div>
   </div>
     <hr>
@@ -1100,7 +1101,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <h3>Save the contents of the Main box to a file</h3>
   </div>
   <div id="a57" class="texter">
-    <p>1. On the <strong>Options</strong> tab, click the <strong>Save</strong> button.</p>
+    <p>1. Click the <strong>Save</strong> button on the <strong>Main</strong> tab.</p>
   <p>2. A prompt asks for a name for the file. Type a name (default extension is .txt) and click <strong>OK</strong>. The file is saved to your default downloads folder.  </p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
 <div id='bb57' style="cursor:pointer">
@@ -1577,14 +1578,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="a42" class="texter">
 <p>1. Check that the item to be converted into fake text is on the <strong>Main</strong> tab. Then click the <strong>&#9660;</strong> button, if needed, to show the <strong>Text hide</strong> button.</p>
 <p>2. If you wish to use a cover text different from the default and you have stored it in the local directory, select it on the top box of the <strong>Main</strong> tab. Otherwise click the <strong>Edit</strong> button and enter the new cover text in the lower box of the dialog, then return to the <strong>Main</strong> tab.</p>
-<p>3. Make sure the hiding mode you want is the one selected in the <strong>Options</strong> tab. There are four different methods for doing this: Words, Spaces, Sentences, and Chains. Words replaces each character by a single word. Spaces encodes the characters into the spaces between words. Sentences (default) and Chains encode characters as grammatically correct sentences.</p>
-<p>4. If now you click the <strong>Text hide</strong> button, the PassLok item is converted into text, using words from the cover text.</p>
+<p>3. Make sure the hiding mode you want is the one selected in the <strong>Options</strong> tab. There are five different methods for doing this: Letters, Words, Spaces, Sentences, and Chains. Letters (default) encodes the characters as non-standard characters in the cover text. Words replaces each character by a single word. Spaces encodes the characters into the spaces between words. Sentences  and Chains encode characters as grammatically correct sentences.</p>
+<p>4. If now you click the <strong>Text hide</strong> button, the PassLok item is converted into text, using words from the cover text. You may have to complete the last sentence manually.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=_7Fju1EwhV4" target="_blank">https://www.youtube.com/watch?v=_7Fju1EwhV4</a></p>
 <div id='bb42' style="cursor:pointer">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b42" class="texter">
-<p>The recipient of a Words- or Chains-encoded text must have the same cover text in order to retrieve the original, but this is not necessary for Spaces- or Sentences-encoded text. The output of Chains, Spaces, and Sentences encoding is roughly seven times longer than that of Words encoding, but it makes more grammatical sense. If the cover text is not long enough, it will be repeated several times. When you use Spaces encoding, you should be careful not to add or delete any spaces within the encoded text, but it is okay to add more text to complete the last sentence, which may contain additional spaces.</p>
+<p>The recipient of a Words- or Chains-encoded text must have the same cover text in order to retrieve the original, but this is not necessary for Letters-, Spaces- or Sentences-encoded text. The output of Chains, Spaces, and Sentences encoding is roughly seven times longer than that of Letters or Words encoding. The most grammatically-correct output is that or Letters and Spaces (identical to the cover text), followed by Sentences and Chains; Words output doesn't make much grammatical sense. If the cover text is not long enough, it will be repeated several times. When you use Spaces or Letters encoding, you should be careful not to add or delete any spaces within the encoded text, but it is okay to add more text to complete the last sentence, which may contain additional spaces. Also aware that some services replace the special characters in Letters-encoded items with something else, thus corrupting the items.</p>
 <p>Text encoding is no substitute for real encryption, and so PassLok will refuse to convert into fake text anything that does not look like genuine PassLok output.</p>
 <p>Cover texts do not have to be in English or even use Latin characters. Anything that can be written in UTF-16 encoded characters can be used (most languages, including Arabic and Chinese, will work fine).</p>
 <p>Since the cover text is a (weak) sort of password for a Words- or Chains-encoded item, it may be good to store often-used cover texts in your local directory so they can be loaded easily from the <strong>Main</strong> tab. To do this, click the <strong>Edit</strong> button next to the selection box, then write a new name in the upper box of the dialog that appears, paste the cover text in the lower box, and click <strong>Save</strong>.</p>
@@ -1787,7 +1788,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
 <hr>
 	<address>
-	PassLok v2.2.03 &#169; F. Ruiz 2015
+	PassLok v2.2.4 &#169; F. Ruiz 2015
   </address>
     <ul>
 	<li>
@@ -1814,6 +1815,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     webRTC chat by Muaz Khan 2015</li>
     <li>
     markovTextStego.js by Jackson Thuraisamy 2013</li>
+    <li>Letters encoding based on the Advanced Unicode Stego by Adrian Crenshaw 2013</li>
     <li>
     testing, help items, interface ideas by the IIT IPRO-379 team 2014</li>
     </ul>

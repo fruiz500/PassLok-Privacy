@@ -1092,14 +1092,15 @@ function verifySignature(){
 		mainMsg.innerHTML = 'Select a Lock to verify or unseal an item';
 		throw("no Lock present")
 	}
-		Lock = striptags(Lock);
-	if (Lock.length != 43 && Lock.length != 50){											//not a Lock, but maybe it's a name
+	var	Lockstripped = striptags(Lock);
+	if (Lockstripped.length != 43 && Lockstripped.length != 50){											//not a Lock, but maybe it's a name
 		if (locDir[Lock]){
 			var name = Lock;
 			Lock = replaceByItem(Lock,false)
 		}
 	}else{
-		var name = lockMsg.innerHTML
+		var name = lockMsg.innerHTML;
+		Lock = Lockstripped
 	}
 	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 		//ezLok replaced by regular Lock
 	if (Lock.length != 43){
