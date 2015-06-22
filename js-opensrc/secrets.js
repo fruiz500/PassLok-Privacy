@@ -1,4 +1,4 @@
-//edit in lines 152-155 by F. Ruiz in order to use NaCl RNG function rather than the built-in RNG. Chunks of code commented out as a consequence.
+//edit in lines 153-156 by F. Ruiz in order to use NaCl RNG function rather than the built-in RNG. Chunks of code commented out as a consequence. Another edit in 341-346 because the original padLeft function didn't work on iPad
 // secrets.js - by Alexander Stetsyuk - released under MIT License
 (function(exports, global){
 var defaults = {
@@ -72,7 +72,7 @@ function isInited(){
 
 //about 100 lines removed here
 
-//End of F. Ruiz edits for this block. There are two more edits: 1. a RNG check that is removed. 2. built-in RNG call replaced by SJCL RNG call
+//End of F. Ruiz edits for this block. There are three more edits: 1. a RNG check that is removed. 2. built-in RNG call replaced by SJCL RNG call. 3. new version of padLeft function
 
 
 // Divides a `secret` number String str expressed in radix `inputRadix` (optional, default 16) 
@@ -338,8 +338,12 @@ function split(str, padLength){
 // Pads a string `str` with zeros on the left so that its length is a multiple of `bits`
 function padLeft(str, bits){
 	bits = bits || config.bits
-	var missing = str.length % bits;
-	return (missing ? new Array(bits - missing + 1).join('0') : '') + str;
+//edit by F. Ruiz. This function didn't work well on iPad, so changed it with a different algorithm
+//	var missing = str.length % bits;
+//	return (missing ? new Array(bits - missing + 1).join('0') : '') + str;
+	while(str.length % bits) str = '0' + str;
+	return str;
+//end of F. Ruiz edit
 };
 
 function hex2bin(str){

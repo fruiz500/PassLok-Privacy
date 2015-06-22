@@ -1,6 +1,6 @@
 ﻿//function that starts it all when the Lock/Unlock button is pushed
 function lockUnlock(){
-	mainMsg.innerHTML = '<span class="blink" style="color:blue">PROCESSING</span>';				//Get blinking message started
+	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		Decrypt_single();
 	},20);						//end of timeout
@@ -29,7 +29,7 @@ function Encrypt_single(){
 		return
 	}
 	if (listArray.length > 1 && listArray[1].slice(0,4) != 'http'){			//this is a List, which is not compatible with short mode, video URLs on 2nd line don't count
-		mainMsg.innerHTML = '<span style="color:red">Short mode not available for multiple recipients</span>';
+		mainMsg.innerHTML = '<span style="color:orange">Short mode not available for multiple recipients</span>';
 		throw('multiple Locks for short mode')
 	}
 	var lockBoxNoVideo = listArray[0].trim(),						//strip video URL, if any
@@ -65,23 +65,8 @@ function Encrypt_single(){
 		};
 		readKey();
 		if(!locDir[name] && locDir[lockBoxHold]) name = lockBoxHold;				//get name from Lock area
-		if (locDir[name] && fullAccess){
-			var sharedKeyCipher = locDir[name][1];
-		}
-		if (sharedKeyCipher != null && fullAccess){
-			var sharedKey = nacl.util.decodeBase64(keyDecrypt(sharedKeyCipher))
-		} else {
-			var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
-			if (locDir[name] && fullAccess){
-				locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(sharedKey));
-				localStorage[userName] = JSON.stringify(locDir);
-
-				if(ChromeSyncOn){											//if Chrome sync is available, change in sync storage
-					syncChromeLock(name,JSON.stringify(locDir[name]))
-				}
-			}
-		}
-		if (text.length > 94) clipped = true;  			//94-char capacity
+		var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
+		if (text.length > 94) clipped = true;  						//94-char capacity
 		text = text.slice(0,94);
 		while (text.length < 94) text = text + ' ';
 		var cipherstr = PLencrypt(text,nonce24,sharedKey);
@@ -124,13 +109,12 @@ function Encrypt_single(){
 			throw('name not on locDir')
 		}		
 		readKey();
-		var dualKeyCipher = locDir[name][1],				//this is the permanent shared Key, we'll call it "dual" here to distinguish it from the current shared key, which is ephemeral
-			turnstring = locDir[name][4];
+		var	turnstring = locDir[name][3];
 		if (turnstring=='next unlock' && onceMode.checked){				//don't allow a switch in read-once mode, since it corrupts the exchange
 			mainMsg.innerHTML = 'In Read-once mode, you cannot lock a new message before receiving a reply from the recipient. Use PFS mode instead.';
 			throw('read-once locking aborted')						
 		}
-		var lastLockCipher = locDir[name][3];					//retrieve dummy Lock from storage, [0] is the permanent Lock by that name
+		var lastLockCipher = locDir[name][2];					//retrieve dummy Lock from storage, [0] is the permanent Lock by that name
 		if (lastLockCipher) {								//if dummy exists, decrypt it first
 			var lastLock = keyDecrypt(lastLockCipher);
 		} else {													//use permanent Lock if dummy doesn't exist
@@ -152,11 +136,11 @@ function Encrypt_single(){
 					var newLockCipher = PLencrypt(pubdumstr,nonce24,makeShared(lastLock,wiseHash(Lock,noncestr)));
 				}
 			}else{
-				var dualKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var dualKey = getDualKey(name,Lock,noncestr);
 				var	newLockCipher = PLencrypt(pubdumstr,nonce24,dualKey);
 			}
 		}else{
-			var lastKeyCipher = locDir[name][2];						//read-once mode uses previous Key and previous Lock
+			var lastKeyCipher = locDir[name][1];						//read-once mode uses previous Key and previous Lock
 			if (lastKeyCipher){
 				var lastKey = nacl.util.decodeBase64(keyDecrypt(lastKeyCipher));
 			} else {													//use new dummy Key if stored dummy doesn't exist
@@ -174,14 +158,14 @@ function Encrypt_single(){
 					}
 				}
 			}else{
-				var dualKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var dualKey = getDualKey(name,Lock,noncestr);
 				var	newLockCipher = PLencrypt(pubdumstr,nonce24,dualKey);
 			}
 		}
-		locDir[name][2] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database
-		locDir[name][4] = 'next unlock';
+		locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database
+		locDir[name][3] = 'next unlock';
 
-		if(ChromeSyncOn){										//if Chrome sync is available, change in sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){										//if Chrome sync is available, change in sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 			
@@ -208,21 +192,12 @@ function Encrypt_single(){
 	callKey = '';
 };
 
-//gets the permanent shared key from storage, or makes it and stores it. Used by PFS and Read-once modes
-function getDualKey(name,Lock,noncestr,dualKeyCipher){
+//makes the permanent shared Key. Used by PFS and Read-once modes
+function getDualKey(name,Lock,noncestr){
 	if (Lock.length == 43){
-		if (dualKeyCipher){
-			var dualKey = nacl.util.decodeBase64(keyDecrypt(dualKeyCipher));
-		} else {
-			var dualKey = makeShared(convertPubStr(Lock),KeyDH);
-			locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(dualKey));
-						
-			if(ChromeSyncOn){
-				syncChromeLock(name,JSON.stringify(locDir[name]))
-			}
-		}
-	}else{											//recipient has a shared Key in common with sender. Stretch it first. Use the padding as salt
-		var dualKey = wiseHash(Lock,noncestr);		//"Lock" is actually a permanent shared Key, unstripped
+		var dualKey = makeShared(convertPubStr(Lock),KeyDH);
+	}else{
+		var dualKey = wiseHash(Lock,noncestr);					//"Lock" is actually a permanent shared Key, unstripped
 	}
 	return dualKey
 }
@@ -231,7 +206,7 @@ function getDualKey(name,Lock,noncestr,dualKeyCipher){
 //the output string contains each encrypted key along with 66 bits of an encrypted form of the recipient's item, so he/she can find the right encrypted key
 function Encrypt_List(listArray){
 	if(shortMode.checked){
-		mainMsg.innerHTML = '<span style="color:red">Short mode not available for multiple recipients</span>';
+		mainMsg.innerHTML = '<span style="color:orange">Short mode not available for multiple recipients</span>';
 		throw('short mode not available')
 	}
 	var warningList = "";
@@ -267,13 +242,13 @@ function Encrypt_List(listArray){
 		var outString = "!"
 	} else if(pfsMode.checked){
 		if (learnMode.checked){
-			var reply = confirm("The contents of the main box will be locked in PFS mode with the Locks of the recipients listed, so that all of them can read it with their respective Keys, and the result will replace the main box. Cancel if this is not what you want.");
+			var reply = confirm("The contents of the main box will be locked in PFS mode with the Locks of the recipients listed, so that all of them can read it with their respective Keys, and the result will replace the main box. It will not lock for yourself. Cancel if this is not what you want.");
 			if(!reply) throw("PFS list encryption canceled");
 		}
 		var outString = "$"
 	} else if(onceMode.checked){
 		if (learnMode.checked){
-			var reply = confirm("The contents of the main box will be locked in Read-once mode with the Locks of the recipients listed, so that all of them can read it with their respective Keys, and the result will replace the main box. Cancel if this is not what you want.");
+			var reply = confirm("The contents of the main box will be locked in Read-once mode with the Locks of the recipients listed, so that all of them can read it with their respective Keys, and the result will replace the main box. It will not lock for yourself. Cancel if this is not what you want.");
 			if(!reply) throw("Read-once list encryption canceled");
 		}
 		var outString = "*"
@@ -310,22 +285,8 @@ function Encrypt_List(listArray){
 			
 				if (signedMode.checked){
 					readKey();
-					if(locDir[name]!=null && fullAccess){
-						var sharedKeyCipher = locDir[name][1];			//permanent key shared with recipient, for encrypting the new dummy Lock
-						if (sharedKeyCipher != null){
-							var sharedKey = nacl.util.decodeBase64(keyDecrypt(sharedKeyCipher))
-						} else {
-							var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
-							locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(sharedKey));
-							
-							if(ChromeSyncOn){
-								syncChromeLock(name,JSON.stringify(locDir[name]))
-							}
-						}
-					} else {											//if the name is not in the directory, make it fresh
-						var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
-					}
-					var cipher2 = nacl.util.encodeBase64(nacl.secretbox(msgKey,nonce24,sharedKey)).replace(/=+$/,''),
+					var sharedKey = makeShared(convertPubStr(Lock),KeyDH),
+						cipher2 = nacl.util.encodeBase64(nacl.secretbox(msgKey,nonce24,sharedKey)).replace(/=+$/,''),
 						idTag = PLencrypt(Lock,nonce24,sharedKey);
 
 				} else if (anonMode.checked){
@@ -343,15 +304,14 @@ function Encrypt_List(listArray){
 						}
 					}
 					readKey();
-					var dualKeyCipher = locDir[name][1],				//this is the permanent shared Key, we'll call it "dual" here to distinguish it from the current shared key, which is ephemeral
-						turnstring = locDir[name][4];
+					var	turnstring = locDir[name][3];
 					if (turnstring=='next unlock' && onceMode.checked){			//don't allow a switch in read-once mode, since it corrupts the exchange
 						mainMsg.innerHTML = 'In Read-once mode, you cannot lock a new message before receiving a reply from all recipients. Use PFS mode instead.';
 						throw('read-once locking aborted')						
 					}
 
-				  if(name != 'myself'){								//can't do PFS or Read-once to myself, so do a signed one, below
-					var lastLockCipher = locDir[name][3];					//retrieve dummy Lock from storage, [0] is the permanent Lock by that name
+				  if(name != 'myself'){								//can't do PFS or Read-once to myself
+					var lastLockCipher = locDir[name][2];					//retrieve dummy Lock from storage, [0] is the permanent Lock by that name
 					if (lastLockCipher != null) {								//if dummy exists, decrypt it first
 						var lastLock = keyDecrypt(lastLockCipher)
 					} else {													//use permanent Lock if dummy doesn't exist
@@ -373,10 +333,10 @@ function Encrypt_List(listArray){
 								var idKey = makeShared(lastLock,wiseHash(Lock,noncestr));
 							}
 						}else{
-							var idKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+							var idKey = getDualKey(name,Lock,noncestr);
 						}
 					}else{
-						var lastKeyCipher = locDir[name][2];						//read-once mode uses previous Key and previous Lock
+						var lastKeyCipher = locDir[name][1];						//read-once mode uses previous Key and previous Lock
 						if (lastKeyCipher != null){
 							var lastKey = nacl.util.decodeBase64(keyDecrypt(lastKeyCipher));
 						} else {													//use new dummy Key if stored dummy doesn't exist
@@ -395,25 +355,25 @@ function Encrypt_List(listArray){
 								}
 							}
 						}else{
-							var idKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+							var idKey = getDualKey(name,Lock,noncestr);
 						}
 					}
 					
-					locDir[name][2] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database
-					locDir[name][4] = 'next unlock';
+					locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database
+					locDir[name][3] = 'next unlock';
 
-					if(ChromeSyncOn){										//if Chrome sync is available, change in sync storage
+					if(ChromeSyncOn && chromeSyncMode.checked){										//if Chrome sync is available, change in sync storage
 						syncChromeLock(name,JSON.stringify(locDir[name]))
 					}
 					var cipher2 = nacl.util.encodeBase64(nacl.secretbox(msgKey,nonce24,sharedKey)).replace(/=+$/,''),
 						idTag = PLencrypt(Lock,nonce24,idKey),
 						newLockCipher = PLencrypt(pubdumstr,nonce24,idKey);
 						
-				  }else{														//don't do PFS to 'myself'; use signed mode instead
-				  	var idKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
-					var cipher2 = nacl.util.encodeBase64(nacl.secretbox(msgKey,nonce24,idKey)).replace(/=+$/,''),
-						idTag = PLencrypt(Lock,nonce24,idKey),
-						newLockCipher = PLencrypt(nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,''),nonce24,idKey);		//just a filler that won't be used
+				  }else{
+					if(listArray.length < 2){
+						mainMsg.innerHTML = 'In PFS and Read-once modes you must select recipients other than yourself.';
+						throw('only myself for PFS')
+					}
 				  }
 				}
 				
@@ -425,7 +385,7 @@ function Encrypt_List(listArray){
 			
 			//now add the idTag and encrypted strings to the output string, and go to the next recipient
 			if (pfsMode.checked || onceMode.checked){				//these include encrypted ephemeral Locks, not the other types
-				outString = outString + '%' + idTag.slice(0,9) + '%' + newLockCipher + cipher2;
+				if(name != 'myself') outString = outString + '%' + idTag.slice(0,9) + '%' + newLockCipher + cipher2;
 			} else {
 				outString = outString + '%' + idTag.slice(0,9) + '%' + cipher2;
 			}
@@ -450,7 +410,6 @@ function Encrypt_List(listArray){
 		}
 	}
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
-	smallOutput();
 	mainMsg.innerHTML = 'Locking successful. Select and copy.';
 	callKey = '';
 }
@@ -573,7 +532,7 @@ function Decrypt_single(){
 	if(type == '@' || type == '#' || type == '$' || type == '*'){				//only one sender allowed
 		if(lockBoxLines.length > 1){
 			if(lockBoxLines[1].slice(0,4) != 'http'){
-				mainMsg.innerHTML = "<span style='color:red'>Please select a single sender</span>";
+				mainMsg.innerHTML = "<span style='color:orange'>Please select a single sender</span>";
 				throw("too many lines in lock box");
 			}
 		}
@@ -608,7 +567,7 @@ function Decrypt_single(){
 			if(!reply2) throw("sym decryption canceled");
 		};
 		if (lockBoxItem == ''){
-			mainMsg.innerHTML = '<span style="color:red">Enter shared Key</span>';
+			mainMsg.innerHTML = '<span style="color:orange">Enter shared Key</span>';
 			throw("symmetric key empty");
 		}
 		lockBoxItem = replaceByItem(lockBoxItem,false);					//if it's a name in the box, get the real item
@@ -631,30 +590,17 @@ function Decrypt_single(){
 			if(!reply) throw("signed decryption canceled");
 		};
 		if (strippedLockBox == ''){
-			mainMsg.innerHTML = "<span style='color:red'>Identify the sender or enter his/her Lock</span>";
+			mainMsg.innerHTML = "<span style='color:orange'>Identify the sender or enter his/her Lock</span>";
 			throw("lock box empty");
 		}
 		readKey();
 		if (locDir[name] == null){
 			name = lockBoxItem;							//try again using the string in the lockBox as name, not stripped
 		}
-		if (locDir[name] && fullAccess) var sharedKeyCipher = locDir[name][1];
-		if (sharedKeyCipher != null){
-			var sharedKey = nacl.util.decodeBase64(keyDecrypt(sharedKeyCipher))
-		} else {
-			strippedLockBox = replaceByItem(lockBoxItem,false);
-			if (strippedLockBox.length == 50) strippedLockBox = changeBase(strippedLockBox.toLowerCase(), BASE36, BASE64, true) 		//replace ezLok with standard
-			var sharedKey = makeShared(convertPubStr(strippedLockBox),KeyDH);
-			if (locDir[name] && fullAccess) {
-				locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(sharedKey));
-				localStorage[userName] = JSON.stringify(locDir);
-
-				if(ChromeSyncOn){												//if Chrome sync is available, change in sync storage
-					syncChromeLock(name,JSON.stringify(locDir[name]))
-				}
-			}
-		}
-		var	noncestr = cipherstr.slice(0,12),
+		strippedLockBox = replaceByItem(lockBoxItem,false);
+		if (strippedLockBox.length == 50) strippedLockBox = changeBase(strippedLockBox.toLowerCase(), BASE36, BASE64, true) 		//replace ezLok with standard
+		var sharedKey = makeShared(convertPubStr(strippedLockBox),KeyDH),
+			noncestr = cipherstr.slice(0,12),
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr));
 		cipherstr = cipherstr.slice(12);
 		try{
@@ -691,7 +637,7 @@ function Decrypt_single(){
 		};
 		readKey();
 		if (lockBoxItem == ''){
-			mainMsg.innerHTML = '<span style="color:red">Select the sender</span>';
+			mainMsg.innerHTML = '<span style="color:orange">Select the sender</span>';
 			throw("PFS sender empty");
 		}	
 		if(!locDir[name]) name = lockBoxItem;						//if the name is not displayed, try with the content of the lock box
@@ -707,8 +653,8 @@ function Decrypt_single(){
 			newLockCipher = cipherstr.slice(12,91);
 		cipherstr = cipherstr.slice(91);
 		
-		var lastKeyCipher = locDir[name][2],												//retrieve dummy Key from storage
-			turnstring = locDir[name][4];													//this strings says whose turn it is to encrypt
+		var lastKeyCipher = locDir[name][1],												//retrieve dummy Key from storage
+			turnstring = locDir[name][3];													//this strings says whose turn it is to encrypt
 		if (turnstring=='next lock'){
 			if(type == '*'){
 				window.setTimeout(function(){mainMsg.innerHTML = 'Read-once messages can be unlocked only once'},2000)				
@@ -724,7 +670,7 @@ function Decrypt_single(){
 				var lastKey = wiseHash(Lock,noncestr);								//shared Key: use directly
 			}
 		}		
-		if (locDir[name]) var dualKeyCipher = locDir[name][1];
+
 		if(type == '$'){																//PFS mode
 			if(lastKeyCipher){
 				if(Lock.length == 43){
@@ -733,13 +679,13 @@ function Decrypt_single(){
 					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey));
 				}
 			}else{
-				var dualKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var dualKey = getDualKey(name,Lock,noncestr);
 				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey);
 			}
 			var	sharedKey = makeShared(newLock,lastKey);
 		}else{																			//Read-once mode
 																
-			var lastLockCipher = locDir[name][3];										//read-once mode uses last Key and last Lock
+			var lastLockCipher = locDir[name][2];										//read-once mode uses last Key and last Lock
 			if(lastKeyCipher){
 				if(lastLockCipher){
 					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(keyDecrypt(lastLockCipher),lastKey));
@@ -751,7 +697,7 @@ function Decrypt_single(){
 					}
 				}
 			}else{
-				var dualKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var dualKey = getDualKey(name,Lock,noncestr);
 				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey);
 			}
 			if (lastLockCipher) {												//if stored dummy Lock exists, decrypt it first
@@ -767,10 +713,10 @@ function Decrypt_single(){
 			mainBox.innerHTML = decodeURI(plain).trim();
 		}catch(err){failedDecrypt()}
 		mainMsg.innerHTML = 'Unlock successful';
-		locDir[name][3] = keyEncrypt(newLock);										//store the new dummy Lock
-		locDir[name][4] = 'next lock';
+		locDir[name][2] = keyEncrypt(newLock);										//store the new dummy Lock
+		locDir[name][3] = 'next lock';
 
-		if(ChromeSyncOn){																//if Chrome sync is available, change in sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){																//if Chrome sync is available, change in sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}	
 		
@@ -821,37 +767,21 @@ function Decrypt_List(cipherArray){
 			if(!reply) throw("signed list decryption canceled");
 		}
 		if (Lock == ''){
-			mainMsg.innerHTML = "<span style='color:red'>Enter the sender's Lock or shared Key</span>";
+			mainMsg.innerHTML = "<span style='color:orange'>Enter the sender's Lock or shared Key</span>";
 			throw("lock box empty");
 		}
 		var lockBoxLines = lockBox.value.trim().split('\n');
 		if(lockBoxLines.length > 1){
 			if(lockBoxLines[1].slice(0,4) != 'http'){
-				mainMsg.innerHTML = "<span style='color:red'>Please select a single sender</span>";
+				mainMsg.innerHTML = "<span style='color:orange'>Please select a single sender</span>";
 				throw("too many lines in lock box");
 			}
 		}
 		readKey();
 		if (Lock.length == 43){									//assuming this is a Lock, not a shared Key. See below for the other case
-			if (locDir[name] && fullAccess){										//get permanent shared Key from storage, or make it if not stored
-				var sharedKeyCipher = locDir[name][1];
-			}else if(locDir[lockBoxItem] && fullAccess){							//get name from Lock box instead of message
-				name = lockBoxItem;
-				var sharedKeyCipher = locDir[name][1];
-			}
-			if (sharedKeyCipher != null){
-				var sharedKey = nacl.util.decodeBase64(keyDecrypt(sharedKeyCipher))
-			} else {																//no shared key found, so making a new one
-				var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
-				if (locDir[name] && fullAccess) {
-					locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(sharedKey));
-
-					if(ChromeSyncOn){												//if Chrome sync is available, change in sync storage
-						syncChromeLock(name,JSON.stringify(locDir[name]))
-					}
-				}
-			}
-			var	idKey = sharedKey;
+			if(!locDir[name] && locDir[lockBoxItem]) name = lockBoxItem;																
+			var sharedKey = makeShared(convertPubStr(Lock),KeyDH),
+				idKey = sharedKey;
 		} else {														//this when it's a regular shared Key in common with the sender
 			var	sharedKey = wiseHash(Lock,noncestr),						//nonce is used as salt for regular shared Keys
 				idKey = sharedKey;
@@ -877,15 +807,14 @@ function Decrypt_List(cipherArray){
 			if(!reply) throw("signed list decryption canceled");
 		}
 		if (Lock == ''){
-			mainMsg.innerHTML = "<span style='color:red'>Enter the sender's Lock or shared Key</span>";
+			mainMsg.innerHTML = "<span style='color:orange'>Enter the sender's Lock or shared Key</span>";
 			throw("lock box empty");
 		}
 		readKey();		
 		if (locDir[name]){
-			var dualKeyCipher = locDir[name][1],
-				lastKeyCipher = locDir[name][2],
-				lastLockCipher = locDir[name][3],
-				turnstring = locDir[name][4];										//this strings says whose turn it is to encrypt
+			var	lastKeyCipher = locDir[name][1],
+				lastLockCipher = locDir[name][2],
+				turnstring = locDir[name][3];										//this strings says whose turn it is to encrypt
 			if (turnstring=='next lock'){											//it will fail, so prepare a message
 				if(type == '*'){
 					window.setTimeout(function(){mainMsg.innerHTML = 'Read-once messages can be unlocked only once'},2000)				
@@ -909,7 +838,7 @@ function Decrypt_List(cipherArray){
 					var idKey = makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey);
 				}
 			}else{
-				var idKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var idKey = getDualKey(name,Lock,noncestr);
 			}
 		}else{																			//Read-once mode uses lastLock if available
 			if(lastKeyCipher){
@@ -923,7 +852,7 @@ function Decrypt_List(cipherArray){
 					}
 				}
 			}else{
-				var idKey = getDualKey(name,Lock,noncestr,dualKeyCipher);
+				var idKey = getDualKey(name,Lock,noncestr);
 			}
 		}
 
@@ -961,7 +890,7 @@ try{
 		if(type == '$'){																//PFS mode: last Key and new Lock
 			var	sharedKey = makeShared(newLock,lastKey);
 		}else{																			//Read-once mode: last Key and last Lock																
-			var lastLockCipher = locDir[name][3];
+			var lastLockCipher = locDir[name][2];
 			if (lastLockCipher != null) {												//if stored dummy Lock exists, decrypt it
 				var lastLock = keyDecrypt(lastLockCipher)
 			} else {																	//use new dummy if no stored dummy
@@ -971,10 +900,10 @@ try{
 		}
 		var msgKey = nacl.secretbox.open(nacl.util.decodeBase64(msgKeycipher),nonce24,sharedKey);
 		if(!msgKey) failedDecrypt();
-		locDir[name][3] = keyEncrypt(newLock);										//store the new dummy Lock
-		locDir[name][4] = 'next lock';
+		locDir[name][2] = keyEncrypt(newLock);										//store the new dummy Lock
+		locDir[name][3] = 'next lock';
 
-		if(ChromeSyncOn){															//change in sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){															//change in sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 	}
@@ -1067,7 +996,7 @@ function verifySignature(){
 	mainMsg.innerHTML = "";
 	var text = mainBox.innerHTML.replace(/<br>/g,'\n').replace(/<div>/g,'\n').replace(/<\/div>/g,'').trim();					//newline-related formatting is ignored
 	if (text == ""){																	//nothing in text box
-		mainMsg.innerHTML = '<span style="color:red">Nothing to sign or verify</span>';
+		mainMsg.innerHTML = '<span style="color:orange">Nothing to sign or verify</span>';
 		throw("no text")
 	}
 	if(lockBox.value.slice(0,1)=='~') decryptItem();
@@ -1104,7 +1033,7 @@ function verifySignature(){
 	}
 	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 		//ezLok replaced by regular Lock
 	if (Lock.length != 43){
-		mainMsg.innerHTML = '<span style="color:red">Enter a valid Lock</span>';
+		mainMsg.innerHTML = '<span style="color:orange">Enter a valid Lock</span>';
 		throw("invalid public key")
 	}
 	var signature = nacl.util.decodeBase64(sigstr.slice(1));
@@ -1112,14 +1041,14 @@ function verifySignature(){
 		text = text.replace(/\r?\n?[^\r\n]*$/, "");												//remove last line; next do the checking
 		var check = nacl.sign.detached.verify(nacl.util.decodeUTF8(reallyTrim(text)), signature, nacl.util.decodeBase64(Lock));
 		if (check) {
-			mainMsg.innerHTML = '<span style="color:green"><strong>The signature is VERIFIED for ' + name + '</strong></span>'
+			mainMsg.innerHTML = '<span style="color:cyan"><strong>The signature is VERIFIED for ' + name + '</strong></span>'
 		} else {
 			mainMsg.innerHTML = '<span style="color:magenta"><strong>The signature has FAILED verification for ' + name + '</strong></span>'
 		}
 	}else{											//unsealing of sealed message
 		var result = nacl.sign.open(signature, nacl.util.decodeBase64(Lock));
 		if(result){
-			mainMsg.innerHTML = '<span style="color:green"><strong>Seal ownership is VERIFIED for ' + name + '</strong></span>'
+			mainMsg.innerHTML = '<span style="color:cyan"><strong>Seal ownership is VERIFIED for ' + name + '</strong></span>'
 		}else{
 			mainMsg.innerHTML = '<span style="color:magenta"><strong>The seal has FAILED to verify for ' + name + '</strong></span>'
 		}

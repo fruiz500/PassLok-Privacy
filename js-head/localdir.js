@@ -1,7 +1,7 @@
 ﻿//get name and Lock from form and merge them with the locDir object, then store
 function addLock(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Save not available after Key cancel<br>Please restart PassLok';
+		lockMsg.innerHTML = 'Save not available in Guest mode<br>Please restart PassLok';
 		throw('lock save canceled')
 	}
 	if (learnMode.checked){
@@ -50,12 +50,12 @@ function addLock(){
 			}, 100);
 			fillList();
 
-			if(ChromeSyncOn){													//if Chrome sync is available, add to sync storage
+			if(ChromeSyncOn && chromeSyncMode.checked){													//if Chrome sync is available, add to sync storage
 				syncChromeLock(name,JSON.stringify(locDir[name]))
 			}
 
 	} else {
-		lockMsg.innerHTML = '<span style="color:red">Cannot save without a name</span>'
+		lockMsg.innerHTML = '<span style="color:orange">Cannot save without a name</span>'
 	};
 	suspendFindLock = false;
 	callKey = ''
@@ -64,7 +64,7 @@ function addLock(){
 //delete a particular key in Object locDir, then store
 function removeLock(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Delete not available after Key cancel<br>Please restart PassLok';
+		lockMsg.innerHTML = 'Delete not available in Guest mode<br>Please restart PassLok';
 		throw('lock removal canceled')
 	}
 	if (learnMode.checked){
@@ -88,7 +88,7 @@ function removeLock(){
 	}, 100);
 	fillList();
 
-		if(ChromeSyncOn){											//if Chrome sync is available, remove from sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
 			if(confirm('Item removed from local storage. Do you want to remove it also from the Chrome sync area?')) remChromeLock(name)
 		}
 
@@ -98,7 +98,7 @@ function removeLock(){
 //this is to just delete the PFS data for a particular key (or reset the current list)
 function resetPFS(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Reset not available after Key cancel<br>Please restart PassLok';
+		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
 		throw('lock reset canceled')
 	}
 	if (lockBox.value.trim().split('\n').length > 1){		//use button to reset current List if a List is displayed, nothing to do with normal use
@@ -125,14 +125,14 @@ function resetPFS(){
 		lockMsg.innerHTML = 'There is a button to reset your options in the Options tab';
 		throw('no reset for myself')
 	}	
-	if ((locDir[name][1] == null) && (locDir[name][2] == null) && (locDir[name][3] == null)){
+	if ((locDir[name][1] == null) && (locDir[name][2] == null)){
 		lockMsg.innerHTML = 'Nothing to reset';
 		throw('no PFS data')
 	}
 	locDir[name].splice(1);
 	localStorage[userName] = JSON.stringify(locDir);
 
-		if(ChromeSyncOn){											//if Chrome sync is available, change in sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){							//if Chrome sync is available, change in sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 
@@ -186,6 +186,8 @@ function decryptLock(){
 			lockMsg.innerHTML = 'Lock extracted'
 		} else if(lockBox.value.length == 42){
 			lockMsg.innerHTML = 'Random Key extracted'
+		} else if(lockMsg.innerHTML == 'myself'){
+			lockMsg.innerHTML = 'Email/token extracted'
 		} else {
 			lockMsg.innerHTML = 'Shared Key extracted'
 		}
@@ -258,7 +260,7 @@ function showLockDB(){
 		lockBox.value = JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
 		lockMsg.innerHTML = 'These are the items stored under the current user name';
 	}else{
-		lockMsg.innerHTML = '<span style="color:red">There are no stored items</span>';
+		lockMsg.innerHTML = '<span style="color:orange">There are no stored items</span>';
 	}
 	suspendFindLock = false
 }
@@ -270,7 +272,7 @@ function showMyself(){
 		mainBox.innerHTML = 'myself:\n' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
 		mainMsg.innerHTML = 'These are your stored settings';
 	}else{
-		mainMsg.innerHTML = '<span style="color:red">No settings to store</span>';
+		mainMsg.innerHTML = '<span style="color:orange">No settings to store</span>';
 	}
 	suspendFindLock = false
 }
@@ -301,9 +303,9 @@ function mergeLockDB(){
 		}
 		if(!fullAccess){
 			if(lockScr.style.display == 'block'){
-				lockMsg.innerHTML = 'Merge not available after Key cancel<br>Please restart PassLok';
+				lockMsg.innerHTML = 'Merge not available in Guest mode<br>Please restart PassLok';
 			}else{
-				mainMsg.innerHTML = 'Settings update not available after Key cancel<br>Please restart PassLok';
+				mainMsg.innerHTML = 'Settings update not available in Guest mode<br>Please restart PassLok';
 			}
 			throw('DB merge canceled')
 		}
@@ -313,18 +315,19 @@ function mergeLockDB(){
 		localStorage[userName] = JSON.stringify(locDir);
 		lockNames = Object.keys(locDir);
 		
-		if(ChromeSyncOn){
+		if(ChromeSyncOn && chromeSyncMode.checked){
 			for(var name in locDir){								//if Chrome sync is available, put all this in sync storage
 				syncChromeLock(name,JSON.stringify(locDir[name]))
 			}
 		}
 		
-		var email = keyDecrypt(locDir['myself'][2]);				//populate email and recalculate Keys and Locks
+		var email = keyDecrypt(locDir['myself'][0]);				//populate email and recalculate Keys and Locks
 		if(email) myEmail = email;
 		var key = readKey();
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
-		myLock = keyDecrypt(locDir['myself'][0]);
+//		myLock = keyDecrypt(locDir['myself'][0]);
+		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 		myezLock = changeBase(myLock, BASE64, BASE36, true);
 	
 		fillList();
@@ -367,7 +370,7 @@ function realNulls(object){
 //makes encrypted backup of the whole DB, then if allowed clears locDir object, then stores
 function moveLockDB(){
 	if(!fullAccess){
-		optionMsg.innerHTML = 'Move not allowed after Key cancel<br>Please restart PassLok';
+		optionMsg.innerHTML = 'Move not allowed in Guest mode<br>Please restart PassLok';
 		throw('DB move canceled')
 	}
 	callKey = 'movedb';
@@ -388,7 +391,7 @@ function moveLockDB(){
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
 	if (!reply) throw("locDir erase canceled");
 	
-	if(ChromeSyncOn){											//if Chrome sync is available, remove from sync storage
+	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to delete also from the Chrome sync area?')){
 			for(var name in locDir) remChromeLock(name);
 			chrome.storage.sync.remove(userName.toLowerCase() + '.ChromeSyncList')
@@ -407,7 +410,7 @@ function moveLockDB(){
 //deletes extra data from all entries
 function resetLockDB(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Reset not allowed after Key cancel<br>Please restart PassLok';
+		lockMsg.innerHTML = 'Reset not allowed in Guest mode<br>Please restart PassLok';
 		throw('DB reset canceled')
 	}
 	var reply = confirm("If you click OK, the extra data for every item will be erased. This cannot be undone.");
@@ -415,7 +418,7 @@ function resetLockDB(){
 	for(var name in locDir){
 		if(name !='myself') locDir[name].splice(1);
 		
-		if(ChromeSyncOn){									//if Chrome sync is available, add to sync storage
+		if(ChromeSyncOn && chromeSyncMode.checked){							//if Chrome sync is available, add to sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 			
@@ -455,7 +458,7 @@ function moveMyself(){
 	mainMsg.innerHTML = 'Your settings, including the email/token, have been erased<br>' + msg;
 	optionMsg.innerHTML = 'Settings erased';
 	
-	if(ChromeSyncOn){											//if Chrome sync is available, remove from sync storage
+	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to remove your settings also from the Chrome sync area?')) remChromeLock('myself')
 	}
 		
@@ -513,7 +516,6 @@ function recryptDB(newKey,newUserName){
 		newKeyStretched = wiseHash(newKey,newUserName);
 			
 	for(var name in locDir){
-		delete locDir[name][1];										//this entry is useless after Key is changed. Will be remade later
 		if(name != 'myself'){
 			for(var index = 0; index < locDir[name].length; index++){
 				var content = locDir[name][index];
@@ -527,7 +529,7 @@ function recryptDB(newKey,newUserName){
 						locDir[name][index] = content;
 					}
 				}
-				if(ChromeSyncOn && index == 0){									//if Chrome sync is available, add to sync storage
+				if(ChromeSyncOn && chromeSyncMode.checked && index == 0){		//if Chrome sync is available, add to sync storage
 					syncChromeLock(name,JSON.stringify(locDir[name]))
 				}
 			}
@@ -541,11 +543,10 @@ function recryptDB(newKey,newUserName){
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
-	locDir['myself'][0] = keyEncrypt(myLock);
-	locDir['myself'][2] = keyEncrypt(email);
+	locDir['myself'][0] = keyEncrypt(email);
 	localStorage[userName] = JSON.stringify(locDir);
 	
-	if(ChromeSyncOn && index == 0){
+	if(ChromeSyncOn && chromeSyncMode.checked && index == 0){
 		syncChromeLock(name,JSON.stringify(locDir['myself']))
 	}
 }
@@ -560,6 +561,7 @@ function changeKey(){
 	var newkey = newKey.value.trim(),
 		newkey2 = newKey2.value.trim();
 	if (newkey.trim() == "" || newkey2.trim() == ""){								//stop to display the entry form if new Key is empty
+		optionsTab.className = "tabContent hide";
 		keyChange.style.display = "block";
 		shadow.style.display = "block";
 		keyChangeMsg.innerHTML = 'Enter the new Key in both boxes';
@@ -573,13 +575,13 @@ function changeKey(){
 		throw ("stopped for new Key input")
 	}
 	if(newkey.trim() != newkey2.trim()){											//check that the two copies match before going ahead
-		keyChangeMsg.innerHTML = "<span style='color:red'>The two Keys don't match</span>";
+		keyChangeMsg.innerHTML = "<span style='color:purple'>The two Keys don't match</span>";
 		throw ("Keys don't match")
 	}
 
 //everything OK, so do it!
 	if(!fullAccess){
-		keyChangeMsg.innerHTML = 'Key change not allowed after Key cancel';
+		keyChangeMsg.innerHTML = 'Key change not allowed in Guest mode';
 		throw('Key change canceled')
 	}
 	recryptDB(newkey,userName);
@@ -587,9 +589,10 @@ function changeKey(){
 	newKey2.value = "";
 	keyChange.style.display = 'none';
 	shadow.style.display = 'none';
+	optionsTab.className = "tabContent";
 	pwd.value = newkey;									//refill Key box, too
 	
-	if(ChromeSyncOn){
+	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
@@ -694,7 +697,7 @@ function resetList(){
 	}
 }
 
-//grab the names in localStorage and put them on the userName selection box
+//grab the names in localStorage and put them on the userName selection box. Buggy, so a lot of cleanup ifs
 function fillNameList(){	
 	nameList.innerHTML = '<option value="" disabled style="color:#639789;">Select User Name:</option>';
 	var list = [];

@@ -14,7 +14,7 @@ window.onload = function() {
 		helpTop.style.display = 'block';
 		helpSpace.style.display = 'block'
 	}
-
+  
 	window.addEventListener("resize", function() { textheight();chatResize();}, false)	    	//resize if the window changes
 
 	//this one for loading files into extra screen
@@ -23,13 +23,12 @@ window.onload = function() {
     // add action to the file input
     imageFile.addEventListener('change', importImage);
 
-    // add action to the encode button
-    encodeImgBtn.addEventListener('click', encodeImage);
+    // add actions to the rest of the buttons
+    encodePNGBtn.addEventListener('click', encodePNG);
 
-    // add action to the decode button
+	encodeJPGBtn.addEventListener('click', encodeJPG);
+
     decodeImgBtn.addEventListener('click', decodeImage);
-
-//button code moved from html page, used to be inline
 
    	showLockBtn.addEventListener('click', showLock);
 
@@ -111,6 +110,16 @@ window.onload = function() {
 
    	advancedMode.addEventListener('click', basic2adv);
 
+	liteStyle.addEventListener('click', selectStyle);
+
+	darkStyle.addEventListener('click', selectStyle);
+
+	redStyle.addEventListener('click', selectStyle);
+
+	greenStyle.addEventListener('click', selectStyle);
+
+	blueStyle.addEventListener('click', selectStyle);
+
 	anonMode.addEventListener('click', checkboxStore);
 
 	signedMode.addEventListener('click', checkboxStore);
@@ -129,9 +138,9 @@ window.onload = function() {
 
 	noTagsMode.addEventListener('click', checkboxStore);
 
-   	smallOutMode.addEventListener('click', checkboxStore);
-
    	encryptLocksMode.addEventListener('click', checkboxStore);
+
+	chromeSyncMode.addEventListener('click', checkboxStore);
 
 	ReedSolMode.addEventListener('click', checkboxStore);
 
@@ -148,8 +157,6 @@ window.onload = function() {
 	wordMode.addEventListener('click', checkboxStore);
 
 	spaceMode.addEventListener('click', checkboxStore);
-
-	chainMode.addEventListener('click', checkboxStore);
 
    	showKey.addEventListener('click', showsec);
 
@@ -364,7 +371,6 @@ window.onload = function() {
 	aa59.addEventListener('click', function() {openClose('a59')});
 	aa60.addEventListener('click', function() {openClose('a60')});
 	aa61.addEventListener('click', function() {openClose('a61')});
-	aa62.addEventListener('click', function() {openClose('a62')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -410,7 +416,7 @@ window.onload = function() {
 	bb40.addEventListener('click', function() {openClose('b40')});
 	bb41.addEventListener('click', function() {openClose('b41')});
 	bb42.addEventListener('click', function() {openClose('b42')});
-	bb43.addEventListener('click', function() {openClose('b43')});
+//	bb43.addEventListener('click', function() {openClose('b43')});
 //	bb44.addEventListener('click', function() {openClose('b44')});
 	bb45.addEventListener('click', function() {openClose('b45')});
 	bb46.addEventListener('click', function() {openClose('b46')});
@@ -429,13 +435,14 @@ window.onload = function() {
 	bb59.addEventListener('click', function() {openClose('b59')});
 	bb60.addEventListener('click', function() {openClose('b60')});
 	bb61.addEventListener('click', function() {openClose('b61')});
-	bb62.addEventListener('click', function() {openClose('b62')});
 };
+
 
 //this one is for mobile only. Remove for the Chrome app
 window.addEventListener('load', function() {
     FastClick.attach(document.body);
 }, false);
+
 
 //for general directory
 window.addEventListener('message', receiveMessage, false);

@@ -41,11 +41,6 @@ function showNewKey(){
 	}
 };
 
-//to display output in a small font
-function smallOutput(){
-	if(smallOutMode.checked) mainBox.innerHTML = "<span style='color:black;background-color:white;font-size:xx-small'>" + XSSfilter(mainBox.innerHTML) + "</span>";
-}
-
 function box2cover(){
 	newcover(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,' ').trim()))
 }
@@ -121,6 +116,7 @@ function newUser(){
 //shows email screen so email/token can be changed
 function showEmail(){
 	if(myEmail) emailBox.value = myEmail;
+	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block';
 }
@@ -128,6 +124,7 @@ function showEmail(){
 //shows user name so it can be changed
 function showName(){
 	userNameBox.value = userName;
+	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
 	nameScr.style.display = 'block'	
 }
@@ -135,7 +132,7 @@ function showName(){
 //changes the name of the complete database, syncs if possible
 function changeName(){
 	if(!fullAccess){
-		namechangemsg.innerHTML = 'Name change not allowed after Key cancel';
+		namechangemsg.innerHTML = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
 	if (learnMode.checked){
@@ -153,7 +150,7 @@ function changeName(){
 	delete localStorage[userName];
 	userName = userNameTemp;
 	
-	if(ChromeSyncOn){
+	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]));
 			chrome.storage.sync.remove((oldUserName+'.'+name).toLowerCase());
@@ -172,10 +169,10 @@ function checkboxStore(){
 			binCode += checks[i].checked ? 1 : 0;
 		}
 		if(locDir['myself']){
-			locDir['myself'][3] = changeBase(binCode,'01',BASE64);
+			locDir['myself'][1] = changeBase(binCode,'01',BASE64);
 			localStorage[userName] = JSON.stringify(locDir);
 		
-			if(ChromeSyncOn){
+			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}
 		}
@@ -185,8 +182,8 @@ function checkboxStore(){
 //resets checkboxes in Options according to the stored code
 function code2checkbox(){
 	var checks = document.optionchecks;
-	if(locDir['myself'][3]){
-		var binCode = changeBase(locDir['myself'][3],BASE64,'01'), i;
+	if(locDir['myself'][1]){
+		var binCode = changeBase(locDir['myself'][1],BASE64,'01'), i;
 		while(binCode.length < checks.length) binCode = '0' + binCode;
 		for(i = 0; i < checks.length; i++){
 			checks[i].checked = (binCode[i] == '1')
@@ -206,6 +203,19 @@ function code2checkbox(){
 		basicMode.checked = false;
 		advancedMode.checked = true;
 	}
+	if(darkStyle.checked){
+		setActiveStyleSheet('dark')
+	}else if(redStyle.checked){
+		setActiveStyleSheet('red')
+	}else if(greenStyle.checked){
+		setActiveStyleSheet('green')
+	}else if(blueStyle.checked){
+		setActiveStyleSheet('blue')
+	}else {
+		setActiveStyleSheet('light')
+	}
+	
+	if(ChromeSyncOn) syncCheck.style.display = 'block'
 }
 
 //go to 2nd intro screen, and back. The others are similar
@@ -261,29 +271,36 @@ function cancelKey(){
 		getSettings();
 		fillList();										//put names in selection box
 		if(locDir['myself']){
-			locDir['myself'][4] = 'guest mode';
+			locDir['myself'][2] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
 		
-			if(ChromeSyncOn){
+			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}			
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
 			mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 		}else{
-			mainMsg.innerHTML = 'You are in Guest mode<br>For full access, reload and enter the Key'
+			setTimeout(function(){mainMsg.innerHTML = '<span style="color:orange">You are in Guest mode<br>For full access, reload and enter the Key</span>'},30);
 		}
 	}
 	allowCancelWfullAccess = false;
-	closeBox()
+	closeBox();
+	if(tabLinks['optionsTab'].className == 'selected'){
+		optionsTab.className = "tabContent";
+	}
 }
 function cancelName(){
 	closeBox();
+	optionsTab.className = "tabContent";
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
+	if(tabLinks['optionsTab'].className == 'selected'){
+		optionsTab.className = "tabContent";
+	}
 	callKey = ''
 }
 function cancelDecoyIn(){
@@ -304,6 +321,7 @@ function cancelChat(){
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
+	optionsTab.className = "tabContent";
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
@@ -320,7 +338,7 @@ function lockNameKeyup(evt){
 	evt = evt || window.event												//IE6 compliance
 	if (evt.keyCode == 13) {												//sync from Chrome or decrypt if hit Return
 		if(lockMsg.innerHTML == ''){				//found nothing, so try to get it from Chrome sync
-			if(ChromeSyncOn){
+			if(ChromeSyncOn && chromeSyncMode.checked){
 				getChromeLock(lockNameBox.value);
 			}
 		} else {												//decrypt 1st time if found locally, 2nd time if synced from Chrome
@@ -471,6 +489,7 @@ function adv2basic(){
 	advancedHelp.style.display = 'none';
 	basicMode.checked = true;
 	advancedMode.checked = false;
+	anonMode.checked = true;
 
 	BasicButtons = true;	
 	checkboxStore();
@@ -554,6 +573,8 @@ function main2chat(token){
 		if(!reply) throw('chat canceled by user');
 	}
 	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;
+	chatBtn.innerHTML = 'Back to Chat';
+	chatBtn.style.color = 'orange';
 	chatScr.style.display = 'block';
 }
 
@@ -604,18 +625,14 @@ function email2any(){
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	if(dispLock) lockDisplay();
-	
-	if(fullAccess){
-		for(var name in locDir){					//this has likely changed for each entry, so delete it. It will be remade later
-			delete locDir[name][1];
-			
-			if(ChromeSyncOn) syncChromeLock(name,JSON.stringify(locDir[name]))
-		}
-		storemyLock();										//this also stores the email		
-	}
+		
+	if(fullAccess) storemyEmail();
 	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
-	if(tabLinks['optionsTab'].className == 'selected') optionMsg.innerHTML = '<span style="color:green">Email/token changed</span>';
+	if(tabLinks['optionsTab'].className == 'selected'){
+		optionMsg.innerHTML = '<span style="color:cyan">Email/token changed</span>';
+		optionsTab.className = "tabContent";
+	}
 	callKey = ''
 }
 
@@ -625,11 +642,12 @@ function name2any(){
 	if(fullAccess){
 		changeName()
 	}else{
-		namechangemsg.innerHTML = 'Name change not allowed after Key cancel';
+		namechangemsg.innerHTML = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
+	optionsTab.className = "tabContent";
 	closeBox();
-	optionMsg.innerHTML = '<span style="color:green">The User Name has changed to: '+ userName +'</span>';
+	optionMsg.innerHTML = 'The User Name has changed to: '+ userName;
 	callKey = ''
 }
 
@@ -791,5 +809,31 @@ function toggleRichText() {
 		niceEditor = true
 	}
 	textheight();
+}
+
+//to switch between color schemes, based on an article by Paul Sowden, 2001
+function setActiveStyleSheet(title) {
+  var i, a, main;
+  for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+    if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")) {
+      a.disabled = true;
+      if(a.getAttribute("title") == title) a.disabled = false;
+    }
+  }
+}
+
+function selectStyle(){
+	if(liteStyle.checked){
+		setActiveStyleSheet('light')
+	}else if(darkStyle.checked){
+		setActiveStyleSheet('dark')
+	}else if(redStyle.checked){
+		setActiveStyleSheet('red')
+	}else if(greenStyle.checked){
+		setActiveStyleSheet('green')
+	}else if(blueStyle.checked){
+		setActiveStyleSheet('blue')
+	}
+	checkboxStore();
 }
 //The main script in the head ends here.
