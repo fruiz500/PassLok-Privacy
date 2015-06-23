@@ -112,8 +112,8 @@
 <!--message area and local directory box, plus buttons-->
 	<span id="mainMsg"><span>Welcome to PassLok</span></span><br /><br />
     <select id='lockList' size='4' multiple style="padding:4px" title="Hold Ctrl or cmd to select several items"></select>
-    <button class="cssbutton" id="resetListBtn" value="resetList" style="font-size: 14px; padding:4px;" title="reset selection (alt-0)" accesskey="0">Reset</button>
-    <button class="cssbutton" id="main2lockBtn" value="editLocks" style="font-size: 14px; padding:4px;" title="add or edit items in the local directory (alt-D)" accesskey="d">Edit</button><br /><br />
+    <button class="cssbutton" id="resetListBtn" value="resetList" style="font-size: 14px; padding:4px;" title="reset selection (alt-0)" accesskey="0">Deselect</button>
+    <button class="cssbutton" id="main2lockBtn" value="editLocks" style="font-size: 14px; padding:4px; padding-left:10px;padding-right:12px;" title="add or edit items in the local directory (alt-D)" accesskey="d">Edit</button><br /><br />
     
 <!--buttons above the main box-->
 <div id="basicBtnsTop" style="display: block;">
@@ -265,7 +265,7 @@
         &nbsp;&nbsp;Locking:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="anonMode"  title="anonymous locking mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>&nbsp; Anonymous
         &nbsp;&nbsp;<input type="radio" name="lockmodes" id="signedMode" title="signed locking mode; recipient needs the sender's Lock (alt-S)" accesskey="s"/>&nbsp; Signed
         <br /><br />
-        &nbsp;&nbsp;Forward sec.:&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="pfsMode" title="Perfect Forward Secrecy: messages become unlockable after exchange (alt-P)" accesskey="p"/>&nbsp; PFS&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;Forward secr.:&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="pfsMode" title="Perfect Forward Secrecy: messages become unlockable after exchange (alt-P)" accesskey="p"/>&nbsp; PFS&nbsp;&nbsp;&nbsp;
         <input type="radio" name="lockmodes" id="onceMode" title="Read-once: like PFS but messages become unreadable after being read once (alt-1)" accesskey="1"/>&nbsp; Read-once
         </div>
         <hr>
@@ -848,7 +848,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>Alt-D: <strong>D</strong>irectory Edit dialog</p>
     <p>Alt-H: <strong>H</strong>elp tab</p>
     <p>Alt-O: <strong>O</strong>ptions tab</p>
-    <p>Alt-0: Reset the local directory</p>
+    <p>Alt-0: Deselect all Locks</p>
     <p>Alt- <strong>.</strong> <em>(period)</em>: extra buttons open and close</p>
     <p>Alt-L: <strong>L</strong>ock or unlock </p>
     <p>Alt-V: sign or <strong>V</strong>erify</p>
@@ -1595,8 +1595,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <li>
     webRTC chat by Muaz Khan 2015</li>
     <li>Letters encoding based on Advanced Unicode Stego by Adrian Crenshaw 2013</li>
-    <li>
-    testing, help items, interface ideas by the IIT IPRO-379 team 2014</li>
+    <li> testing, help items, interface ideas by the IIT student team 2014-15</li>
     </ul>
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address>
 </div>
