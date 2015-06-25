@@ -89,7 +89,7 @@ function removeLock(){
 	fillList();
 
 		if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
-			if(confirm('Item removed from local storage. Do you want to remove it also from the Chrome sync area?')) remChromeLock(name)
+			if(confirm('Item removed from local storage. Do you want to remove it also from Chrome sync?')) remChromeLock(name)
 		}
 
 	suspendFindLock = false;
@@ -392,7 +392,7 @@ function moveLockDB(){
 	if (!reply) throw("locDir erase canceled");
 	
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
-		if(confirm('Do you want to delete also from the Chrome sync area?')){
+		if(confirm('Do you want to delete also from Chrome sync?')){
 			for(var name in locDir) remChromeLock(name);
 			chrome.storage.sync.remove(userName.toLowerCase() + '.ChromeSyncList')
 		}
@@ -459,7 +459,7 @@ function moveMyself(){
 	optionMsg.innerHTML = 'Settings erased';
 	
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
-		if(confirm('Do you want to remove your settings also from the Chrome sync area?')) remChromeLock('myself')
+		if(confirm('Do you want to remove your settings also from Chrome sync?')) remChromeLock('myself')
 	}
 		
 	suspendFindLock = false;
@@ -553,6 +553,10 @@ function recryptDB(newKey,newUserName){
 
 //reads old and new Key from boxes and calls recryptDB so locDir is re-encrypted with the new Key
 function changeKey(){
+	if(!fullAccess){
+		optionMsg.innerHTML = 'Key change not allowed in Guest mode<br>Please restart PassLok';
+		throw('key change canceled')
+	}
 	callKey = 'changekey';
 	if (learnMode.checked){
 		var reply = confirm("The local directory will be re-encrypted with a new Key. Cancel if this is not what you want.");

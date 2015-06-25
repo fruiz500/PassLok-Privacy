@@ -177,9 +177,11 @@ function resetKeys(){
 //reads email from the box. This is used as a salt to make the Lock
 function readEmail(){
 	if(myEmail) return myEmail;
-	if(locDir['myself'] && fullAccess) return keyDecrypt(locDir['myself'][0]);
+	if(locDir['myself'] && fullAccess){
+		if(locDir['myself'][0]) return keyDecrypt(locDir['myself'][0]);
+	}
 	var email = emailBox.value;
-	if (email == ""){								//won't trigger if there is a space, thus allowing for empty email strings
+	if (email == "" && emailScr.style.display == 'none'){
 		any2email();
 		throw ('email needed')
 	};
@@ -243,7 +245,8 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		showLock();
 		setTimeout(function(){fillList();mainMsg.innerHTML = 'To lock a message for someone, enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);
-	}	
+	}
+	if(ChromeSyncOn) syncCheck.style.display = 'block';	
 	getSettings();
 	if(inviteBox.checked) sendMail();
 	setTimeout(function(){ makeGreeting()}, 30);									//fill Main box with a special greeting
@@ -318,7 +321,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 					if(email) myEmail = email;
 					localStorage[userName] = JSON.stringify(locDir);			
 					retrieveAllSync();
-					setTimeout(function(){mainMsg.innerHTML = 'Settings retrieved from your Chrome sync area';}, 500);
+					setTimeout(function(){mainMsg.innerHTML = 'Settings retrieved Chrome sync';}, 500);
 				}else{													//user missing in sync: store settings
 					var email = readEmail();
 					locDir['myself'] = [];
@@ -406,7 +409,7 @@ function getSettings(){
 							mainMsg.innerHTML = '<span style="color:orange"><strong>Warning: last session was in Guest mode</strong></span>'
 						}
 					}else{
-						mainMsg.innerHTML = 'Last session was in Guest mode, like this one'
+						mainMsg.innerHTML = 'Last session was also in Guest mode'
 					}
 				}, 500);			
 				locDir['myself'][2] = 'full access';

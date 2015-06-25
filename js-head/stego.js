@@ -432,7 +432,6 @@ function fromLetters(text){
 
 //this one is to display the cover text or change it as requested
 function newcover(string){
-//	mainMsg.innerHTML = "";
 	
 //remove multiple spaces, spaces after linefeed, multiple periods.
 	var newcovertext = string.replace(/   +/g,"\t").replace(/ +/g," ").replace(/ &nbsp;+/g," ").replace(/\n /g,"\n\t").replace(/--/g,', ').replace(/-/g,'').replace(/\.\.\./g,'').replace(/\. \. \. /g,'');
@@ -461,7 +460,7 @@ var importImage = function(e) {
     reader.onload = function(event) {
         // set the preview
         preview.style.display = 'block';
-        preview.src = XSSfilter(event.target.result);
+        document.getElementById('preview').src = XSSfilter(event.target.result);
     };
 
     reader.readAsDataURL(e.target.files[0]);
@@ -476,7 +475,7 @@ function updateCapacity(){
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 setTimeout(function(){	
 	//now measure jpeg capacity	
-	if(document.getElementById('preview').src.slice(11,15) == 'jpeg'){					//true jpeg capacity calculation
+	if(document.getElementById('preview').src.slice(11,15) == 'jpeg' && !isiOS){					//true jpeg capacity calculation, gets stuck on iOS
 		var lumaCoefficients = [];
 		var count = 0;
 		jsSteg.getCoefficients(document.getElementById('preview').src, function(coefficients){
@@ -526,13 +525,17 @@ setTimeout(function(){																			//the rest after a 20 ms delay
     // view the new image
     document.getElementById('preview').src = XSSfilter(encodedImage);
 	document.getElementById('preview').onload = function(){
-		imagemsg.innerHTML = 'tem hidden in the image. Save it now.'
+		imagemsg.innerHTML = 'Item hidden in the image. Save it now.'
 	}	
 },30);						//end of timeout
 }
 
 //extract text from image
 function decodeImage(){
+	if(isiOS){
+		imagemsg.innerHTML = '<span style="color:orange">On iOS, you can do PNG hide only.</span>';
+		throw('reveal not supported on iOS')
+	}
 	if (learnMode.checked){
 		var reply = confirm("The text hidden in this image, if any, will be extracted and placed in the previous box, replacing its contents. This does not yet work on mobile devices. Cancel if this is not what you want.");
 		if(!reply) throw("decode image canceled");

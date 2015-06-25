@@ -30,7 +30,7 @@ function getChromeLock(name) {
 			getChromeLock(name2)
 		} else {
 			if (name.slice(0,2) == '--') name = name.slice(2,name.length-2);
-			lockMsg.innerHTML = XSSfilter(name) + ' not found in your Chrome sync area'
+			lockMsg.innerHTML = XSSfilter(name) + ' not found in Chrome sync'
 		}
 	});
 }
@@ -39,7 +39,7 @@ function getChromeLock(name) {
 function storeChromeLock(name,lockdata){
 	locDir[name] = JSON.parse(lockdata);
 	lockBox.value = locDir[name][0];
-	lockMsg.innerHTML = XSSfilter(name) + ' added from your Chrome sync area';
+	lockMsg.innerHTML = XSSfilter(name) + ' added from Chrome sync';
 	locDir = sortObject(locDir);
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);

@@ -115,6 +115,10 @@ function newUser(){
 
 //shows email screen so email/token can be changed
 function showEmail(){
+	if(!fullAccess){
+		optionMsg.innerHTML = 'Email change not allowed in Guest mode<br>Please restart PassLok';
+		throw('email change canceled')
+	}
 	if(myEmail) emailBox.value = myEmail;
 	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
@@ -123,6 +127,10 @@ function showEmail(){
 
 //shows user name so it can be changed
 function showName(){
+	if(!fullAccess){
+		optionMsg.innerHTML = 'Name change not allowed in Guest mode<br>Please restart PassLok';
+		throw('name change canceled')
+	}
 	userNameBox.value = userName;
 	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
@@ -342,7 +350,7 @@ function lockNameKeyup(evt){
 				getChromeLock(lockNameBox.value);
 			}
 		} else {												//decrypt 1st time if found locally, 2nd time if synced from Chrome
-			if(!lockMsg.innerHTML.match('not found in your Chrome')){
+			if(!lockMsg.innerHTML.match('not found in Chrome sync')){
 				var firstchar = lockBox.value.slice(0,1);
 				if(firstchar == '~'){
 					decryptLock()
@@ -633,6 +641,7 @@ function email2any(){
 		optionMsg.innerHTML = '<span style="color:cyan">Email/token changed</span>';
 		optionsTab.className = "tabContent";
 	}
+	fillList();
 	callKey = ''
 }
 

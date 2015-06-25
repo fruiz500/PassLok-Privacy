@@ -14,6 +14,11 @@ window.onload = function() {
 		helpTop.style.display = 'block';
 		helpSpace.style.display = 'block'
 	}
+	if(isAndroid){
+		extra2mainBtn.style.padding = '9px';
+		main2extraBtn.style.padding = '9px';
+	}
+	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
   
 	window.addEventListener("resize", function() { textheight();chatResize();}, false)	    	//resize if the window changes
 
