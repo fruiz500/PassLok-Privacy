@@ -949,13 +949,25 @@ function decoyDecrypt(cipher,nonce24,dummylock){
 	}catch(err){failedDecrypt()}
 };
 
+//function that starts it all when the Sign/Verify button is pushed
+function signVerify(){
+	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	setTimeout(function(){																			//the rest after a 20 ms delay
+		verifySignature();
+	},20);						//end of timeout
+};
+
 //adds Schnorr signature to the contents of the main box 
 function applySignature(){
 	callKey = 'sign';
 	keyMsg.innerHTML = "";
 	mainMsg.innerHTML = "";
 	if (learnMode.checked){
-		var reply = confirm("A signature matching the contents of the main box will be made using your secret Key, and the resulting signature will be added to the end of the main box. Cancel if this is not what you want.");
+		if(attachedMode.checked){
+			var reply = confirm("A signature matching the contents of the main box will be made using your secret Key, and the resulting signature will be added to the end of the main box. Cancel if this is not what you want.");
+		}else{
+			var reply = confirm("The contents of the main box will be sealed using your secret Key, so that others can verify its origin. The resulting item WILL NOT BE LOCKED. Cancel if this is not what you want.");
+		}
 		if(!reply) throw("signature canceled");
 	};
 	readKey();

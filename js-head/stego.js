@@ -34,6 +34,8 @@ function textStego(){
 		mainMsg.innerHTML = '<span style="color:orange">No text in the box</span>';
 		throw("no text")
 	}
+	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+setTimeout(function(){																			//the rest after a 20 ms delay
 	if(legalItem(text)){										//legal item found: encode it
 		if(sentenceMode.checked){
 			toPhrases(text);
@@ -67,6 +69,7 @@ function textStego(){
 			mainMsg.innerHTML = 'Message extracted from Words encoding'
 		}
 	}
+},20);						//end of timeout
 }
 
 //makes array with words of 9 different lengths taken from the cover

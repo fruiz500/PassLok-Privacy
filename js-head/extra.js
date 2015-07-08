@@ -73,71 +73,57 @@ function charsLeft(){
 
 //formats results depending on tags present and sends to default email
 function sendMail() {
-	if(mainBox.innerHTML.trim() == ''){
-		if (learnMode.checked){
-			var reply = confirm("An invitation for others to join PassLok and containing your Lock will open in your default email. You still need to supply the recipient's address.  Cancel if this is not what you want.");
-			if(!reply) throw("email canceled");
-		};
-		showLock();
-	}	
-	mainMsg.innerHTML = "";
-	if (learnMode.checked){
-		var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a title. Only Locks and locked or signed text are allowed. Cancel if this is not what you want.");
-		if(!reply) throw("email canceled");
-	};
-	if (locDir['myself']){
-		var key = readKey();
-		if (key.trim() == '') {any2key(); return}
-		if(ezLokMode.checked){
-			var mylock2 = changeBase(myLock,BASE64,BASE36,true);
-			mylock2 = triple('PL22ezLok=' + mylock2 + '=PL22ezLok')		//this contains my Lock
-		}else{
-			var mylock2 = myLock;
-			mylock2 = triple('PL22lok=' + mylock2 + '=PL22lok')
-		}
-	} else {
-		var mylock2 = 'Lock not attached'
-	}
 	var cipherstr = mainBox.innerHTML;
 	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	var type = cipherstr.slice(0,1);
+	if (learnMode.checked){
+		if(type.match(/[~!@#$%*]/)){
+			var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a title. Only locked or signed text are allowed. Cancel if this is not what you want.");
+		}else{
+			var reply = confirm("An invitation for others to join PassLok and containing your Lock will open in your default email. You still need to supply the recipient's address.  Cancel if this is not what you want.");
+		}
+		if(!reply) throw("email canceled");
+	}	
+	mainMsg.innerHTML = "";
+	var hashTag = encodeURIComponent(userName.replace(/\s/g,'_') + '&' + myLock);
+	var linkText = "%0D%0A%0D%0AClick the link below if you don't have PassLok already or wish to get my Lock automatically. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device:%0D%0A%0D%0Ahttps://passlok.com#" + hashTag;
+	var inviteLink = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores." + linkText;
+	
 if (!noTagsMode.checked){							//add tags if checked, add explanatory text
 	if(type=="!"){
-    	var link = "mailto:"+ "?subject=" + "&body=Anonymous message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+    	var link = "mailto:"+ "?subject=" + "&body=Anonymous message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
 	} else if (type=="@"){
-		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with shared Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
 	} else if (type=="#"){
-		var link = "mailto:"+ "?subject=" + "&body=Signed message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=Signed message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
 	} else if (type=="$"){
-		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=PFS message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
+	} else if (type=="*"){
+		var link = "mailto:"+ "?subject=" + "&body=Read-once message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
 	} else if (type=="~"){
 		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with my secret Key. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML);
 	} else if (cipherstr.length==43 || cipherstr.replace(/-/g,'').length==50){
-		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0AAs soon as you start PassLok, you will be asked to come up with a secret Key, from which a matching Lock is made, and then you can send me that Lock anyway you want because it is impossible to get your Key from the Lock. To send it by email, just click the Email button in PassLok. Your secret Key will not be sent or saved anywhere.%0D%0A%0D%0AOn the line below is my PassLok v.2.2 Lock. Use it to send me private messages and verify my signature, or invite me to a private real-time chat involving text, files, audio, and even video. %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) +"%0D%0A%0D%0AOnce again, you can get PassLok for free at https://passlok.com, plus the Chrome, Android, and iOS app stores.";
-	} else if (cipherstr.length==160){
-		var link = "mailto:"+ "?subject=" + "&body=Short message locked with PassLok v.2.2 %0D%0A%0D%0AStrip everything but the locked message and unlock normally.%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock if you want to reply to me:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
-	} else if (type=="%" && cipherstr.length==159){
-		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML);
+		var link = "mailto:"+ "?subject=" + "&body=This is my PassLok v.2.2 Lock. Use it to lock text or files for me to unlock, or to verify my signature or seal:%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
+	} else if (type=="%" && cipherstr.length==87){
+		var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify it using my Lock." + linkText + "%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerText);
 	} else if (type=="%"){
-		var link = "mailto:"+ "?subject=" + "&body=The following is a text sealed with PassLok v.2.2. It is not encrypted. Extract it and verify my authorship using my Lock %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AHere's my Lock:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+		var link = "mailto:"+ "?subject=" + "&body=The item at the end of this email is a text sealed with PassLok v.2.2. It is not encrypted. Extract it and verify my authorship using my Lock %0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + linkText;
 	} else {																		//may be a longish signed text, so try a little harder
 		var cipherstrArray = mainBox.innerHTML.split('\n'),
 			length = cipherstrArray.length,
 			cipherstr = cipherstrArray[length-1];
 		cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 		if (cipherstr.length==159){
-			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify using my Lock, which is this:%0D%0A%0D%0A" + encodeURIComponent(mylock2) + "%0D%0A%0D%0AHere's the signed text:%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerHTML) + "%0D%0A%0D%0AGet PassLok at https://passlok.com";
+			var link = "mailto:"+ "?subject=" + "&body=The following is a text signed with PassLok v.2.2. Verify it using my Lock:" + linkText + "%0D%0A%0D%0AThe text, followed by the signature,  BEGINS BELOW THIS LINE:%0D%0A%0D%0A" + encodeURIComponent(mainBox.innerText);
 		} else {
-			mainMsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
-			throw("illegal text")
+			var link = inviteLink;
 		}
 	}
 }else{																				//tags unchecked, no extra text
-	if((type=="!")||(type=="@")||(type=="#")||(type=="$")||(cipherstr.length==43)||(cipherstr.length==50)||(cipherstr.length==160)){
+	if(type.match(/[~!@#$%*]/)||cipherstr.length==43||cipherstr.length==50||cipherstr.length==160){
 		var link = "mailto:"+ "?subject=" + "&body=" + encodeURIComponent(mainBox.innerHTML);
 	}else{
-		mainMsg.innerHTML = 'Only Locks, and locked or signed text are allowed for Email';
-		throw("illegal text")
+		var link = inviteLink;
 	}
 }
 	if(isMobile){ 	 											//new window for PC, same window for mobile
@@ -151,7 +137,7 @@ if (!noTagsMode.checked){							//add tags if checked, add explanatory text
 function sendSMS(){
 	if(isMobile){
 		if (learnMode.checked){
-			var reply = confirm("The default texting app will now open. You need to have copied your short locked message to the clipboard before doing this, if you want to send one. This only works in smartphones. Cancel if this is not what you want.");
+			var reply = confirm("The default texting app will now open. You need to have copied your short locked message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
 			if(!reply) throw("SMS canceled");
 		};
 		var text = "";

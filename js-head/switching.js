@@ -107,8 +107,15 @@ function suggestIntro(){
 	showIntroKey.checked = true
 }
 
+var friendsLock = '';
 //makes a new user account
 function newUser(){
+	var referrer = decodeURIComponent(window.location.hash.slice(1)).split('&');
+	if (referrer.length > 1){
+		friendsName.value = referrer[0].replace(/_/g,' ');
+		friendsLock = referrer[1];
+		referrerMsg.style.display = "block";
+	}
 	introscr.style.display = "block";
 	BasicButtons = true;
 }
@@ -211,17 +218,8 @@ function code2checkbox(){
 		basicMode.checked = false;
 		advancedMode.checked = true;
 	}
-	if(darkStyle.checked){
-		setActiveStyleSheet('dark')
-	}else if(redStyle.checked){
-		setActiveStyleSheet('red')
-	}else if(greenStyle.checked){
-		setActiveStyleSheet('green')
-	}else if(blueStyle.checked){
-		setActiveStyleSheet('blue')
-	}else {
-		setActiveStyleSheet('light')
-	}
+	getCustomColors();
+	selectStyle();
 	
 	if(ChromeSyncOn) syncCheck.style.display = 'block'
 }
@@ -279,7 +277,7 @@ function cancelKey(){
 		getSettings();
 		fillList();										//put names in selection box
 		if(locDir['myself']){
-			locDir['myself'][2] = 'guest mode';
+			locDir['myself'][3] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
 		
 			if(ChromeSyncOn && chromeSyncMode.checked){
@@ -300,12 +298,14 @@ function cancelKey(){
 }
 function cancelName(){
 	closeBox();
+	optionsMsg.innerHTML = 'User name change canceled';
 	optionsTab.className = "tabContent";
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
+	optionsMsg.innerHTML = 'Email/token change canceled';
 	if(tabLinks['optionsTab'].className == 'selected'){
 		optionsTab.className = "tabContent";
 	}
@@ -313,22 +313,27 @@ function cancelEmail(){
 }
 function cancelDecoyIn(){
 	decoyPwdIn.value = '';
-	closeBox()
+	closeBox();
+	mainMsg.innerHTML = 'Hidden message canceled';
 }
 function cancelDecoyOut(){
 	decoyPwdOut.value = '';
-	closeBox()
+	closeBox();
+	mainMsg.innerHTML = 'Hidden message canceled';
 }
 function cancelPartsIn(){
 	partsNumber.value = '';
-	closeBox()
+	closeBox();
+	mainMsg.innerHTML = 'Split canceled';
 }
 function cancelChat(){
-	closeBox()
+	closeBox();
+	mainMsg.innerHTML = 'Chat canceled';
 }
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
+	optionsMsg.innerHTML = 'Key change canceled';
 	optionsTab.className = "tabContent";
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
@@ -740,6 +745,8 @@ function openClose(theID) {
           contentDivs[id].className = 'tabContent hide';
         }
       }
+	  if(this.hash == '#mainTab') fillList();
+	  storeColors();
 
       // Stop the browser following the link
       return false;
@@ -819,30 +826,3 @@ function toggleRichText() {
 	}
 	textheight();
 }
-
-//to switch between color schemes, based on an article by Paul Sowden, 2001
-function setActiveStyleSheet(title) {
-  var i, a, main;
-  for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
-    if(a.getAttribute("rel").indexOf("style") != -1 && a.getAttribute("title")) {
-      a.disabled = true;
-      if(a.getAttribute("title") == title) a.disabled = false;
-    }
-  }
-}
-
-function selectStyle(){
-	if(liteStyle.checked){
-		setActiveStyleSheet('light')
-	}else if(darkStyle.checked){
-		setActiveStyleSheet('dark')
-	}else if(redStyle.checked){
-		setActiveStyleSheet('red')
-	}else if(greenStyle.checked){
-		setActiveStyleSheet('green')
-	}else if(blueStyle.checked){
-		setActiveStyleSheet('blue')
-	}
-	checkboxStore();
-}
-//The main script in the head ends here.

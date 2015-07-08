@@ -56,7 +56,11 @@ function textheight(){
 		mainBox.style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
 		if(isMobile){
-			mainBox.style.height = fullheight - offsetheight + 40 + 'px';
+			if(isAndroid && window.location.protocol != 'file'){
+				mainBox.style.height = fullheight - offsetheight + 80 + 'px';
+			}else{
+				mainBox.style.height = fullheight - offsetheight + 40 + 'px';
+			}
 		}else{
 			mainBox.style.height = fullheight - offsetheight + 'px';
 		}

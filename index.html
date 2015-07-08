@@ -16,12 +16,234 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     
 <!--Default stylesheet containing the Light color scheme-->
-<link rel="stylesheet" type="text/css" href="css/common.css" />
-<!--The other color schemes are loaded from these stylesheets-->
-<link rel="alternate stylesheet" type="text/css" href="css/dark.css" title="dark" />
-<link rel="alternate stylesheet" type="text/css" href="css/red.css" title="red" />
-<link rel="alternate stylesheet" type="text/css" href="css/green.css" title="green" />
-<link rel="alternate stylesheet" type="text/css" href="css/blue.css" title="blue" />
+<style>
+html {
+	-webkit-text-size-adjust: 100%;
+}
+body {
+	font-family: Sans-Serif;
+	margin-left: 1%;
+	margin-right: 1%;
+	overflow: auto;
+	background-color: #FFFFFF;
+	color: #000000;
+}
+	.black_overlay{
+		display: none;
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		z-index:1001;
+		-moz-opacity: 0.5;
+		opacity:.50;
+		filter: alpha(opacity=50);
+		background-color: black;
+	}
+	.white_content {
+		display: none;
+		position: absolute;
+		top: 10%;
+		left: 10%;
+		width: 80%;
+		height: 80%;
+		padding: 0px;
+		border: 0px solid gray;
+		z-index:1002;
+		overflow: auto;
+		background-color: white;
+	}
+	.block_page {
+		display: none;
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		padding: 0px;
+		border: 0px solid gray;
+		z-index:1002;
+		overflow: auto;
+		background-color: white;
+	}
+	.cssbutton {
+		-webkit-border-radius: 0;
+	  	-moz-border-radius: 0;
+  		border-radius: 0;
+  		font-family: Arial;
+		font-size:18px;
+  		padding: 12px;
+  		text-decoration: none;
+		border:0px;
+		margin-right: -2px;
+		color: #666666;
+  		background: #e6e6e6;
+	}
+	.cssbutton:hover {
+		text-decoration: none;
+		cursor: pointer;
+		background: #c4c4c4;
+	}
+	.custom-file-input{
+		color: #ffffff;
+	}
+	.custom-file-input::-webkit-file-upload-button {
+  		visibility: hidden;
+	}
+	.custom-file-input::before {
+ 	 	content: 'Select a file';
+ 		display: inline-block;
+		-webkit-border-radius: 0;
+  		-moz-border-radius: 0;
+  		border-radius: 0;
+  		font-family: Arial;
+		font-size:18px;
+  		padding: 12px;
+		border:0px;
+ 		outline: none;
+  		white-space: nowrap;
+  		-webkit-user-select: none;
+  		cursor: pointer;
+  		text-decoration: none;
+		color: #666666;
+  		background: #e6e6e6;
+	}
+	.custom-file-input:hover::before {
+  		background: #c4c4c4;
+	}
+	.custom-file-input:active::before {
+  		background: #c4c4c4;
+	}
+	.cssbox {
+		-webkit-border-radius: 0;
+  		-moz-border-radius: 0;
+  		border-radius: 0;
+		font-size:medium;
+  		padding: 15px;
+  		text-decoration: none;
+		width: 100%;
+		-webkit-appearance: none;
+		box-sizing: border-box;
+   	 	-webkit-box-sizing:border-box;
+    	-moz-box-sizing: border-box;
+		-webkit-box-shadow: none;
+		-moz-box-shadow: none;
+		box-shadow: none;
+		color: #000000;
+  		background: #fffff5;
+		border:1px solid #dedede;
+		overflow: auto;
+	}
+	.helpitem {
+		cursor: pointer;
+		padding: 1px;
+	}
+	.helpitem:hover {
+		background-color: #eeeeee;
+	}
+	.intLink { cursor: pointer; }
+	.blink {
+    	-webkit-animation: blink .75s linear infinite;
+    	-moz-animation: blink .75s linear infinite;
+    	-ms-animation: blink .75s linear infinite;
+    	-o-animation: blink .75s linear infinite;
+    	animation: blink .75s linear infinite;
+	}
+		@-webkit-keyframes blink {
+    		0% { opacity: 1; }
+    		50% { opacity: 1; }
+			50.01% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+		@-moz-keyframes blink {
+    		0% { opacity: 1; }
+    		50% { opacity: 1; }
+    		50.01% { opacity: 0; }
+    		100% { opacity: 0; }
+		}
+		@-ms-keyframes blink {
+   			0% { opacity: 1; }
+    		50% { opacity: 1; }
+			50.01% { opacity: 0; }
+			100% { opacity: 0; }
+		}
+		@-o-keyframes blink {
+			0% { opacity: 1; }
+    		50% { opacity: 1; }
+    		50.01% { opacity: 0; }
+    		100% { opacity: 0; }
+		}
+		@keyframes blink {
+    		0% { opacity: 1; }
+    		50% { opacity: 1; }
+    		50.01% { opacity: 0; }
+    		100% { opacity: 0; }
+		}
+		
+input[type=checkbox]{
+ 	/* Larger checkboxes */
+  	-ms-transform: scale(1.7); /* IE */
+	-moz-transform: scale(1.7); /* FF */
+  	-webkit-transform: scale(1.7); /* Safari and Chrome */
+  	-o-transform: scale(1.7); /* Opera */
+ 	padding: 0px;
+	cursor: pointer;
+	border:1px solid #dedede;
+}
+input[type=radio]{
+  	/* Larger radio buttons */
+  	-ms-transform: scale(1.7); /* IE */
+ 	-moz-transform: scale(1.7); /* FF */
+  	-webkit-transform: scale(1.7); /* Safari and Chrome */
+  	-o-transform: scale(1.7); /* Opera */
+ 	padding: 0px;
+	cursor: pointer;
+	border:1px solid #dedede;
+}
+
+ul#tabs { margin: 0; text-align: center; padding: 11px; width: 100%; position: fixed; top: 0px; left: 0px; z-index:1; background-color: #c6d5c6; }
+ul#tabs li { display: inline; width: auto; }
+ul#tabs li a { font-size:18px; border: none; text-decoration: none; padding: 10px; margin-left: -4px; padding-bottom: 11px; color: #42454a; background-color: #c6d5c6; }
+ul#tabs li a:hover { background-color: #a4b3a4; }
+ul#tabs li a.selected { font-weight: bold; padding: 12px; border: none; color: #000; background-color: #ffffff; }
+
+div.tabContent { border: none; max-width: 1200px; margin-left: auto; margin-right: auto; background-color: #ffffff; }
+div.tabContent.hide { display: none; }
+
+select {
+	-webkit-appearance: button;
+	-moz-appearance: button;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	font-size: medium;
+	width: 30%;
+	margin: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border:1px solid #dedede;
+	color: #666666;
+	background: #fffff5;
+}
+
+img.intLink { border: 0; }
+
+#toolBar1 {
+	padding-top: 1px;
+	padding-left: 2px;
+	background: #e6e6e6;
+}
+#toolBar1 select {
+	font-size:10px;
+	width:80px;
+	padding:4px
+}
+#mainBox {
+	width: 100%;
+	padding: 12px;
+}
+#editMode label { cursor: pointer; }
+</style>
     
 <!--License notice and SSL force-->
 <script src="js-head/license.js"></script>
@@ -33,9 +255,6 @@
 
 <!--For hiding data in images. https://github.com/petereigenschink/steganography.js-->
 <script src="js-opensrc/steganography.js"></script>
-
-<!--FastClick, used only in mobile devices. https://github.com/ftlabs/fastclick-->
-<script src="js-opensrc/fastclick.js"></script>
 
 <!--Tweet NaCl crypto library by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
 <script src="js-opensrc/nacl.js"></script>
@@ -60,6 +279,12 @@
 
 <!--jssteg-1.0.js-->
 <script src="js-opensrc/jssteg-1.0.js"></script>
+
+<!--color picker by Jan Odvarko. Edited so no images need to be loaded. https://github.com/odvarko/JSColor-->
+<script src="js-opensrc/jscolor.js"></script>
+
+<!--FastClick, used only in mobile devices. https://github.com/ftlabs/fastclick-->
+<script src="js-opensrc/fastclick.js"></script>
 
 <!--ORIGINAL PASSLOK CODE-->
 
@@ -89,6 +314,9 @@
 
 <!--functions for switching screens, etc.-->
 <script src="js-head/switching.js"></script>
+
+<!--for changing screen colors-->
+<script src="js-head/colors.js"></script>
 
 <!--special functions that work only with Chrome apps and extensions-->
 <script src="js-head/Chromestuff.js"></script>
@@ -232,7 +460,7 @@
 <button class="cssbutton" id="niceEditBtn" value="Rich" style="" title="toggle rich text editor (alt-R)" accesskey="r">Rich</button><!--
 --><button class="cssbutton" id="selectMainBtn" value="Select" style="" title="select the text in the box">Select</button><!--
 --><button class="cssbutton" id="clearMainBtn" value="Clear" style="" title="clear the text in the box">Clear</button><!--
---><button class="cssbutton" id="sendMailBtn" value="Email" style="" title="put the box contents in an email using the default client (alt-E)">Email</button><!--
+--><button class="cssbutton" id="sendMailBtn" value="Email" style="" title="invite others to PassLok and put the box contents in an email using the default client (alt-E)">Email</button><!--
 --><button class="cssbutton" id="chatBtn" value="Chat" style="" title="make a chat invitation or open it (alt-C)" accesskey="c">Chat</button><!--
 --><button class="cssbutton" id="sendSMSBtn" value="SMS" style="" title="mobile: open the default Texting app">SMS</button>
 </div>
@@ -256,10 +484,20 @@
     &nbsp;&nbsp;Color scheme:&nbsp;&nbsp;&nbsp;&nbsp;
 	<input type="radio" name="colormodes" id="liteStyle" title="switch back to default light style" checked/>&nbsp; Light&nbsp;&nbsp;
    <input type="radio" name="colormodes" id="darkStyle" title="switch to dark style"/>&nbsp; Dark
-   <br><br>&nbsp;&nbsp;&nbsp;
+   <br><br>&nbsp;
    <input type="radio" name="colormodes" id="redStyle" title="switch to red style"/>&nbsp; Red&nbsp;&nbsp;
    <input type="radio" name="colormodes" id="greenStyle" title="switch to green style"/>&nbsp; Green&nbsp;&nbsp;
-   <input type="radio" name="colormodes" id="blueStyle" title="switch to blue style"/>&nbsp; Blue     
+   <input type="radio" name="colormodes" id="blueStyle" title="switch to blue style"/>&nbsp; Blue&nbsp;&nbsp;
+   <input type="radio" name="colormodes" id="customStyle" title="switch to custom style"/>&nbsp; Cust.
+   <div id='customColors' style='display:block;'><br>
+   Click to edit color: <input class="color {pickerPosition:'top', onImmediateChange:'updateColor();'}" id="colorPicker" style="width:50px; padding:12px;" title="click here to edit the color selected below">&nbsp;
+   <button type="button" class="cssbutton" id="rndColors" value="Random Colors" style="font-size:medium; padding:9px" title="pick colors at random">Random</button>   
+   <br><br>
+   &nbsp;&nbsp;<input type="radio" name="colorareas" id="editTabColor" title="edit Tab color" checked/>&nbsp; Tabs&nbsp;&nbsp;
+   <input type="radio" name="colorareas" id="editBgColor" title="edit Background color"/>&nbsp; Backg.&nbsp;&nbsp;
+   <input type="radio" name="colorareas" id="editBtnColor" title="edit Button color"/>&nbsp; Btns.&nbsp;&nbsp;
+   <input type="radio" name="colorareas" id="editBoxColor" title="edit Box color"/>&nbsp; Box
+   </div>
         <div id='advLockModes' style="display: none;">
         <hr>
         &nbsp;&nbsp;Locking:&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="lockmodes" id="anonMode"  title="anonymous locking mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>&nbsp; Anonymous
@@ -337,7 +575,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--the help items begin here-->
 <hr>
-    <div id="aa1" style="cursor:pointer">
+    <div id="aa1" class="helpitem">
 	<h3>What is PassLok?</h3>
     </div>
     <div id="a1" class="texter">
@@ -362,38 +600,52 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa58" style="cursor:pointer">
+  <div id="aa58" class="helpitem">
 <h3>Invite others to PassLok</h3>
 </div>
 	<div id="a58" class="texter">
 <p>Before you can communicate with others using PassLok, they must have obtained the app, come up with a secret Key (which they won't tell you), generated a Lock from it, and sent it back to you.</p>
 <p>You can tell others about PassLok any way you want, but PassLok can help you to start your network with a single keystroke, this way:</p>
-<p>1. With the main box empty or showing your Lock, click the <strong>Email</strong> button.</p>
-<p>2. A new page should open in your default email, containing a basic set of instructions on how to get PassLok, plus your personal Lock. Edit it as needed, then write the recipients' email addresses and send it.</p>
+<p>1. Click the <strong>Email</strong> button.</p>
+<p>2. A new page should open in your default email, containing a link to PassLok that includes your personal Lock, plus whatever output was in the box before the button was clicked. Edit it as needed, then write the recipients' email addresses and send it.</p>
 <p>This is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=0wTJWyd9s64" target="_blank">https://www.youtube.com/watch?v=0wTJWyd9s64</a></p>
-<div id='bb58' style="cursor:pointer">
+<div id='bb58' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b58" class="texter">
 <p>People who did not get your email will still be able to obtain your Lock if you post it in the General Directory. To do this, click the <strong>myLock</strong> button if your Lock is not already displayed, then the small <strong>Edit</strong> button near the top, and then the large <strong>General Directory</strong> button. A new page will open where you only need to supply your email address, click <strong>Post</strong>, and reply to a confirmation email.</p>
+<p>Those who get PassLok from your email invitation will have the short version of your Lock automatically stored in their directories, so they can lock items for you right away.</p>
 </div>
   </div>
   <hr>
 
-  <div id="aa48" style="cursor:pointer">
+  <div id="aa48" class="helpitem">
   <h3>Learn how to use PassLok</h3>
  </div>
   <div id="a48" class="texter">
     <p>If you check the <strong>Learn</strong> box in the <strong>Options</strong> tab, a text explaining what is about to happen will pop up every time a button is clicked.</p>
     <p>And here are a few more resources you may want to check out:</p>
     <p>The Learn PassLok website at <a href="https://passlok.com/learn" target="_blank">https://passlok.com/learn</a> contains a working copy of PassLok and a number of lessons on the different things you can do with it.</p>
+    <p>The PassLok information website at <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a> contains a number of videos and PDF documents.</p>
     <p>The PassLok <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf" target="_blank">manual in PDF format.</a></p>
-    <p>The PassLok informational website at <a href="http://passlok.weebly.com" target="_blank">http://passlok.weebly.com</a> contains a number of videos and more PDF documents.</p>
     <p>If you want to learn what's under the hood, read the <a href="http://www.weebly.com/uploads/2/4/1/8/24187628/passlok_technical_document.pdf" target="_blank">PassLok technical document.</a></p>
   </div>
    <hr>
-     
-  <div id="aa2" style="cursor:pointer">
+
+  <div id="aa62" class="helpitem">
+<h3>Change PassLok's look</h3>
+</div>
+	<div id="a62" class="texter">
+<p>PassLok opens with the default Light colors. You can also select the Dark, Red, Green, and Blue schemes on the <strong>Options</strong> tab, or even make your own custom scheme, this way:</p>
+<p>1. Click Custom on <strong>Options</strong>.</p>
+<p>2. Select the  color you wish to modify: Tabs, Background, Buttons, or Boxes.</p>
+<p>3. Click the colored box, which will open a selector. Hue and saturation are set on the main area, brightness on the sidebar.</p>
+<p>4. Repeat steps 2 and 3 for each color type.</p>
+<p>PassLok will pick random colors if you click the <strong>Random</strong> button. You can then edit them using the selector.</p>
+</div>
+  <hr>
+  
+  <div id="aa2" class="helpitem">
 <h3>How to make a strong Key</h3>
 </div>
 	<div id="a2" class="texter">
@@ -405,14 +657,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-<div id="aa54" style="cursor:pointer">
+<div id="aa54" class="helpitem">
 <h3>Get a hint to remember my Key</h3>
 </div>
 <div id="a54" class="texter">
 <p>If you are reading this, likely you have gained Guest access to PassLok by clicking <strong>Cancel</strong> at the Key entry screen. The good news is that you can still lock messages if you know the recipient's Lock or shared Key, verify signatures, and use the Locks stored in your local directory as well as all the auxiliary functions of PassLok. You can even make signatures and display the matching Lock if you enter a Key when PassLok asks for it.</p>
 <p>The bad news is that  you cannot change anything stored in the local directory, and your use of it is limited to Locks. You cannot do anything that would involve your secret Key, such as unlocking messages locked with your Lock, or continuing a PFS conversation in course.</p>
-<p>Well, we've got even worse news for you: we cannot help you to recover your secret Key, because PassLok never stored it or sent it out. There are no hints, either. If you forgot your Key, <strong>it's gone, along with all encrypted items in the local directory</strong>. This includes the random token, if you used one.</p>
-<div id='bb54' style="cursor:pointer">
+<p>Well, we've got even worse news for you: we cannot help you to recover your secret Key, because PassLok never stored it or sent it out. There are no hints, either. If you forgot your Key, <strong>it's gone, along with all encrypted items in the local directory</strong>.</p>
+<div id='bb54' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b54" class="texter">
@@ -426,7 +678,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa55" style="cursor:pointer">
+  <div id="aa55" class="helpitem">
 <h3>Use a different Key temporarily</h3>
 </div>
 <div id="a55" class="texter">
@@ -434,7 +686,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>1. Select the user and enter the new Key in the box (optional).</p>
 <p>2. Click the <strong>Cancel</strong> button.</p>
 <p>3. If asked for your email etc., enter it and click <strong>OK</strong>. (the <strong>Random</strong> button will write a new random value, different from the original random token, if any, so beware)</p>
-<div id='bb55' style="cursor:pointer">
+<div id='bb55' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b55" class="texter">
@@ -443,7 +695,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa4" style="cursor:pointer">
+  <div id="aa4" class="helpitem">
 <h3>Make PassLok remember the secret Key for the current session</h3>
 </div>
 <div id="a4" class="texter">
@@ -453,7 +705,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
   
-  <div id="aa52" style="cursor:pointer">
+  <div id="aa52" class="helpitem">
 <h3>Make PassLok even more secure</h3>
 </div>
 <div id="a52" class="texter">
@@ -463,7 +715,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>2. Then a dialog asks you if you want to reset your settings. If you click <strong>OK</strong>, PassLok will restart as if it had never started before, except that the local directory remains intact.</p>
 <p>To restore the random token from a backup item, paste the packup into the main box and click <strong>Lock/Unlock</strong>.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4DjhIjU_nuM" target="_blank">https://www.youtube.com/watch?v=4DjhIjU_nuM</a></p>
-<div id='bb52' style="cursor:pointer">
+<div id='bb52' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b52" class="texter">
@@ -472,15 +724,15 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa5" style="cursor:pointer">
+  <div id="aa5" class="helpitem">
 <h3>Display the Lock matching your secret Key</h3>
 </div>
 <div id="a5" class="texter">
 <p>Click the <strong>myLock</strong> button on the <strong>Main</strong> tab. The lock matching that Key will appear
   in the lower box, from where you can copy it or email it.</p>
-<p>If then you click the <strong>Edit</strong> button next to the Lock selection box <strong></strong> and click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
+<p>If then you click the <strong>Edit</strong> button next to the local directory box, <strong></strong> and after that click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=L00yybDzN6k" target="_blank">https://www.youtube.com/watch?v=L00yybDzN6k</a></p>
-<div id='bb5' style="cursor:pointer">
+<div id='bb5' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b5" class="texter">
@@ -491,7 +743,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa6" style="cursor:pointer">
+  <div id="aa6" class="helpitem">
 <h3>Lock a message with a Lock, to be unlocked with the matching Key (Anonymous mode)</h3>
 </div>
   <div id="a6" class="texter">
@@ -505,7 +757,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  <p>Copy it and paste it into your
    communications program or click <strong>Email</strong> to open your default email. </p>
  <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=nBA5JNY4gmQ" target="_blank">https://www.youtube.com/watch?v=nBA5JNY4gmQ</a></p>
-<div id='bb6' style="cursor:pointer">
+<div id='bb6' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b6" class="texter">
@@ -514,7 +766,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa7" style="cursor:pointer">
+  <div id="aa7" class="helpitem">
 <h3>Unlock an Anonymous locked message (tags are PL**msa)</h3>
   </div>
   <div id="a7" class="texter">
@@ -522,7 +774,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>2. Click the <strong>Lock/Unlock</strong> button. The unlocked message
   will appear in the box, replacing the locked message.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=nBA5JNY4gmQ" target="_blank">https://www.youtube.com/watch?v=nBA5JNY4gmQ</a></p>
-<div id='bb7' style="cursor:pointer">
+<div id='bb7' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b7" class="texter">
@@ -533,14 +785,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa8" style="cursor:pointer">
+  <div id="aa8" class="helpitem">
 <h3>Send a PassLok item (Lock, message, etc.) by email</h3>
   </div>
   <div id="a8" class="texter">
 <p>1. Check that the item is displayed on the <strong>Main</strong> tab.</p>
 <p>2. Click the <strong>Email</strong> button. If the device is so configured, a window appears containing the item and some explanatory text. You only need to supply the recipient's email address and a subject line before clicking the Send button.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=LsljKvjAi9I" target="_blank">https://www.youtube.com/watch?v=LsljKvjAi9I</a></p>
-<div id='bb8' style="cursor:pointer">
+<div id='bb8' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b8" class="texter">
@@ -549,7 +801,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   
-  <div id="aa30" style="cursor:pointer">
+  <div id="aa30" class="helpitem">
 <h3>Send a PassLok item by Text messaging (mobile only)</h3>
   </div>
   <div id="a30" class="texter">
@@ -558,7 +810,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Tap the button dealing with text messaging, which is labeled <strong>SMS</strong>. A window appears with the default texting app.</p>
 <p>4. Tap the input box and then paste the clipboard. Send the message in the usual way.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=LsljKvjAi9I" target="_blank">https://www.youtube.com/watch?v=LsljKvjAi9I</a></p>
-<div id='bb30' style="cursor:pointer">
+<div id='bb30' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b30" class="texter">
@@ -567,7 +819,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
 <hr>
     
-  <div id="aa23" style="cursor:pointer">
+  <div id="aa23" class="helpitem">
   <h3>Load a file  to be locked, signed, or split (non-mobile)</h3>
   </div>
   <div id="a23" class="texter">
@@ -575,7 +827,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <p>2. A dialog will appear so you can navigate to the file. If all goes well, the file or image loads into the box as a piece of gibberish text, with some identifying information at the top.</p>
   <p>Now you can lock it, sign it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
-<div id='bb23' style="cursor:pointer">
+<div id='bb23' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b23" class="texter">
@@ -584,7 +836,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
     <hr>
 
-  <div id="aa24" style="cursor:pointer">
+  <div id="aa24" class="helpitem">
   <h3>Retrieve a file from encoded text (non-mobile)</h3>
   </div>
     <div id="a24" class="texter">
@@ -593,7 +845,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <p>3. If the content was plain text rather than encoded, you will be asked for a name. Type a name (default extension is .txt) and click <strong>OK</strong>. </p>
   <p>The file will be saved to your default downloads folder.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
-<div id='bb24' style="cursor:pointer">
+<div id='bb24' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b24" class="texter">
@@ -602,7 +854,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
     <hr>
         
-   <div id="aa50" style="cursor:pointer">
+   <div id="aa50" class="helpitem">
   <h3>Make an invitation to join a real-time multi-party chat session</h3>
  </div>
   <div id="a50" class="texter">
@@ -610,7 +862,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>2. Click the <strong>Chat</strong> button. A dialog will appear asking you whether this chat is going to involve text and files only, or also will involve audio, or even video. There is also a text box where you can optionally type something that will be shown to the users (such as the date and time for the chat) before they join the chat, and another box where you can supply a nondescript name for your chat room (otherwise PassLok will generate a name).</p>
     <p>3. Supply the required information and click <strong>OK</strong>. If the main box did not contain a chat invitation, a new one is generated and placed there. You can now email it with the <strong>Email</strong> button, or send it out by any other means.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=XytUN0T_2zQ">https://www.youtube.com/watch?v=XytUN0T_2zQ</a></p>
-<div id='bb50' style="cursor:pointer">
+<div id='bb50' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b50" class="texter">
@@ -619,7 +871,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
 
-   <div id="aa56" style="cursor:pointer">
+   <div id="aa56" class="helpitem">
   <h3>Use an invitation to join a real-time chat session (tags are PL**chat)</h3>
  </div>
   <div id="a56" class="texter">
@@ -628,7 +880,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>3. As participants join the chat session, their chosen names will appear at the top of the chat screen (or a randomly-chosen tag, if they didn't supply a name). You can then post text by writing it in the Text box, followed by Enter. You can also post files by clicking the Browse or Files button.</p>
     <p>4. If the chat involves audio or video, you may be asked to give permission to access you microphone and camera. After you grant it, you will see or hear the other participants as they join, and likely yourself too.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=XytUN0T_2zQ">https://www.youtube.com/watch?v=XytUN0T_2zQ</a></p>
-<div id='bb56' style="cursor:pointer">
+<div id='bb56' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b56" class="texter">
@@ -637,7 +889,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
 
-  <div id="aa13" style="cursor:pointer">
+  <div id="aa13" class="helpitem">
 <h3>Lock a message with a shared Key, to be unlocked with the same Key</h3>
 </div>
       <div id="a13" class="texter">
@@ -651,7 +903,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>Copy it and paste it into your
   communications program or click <strong>Email</strong> to open your default email program. </p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number):<a href="https://www.youtube.com/watch?v=sRdpWe4zya8" target="_blank">https://www.youtube.com/watch?v=sRdpWe4zya8</a></p>
-<div id='bb13' style="cursor:pointer">
+<div id='bb13' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b13" class="texter">
@@ -664,7 +916,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa14" style="cursor:pointer">
+  <div id="aa14" class="helpitem">
  <h3>Unlock a message locked with a shared Key</h3>
 </div>
       <div id="a14" class="texter">
@@ -676,7 +928,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Click the <strong>Lock/Unlock</strong> button. The unlocked message
   will appear in the main box, replacing the locked message.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number):<a href="https://www.youtube.com/watch?v=sRdpWe4zya8" target="_blank">https://www.youtube.com/watch?v=sRdpWe4zya8</a></p>
-<div id='bb14' style="cursor:pointer">
+<div id='bb14' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b14" class="texter">
@@ -687,7 +939,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-<div id="aa17" style="cursor:pointer">
+<div id="aa17" class="helpitem">
 <h3>Add a Lock to the local directory</h3>
 </div>
     <div id="a17" class="texter">
@@ -703,16 +955,16 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>3. Paste the Lock in the lower box, replacing whatever was there before. If the Lock loses its tags as you enter it, this means that PassLok has recognized it and is cleaning it up before storage. </p>
       <p>4. Click the <strong>Save</strong> button. A message confirms that the Lock has been saved under the name given.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=vQrED7eIkLA" target="_blank">https://www.youtube.com/watch?v=vQrED7eIkLA</a></p>
-<div id='bb17' style="cursor:pointer">
+<div id='bb17' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b17" class="texter">
-<p>if the given name is already in the directory,  the  Lock will be replaced rather than added. Locks are stored unencrypted by default, but this can be changed by clicking <strong>encr. Locks</strong> in the <strong>Options</strong> tab. From the directory Edit dialog, you can store a number of things besides somebody's Lock: a shared Key, a cover text, a List. In the case of a List, the given name will be bracketed by double dashes. Items that are not Locks are always stored encrypted. (<em>Chrome app only</em>) If <strong>Chrome sync</strong> is checked in Options, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome.</p>
+<p>If the given name is already in the directory,  the  Lock will be replaced rather than added. Locks are stored unencrypted by default, but this can be changed by clicking <strong>encr. Locks</strong> in the <strong>Options</strong> tab. From the directory Edit dialog, you can store a number of things besides somebody's Lock: a shared Key, a cover text, a List. In the case of a List, the given name will be bracketed by double dashes. Items that are not Locks are always stored encrypted. When you load PassLok from an email link, a popup may open asking you to accept saving the sender's Lock to your directory. You can change its name at this point. (<em>Chrome app only</em>) If <strong>Chrome sync</strong> is checked in Options, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome.</p>
 </div>
     </div>
     <hr>
 
- <div id="aa18" style="cursor:pointer">
+ <div id="aa18" class="helpitem">
 <h3>Retrieve a Lock from the local directory</h3>
 </div>
       <div id="a18" class="texter">
@@ -722,7 +974,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
          <li>If the first character in the lower box is '~', the item is encrypted. PassLok can use the Lock in encrypted form, but if you want to see the decrypted version, press the Enter key after the name appears on the upper line.       </li>
        </ul>
        <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=vQrED7eIkLA" target="_blank">https://www.youtube.com/watch?v=vQrED7eIkLA</a></p>
-<div id='bb18' style="cursor:pointer">
+<div id='bb18' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b18" class="texter">
@@ -731,7 +983,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       </div>
      <hr>
 
-<div id="aa19" style="cursor:pointer">
+<div id="aa19" class="helpitem">
  <h3>Delete a stored Lock</h3>
 </div>
   <div id="a19" class="texter">
@@ -739,7 +991,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>1. Start writing the name of the Lock in the top box of the dialog that appears. As you type, the line above the box displays existing names that match what you have typed so far, and the encrypted Lock appears in the lower box. </p>
        <p>2. Click the <strong>Delete</strong> button. A message confirms that the Lock has been deleted from the local directory.</p>
        <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=vQrED7eIkLA" target="_blank">https://www.youtube.com/watch?v=vQrED7eIkLA</a></p>
-<div id='bb19' style="cursor:pointer">
+<div id='bb19' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b19" class="texter">
@@ -748,7 +1000,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-   <div id="aa20" style="cursor:pointer">
+   <div id="aa20" class="helpitem">
   <h3>Make a video to authenticate your Lock</h3>
   </div>
  <div id="a20" class="texter">
@@ -768,7 +1020,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 	  <li>For more instructions on this, go to “How to add an authentication video” under the General Directory help.      </li>
 </ul>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=zkcqEz3UjnM" target="_blank">https://www.youtube.com/watch?v=zkcqEz3UjnM</a></p>
-<div id='bb20' style="cursor:pointer">
+<div id='bb20' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b20" class="texter">
@@ -777,7 +1029,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
     <hr>
 
-<div id="aa22" style="cursor:pointer">
+<div id="aa22" class="helpitem">
       <h3>Use the General Directory</h3>
 </div>
   <div id="a22" class="texter">
@@ -789,7 +1041,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </ul>
 <p> The General Directory has its own Help page, which is structured like this one.    </p>
 <p>This and more  is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=QQQ2df2vPgs" target="_blank">https://www.youtube.com/watch?v=QQQ2df2vPgs</a></p>
-<div id='bb22' style="cursor:pointer">
+<div id='bb22' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b22" class="texter">
@@ -799,7 +1051,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa35" style="cursor:pointer">
+  <div id="aa35" class="helpitem">
   <h3>Add, remove, and backup users</h3>
 </div>
  <div id="a35" class="texter">
@@ -810,7 +1062,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>2. Then a prompt asks you to confirm deleting the directory from the device. If you click <strong>OK,</strong> the entire local directory for that user is deleted, leaving no traces. If you click <strong>Cancel</strong>, the process ends and the directory contents are not deleted. In both cases the backup on the <strong>Main</strong> tab remains.</p>
       <p>3. To retrieve a backed-up directory (has PL**dir tags), place it in the <strong>Main</strong> tab and click <strong>Lock/Unlock</strong>. The database will be unlocked and placed in the directory Edit dialog. Then you can add it to the device's current local directory by clicking <strong>Merge</strong>.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=8zo-N5O82iM" target="_blank">https://www.youtube.com/watch?v=8zo-N5O82iM</a></p>
-<div id='bb35' style="cursor:pointer">
+<div id='bb35' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b35" class="texter">
@@ -819,7 +1071,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
  <hr>
 
-  <div id="aa27" style="cursor:pointer">
+  <div id="aa27" class="helpitem">
 <h3>Access the advanced functions of PassLok</h3>
   </div>
   <div id="a27" class="texter">
@@ -838,7 +1090,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-	<div id="aa28" style="cursor:pointer">
+	<div id="aa28" class="helpitem">
   <h3>Are there any keyboard shortcuts?</h3>
  </div>
   <div id="a28" class="texter">
@@ -868,7 +1120,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>Alt-<strong>;</strong> <em>(semicolon)</em>: put cursor on main box</p>
     <p>Alt-G: <strong>G</strong>eneral Lock directory</p>
     </ul>
-<div id='bb28' style="cursor:pointer">
+<div id='bb28' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b28" class="texter">
@@ -879,7 +1131,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <div id='advancedHelp' style="display: none;">
       
-  <div id="aa9" style="cursor:pointer">
+  <div id="aa9" class="helpitem">
 <h3>Lock a message with a Lock, to be unlocked with the matching Key, and sign it with your secret Key (Signed mode) <em>(advanced)</em></h3>
   </div>
   <div id="a9" class="texter">
@@ -894,7 +1146,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>Copy it and paste it into your
       communications program or click <strong>Email</strong> to open your default email.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=R9UanENF3ro" target="_blank">https://www.youtube.com/watch?v=R9UanENF3ro</a></p>
-<div id='bb9' style="cursor:pointer">
+<div id='bb9' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b9" class="texter">
@@ -904,7 +1156,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa10" style="cursor:pointer">
+  <div id="aa10" class="helpitem">
 <h3>Unlock a Signed message   (tags are PL**mss) <em>(advanced)</em></h3>
 </div>
   <div id="a10" class="texter">
@@ -916,7 +1168,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>3. Click the <strong>Lock/Unlock</strong> button. The unlocked message
         will replace the locked message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=R9UanENF3ro" target="_blank">https://www.youtube.com/watch?v=R9UanENF3ro</a></p>
-<div id='bb10' style="cursor:pointer">
+<div id='bb10' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b10" class="texter">
@@ -925,7 +1177,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
       <hr>
       
-    <div id="aa15" style="cursor:pointer">
+    <div id="aa15" class="helpitem">
     <h3>Make a short locked message suitable for texting <em>(advanced)</em></h3>
 </div>
 <div id="a15" class="texter">
@@ -938,7 +1190,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>4. Click the <strong>Lock/Unlock</strong> button. The locked message will appear in the box, replacing the original message.</p>
 <p>Copy it and paste it into your communications program. </p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=pD-uvyxKBgQ" target="_blank">https://www.youtube.com/watch?v=pD-uvyxKBgQ</a></p>
-<div id='bb15' style="cursor:pointer">
+<div id='bb15' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b15" class="texter">
@@ -951,7 +1203,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa16" style="cursor:pointer">
+  <div id="aa16" class="helpitem">
 <h3>Unlock a short locked message (no tags) <em>(advanced)</em></h3>
   </div>
   <div id="a16" class="texter">
@@ -959,7 +1211,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>2. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
     <p>3. Click the <strong>Lock/Unlock</strong> button. The unlocked message will appear in the box, replacing the locked message.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=pD-uvyxKBgQ" target="_blank">https://www.youtube.com/watch?v=pD-uvyxKBgQ</a></p>
-<div id='bb16' style="cursor:pointer">
+<div id='bb16' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b16" class="texter">
@@ -969,13 +1221,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
  
-  <div id="aa53" style="cursor:pointer">
+  <div id="aa53" class="helpitem">
 <h3>Further protect a Lock, locked or sealed message, signature, or part from accidental errors <em>(advanced)</em></h3>
   </div>
   <div id="a53" class="texter">
 <p>PassLok optionally includes a Reed-Solomon error correction code as part of the tags attached to most items. It is located right before the end label. Character changes introduced in transmission will be corrected automatically so long as the tags are present.In order to use this feature, just check <strong>RS</strong> on the <strong>Options</strong> tab; PassLok will remember your choice from then on.</p>
 <p>If you foresee that the item may pick up a lot of errors during transmission, including deletions and additions, send three copies of it, separated by two @ signs between them. PassLok will reconstruct the undamaged original out of a damaged triple copy automatically. PassLok will make the triple copies for you if you check <strong>Triple</strong> in the <strong>Options</strong> tab (visible in the Advanced interface) before generating the item.</p>
-<div id='bb53' style="cursor:pointer">
+<div id='bb53' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b53" class="texter">
@@ -984,7 +1236,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa31" style="cursor:pointer">
+  <div id="aa31" class="helpitem">
 <h3>Sign a text with your secret Key <em>(advanced)</em></h3>
 </div>
 <div id="a31" class="texter">
@@ -994,7 +1246,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     button. A signature matching the text and your Key will be appended at the end of the text. Copy
     it or email it from there.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Vh9wwFZiV4w" target="_blank">https://www.youtube.com/watch?v=Vh9wwFZiV4w</a></p>
-<div id='bb31' style="cursor:pointer">
+<div id='bb31' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b31" class="texter">
@@ -1006,7 +1258,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa32" style="cursor:pointer">
+  <div id="aa32" class="helpitem">
 <h3>Verify a signature attached to a text (signature tags are PL**sig) <em>(advanced)</em></h3>
 </div>
 <div id="a32" class="texter">
@@ -1018,7 +1270,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Click the <strong>Sign/Verify</strong> button. A message above the main box will say whether
   or not the signature for that text has been verified.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Vh9wwFZiV4w" target="_blank">https://www.youtube.com/watch?v=Vh9wwFZiV4w</a></p>
-<div id='bb32' style="cursor:pointer">
+<div id='bb32' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b32" class="texter">
@@ -1029,7 +1281,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
     <hr>
     
-  <div id="aa61" style="cursor:pointer">
+  <div id="aa61" class="helpitem">
 <h3>Seal a text with your secret Key so others know it comes from you <em>(advanced)</em></h3>
 </div>
 <div id="a61" class="texter">
@@ -1040,7 +1292,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     it or email it from there.</p>
   <p>You must be aware that a sealed item is <strong>NOT ENCRYPTED</strong>, and that anyone in the world can unseal it so long as he/she has your Lock, which is public.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Vh9wwFZiV4w" target="_blank">https://www.youtube.com/watch?v=Vh9wwFZiV4w</a></p>
-<div id='bb61' style="cursor:pointer">
+<div id='bb61' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b61" class="texter">
@@ -1052,7 +1304,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa57" style="cursor:pointer">
+  <div id="aa57" class="helpitem">
 <h3>Unseal a sealed text and verify its origin (tags are PL**sld) <em>(advanced)</em></h3>
 </div>
 <div id="a57" class="texter">
@@ -1065,7 +1317,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   or not the seal has been verified for that sealer.</p>
 <p>You must be aware that being able to unseal an item does not mean that others are not able to do it just as easily, because a sealed item is <strong>NOT ENCRYPTED</strong>.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Vh9wwFZiV4w" target="_blank">https://www.youtube.com/watch?v=Vh9wwFZiV4w</a></p>
-<div id='bb57' style="cursor:pointer">
+<div id='bb57' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b57" class="texter">
@@ -1076,7 +1328,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
     <hr>
       
-  <div id="aa11" style="cursor:pointer">
+  <div id="aa11" class="helpitem">
       <h3>Lock a message so that nobody can read it after the exchange is over, or even link it with the correspondents (PFS and Read-once modes) <em>(advanced)</em></h3>
     </div>
     <div id="a11" class="texter">
@@ -1092,7 +1344,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>Copy it and paste it into your
         communications program or click <strong>Mail</strong> to open your default email.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=VutWfWZW5bY" target="_blank">https://www.youtube.com/watch?v=VutWfWZW5bY</a></p>
-      <div id='bb11' style="cursor:pointer">
+      <div id='bb11' class="helpitem">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b11" class="texter">
@@ -1101,7 +1353,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
   <hr>
 
-  <div id="aa12" style="cursor:pointer">
+  <div id="aa12" class="helpitem">
       <h3>Unlock a message  that was locked in PFS mode (tags are PL**msp) or Read-once mode (tags are PL**mso) <em>(advanced)</em></h3>
     </div>
     <div id="a12" class="texter">
@@ -1110,7 +1362,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>3. Click the <strong>Lock/Unlock</strong> button. The unlocked message
         will replace the locked message.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=VutWfWZW5bY" target="_blank">https://www.youtube.com/watch?v=VutWfWZW5bY</a></p>
-      <div id='bb12' style="cursor:pointer">
+      <div id='bb12' class="helpitem">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b12" class="texter">
@@ -1119,7 +1371,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
       <hr>
 
-  <div id="aa42" style="cursor:pointer">
+  <div id="aa42" class="helpitem">
 <h3>Convert a PassLok item (Lock, message, etc.) into fake text <em>(advanced)</em></h3>
   </div>
   <div id="a42" class="texter">
@@ -1128,7 +1380,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Make sure the hiding mode you want is the one selected in the <strong>Options</strong> tab. There are four different methods for doing this: Letters, Words, Spaces, and Sentences. Letters (default) encodes the characters as non-standard characters in the cover text. Words replaces each character by two words. Spaces encodes the characters into the spaces between words. Sentences encodes characters as grammatically correct sentences.</p>
 <p>4. If now you click the <strong>Text hide</strong> button, the PassLok item is converted into text, using words from the cover text. You may have to complete the last sentence manually.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=_7Fju1EwhV4" target="_blank">https://www.youtube.com/watch?v=_7Fju1EwhV4</a></p>
-<div id='bb42' style="cursor:pointer">
+<div id='bb42' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b42" class="texter">
@@ -1140,7 +1392,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
-  <div id="aa43" style="cursor:pointer">
+  <div id="aa43" class="helpitem">
 <h3>Retrieve the original PassLok item from fake text <em>(advanced)</em></h3>
   </div>
   <div id="a43" class="texter">
@@ -1150,7 +1402,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
- <div id="aa45" style="cursor:pointer">
+ <div id="aa45" class="helpitem">
   <h3>Hide a PassLok item inside an image <em>(advanced)</em></h3>
  </div>
   <div id="a45" class="texter">
@@ -1160,7 +1412,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>4. When you see the image, click the <strong>PNG hide</strong> or the <strong>JPG hide</strong> button, depending on the format of the image you want to produce. A message will say when processing is completed, although the image will not appear to have changed much.</p>
     <p>5. Right-click or long-press on the image in order to save it or send it somewhere.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=_iXIyH6AnMI" target="_blank">https://www.youtube.com/watch?v=_iXIyH6AnMI</a></p>
-<div id='bb45' style="cursor:pointer">
+<div id='bb45' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b45" class="texter">
@@ -1169,7 +1421,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
     <hr>
 
- <div id="aa46" style="cursor:pointer">
+ <div id="aa46" class="helpitem">
   <h3>Retrieve the PassLok item hidden inside an image <em>(advanced)</em></h3>
  </div>
   <div id="a46" class="texter">
@@ -1178,7 +1430,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>3. When the image displays on the screen, click the <strong>Reveal</strong> button. A message will say when processing is completed and the hidden item has been retrieved, or no hidden item has been found.</p>
       <p>4. Click <strong>Back</strong> to see the item on the <strong>Main</strong> tab.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=_iXIyH6AnMI" target="_blank">https://www.youtube.com/watch?v=_iXIyH6AnMI</a></p>
-<div id='bb46' style="cursor:pointer">
+<div id='bb46' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b46" class="texter">
@@ -1187,7 +1439,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
    
-<div id="aa40" style="cursor:pointer">
+<div id="aa40" class="helpitem">
   <h3>Split an item into several random-looking parts <em>(advanced)</em></h3>
 </div>
 <div id="a40" class="texter">
@@ -1195,7 +1447,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <p>2. Click the <strong>&#9660;</strong> button, if needed, and then click the <strong>Split/Join</strong> button.  </p>
   <p>3. A popup asks for the total number of parts to be made, and the minimum number required to retrieve the original. Enter those numbers, which must be between 2 and 255, and click <strong>OK</strong>. The parts appear in the main box, replacing the original item, and a message confirms it. Copy the parts one by one and send or store them as needed.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=ZdVHaD-FpSk" target="_blank">https://www.youtube.com/watch?v=ZdVHaD-FpSk</a></p>
-<div id='bb40' style="cursor:pointer">
+<div id='bb40' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b40" class="texter">
@@ -1204,14 +1456,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
 <hr>
 
-<div id="aa41" style="cursor:pointer">
+<div id="aa41" class="helpitem">
   <h3>Join parts to retrieve the original item (tags are PL**p^^^) <em>(advanced)</em></h3>
 </div>
 <div id="a41" class="texter">
   <p>1. Paste a sufficient number of parts on separate lines of the lower box in the <strong>Main</strong> tab. Make sure that each part is unique. </p>
   <p>2. Click the <strong>&#9660;</strong> button, if needed, and then the  <strong>Split/Join</strong> button. If all goes well, the reconstructed item appears in the box.</p>
   <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=ZdVHaD-FpSk" target="_blank">https://www.youtube.com/watch?v=ZdVHaD-FpSk</a></p>
-<div id='bb41' style="cursor:pointer">
+<div id='bb41' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b41" class="texter">
@@ -1220,7 +1472,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
      
-  <div id="aa25" style="cursor:pointer">
+  <div id="aa25" class="helpitem">
 <h3>Lock a second, undetectable message in addition to the main message (Decoy mode) <em>(advanced)</em></h3>
   </div>
   <div id="a25" class="texter">
@@ -1232,7 +1484,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   the main box, replacing the original text. Copy it and paste it into your
   communications program.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4WrYEdRp2Q4" target="_blank">https://www.youtube.com/watch?v=4WrYEdRp2Q4</a></p>
-<div id='bb25' style="cursor:pointer">
+<div id='bb25' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b25" class="texter">
@@ -1243,7 +1495,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa26" style="cursor:pointer">
+  <div id="aa26" class="helpitem">
 <h3>Reveal the hidden text contained within a message locked in Decoy mode <em>(advanced)</em></h3>
   </div>
   <div id="a26" class="texter">
@@ -1253,7 +1505,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>4. Then click <strong>OK</strong>. The hidden message, if it exists,
   will appear above the main box.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4WrYEdRp2Q4" target="_blank">https://www.youtube.com/watch?v=4WrYEdRp2Q4</a></p>
-<div id='bb26' style="cursor:pointer">
+<div id='bb26' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b26" class="texter">
@@ -1262,14 +1514,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
-  <div id="aa3" style="cursor:pointer">
+  <div id="aa3" class="helpitem">
 <h3>Change your secret Key <em>(advanced)</em></h3>
 </div>
 <div id="a3" class="texter">
 <p>1. Click the Change <strong>Key</strong> button on the <strong>Options</strong> tab. A new dialog will pop up asking you to enter the new Key twice.</p>
 <p>2. Write the new Key in the two boxes in this dialog, and then click <strong>OK</strong>. A message will announce that the Key has changed. </p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=LubzBF4Xaa8" target="_blank">https://www.youtube.com/watch?v=LubzBF4Xaa8</a></p>
-<div id='bb3' style="cursor:pointer">
+<div id='bb3' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b3" class="texter">
@@ -1278,7 +1530,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
   
- <div id="aa33" style="cursor:pointer">
+ <div id="aa33" class="helpitem">
  <h3>Reset the hidden information pertaining to a stored item (PFS, etc.) <em>(advanced)</em></h3>
  </div>
   <div id="a33" class="texter">
@@ -1289,14 +1541,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
   <hr>
 
- <div id="aa34" style="cursor:pointer">
+ <div id="aa34" class="helpitem">
       <h3>Display the entire local directory <em>(advanced)</em></h3>
 </div>
   <div id="a34" class="texter">
   <p>1. Click the <strong>Edit</strong> button next to the Lock selection box.</p>
 <p>2. Click the <strong>All</strong> button below the lower box of dialog. The complete local directory, including PFS and hidden data, is displayed in the box so you can find items and copy them easily.</p>
      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=8zo-N5O82iM" target="_blank">https://www.youtube.com/watch?v=8zo-N5O82iM</a></p>
-<div id='bb34' style="cursor:pointer">
+<div id='bb34' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b34" class="texter">
@@ -1305,7 +1557,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
- <div id="aa36" style="cursor:pointer">
+ <div id="aa36" class="helpitem">
        <h3>Merge additional data into the local directory <em>(advanced)</em></h3>
 </div>
   <div id="a36" class="texter">
@@ -1313,7 +1565,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>2. Paste the additional data into the lower box of the dialog.</p>
      <p>3. Click the <strong>Merge</strong> button. The new data is merged into the local directory.</p>
      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=8zo-N5O82iM" target="_blank">https://www.youtube.com/watch?v=8zo-N5O82iM</a></p>
-<div id='bb36' style="cursor:pointer">
+<div id='bb36' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b36" class="texter">
@@ -1322,7 +1574,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
 
- <div id="aa37" style="cursor:pointer">
+ <div id="aa37" class="helpitem">
      <h3>Use the List button <em>(advanced)</em></h3>
  </div>
   <div id="a37" class="texter">
@@ -1332,7 +1584,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>3. If you click <strong>List</strong> with the box empty, the current List in memory is displayed.</p>
       <p>4. If you click the <strong>Reset</strong> button while a List is displayed in the bottom box, the List in memory is deleted.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=m4Ki9DHTVow" target="_blank">https://www.youtube.com/watch?v=m4Ki9DHTVow</a></p>
-<div id='bb37' style="cursor:pointer">
+<div id='bb37' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b37" class="texter">
@@ -1341,7 +1593,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
      <hr>
 
-  <div id="aa38" style="cursor:pointer">
+  <div id="aa38" class="helpitem">
   <h3>Make a random Key <em>(advanced)</em></h3>
   </div>
  <div id="a38" class="texter">
@@ -1353,7 +1605,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
  <hr>
 
-   <div id="aa39" style="cursor:pointer">
+   <div id="aa39" class="helpitem">
   <h3>Combine a Key and a Lock <em>(advanced)</em></h3>
   </div>
  <div id="a39" class="texter">
@@ -1362,7 +1614,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>2. Click the <strong>Edit</strong> button next to the Lock selection box, and write or paste the other item in the lower box of the dialog that appears. If the item is in PassLok's local directory, you can bring it out by starting to type its name in the top box.</p>
       <p>3. Click the <strong>Merge</strong> button. The Key and the Lock will merge and the 43-character result, which is itself a valid Lock, is placed in both the <strong>Main</strong> and <strong>Directory</strong> tabs.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=0EImhN35Tbs" target="_blank">https://www.youtube.com/watch?v=0EImhN35Tbs</a></p>
-<div id='bb39' style="cursor:pointer">
+<div id='bb39' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b39" class="texter">
@@ -1371,7 +1623,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
  </div>
  <hr>
     
- <div id="aa44" style="cursor:pointer">
+ <div id="aa44" class="helpitem">
   <h3>What do the other checkboxes in the Options tab do? <em>(advanced)</em></em></h3>
  </div>
   <div id="a44" class="texter">
@@ -1382,7 +1634,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
     
-  <div id="aa59" style="cursor:pointer">
+  <div id="aa59" class="helpitem">
 <h3>Ask the participants in a Chat session to authenticate themselves <em>(advanced)</em></h3>
 </div>
 <div id="a59" class="texter">
@@ -1394,7 +1646,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. In the local directory, select the Lock belonging to the person who posted the signature, and click the <strong>Sign/Verify</strong> button.</p>
 <p>4. If the signature is verified, this means that the one who posted it is indeed who he/she claims to be. In the case of a sealed item, the original garbage string should be recovered, plus a message should indicated that the sealer has been verified.</p>
 <p>This is all explained in this video: <a href="https://www.youtube.com/watch?v=NlEJJpF-Wmo" target="_blank">https://www.youtube.com/watch?v=NlEJJpF-Wmo</a></p>
-<div id='bb59' style="cursor:pointer">
+<div id='bb59' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b59" class="texter">
@@ -1404,7 +1656,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
     <hr>
 
-<div id="aa60" style="cursor:pointer">
+<div id="aa60" class="helpitem">
 <h3>Respond to a request for authentication posted in a Chat session <em>(advanced)</em></h3>
 </div>
 <div id="a60" class="texter">
@@ -1417,7 +1669,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Click the <strong>Sign/Verify</strong> button. The text will be signed or sealed depending on your previous choice.</p>
 <p>4. Copy the whole thing and go back to the chat session by clicking the <strong>Chat</strong> button, then paste it into the chat box and submit it.</p>
 <p>This is all explained in this video: <a href="https://www.youtube.com/watch?v=NlEJJpF-Wmo" target="_blank">https://www.youtube.com/watch?v=NlEJJpF-Wmo</a></p>
-<div id='bb60' style="cursor:pointer">
+<div id='bb60' class="helpitem">
   <p><em>Click here for More:</em></p>
 </div>
 <div id="b60" class="texter">
@@ -1426,7 +1678,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 </div>
     <hr>
    
-   <div id="aa21" style="cursor:pointer">
+   <div id="aa21" class="helpitem">
   <h3>Authenticate a Lock without using videos <em>(advanced)</em></h3>
   </div>
  <div id="a21" class="texter">
@@ -1441,7 +1693,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <li><em>When you get it, please verify that what I sent conforms to your instructions. If so, put together the two halves of my locked message to you, unlock it, and send me what I ask in the message as soon as possible, unlocked as well. Then I'll know that your Lock is authentic.</em></li>
    </ol>
       <p><em>Many thanks. Sincerely, This-and-That</em></p>
-<div id='bb21' style="cursor:pointer">
+<div id='bb21' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b21" class="texter">
@@ -1452,7 +1704,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 </div><!--end of advanced help-->
 
-   <div id="aa29" style="cursor:pointer">
+   <div id="aa29" class="helpitem">
 <h3>Check the authenticity of the code</h3>
 </div>
 <div id="a29" class="texter">
@@ -1466,18 +1718,18 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>3. Look up the checksum for this version of PassLok, which is published on the PassLok information website at passlok.weebly.com and a number of other places. If this value and the one obtained in step 2 are not the same, the program has been tampered with.</p>
 <p>4. Now, a hacker who could alter the source code at the server might also be able to change the published checksum so it matches the tampered code. To make sure that the value is authentic you should watch the one-minute video where the author or PassLok, Francisco Ruiz, reads the SHA256 checksum aloud. A link to the video usually accompanies the published SHA256 value.</p>
 <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=NrAfSo2xjnY" target="_blank">https://www.youtube.com/watch?v=NrAfSo2xjnY</a></p>
-<div id='bb29' style="cursor:pointer">
+<div id='bb29' class="helpitem">
 <p><em>Click here for More:</em></p>
 </div>
 <div id="b29" class="texter">
 <p>Typically, you load the source on a separate tab by typing CTRL-U (Windows) or option-cmd-u (OSX). Another way to save the source is to copy it by first selecting the the whole source code (CTRL-A or cmd-a), then copy to clipboard (CTRL-C or cmd-c), and then paste it into a text editor (CTRL-V or cmd-v), and save it from there. DO NOT save the code using the "save" command when the working PassLok page is displayed, since then the browser would modify the source code before saving it. The correct encoding is UTF-8, no BOM (notes: Windows Notepad is unable to save text in the correct format. Cut and paste from Chrome introduces artifacts for big items like the source code).</p>
-<p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload the file and get the hash. Online-convert (http://hash.online-convert.com/sha256-generator), fileformat.info (http://www.fileformat.info/tool/hash.htm) and freeformatter.com (http://www.freeformatter.com/sha256-generator.html) have worked well in our tests.</p>
-<p>If you want a clipboard-based SHA256 utility, the one at Xorbin (http://www.xorbin.com/tools/sha256-hash-calculator) has worked quite well in our tests. Don't copy and paste from Chrome, since it introduces artifacts.</p>
+<p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload a file and get the hash. Online-convert (http://hash.online-convert.com/sha256-generator), fileformat.info (http://www.fileformat.info/tool/hash.htm) and freeformatter.com (http://www.freeformatter.com/sha256-generator.html) have worked well in our tests.</p>
+<p>If you want a clipboard-based SHA256 utility, the one at Xorbin (http://www.xorbin.com/tools/sha256-hash-calculator) has worked quite well in our tests. Don't copy and paste from Chrome, since this introduces artifacts.</p>
 </div>
 </div>
 <hr>
 
-	<div id="aa47" style="cursor:pointer">
+	<div id="aa47" class="helpitem">
   <h3>I have an item that was locked/signed with a previous version of PassLok, and the current version cannot handle it</h3>
  </div>
   <div id="a47" class="texter">
@@ -1522,7 +1774,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><a href="https://www.autistici.org/passlok/archive/passlok15.html" target="_blank">Autistici</a></p>
 <p><a href="https://passlok.site44.com/archive/passlok15.html" target="_blank">Site44</a></p>
 <p><a href="https://www.youtube.com/watch?v=YQIDRKE_wbI" target="_blank">Author reading the SHA256</a></p>
-<p>The following (except 1.0) were edited so the archived help file works, changing the ID from the original (therefore no video)</p>
+<p>The following (except 1.0) were edited so the archived help file works, changing the SHA256 from the original value (therefore no video)</p>
 <p><strong>1.4.03</strong> (f1cc-8931-1d31-4d65-4dfe-fb0d-5368-f854-3766-b240-f131-c93f-a0e9-8d14-752e-018e)</p>
 <p><a href="https://passlok.com/archive/passlok14.html" target="_blank">PassLok.com</a></p>
 <p><a href="https://www.autistici.org/passlok/archive/passlok14.html" target="_blank">Autistici</a></p>
@@ -1546,7 +1798,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
 
-   <div id="aa49" style="cursor:pointer">
+   <div id="aa49" class="helpitem">
   <h3>None of the help items answers my question / I want to give feedback</h3>
  </div>
   <div id="a49" class="texter">
@@ -1555,7 +1807,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
    <hr>
 
-<div id="aa51" style="cursor:pointer">
+<div id="aa51" class="helpitem">
 <h3>Privacy Statement</h3>
 </div>
 <div id="a51" class="texter">
@@ -1563,13 +1815,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p><strong>1. We cannot give your secret Key to anyone</strong> (not even yourself) because we don't have it. Your Key is never stored or transmitted, and by default gets deleted from memory  after five minutes of not being used.</p>
 <p><strong>2. We cannot give your private data to anyone</strong> because PassLok does not send anything out of your device. When you download the app from its server, you get only the code, without any cookies, plugins, or anything of that sort. We do store Locks that have been posted on our General Directory by their owners, but those are public by nature.</p>
 <p><strong>3. We cannot eavesdrop on your chat sessions, or enable anyone to do so.</strong> Establishing a chat session does involve contacting a signaling server (Firebase) and giving it your IP address and a disposable chatroom name so that others can contact you; the signaling server never sees the content of your chat, which is between participants only. The PassLok server doesn't even see the connection data.</p>
-<p><strong>3. We will never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We'd rather shut down PassLok than be forced to do this, which would betray the very essence of our efforts. If we learn that counterfeit versions of PassLok are circulating, whether placed by hackers or government agencies, we'll make the fact known to users.</p>
+<p><strong>3. We will never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We would rather shut down PassLok than be forced to do this, which would betray the very essence of our efforts. If we learn that counterfeit versions of PassLok are circulating, whether placed by hackers or government agencies, we will make the fact known to users.</p>
 <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
 <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
 </div>
 <hr>
 	<address>
-	PassLok v2.2.5 &#169; F. Ruiz 2015
+	PassLok v2.2.6 &#169; F. Ruiz 2015
   </address>
     <ul>
 	<li>
@@ -1595,8 +1847,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <li>
     webRTC chat by Muaz Khan 2015</li>
     <li>Letters encoding based on Advanced Unicode Stego by Adrian Crenshaw 2013</li>
+    <li>color picker: jscolor by Jan Odvarko, 2014</li>
     <li>
-    testing, help items, interface ideas by the IIT student team 2014-15</li>
+      testing, help items, interface ideas by the IIT student team 2014-15</li>
     </ul>
     <address>This document may be used, modified or redistributed under GNU GPL license, version 3.0 or higher.</address>
 </div>
@@ -1653,7 +1906,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="introscr" class="block_page" align="center" style="display: none;">
   	<h2 style="color:green">Welcome to PassLok</h2>
   <div align="left" style="width:98%;max-width:500px;">
-    <p>In the following screens, you will be asked to provide a user name, a secret Key, and a piece of public data such as your email. You can go offline if you like; nothing will leave this device. Your Key will not be stored.</p>
+  <div id="referrerMsg" style="display:none;">
+  <p>Looks like you received an invitation to use PassLok from someone whose user name is in the box below. If you wish to use a different name for this person, you can change it.</p>
+  <div align="center">
+    <input type="text" class="cssbox" autocomplete="off" id="friendsName" style="width: 90%" placeholder="Enter your friend's name here. It will be remembered." align="center"><br /><br>
+    </div>
+  </div>
+    <p>In the following screens, you will be asked to provide a user name for yourself, plus a secret Key, and a piece of public data such as your email. You can go offline if you like; nothing will leave this device. Your Key will not be stored.</p>
     <p>This is needed to keep a permanent directory of your friends’ Locks and shared Keys, all securely encrypted. If you prefer not to store anything, click <strong>Exit</strong>.</p>
   	<p>If you have three minutes to spare, you may want to watch the fun video called by the button below, which explains how PassLok works. It will load on a separate window. Click <strong>Next</strong> when you're ready.</p>
     <div align="center">
@@ -1665,6 +1924,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 </div></div>
 
+
 <div id="introscr2" class="block_page" align="center" style="display: none;">
 <div align="left" style="width:98%;max-width:500px;">
 <button class="cssbutton" id="backtointro1" value="back" title="back to beginning">&#9668; Back</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 2 of 5<br />
@@ -1674,6 +1934,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
 <button class="cssbutton" id="gotointro3" value="next" title="to step 3">Next &#9658;</button>
 </div></div>
+
 
 <div id="introscr3" class="block_page" align="center" style="display: none;">
 <div align="left" style="width:98%;max-width:500px;">
@@ -1692,6 +1953,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <button class="cssbutton" id="gotointro4" value="next" title="to step 4">Next &#9658;</button>
 </div></div>
 
+
 <div id="introscr4" class="block_page" align="center" style="display: none;">
 <div align="left" style="width:98%;max-width:500px;">
 <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 4 of 5<br />
@@ -1705,6 +1967,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <p>For ultimate security (at the expense of portability), you may want to click the Random button to use a random token.</p>
 <button class="cssbutton" id="gotointro5" value="next" title="to step 5">Next &#9658;</button>
 </div></div>
+
 
 <div id="introscr5" class="block_page" align="center" style="display: none;">
 <div align="left" style="width:98%;max-width:500px;">

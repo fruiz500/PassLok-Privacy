@@ -5,8 +5,8 @@ function syncChromeLock(name,data) {
     jsonfile[syncName.toLowerCase()] = data;
     chrome.storage.sync.set(jsonfile);
 	
-	//now update the list, also in Chrome sync, but not if initializing
-	if(lockNames.length > 1) updateChromeSyncList();
+	//now update the list, also in Chrome sync
+	updateChromeSyncList();
 }
 
 //to update the stored list

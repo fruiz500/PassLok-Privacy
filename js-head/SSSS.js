@@ -1,4 +1,12 @@
-﻿//this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
+﻿//function that starts it all when the Lock/Unlock button is pushed
+function splitJoin(){
+	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	setTimeout(function(){																			//the rest after a 20 ms delay
+		secretshare();
+	},20);						//end of timeout
+};
+
+//this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
 	var	main = XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n")).trim();
 	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/\n\nA/) && main.slice(0,1)=='A')){		//main box has parts: join parts
@@ -48,6 +56,8 @@ try{
 			if(!isMobile) partsNumber.focus();
 			throw ("stopped for # of parts input")
 		}
+		partsIn.style.display = "none";
+		shadow.style.display = "none";
 		var quorum = partsQuorum.value;					//this value defaults to the total number if empty
 		if (quorum.trim() == ""){
 			quorum = number
@@ -66,8 +76,6 @@ try{
 		mainMsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
 		partsInBox = true
 	};
-	partsIn.style.display = "none";
-	shadow.style.display = "none"
 };
 
 function displayshare(shares,quorum){

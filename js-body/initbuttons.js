@@ -14,9 +14,14 @@ window.onload = function() {
 		helpTop.style.display = 'block';
 		helpSpace.style.display = 'block'
 	}
-	if(isAndroid){
-		extra2mainBtn.style.padding = '9px';
-		main2extraBtn.style.padding = '9px';
+	if(isAndroid){										//resize shift buttons on Android
+		if(window.location.protocol == 'file:'){
+			extra2mainBtn.style.padding = '8px';
+			main2extraBtn.style.padding = '8px';
+		}else{
+			extra2mainBtn.style.padding = '9px';
+			main2extraBtn.style.padding = '9px';
+		}
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
   
@@ -45,7 +50,7 @@ window.onload = function() {
 
    	decryptBtn.addEventListener('click', lockUnlock);
 
-	verifyBtn.addEventListener('click', verifySignature);
+	verifyBtn.addEventListener('click', signVerify);
 
    	main2extraBtn.addEventListener('click', main2extra);
 
@@ -63,7 +68,7 @@ window.onload = function() {
 
    	imageBtn.addEventListener('click', main2image);
 
-   	secretShareBtn.addEventListener('click', secretshare);
+   	secretShareBtn.addEventListener('click', splitJoin);
 
 	stegoBtn.addEventListener('click', textStego);
 
@@ -124,6 +129,18 @@ window.onload = function() {
 	greenStyle.addEventListener('click', selectStyle);
 
 	blueStyle.addEventListener('click', selectStyle);
+	
+	customStyle.addEventListener('click', selectStyle);
+	
+	rndColors.addEventListener('click', randomColors);
+	
+	editTabColor.addEventListener('click', initPicker);
+	
+	editBgColor.addEventListener('click', initPicker);
+	
+	editBtnColor.addEventListener('click', initPicker);
+	
+	editBoxColor.addEventListener('click', initPicker);
 
 	anonMode.addEventListener('click', checkboxStore);
 
@@ -256,7 +273,7 @@ window.onload = function() {
 
 //	pwd.addEventListener('keyup', function() {pwdKeyup(event)}, false);
 
-   	pwdIntro.addEventListener('keyup', introKeyup);
+ 	pwdIntro.addEventListener('keyup', introKeyup);
 
 //	decoyPwdIn.addEventListener('keyup', function() {decoyKeyup(event)}, false);
 
@@ -376,6 +393,7 @@ window.onload = function() {
 	aa59.addEventListener('click', function() {openClose('a59')});
 	aa60.addEventListener('click', function() {openClose('a60')});
 	aa61.addEventListener('click', function() {openClose('a61')});
+	aa62.addEventListener('click', function() {openClose('a62')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -440,12 +458,13 @@ window.onload = function() {
 	bb59.addEventListener('click', function() {openClose('b59')});
 	bb60.addEventListener('click', function() {openClose('b60')});
 	bb61.addEventListener('click', function() {openClose('b61')});
+//	bb62.addEventListener('click', function() {openClose('b62')});
 };
 
 
 //this one is for mobile only. Remove for the Chrome app
 window.addEventListener('load', function() {
-    FastClick.attach(document.body);
+	FastClick.attach(document.body);
 }, false);
 
 

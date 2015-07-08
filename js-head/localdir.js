@@ -326,7 +326,6 @@ function mergeLockDB(){
 		var key = readKey();
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
-//		myLock = keyDecrypt(locDir['myself'][0]);
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 		myezLock = changeBase(myLock, BASE64, BASE36, true);
 	
@@ -611,9 +610,12 @@ function changeKey(){
 
 //grab the names in locDir and put them on the Main tab selection box
 function fillList(){
+	if(bgColor[0]){
+		if(bgColor[0] != 'FFFFFF') {var headingColor = milder(bgColor[0],'33')}else{var headingColor = '639789'};
+	}else{var headingColor = '639789'};
 	if(extraButtonsTop.style.display == 'block'){									//steganography buttons showing
 		if(!isiPhone){
-			lockList.innerHTML = '<option value="" disabled selected style="color:#639789;">Choose one stored Cover text:</option><option value="default">default</option>'
+			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Choose one stored Cover text:</option><option value="default">default</option>'
 		}else{
 			lockList.innerHTML = '<option value="default">default</option>'
 		}
@@ -624,7 +626,7 @@ function fillList(){
 		}
 	}else{																			//normal behavior
 		if(!isiPhone){
-			lockList.innerHTML = '<option value="" disabled selected style="color:#639789;">Select recipients:</option>'
+			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients:</option>'
 		}else{
 			lockList.innerHTML = ''
 		}

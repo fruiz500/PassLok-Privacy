@@ -192,7 +192,8 @@ var userName = '';
 //to initialize a new user
 function initUser(){
 	var key = pwdIntro.value,
-		email = emailIntro.value;
+		email = emailIntro.value,
+		isNewUser = true;
 	userName = nameIntro.value;
 	myEmail = email.trim();
 
@@ -223,11 +224,13 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 				locDir['myself'] = JSON.parse(lockdata);
 				email = keyDecrypt(locDir['myself'][0]);			
 				retrieveAllSync();
+				isNewUser = false;
 				setTimeout(function(){fillList();mainMsg.innerHTML = 'Settings synced from Chrome';}, 500);
 			}else{													//user never seen before: store settings
 				locDir['myself'] = [];
 				locDir['myself'][0] = keyEncrypt(email);			//email/token is stored, encrypted by Key+userName
-				setTimeout(function(){fillList();mainMsg.innerHTML = 'To lock a message for someone, enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);			
+				syncChromeLock('myself',locDir['myself'][0]);
+				setTimeout(function(){fillList();}, 500);		
 			}
 			if(email) myEmail = email;
 			localStorage[userName] = JSON.stringify(locDir);
@@ -239,26 +242,35 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 	}else{															//if not, store the email
 		if(!locDir['myself']) locDir['myself'] = [];
 		locDir['myself'][0] = keyEncrypt(email);
+		if(friendsLock){ 											//this will trigger if there is an invitation
+			if(friendsLock.length == 43){
+				var newEntry = JSON.parse('{"' + friendsName.value + '":["' + friendsLock + '"]}');
+				locDir = sortObject(mergeObjects(locDir,newEntry))
+			}
+		}
 		localStorage[userName] = JSON.stringify(locDir);
 		lockNames = Object.keys(locDir);
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		showLock();
-		setTimeout(function(){fillList();mainMsg.innerHTML = 'To lock a message for someone, enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button';}, 500);
+		setTimeout(function(){fillList();}, 500);
 	}
 	if(ChromeSyncOn) syncCheck.style.display = 'block';	
 	getSettings();
 	if(inviteBox.checked) sendMail();
-	setTimeout(function(){ makeGreeting()}, 30);									//fill Main box with a special greeting
+	setTimeout(function(){ makeGreeting(isNewUser)}, 30);									//fill Main box with a special greeting
 },30);
 }
 
 //makes a special locked greeting for a new user
-function makeGreeting(){
+function makeGreeting(isNewUser){
 	var Lock = lockDisplay();
-	mainBox.innerHTML = "<div>Congratulations! You have unlocked your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can lock messages and files that only you can unlock:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b>.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can lock items that they will be able to unlock.</div><div><br></div><div>Try locking this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Lock/Unlock</b></div></div>";
-	Encrypt_List(['myself']);	
-	mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can lock messages that only you can unlock. You will need <i>their</i> Locks in order to lock messages for them.</div><div><br></div><div>Locked messages look like the gibberish below this line. Go ahead and unlock it by clicking the <b>Lock/Unlock</b> button.</div><div><br></div>" + mainBox.innerHTML
+	if(isNewUser){
+		mainBox.innerHTML = "<div>Congratulations! You have unlocked your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can lock messages and files that only you can unlock:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b>.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can lock items that they will be able to unlock. If someone invited you, that person should be already.</div><div><br></div><div>Try locking this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Lock/Unlock</b></div></div><div><br></div><div>You won't be able to unlock this back if you select someone else's name before you click <b>Lock/Unlock</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
+		Encrypt_List(['myself']);
+		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can lock messages that only you can unlock. You will need <i>their</i> Locks in order to lock messages for them.</div><div><br></div><div>Locked messages look like the gibberish below this line. Go ahead and unlock it by clicking the <b>Lock/Unlock</b> button.</div><div><br></div>" + mainBox.innerHTML;
+		mainMsg.innerHTML = "PassLok Privacy"
+	}
 }
 
 //checks that the Key is the same as before, resumes operation
@@ -298,12 +310,23 @@ function acceptKey(){
 setTimeout(function(){									//execute after a delay so the key entry dialog can go away
 	if(locDir['myself']){
 		if(!fullAccess){									//OK so far, now check that the Key is good; at the same time populate email and generate stretched Keys
-			locDir['myself'][2] = 'guest mode';
+			locDir['myself'][3] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
 			mainMsg.innerHTML = 'You have limited access to functions<br>For full access, reload and enter the Key'
 		}
 		checkKey(key);
 		getSettings();
+		
+		var referrer = decodeURIComponent(window.location.hash.slice(1)).split('&');	//check for Lock on the URL, offer to save
+		if (referrer.length > 1){
+			var friendsName = referrer[0].replace(/_/g,' ');
+			if(referrer[1].length == 43) var reply = prompt('Looks like you received a link containing a Lock from someone whose user name is in the box below. Do you want to add it to your directory? If you wish to use a different name for the Lock, you can change it.',friendsName);
+			if(reply){
+				lockNameBox.value = reply;
+				lockBox.value = referrer[1];
+				addLock()
+			}
+		}
 			
 		if(ChromeSyncOn && chromeSyncMode.checked){
 			syncChromeLock('myself',JSON.stringify(locDir['myself']))
@@ -398,7 +421,7 @@ function getSettings(){
 		lockNames = Object.keys(locDir);												//array for finding lock names. Global variable	
 		if(locDir['myself']){															//initialize permanent settings
 			if(!firstInit) return;														//skip the rest if it's not the first time
-			if(locDir['myself'][2] == 'guest mode'){
+			if(locDir['myself'][3] == 'guest mode'){
 				setTimeout(function(){				//add delay so messages are seen and recrypt doesn't get in the way
 					if(fullAccess){
 						var reply = confirm("Last user did not enter the right Key. Would you like to re-encrypt the local directory?");
@@ -412,7 +435,7 @@ function getSettings(){
 						mainMsg.innerHTML = 'Last session was also in Guest mode'
 					}
 				}, 500);			
-				locDir['myself'][2] = 'full access';
+				locDir['myself'][3] = 'full access';
 				localStorage[userName] = JSON.stringify(locDir);
 			}
 			code2checkbox();										//set checkboxes
