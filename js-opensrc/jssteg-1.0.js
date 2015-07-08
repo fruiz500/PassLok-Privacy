@@ -1,4 +1,4 @@
-/**
+﻿/**
  * jsSteg Javascript Library v1.0
  * https://github.com/owencm/js-steg
  * Copyright 2014, Owen Campbell-Moore and other contributors
