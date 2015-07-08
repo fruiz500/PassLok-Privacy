@@ -1,5 +1,4 @@
-﻿/*
-
+/*
   Based on Basic Blocking JPEG Encoder v 0.9a, ported and optimised by 
   Andreas Ritter (www.bytestrom.eu, 11/2009).
 
@@ -768,5 +767,5 @@ function JPEGEncoder() {
 	}
 	
 	init();
-	
+
 };
