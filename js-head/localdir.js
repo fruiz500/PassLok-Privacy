@@ -39,13 +39,13 @@ function addLock(){
 			lockNames = Object.keys(locDir);
 			window.setTimeout(function(){											//this needs to be on a timer for iOS
 				if (ran) {
-					lockMsg.innerHTML = '<span style="color:green">Random Key stored to local directory with name </span>' + name
+					lockMsg.innerHTML = '<span style="color:cyan">Random Key stored to local directory with name </span>' + name
 				} else if(striptags(lock).length == 43 || striptags(lock).length == 50){
-					lockMsg.innerHTML = '<span style="color:green">Lock saved to local directory with name </span>' + name
+					lockMsg.innerHTML = '<span style="color:cyan">Lock saved to local directory with name </span>' + name
 				} else if(isList){
-					lockMsg.innerHTML = '<span style="color:green">List saved to local directory with name </span>' + name
+					lockMsg.innerHTML = '<span style="color:cyan">List saved to local directory with name </span>' + name
 				} else {
-					lockMsg.innerHTML = '<span style="color:green">Item saved to local directory with name </span>' + name
+					lockMsg.innerHTML = '<span style="color:cyan">Item saved to local directory with name </span>' + name
 				};
 			}, 100);
 			fillList();
@@ -383,7 +383,7 @@ function moveLockDB(){
 	}else{
 		mainBox.innerHTML = triple('PL22dir=' + datacrypt + '=PL22dir');
 	}
-	optionMsg.innerHTML = '<span style="color:green">Database in Main tab</span>';
+	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
 	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Lock/Unlock';
 
 	//now check that the user really wants to delete the database
@@ -444,7 +444,7 @@ function moveMyself(){
 	}else{
 		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
 	}
-	optionMsg.innerHTML = '<span style="color:green">Backed-up settings on Main tab</span>';
+	optionMsg.innerHTML = '<span style="color:cyan">Backed-up settings on Main tab</span>';
 	mainMsg.innerHTML = msg;
 	
 	//now check that the user really wants to delete the database
@@ -564,7 +564,6 @@ function changeKey(){
 	var newkey = newKey.value.trim(),
 		newkey2 = newKey2.value.trim();
 	if (newkey.trim() == "" || newkey2.trim() == ""){								//stop to display the entry form if new Key is empty
-		optionsTab.className = "tabContent hide";
 		keyChange.style.display = "block";
 		shadow.style.display = "block";
 		keyChangeMsg.innerHTML = 'Enter the new Key in both boxes';
@@ -592,7 +591,6 @@ function changeKey(){
 	newKey2.value = "";
 	keyChange.style.display = 'none';
 	shadow.style.display = 'none';
-	optionsTab.className = "tabContent";
 	pwd.value = newkey;									//refill Key box, too
 	
 	if(ChromeSyncOn && chromeSyncMode.checked){
@@ -602,9 +600,9 @@ function changeKey(){
 	}
 	
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
-	mainMsg.innerHTML = '<span style="color:green">The Key has changed</span>';
-	lockMsg.innerHTML = '<span style="color:green">The Key has changed</span>';
-	optionMsg.innerHTML = '<span style="color:green">The Key has changed</span>';
+	mainMsg.innerHTML = '<span style="color:cyan">The Key has changed</span>';
+	lockMsg.innerHTML = '<span style="color:cyan">The Key has changed</span>';
+	optionMsg.innerHTML = '<span style="color:cyan">The Key has changed</span>';
 	callKey = '';
 }
 

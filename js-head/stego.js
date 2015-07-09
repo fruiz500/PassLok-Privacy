@@ -45,10 +45,10 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 			mainMsg.innerHTML = 'Message encoded as words of varying length'
 		}else if(spaceMode.checked){
 			toSpaces(text);
-			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into spaces of this text'
+			mainMsg.innerHTML = 'Message encoded into spaces of this text'
 		}else{
 			toLetters(text);
-			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
+			mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
 		}
 	}else{												//no legal item found: try to decode
 		var doublespaces = text.match(/ &nbsp;/g);

@@ -127,7 +127,6 @@ function showEmail(){
 		throw('email change canceled')
 	}
 	if(myEmail) emailBox.value = myEmail;
-	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block';
 }
@@ -139,7 +138,6 @@ function showName(){
 		throw('name change canceled')
 	}
 	userNameBox.value = userName;
-	optionsTab.className = "tabContent hide";
 	shadow.style.display = 'block';
 	nameScr.style.display = 'block'	
 }
@@ -292,23 +290,16 @@ function cancelKey(){
 	}
 	allowCancelWfullAccess = false;
 	closeBox();
-	if(tabLinks['optionsTab'].className == 'selected'){
-		optionsTab.className = "tabContent";
-	}
 }
 function cancelName(){
 	closeBox();
-	optionsMsg.innerHTML = 'User name change canceled';
-	optionsTab.className = "tabContent";
+	optionMsg.innerHTML = 'User name change canceled';
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
-	optionsMsg.innerHTML = 'Email/token change canceled';
-	if(tabLinks['optionsTab'].className == 'selected'){
-		optionsTab.className = "tabContent";
-	}
+	optionMsg.innerHTML = 'Email/token change canceled';
 	callKey = ''
 }
 function cancelDecoyIn(){
@@ -333,8 +324,7 @@ function cancelChat(){
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
-	optionsMsg.innerHTML = 'Key change canceled';
-	optionsTab.className = "tabContent";
+	optionMsg.innerHTML = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
@@ -644,7 +634,6 @@ function email2any(){
 	key2any();															//close key dialog too, if it was open
 	if(tabLinks['optionsTab'].className == 'selected'){
 		optionMsg.innerHTML = '<span style="color:cyan">Email/token changed</span>';
-		optionsTab.className = "tabContent";
 	}
 	fillList();
 	callKey = ''
@@ -659,7 +648,6 @@ function name2any(){
 		namechangemsg.innerHTML = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
-	optionsTab.className = "tabContent";
 	closeBox();
 	optionMsg.innerHTML = 'The User Name has changed to: '+ userName;
 	callKey = ''

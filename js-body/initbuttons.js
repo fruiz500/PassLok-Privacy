@@ -16,8 +16,10 @@ window.onload = function() {
 	}
 	if(isAndroid){										//resize shift buttons on Android
 		if(isFile){
-			extra2mainBtn.style.padding = '8px';
-			main2extraBtn.style.padding = '8px';
+			extra2mainBtn.style.paddingtop = '7px';
+			extra2mainBtn.style.paddingbottom = '9px';
+			main2extraBtn.style.paddingtop = '7px';
+			main2extraBtn.style.paddingbottom = '9px';
 		}else{
 			extra2mainBtn.style.padding = '9px';
 			main2extraBtn.style.padding = '9px';
