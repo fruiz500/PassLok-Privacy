@@ -14,7 +14,8 @@
 		isiOS = (isiPhone || isiPad),
 		isAndroid = (isMobile && !isiOS),
 		isAndroidTablet = (navigator.userAgent.match(/mobile/i) == null && isAndroid),
-		isAndroidPhone= (navigator.userAgent.match(/mobile/i) != null && isAndroid);
+		isAndroidPhone = (navigator.userAgent.match(/mobile/i) != null && isAndroid),
+		isFile = (window.location.protocol == 'file:');
 	textheight();
 	chatResize();
 
@@ -56,7 +57,7 @@ function textheight(){
 		mainBox.style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
 		if(isMobile){
-			if(isAndroid && window.location.protocol != 'file'){
+			if(isAndroid && !isFile){
 				mainBox.style.height = fullheight - offsetheight + 80 + 'px';
 			}else{
 				mainBox.style.height = fullheight - offsetheight + 40 + 'px';

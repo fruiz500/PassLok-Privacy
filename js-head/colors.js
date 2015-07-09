@@ -90,7 +90,9 @@ function getCustomColors(){
 		while(hexCode.length < 24) hexCode = '0' + hexCode;
 		for(var i=0; i<4; i++){
 			bgColorStore[i] = hexCode.slice(i*6,(i+1)*6);
-			fgColorStore[i] = foregColor(bgColorStore[i])
+			bgColor[i] = bgColorStore[i];
+			fgColorStore[i] = foregColor(bgColorStore[i]);
+			fgColor[i] = fgColorStore[i]
 		}
 	}
 }
@@ -133,9 +135,9 @@ function updateColor(){
 
 //global variables containing hex screen colors. Default is Light. Indices: 0 = tabs, 1 = background, 2 = buttons, 3 = boxes
 var	fgColor = ['202128','000000','666666','000000'],
-	fgColorStore = fgColor,
+	fgColorStore = ['202128','000000','666666','000000'],
 	bgColor = ['c6d5c6','ffffff','e6e6e6','fffff5'],
-	bgColorStore = bgColor;
+	bgColorStore = ['c6d5c6','ffffff','e6e6e6','fffff5'];
 		
 //gets color from picker and puts it into global variables 
 function getColor(i,isPicker){
@@ -340,6 +342,7 @@ function selectStyle(){
 		updateBtnColor(false);
 		bgColor[3] = bgColorStore[3];
 		fgColor[3] = fgColorStore[3];
+		updateBoxColor(false);
 		initPicker()
 	}
 	checkboxStore();

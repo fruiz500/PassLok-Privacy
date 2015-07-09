@@ -73,6 +73,10 @@ function charsLeft(){
 
 //formats results depending on tags present and sends to default email
 function sendMail() {
+	if(isiOS && isFile){
+		mainMsg.innerHTML = 'Email function not available on iOS native app';
+		return
+	}
 	var cipherstr = mainBox.innerHTML;
 	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];
 	var type = cipherstr.slice(0,1);

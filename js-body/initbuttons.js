@@ -15,7 +15,7 @@ window.onload = function() {
 		helpSpace.style.display = 'block'
 	}
 	if(isAndroid){										//resize shift buttons on Android
-		if(window.location.protocol == 'file:'){
+		if(isFile){
 			extra2mainBtn.style.padding = '8px';
 			main2extraBtn.style.padding = '8px';
 		}else{
