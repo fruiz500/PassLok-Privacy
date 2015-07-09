@@ -133,6 +133,8 @@ window.onload = function() {
 	blueStyle.addEventListener('click', selectStyle);
 	
 	customStyle.addEventListener('click', selectStyle);
+		
+	colorPicker.addEventListener('change',updateColor);
 	
 	rndColors.addEventListener('click', randomColors);
 	
