@@ -649,7 +649,7 @@ function name2any(){
 		throw('Name change canceled')
 	}
 	closeBox();
-	optionMsg.innerHTML = 'The User Name has changed to: '+ userName;
+	optionMsg.innerHTML = '<span style="color:cyan">The User Name has changed to: </span>'+ userName;
 	callKey = ''
 }
 
