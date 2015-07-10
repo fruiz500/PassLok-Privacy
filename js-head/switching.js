@@ -410,7 +410,7 @@ function newKey2up(evt){
 			}
 		}else{
 			if(newkey2 == newkey){
-				keyChangeMsg.innerHTML = "<span style='color:green'>Keys match!</span>"
+				keyChangeMsg.innerHTML = "<span style='color:cyan'>Keys match!</span>"
 			} else {
 				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
 			}
