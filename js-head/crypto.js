@@ -426,9 +426,7 @@ function keyDecrypt(cipherstr){
 		var	noncestr = cipherstr.slice(0,12),
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr)),
 			cipherstr = cipherstr.slice(12);
-		try{
-			return decodeURI(PLdecrypt(cipherstr,nonce24,KeyDir).trim())
-		}catch(err){failedDecrypt()}
+			return decodeURI(PLdecrypt(cipherstr,nonce24,KeyDir,'key').trim())
 	}else{
 		return cipherstr
 	}
@@ -572,11 +570,9 @@ function Decrypt_single(){
 		}else{
 			var sharedKey = nacl.util.decodeBase64(keystr)				//actually the sender's Lock, likely from as invitation email
 		}
-		try{
-			var plain = PLdecrypt(cipherstr,nonce24,sharedKey);
-			if(!plain) failedDecrypt();
-			mainBox.innerHTML = decodeURI(plain).trim();
-		}catch(err){failedDecrypt()};
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'symmetric');
+		if(!plain) failedDecrypt('symmetric');
+		mainBox.innerHTML = decodeURI(plain).trim();
 		mainMsg.innerHTML = 'Unlock successful';
 	}
 	
@@ -599,11 +595,9 @@ function Decrypt_single(){
 			noncestr = cipherstr.slice(0,12),
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr));
 		cipherstr = cipherstr.slice(12);
-		try{
-			var plain = PLdecrypt(cipherstr,nonce24,sharedKey);
-			if(!plain) failedDecrypt();
-			mainBox.innerHTML = decodeURI(plain).trim();
-		}catch(err){failedDecrypt()};
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'signed');
+		if(!plain) failedDecrypt('signed');
+		mainBox.innerHTML = decodeURI(plain).trim();
 		mainMsg.innerHTML = 'Unlock successful';
 	}
 
@@ -618,11 +612,9 @@ function Decrypt_single(){
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr)),
 			sharedKey = makeShared(pubdumstr,KeyDH);
 		cipherstr = cipherstr.slice(55);
-		try{
-			var plain = PLdecrypt(cipherstr,nonce24,sharedKey);
-			if(!plain) failedDecrypt();
-			mainBox.innerHTML = decodeURI(plain).trim();
-		}catch(err){failedDecrypt()};
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'anon');
+		if(!plain) failedDecrypt('anon');
+		mainBox.innerHTML = decodeURI(plain).trim();
 		mainMsg.innerHTML = 'Unlock successful';
 	}
 		
@@ -673,13 +665,13 @@ function Decrypt_single(){
 		if(type == '*' || type == '%'){												//PFS mode
 			if(lastKeyCipher){
 				if(Lock.length == 43){
-					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey));
+					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey),'read-once');
 				}else{
-					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey));
+					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey),'read-once');
 				}
 			}else{
 				var dualKey = getDualKey(name,Lock,noncestr);
-				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey);
+				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey,'read-once');
 			}
 			var	sharedKey = makeShared(newLock,lastKey);
 			
@@ -688,17 +680,17 @@ function Decrypt_single(){
 			var lastLockCipher = locDir[name][2];										//read-once mode uses last Key and last Lock
 			if(lastKeyCipher){
 				if(lastLockCipher){
-					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(keyDecrypt(lastLockCipher),lastKey));
+					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(keyDecrypt(lastLockCipher),lastKey),'read-once');
 				}else{
 					if(Lock.length == 43){
-						var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey));
+						var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey),'read-once');
 					}else{
-						var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey));
+						var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(makePubStr(wiseHash(Lock,noncestr)),lastKey),'read-once');
 					}
 				}
 			}else{
 				var dualKey = getDualKey(name,Lock,noncestr);
-				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey);
+				var newLock = PLdecrypt(newLockCipher,nonce24,dualKey,'read-once');
 			}
 			if (lastLockCipher) {												//if stored dummy Lock exists, decrypt it first
 				var lastLock = keyDecrypt(lastLockCipher)
@@ -707,11 +699,9 @@ function Decrypt_single(){
 			}
 			var	sharedKey = makeShared(lastLock,lastKey);
 		}
-		try{
-			var plain = PLdecrypt(cipherstr,nonce24,sharedKey);
-			if(!plain) failedDecrypt();
-			mainBox.innerHTML = decodeURI(plain).trim();
-		}catch(err){failedDecrypt()}
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'read-once');
+		if(!plain) failedDecrypt('read-once');
+		mainBox.innerHTML = decodeURI(plain).trim();
 		
 		if(type == '$'){
 			mainMsg.innerHTML = 'Unlock successful. This message cannot be unlocked again'
@@ -875,7 +865,6 @@ function Decrypt_List(cipherArray){
 	}
 	
 	//got the encrypted message key so now decrypt it, and finally the main message. The process for PFS and read-once modes is more involved.
-try{
 	if (type != '$'){					//anonymous and signed modes
 		var msgKey = nacl.secretbox.open(nacl.util.decodeBase64(msgKeycipher),nonce24,sharedKey);
 		if(!msgKey) failedDecrypt();
@@ -890,7 +879,7 @@ try{
 		var newLockCipher = msgKeycipher.slice(0,79),
 			typeChar = msgKeycipher.slice(-1);
 		msgKeycipher = msgKeycipher.slice(79,-1);
-		var newLock = PLdecrypt(newLockCipher,nonce24,idKey);
+		var newLock = PLdecrypt(newLockCipher,nonce24,idKey,'read-once');
 
 		if(typeChar == 'r'){											//if reset type, delete ephemeral data first
 			locDir[name][1] = locDir[name][2] = null;		
@@ -912,7 +901,7 @@ try{
 			var	sharedKey = makeShared(lastLock,lastKey);
 		}
 		var msgKey = nacl.secretbox.open(nacl.util.decodeBase64(msgKeycipher),nonce24,sharedKey);
-		if(!msgKey) failedDecrypt();
+		if(!msgKey) failedDecrypt('read-once');
 		locDir[name][2] = keyEncrypt(newLock);										//store the new dummy Lock (final storage at end)
 		locDir[name][3] = 'lock';
 
@@ -923,8 +912,6 @@ try{
 	
 	//final decryption for the main message
 	var plainstr = PLdecrypt(cipher,nonce24,msgKey);
-	
-}catch(err){failedDecrypt()}
 
 	if(XSSfilter(plainstr).slice(0,9) != 'filename:') plainstr = LZString.decompressFromBase64(plainstr);		//encoded files are not compressed
 	mainBox.innerHTML = plainstr;
@@ -956,10 +943,8 @@ function decoyDecrypt(cipher,nonce24,dummylock){
 	}else{																				//symmetric mode
 		var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24));
 	}
-	try{
-		var plain = PLdecrypt(cipher,nonce24,sharedKey);
-		mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(plain) + '</span>'
-	}catch(err){failedDecrypt()}
+	var plain = PLdecrypt(cipher,nonce24,sharedKey,'decoy');
+	mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(plain) + '</span>'
 };
 
 //function that starts it all when the Seal/Unseal button is pushed

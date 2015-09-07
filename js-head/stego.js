@@ -38,20 +38,16 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 	if(legalItem(text)){										//legal item found: encode it
 		if(sentenceMode.checked){
 			toPhrases(text);
-			if(!isMobile) selectMain();
-			mainMsg.innerHTML = 'Message encoded as sentences of varying length'
+			if(!isMobile) selectMain()
 		}else if(wordMode.checked){
 			toWords(text);
-			if(!isMobile) selectMain();
-			mainMsg.innerHTML = 'Message encoded as words of varying length'
+			if(!isMobile) selectMain()
 		}else if(spaceMode.checked){
 			toSpaces(text);
-			if(!isMobile) selectMain();
-			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into spaces of this text'
+			if(!isMobile) selectMain()
 		}else{
 			toLetters(text);
-			if(!isMobile) selectMain();
-			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
+			if(!isMobile) selectMain()
 		}
 	}else{												//no legal item found: try to decode
 		var doublespaces = text.match(/ &nbsp;/g);
@@ -115,6 +111,7 @@ function toWords(text){
 	out = out.slice(0,-1) + '.';
 	mainBox.innerHTML = out.trim();
 	randomBreaks(10);
+	mainMsg.innerHTML = 'Message encoded as words of varying length'
 }
 
 //words decoder. Takes groups of 2 words. Their lengths is the index of each characters, in base9
@@ -272,7 +269,8 @@ function toPhrases(text){
 	out = out.replace(/[.!?][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[,;:][\s\n][A-Z]/g,function(a){return a.toLowerCase();}).trim();  //capitalization
 	out = out.charAt(0).toUpperCase() + out.slice(1);
 	mainBox.innerHTML = out.trim();
-	randomBreaks(40)
+	randomBreaks(40);
+	mainMsg.innerHTML = 'Message encoded as sentences of varying length'
 }
 
 //decodes text encoded as sentences of varying length
@@ -408,6 +406,7 @@ function toLetters(text){
 		i++;
 	}
 	mainBox.innerHTML = finalString;
+	mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'
 }
 
 //gets the original text from Letters encoded text

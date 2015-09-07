@@ -578,11 +578,11 @@ function PLencrypt(plainstr,nonce24,sharedKey){
 	return nacl.util.encodeBase64(cipher).replace(/=+$/,'')
 }
 
-//decrypt string with a shared Key
-function PLdecrypt(cipherstr,nonce24,sharedKey){
+//decrypt string with a shared Key. Var 'label' is to display messages
+function PLdecrypt(cipherstr,nonce24,sharedKey,label){
 	var cipher = nacl.util.decodeBase64(cipherstr),
 		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
-		if(!plain) failedDecrypt();
+	if(!plain) failedDecrypt(label);
 	return nacl.util.encodeUTF8(plain)
 }
 
@@ -664,7 +664,7 @@ function randomToken(){
 }
 
 //takes appropriate UI action if decryption fails
-function failedDecrypt(){
+function failedDecrypt(label){
 	if(lockBox.value.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){				
 		any2key();					//this displays the Key entry dialog
 		keyMsg.innerHTML = "<span style='color:orange'>This Key won't unlock the item </span>" + nameBeingUnlocked;
@@ -677,8 +677,10 @@ function failedDecrypt(){
 		keyScr.style.display = 'block';
 		keyMsg.innerHTML = "<span style='color:orange'>Please write the last Key you used</span><br>You can change the Key in Options";
 		checkingKey = false;
+	}else if (label == 'read-once'){
+		mainMsg.innerHTML = 'Read-once unlock has Failed<br>You may have to reset the exchange with this sender';
 	}else{
-		mainMsg.innerHTML = '<span>Unlock has Failed</span>';
+		mainMsg.innerHTML = 'Unlock has Failed';
 	}
 	throw('decryption failed')
 }
