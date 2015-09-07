@@ -1,10 +1,8 @@
 ﻿//this is the part of the javascript code that must be within the body
-
-//  Clear out "sorry, no JavaScript" warning and display the type of source
-	showGreeting();
 	
 //detect browser and device
-	var	isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1,
+	var isMobile = (typeof window.orientation != 'undefined'),
+		isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1,
 		isFirefox = typeof InstallTrigger !== 'undefined',   						// Firefox 1.0+
 		isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,       // At least Safari 3+: "[object HTMLElementConstructor]"
 		isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0,								// Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
@@ -19,6 +17,9 @@
 	textheight();
 	chatResize();
 
+//  Clear out "sorry, no JavaScript" warning and display the type of source
+	showGreeting();
+	
 //set global variable indicating if there is a Chrome sync data area. Works for Chrome apps and extension
 var ChromeSyncOn = false;
 if(isChrome){
@@ -37,7 +38,7 @@ function showGreeting(){
 	if(protocol == 'file:'){
 		keyMsg.innerHTML = msgStart + 'running from a saved file' + msgEnd
 	}else if(protocol == 'https:'){
-		keyMsg.innerHTML = msgStart + 'running from a secure server' + msgEnd
+		keyMsg.innerHTML = msgStart + 'downloaded from a secure server' + msgEnd
 	}else if(protocol == 'chrome-extension:'){
 		keyMsg.innerHTML = msgStart + 'running as a Chrome app' + msgEnd
 	}else{
@@ -52,15 +53,15 @@ function textheight(){
 		offsetheight = 400,
 		toolbarheight = 48;
 	if(isiPhone) offsetheight = offsetheight - 70;
-	lockBox.style.height = fullheight - offsetheight + 'px';
+	lockBox.style.height = (fullheight - offsetheight)*0.8 + 'px';
 	if(niceEditor){
 		mainBox.style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{
 		if(isMobile){
 			if(isAndroid && !isFile){
-				mainBox.style.height = fullheight - offsetheight + 80 + 'px';
-			}else{
 				mainBox.style.height = fullheight - offsetheight + 40 + 'px';
+			}else{
+				mainBox.style.height = fullheight - offsetheight + 'px';
 			}
 		}else{
 			mainBox.style.height = fullheight - offsetheight + 'px';
@@ -111,7 +112,7 @@ function saveURLAsFile(){
 		downloadLink.innerHTML = "Download File";
 		content = window.URL.createObjectURL(textFileAsBlob);
 	}
-	if (window.webkitURL != null)
+	if (window.URL != null)
 	{
 		// Chrome allows the link to be clicked
 		// without actually adding it to the DOM.

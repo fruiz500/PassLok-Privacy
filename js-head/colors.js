@@ -303,7 +303,7 @@ function selectStyle(){
 		fgColor[0] = 'ffffff';
 		bgColor[1] = '99cc99';
 		fgColor[1] = '000000';
-		bgColor[2] = 'cccc99';
+		bgColor[2] = 'ddddaa';
 		fgColor[2] = '595959';
 		bgColor[3] = 'ffffcc';
 		fgColor[3] = '000000';
@@ -317,7 +317,7 @@ function selectStyle(){
 		fgColor[0] = 'efefef';
 		bgColor[1] = '0099cc';
 		fgColor[1] = 'ffffff';
-		bgColor[2] = '003399';
+		bgColor[2] = '0044cc';
 		fgColor[2] = 'cacaca';
 		bgColor[3] = 'd7ffd7';
 		fgColor[3] = '000000';

@@ -28,7 +28,6 @@ function uniq(a) {
 
 //This function checks for legal PassLok output and calls the currently selected encoder. Otherwise it calls the decoder
 function textStego(){
-	mainMsg.innerHTML = "";
 	var text = XSSfilter(mainBox.innerHTML).replace(/-/g,'');
 	if(text == ""){
 		mainMsg.innerHTML = '<span style="color:orange">No text in the box</span>';
@@ -39,16 +38,20 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 	if(legalItem(text)){										//legal item found: encode it
 		if(sentenceMode.checked){
 			toPhrases(text);
+			if(!isMobile) selectMain();
 			mainMsg.innerHTML = 'Message encoded as sentences of varying length'
 		}else if(wordMode.checked){
 			toWords(text);
+			if(!isMobile) selectMain();
 			mainMsg.innerHTML = 'Message encoded as words of varying length'
 		}else if(spaceMode.checked){
 			toSpaces(text);
-			mainMsg.innerHTML = 'Message encoded into spaces of this text'
+			if(!isMobile) selectMain();
+			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into spaces of this text'
 		}else{
 			toLetters(text);
-			mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
+			if(!isMobile) selectMain();
+			if(mainMsg.innerHTML=="") mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
 		}
 	}else{												//no legal item found: try to decode
 		var doublespaces = text.match(/ &nbsp;/g);

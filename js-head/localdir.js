@@ -1,4 +1,21 @@
-﻿//get name and Lock from form and merge them with the locDir object, then store
+﻿//detect if Lock pasted in Lock box
+function pasteLock(){
+	lockMsg.innerHTML = '';
+	var text = lockBox.value;
+	var	strings = text.split(/\r?\n/);
+	var lastline = strings[strings.length-1];
+	if (lastline.slice(0,4) != 'http'){
+		var lock = lastline;
+	}else{
+		var lock = strings[strings.length-2]									//in case there is a video URL as last line
+	}
+	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
+
+	suspendFindLock = true;															//allow writing a name without searching
+	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
+}
+
+//get name and Lock from form and merge them with the locDir object, then store
 function addLock(){
 	if(!fullAccess){
 		lockMsg.innerHTML = 'Save not available in Guest mode<br>Please restart PassLok';
@@ -25,7 +42,7 @@ function addLock(){
 	}
 	if (name !=''){
 		var locklength = striptags(lockarray[0]).length;
-		if((locklength == 43 || locklength == 50) && !encryptLocksMode.checked && lockarray.length == 1){
+		if((locklength == 43 || locklength == 50) && lockarray.length == 1){
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
 		}else{
 			if (lock.length > 500) lock = LZString.compressToBase64(lock);			//cover texts are compressed
@@ -67,10 +84,8 @@ function removeLock(){
 		lockMsg.innerHTML = 'Delete not available in Guest mode<br>Please restart PassLok';
 		throw('lock removal canceled')
 	}
-	if (learnMode.checked){
-		var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
-		if(!reply) throw("locDir remove canceled");
-	}
+	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
+	if(!reply) throw("locDir remove canceled");
 	var name = lockMsg.innerHTML;
 	if (locDir[name] == null){
 		lockMsg.innerHTML = 'To remove an item, its name must be displayed <strong>here</strong>';
@@ -112,10 +127,9 @@ function resetPFS(){
 	}
 	
 //now the real stuff
-	if (learnMode.checked){
-		var reply = confirm("The data needed to maintain a PFS conversation with this sender/recipient will be deleted, so the ongoing conversation cannot be continued. This is irreversible. Cancel if this is not what you want.");
-		if(!reply) throw("myself reset canceled");
-	}
+	var reply = confirm("The data needed to maintain a Read-once conversation with this person will be deleted. This is irreversible. Cancel if this is not what you want.");
+	if(!reply) throw("reset canceled");
+
 	var name = lockMsg.innerHTML;
 	if (locDir[name] == null){
 		lockMsg.innerHTML = 'The item to be reset must be displayed first';
@@ -129,14 +143,15 @@ function resetPFS(){
 		lockMsg.innerHTML = 'Nothing to reset';
 		throw('no PFS data')
 	}
-	locDir[name].splice(1);
+	locDir[name][1] = locDir[name][2] = null;
+	locDir[name][3] = 'reset';
 	localStorage[userName] = JSON.stringify(locDir);
 
 		if(ChromeSyncOn && chromeSyncMode.checked){							//if Chrome sync is available, change in sync storage
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 
-	lockMsg.innerHTML = 'PFS data for ' + XSSfilter(name) + ' deleted';
+	lockMsg.innerHTML = 'PFS data for ' + XSSfilter(name) + " deleted. The next message to this user won't have forward secrecy.";
 	suspendFindLock = false
 }
 
@@ -256,8 +271,7 @@ function showLockDB(){
 		if(!reply) throw("locDir show canceled");
 	}
 	if(localStorage[userName] != "{}"){
-		var alphalocDir = locDir;
-		lockBox.value = JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
+		lockBox.value = JSON.stringify(locDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
 		lockMsg.innerHTML = 'These are the items stored under the current user name';
 	}else{
 		lockMsg.innerHTML = '<span style="color:orange">There are no stored items</span>';
@@ -378,13 +392,9 @@ function moveLockDB(){
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
 	var datacrypt = keyEncrypt(lockBox.value.trim());
-	if(ReedSolMode.checked){
-		mainBox.innerHTML = triple('PL22dir=' + datacrypt + '=' + calcRScode(datacrypt) + '=PL22dir');
-	}else{
-		mainBox.innerHTML = triple('PL22dir=' + datacrypt + '=PL22dir');
-	}
+	mainBox.innerHTML = 'PL22dir=' + datacrypt + '=PL22dir';
 	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
-	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Lock/Unlock';
+	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Unlock';
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
@@ -406,26 +416,6 @@ function moveLockDB(){
 	callKey = '';
 }
 
-//deletes extra data from all entries
-function resetLockDB(){
-	if(!fullAccess){
-		lockMsg.innerHTML = 'Reset not allowed in Guest mode<br>Please restart PassLok';
-		throw('DB reset canceled')
-	}
-	var reply = confirm("If you click OK, the extra data for every item will be erased. This cannot be undone.");
-	if (!reply) throw("locDir reset canceled");	
-	for(var name in locDir){
-		if(name !='myself') locDir[name].splice(1);
-		
-		if(ChromeSyncOn && chromeSyncMode.checked){							//if Chrome sync is available, add to sync storage
-			syncChromeLock(name,JSON.stringify(locDir[name]))
-		}
-			
-	}
-	localStorage[userName] = JSON.stringify(locDir);
-	suspendFindLock = false;
-}
-
 //makes encrypted backup of the 'myself' entry only, then if allowed clears it, then stores
 function moveMyself(){
 	callKey = 'movemyself';
@@ -435,12 +425,8 @@ function moveMyself(){
 	if(fullAccess){
 		var key = readKey();
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());
-		if(ReedSolMode.checked){
-			mainBox.innerHTML = triple('PL22bak=' + datacrypt+ "=" + calcRScode(datacrypt) + '=PL22bak');
-		}else{
-			mainBox.innerHTML = triple('PL22bak=' + datacrypt+ '=PL22bak');
-		}
-		var msg = 'The item in the box contains your settings<br>To restore them, click Lock/Unlock';
+		mainBox.innerHTML = 'PL22bak=' + datacrypt+ '=PL22bak';
+		var msg = 'The item in the box contains your settings<br>To restore them, click Unlock';
 	}else{
 		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
 	}
@@ -691,13 +677,19 @@ function fillBox(){
 //empty the selection box on Main tab
 function resetList(){
 	for (var i = 0; i < lockList.options.length; i++) {
+		if(lockList.options[i].selected) lockBox.value = '';
     	lockList.options[i].selected = false
   	}
 	if(extraButtonsTop.style.display == 'block'){
 		setTimeout(function(){mainMsg.innerHTML = 'Cover text not changed';},0);
 	}else{
-		lockBox.value = '';
-		setTimeout(function(){mainMsg.innerHTML = 'No Locks selected';},0);
+		setTimeout(function(){
+			if(lockBox.value){
+				mainMsg.innerHTML = 'Click <strong>Edit</strong> to see loaded Keys'
+			}else{
+				mainMsg.innerHTML = 'No Locks selected'
+			};
+		},0);
 	}
 }
 
@@ -709,7 +701,7 @@ function fillNameList(){
 			//this if is because of a bug in Firefox
 		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem'){
 			//and this, because of a bug in Safari	
-			if(!name.match('com.apple.WebInspector')){
+			if(!name.match('com.apple.WebInspector') && name != 'locDir'){
 				list = list.concat(name)
 			}
 		}

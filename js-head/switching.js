@@ -5,7 +5,7 @@ function showsec(){
 	}else{
 		pwd.type="PASSWORD";
 	}
-};
+}
 
 function showDecoyIn(){
 	if(showDecoyInCheck.checked){
@@ -13,7 +13,7 @@ function showDecoyIn(){
 	}else{
 		decoyPwdIn.type="PASSWORD";
 	}
-};
+}
 
 function showDecoyOut(){
 	if(showDecoyOutCheck.checked){
@@ -21,7 +21,7 @@ function showDecoyOut(){
 	}else{
 		decoyPwdOut.type="PASSWORD";
 	}
-};
+}
 
 function showIntro(){
 	if(showIntroKey.checked){
@@ -29,7 +29,7 @@ function showIntro(){
 	}else{
 		pwdIntro.type="PASSWORD";
 	}
-};
+}
 
 function showNewKey(){
 	if(showNewKeyCheck.checked){
@@ -39,10 +39,6 @@ function showNewKey(){
 		newKey.type="PASSWORD";
 		newKey2.type="PASSWORD";
 	}
-};
-
-function box2cover(){
-	newcover(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,' ').trim()))
 }
 
 function chat2main(){
@@ -60,7 +56,6 @@ function resetChat(){
 function clearMain(){
 	mainBox.innerHTML = '';
 	mainMsg.innerHTML = '';
-	detectLock = true;
 }
 function clearLocks(){
 	lockBox.value='';
@@ -97,6 +92,7 @@ function selectMain(){
 //writes five random dictionary words in the intro Key box
 function suggestIntro(){
 	var output = '';
+	var wordlist = wordListExp.toString().slice(1,-2).split('|')
 	for(var i = 1; i <=5 ; i++){
 		var rand = wordlist[Math.floor(Math.random()*wordlist.length)];
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
@@ -206,9 +202,6 @@ function code2checkbox(){
 	if(!BasicButtons){												//retrieve Advanced interface
 		openClose("basicBtnsTop");
 		openClose("mainBtnsTop");
-		openClose("basicLockBtnsTop");
-		openClose("advLockModes");
-		openClose("lockBtnsTop");
 		openClose("lockBtnsBottom");
 		openClose('advancedModes');
 		openClose('advancedBtns');
@@ -289,17 +282,17 @@ function cancelKey(){
 		}
 	}
 	allowCancelWfullAccess = false;
-	closeBox();
+	closeBox()
 }
 function cancelName(){
 	closeBox();
-	optionMsg.innerHTML = 'User name change canceled';
+	optionsMsg.innerHTML = 'User name change canceled';
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
-	optionMsg.innerHTML = 'Email/token change canceled';
+	optionsMsg.innerHTML = 'Email/token change canceled';
 	callKey = ''
 }
 function cancelDecoyIn(){
@@ -324,7 +317,7 @@ function cancelChat(){
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
-	optionMsg.innerHTML = 'Key change canceled';
+	optionsMsg.innerHTML = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
@@ -464,10 +457,7 @@ function main2extra(){
 function basic2adv(){
 	mainBtnsTop.style.display = 'block';
 	basicBtnsTop.style.display = 'none'
-	lockBtnsTop.style.display = 'block';
-	basicLockBtnsTop.style.display = 'none';
 	lockBtnsBottom.style.display = 'block';
-	advLockModes.style.display = 'block';
 	advancedModes.style.display = 'block';
 	advancedBtns.style.display = 'block';
 	advancedHelp.style.display = 'block';
@@ -483,16 +473,12 @@ function adv2basic(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
 	basicBtnsTop.style.display = 'block'
-	lockBtnsTop.style.display = 'none';
-	basicLockBtnsTop.style.display = 'block';
 	lockBtnsBottom.style.display = 'none';
-	advLockModes.style.display = 'none';
 	advancedModes.style.display = 'none';
 	advancedBtns.style.display = 'none';
 	advancedHelp.style.display = 'none';
 	basicMode.checked = true;
 	advancedMode.checked = false;
-	anonMode.checked = true;
 
 	BasicButtons = true;	
 	checkboxStore();
@@ -502,8 +488,6 @@ function adv2basic(){
 //opens local directory for input if something seems to be missing
 function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
-	openClose('lockScr');
-	openClose('shadow');
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
@@ -511,6 +495,9 @@ function main2lock(){
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newcover(string);
 	}
+	resetList();
+	openClose('lockScr');
+	openClose('shadow');
 }
 
 //open image screen
@@ -682,6 +669,22 @@ function openClose(theID) {
  else { document.getElementById(theID).style.display = "block" } };
 // end of hide trick
 
+//as above, but closes everything else in help
+function openHelp(theID){
+	var helpItems = document.getElementsByClassName('texter');
+	for(var i=0; i < helpItems.length; i++){
+		helpItems[i].style.display = 'none'
+	}
+	document.getElementById(theID).style.display = "block";
+	if(isMobile){									//scroll to the item
+		location.href = '#';
+		location.href = '#a' + theID;
+		if(!isiOS){
+			if(helpTop.style.display == 'block') helpTop.style.display = 'none'
+		}
+	}
+}
+
 <!--variables and functions for making tabs, by Matt Doyle 2009-->
     var tabLinks = new Array();
     var contentDivs = new Array();
@@ -734,6 +737,10 @@ function openClose(theID) {
         }
       }
 	  if(this.hash == '#mainTab') fillList();
+	  if(this.hash != '#optionsTab') customColors.style.display = 'none';
+	  if(this.hash != '#helpTab' && !isiOS){
+			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
+	  }
 	  storeColors();
 
       // Stop the browser following the link
@@ -805,10 +812,14 @@ var niceEditor = false;
 function toggleRichText() {
 	if(niceEditor) {
 		toolBar1.style.display = 'none';
+		mainBox.style.borderTopLeftRadius = '15px';
+		mainBox.style.borderTopRightRadius = '15px';
 		niceEditBtn.innerHTML = 'Rich';
 		niceEditor = false
 	} else {
 		toolBar1.style.display = 'block';
+		mainBox.style.borderTopLeftRadius = '0';
+		mainBox.style.borderTopRightRadius = '0';
 		niceEditBtn.innerHTML = 'Plain';
 		niceEditor = true
 	}

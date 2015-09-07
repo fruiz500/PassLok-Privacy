@@ -1,5 +1,4 @@
 ﻿//detect mobile and store in global Boolean variable. Learn mode detected by setLearn() below. Detect Basic mode. Who calls Key.
-var isMobile = (typeof window.orientation != 'undefined');
 var callKey = '';
 var BasicButtons = true;
 var fullAccess = true;
@@ -8,10 +7,6 @@ var allowCancelWfullAccess = false;
 //global variables used for key box expiration
 var keytimer = 0;
 var keytime = new Date().getTime();
-
-//Regex for searching
-var searchExp = new RegExp(wordlist.join("|"),"g");
-var searchBlackExp = new RegExp(blacklist.join("|"),"g");
 
 //Alphabets for base conversion. Used in making and reading the ezLok format and some fixes to SJCL
 var BASE36 = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -37,7 +32,7 @@ function keyStrength(pwd,display) {
 		var msg = '<span style="color:cyan">Overkill  !!</span>';
 	}
 	
-	iter = Math.max(1,Math.min(20,Math.ceil(24 - entropy/5)));			//set the scrypt iteration exponent based on entropy: 1 for entropy >= 120, 20(max) for entropy <= 20
+	var iter = Math.max(1,Math.min(20,Math.ceil(24 - entropy/5)));			//set the scrypt iteration exponent based on entropy: 1 for entropy >= 120, 20(max) for entropy <= 20
 	
 	var seconds = time10/10000*Math.pow(2,iter-8);			//to tell the user how long it will take, in seconds
 	
@@ -94,7 +89,7 @@ function entropycalc(pwd){
 
 //start by finding words that might be on the blacklist (no credit)
 	var pwd = reduceVariants(pwd);
-	var wordsFound = pwd.match(searchBlackExp);							//array containing words found on the blacklist
+	var wordsFound = pwd.match(blackListExp);							//array containing words found on the blacklist
 	if(wordsFound){
 		for(var i = 0; i < wordsFound.length;i++){
 			pwd = pwd.replace(wordsFound[i],'');						//remove them from the string
@@ -102,7 +97,7 @@ function entropycalc(pwd){
 	}
 
 //now look for regular words on the wordlist
-	wordsFound = pwd.match(searchExp);									//array containing words found on the regular wordlist
+	wordsFound = pwd.match(wordListExp);									//array containing words found on the regular wordlist
 	if(wordsFound){
 		wordsFound = wordsFound.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});	//remove duplicates from the list
 		var foundLength = wordsFound.length;							//to give credit for words found we need to count how many
@@ -116,9 +111,9 @@ function entropycalc(pwd){
 	pwd = pwd.replace(/(.+?)\1+/g,'$1');								//no credit for repeated consecutive character groups
 
 	if(pwd != ''){
-		return (pwd.length*Math.log(Ncount) + foundLength*Math.log(wordlist.length + blacklist.length))/Math.LN2
+		return (pwd.length*Math.log(Ncount) + foundLength*Math.log(wordLength + blackLength))/Math.LN2
 	}else{
-		return (foundLength*Math.log(wordlist.length + blacklist.length))/Math.LN2
+		return (foundLength*Math.log(wordLength + blackLength))/Math.LN2
 	}
 }
 
@@ -199,7 +194,6 @@ function initUser(){
 
 	if (key.trim() == '' || userName.trim() == ''){
 		intromsg2.innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
-		intromsg2.innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
 		return
 	}
 	pwd.value = key;
@@ -230,7 +224,7 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 				locDir['myself'] = [];
 				locDir['myself'][0] = keyEncrypt(email);			//email/token is stored, encrypted by Key+userName
 				syncChromeLock('myself',locDir['myself'][0]);
-				setTimeout(function(){fillList();}, 500);		
+				setTimeout(function(){fillList();}, 500);
 			}
 			if(email) myEmail = email;
 			localStorage[userName] = JSON.stringify(locDir);
@@ -266,10 +260,11 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 function makeGreeting(isNewUser){
 	var Lock = lockDisplay();
 	if(isNewUser){
-		mainBox.innerHTML = "<div>Congratulations! You have unlocked your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can lock messages and files that only you can unlock:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b>.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can lock items that they will be able to unlock. If someone invited you, that person should be already.</div><div><br></div><div>Try locking this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Lock/Unlock</b></div></div><div><br></div><div>You won't be able to unlock this back if you select someone else's name before you click <b>Lock/Unlock</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
+		mainBox.innerHTML = "<div>Congratulations! You have unlocked your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can lock messages and files that only you can unlock:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b>.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can lock items that they will be able to unlock. If someone invited you, that person should be there already.</div><div><br></div><div>Try locking this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Lock</b></div></div><div><br></div><div>You won't be able to unlock this back if you select someone else's name before you click <b>Lock</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
 		Encrypt_List(['myself']);
-		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can lock messages that only you can unlock. You will need <i>their</i> Locks in order to lock messages for them.</div><div><br></div><div>Locked messages look like the gibberish below this line. Go ahead and unlock it by clicking the <b>Lock/Unlock</b> button.</div><div><br></div>" + mainBox.innerHTML;
-		mainMsg.innerHTML = "PassLok Privacy"
+		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can lock messages that only you can unlock. You will need <i>their</i> Locks in order to lock messages for them.</div><div><br></div><div>Locked messages look like the gibberish below this line. Go ahead and unlock it by clicking the <b>Unlock</b> button.</div><div><br></div>" + mainBox.innerHTML;
+		mainMsg.innerHTML = "PassLok Privacy";
+		charsLeft();
 	}
 }
 
@@ -316,15 +311,26 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		}
 		checkKey(key);
 		getSettings();
-		
-		var referrer = decodeURIComponent(window.location.hash.slice(1)).split('&');	//check for Lock on the URL, offer to save
-		if (referrer.length > 1){
-			var friendsName = referrer[0].replace(/_/g,' ');
-			if(referrer[1].length == 43) var reply = prompt('Looks like you received a link containing a Lock from someone whose user name is in the box below. Do you want to add it to your directory? If you wish to use a different name for the Lock, you can change it.',friendsName);
+
+		var hash = window.location.hash.slice(1),								//check for data in the URL
+			hashStripped = hash.match('=(.*)=') || [' ',' '];
+		hashStripped = hashStripped[1];
+		if (hashStripped.length == 43 || hashStripped.length == 50){			//sender's Lock
+			var reply = prompt('Looks like you received a link containing a Lock from someone. It will be added to your directory if you write a name for it in the box.');
 			if(reply){
 				lockNameBox.value = reply;
-				lockBox.value = referrer[1];
+				lockBox.value = hashStripped;
 				addLock()
+			}
+		}else{								//process automatically the other kinds; most will need a Lock to be selected first.
+			mainBox.innerHTML = hash;
+			var type = hashStripped.charAt(0);
+			if(type == '!' || type == '~'){
+				lockUnlock()
+			}else if(type == '%'){
+				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Unseal</strong>"},300)
+			}else if(hash){
+				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Unlock</strong>"},300)
 			}
 		}
 			
@@ -476,7 +482,6 @@ function checkKey(key){
 //display Lock in the lower box of the Main tab.
 function showLock(){
 	callKey = 'showlock';
-	mainMsg.innerHTML = "";
 	if (learnMode.checked){
 		var reply = confirm("The Lock matching the Key in this box will be placed in the lower box, replacing its contents. Cancel if this is not what you want.");
 		if(!reply) return;
@@ -499,27 +504,16 @@ function showLock(){
 function lockDisplay(){
 	if(ezLokMode.checked){
 		var mylocktemp = myezLock.replace(/l/g,'L');					//change smallcase l into capital L for display
-		if(ReedSolMode.checked){
-			var checksum = calcRScode(mylocktemp);
-			checksum = '=' + checksum.match(/.{1,5}/g).join("-")
-		}else{
-			var checksum = ''
-		}
 		mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading		
-		if (!noTagsMode.checked) mylocktemp = "PL22ezLok=" + mylocktemp +  checksum + "=PL22ezLok";
+		mylocktemp = "PL22ezLok=" + mylocktemp + "=PL22ezLok";
 	}else{
 		var mylocktemp = myLock;
-		if(ReedSolMode.checked){
-			var checksum = '=' + calcRScode(mylocktemp);
-		}else{
-			var checksum = ''
-		}
-		if (!noTagsMode.checked) mylocktemp = "PL22lok=" + mylocktemp + checksum + "=PL22lok"
+		mylocktemp = "PL22lok=" + mylocktemp + "=PL22lok";
 	}
-	return triple(mylocktemp);	
+	return mylocktemp
 };
 
-//stores new Lock into local directory, also email if missing
+//stores email if missing
 function storemyEmail(){
 	if(!locDir['myself']) locDir['myself'] = [];
 	locDir['myself'][0] = keyEncrypt(readEmail());
@@ -570,18 +564,21 @@ function convertPubStr(Lock){
 	return nacl.util.encodeBase64(ed2curve.convertPublicKey(pub)).replace(/=+$/,'')
 }
 
+//stretches nonce to 24 bytes
 function makeNonce24(nonce){
 	var	result = new Uint8Array(24);
 	for(i=0;i<nonce.length;i++){result[i] = nonce[i]};
 	return result
 }
 
+//encrypt string with a shared Key
 function PLencrypt(plainstr,nonce24,sharedKey){
 	var plain = nacl.util.decodeUTF8(plainstr),
 		cipher = nacl.secretbox(plain,nonce24,sharedKey);
 	return nacl.util.encodeBase64(cipher).replace(/=+$/,'')
 }
 
+//decrypt string with a shared Key
 function PLdecrypt(cipherstr,nonce24,sharedKey){
 	var cipher = nacl.util.decodeBase64(cipherstr),
 		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
@@ -593,7 +590,7 @@ function PLdecrypt(cipherstr,nonce24,sharedKey){
 function striptags(string){
 	string = string.replace(/\s/g,'');															//remove spaces
 	string = string.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
-	string = string.replace(/[^a-zA-Z0-9+/ ]+/g, ''); 											//takes out anything that is not base64
+	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
 	return string
 }
 
