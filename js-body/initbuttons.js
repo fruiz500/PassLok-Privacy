@@ -29,8 +29,11 @@ window.onload = function() {
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
 		anonLabel.innerHTML = '&nbsp; Anon.';
-		customLabel.innerHTML = '&nbsp; Cust.';
-		lockScr.style = "top: 5%; left: 5%; width: 90%; height: 90%;";
+		customLabel.innerHTML = ' Cust.';
+		lockScr.style.top = "5%";
+		lockScr.style.left = "5%";
+		lockScr.style.width = "90%";
+		lockScr.style.height = "90%";
 	}
   
   //event listeners for buttons etc.
