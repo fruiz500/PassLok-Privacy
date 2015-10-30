@@ -6,7 +6,7 @@ function syncChromeLock(name,data) {
     chrome.storage.sync.set(jsonfile);
 
 	//now update the list, also in Chrome sync
-	updateChromeSyncList();
+	if(name != 'myself') updateChromeSyncList();
 }
 
 //to update the stored list
