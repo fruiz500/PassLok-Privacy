@@ -399,7 +399,7 @@
 
 		targetElement = this.getTargetElementFromEventTarget(event.target);
 		touch = event.targetTouches[0];
-		
+
 		// Ignore touches on contenteditable elements to prevent conflict with text selection.
 		if (targetElement.isContentEditable) {
 			return true;

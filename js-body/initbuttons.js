@@ -29,13 +29,13 @@ window.onload = function() {
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
 		anonLabel.innerHTML = '&nbsp; Anon.';
-		customLabel.innerHTML = ' Cust.';
+		customLabel.innerHTML = '&nbsp; Cust.';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
 		lockScr.style.height = "90%";
 	}
-  
+
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
 
@@ -68,10 +68,6 @@ window.onload = function() {
    	extra2mainBtn.addEventListener('click', main2extra);
 
    	niceEditBtn.addEventListener('click', toggleRichText);
-
-   	sendMailBtn.addEventListener('click', sendMail);
-
-   	sendMailBtnBasic.addEventListener('click', sendMail);
 
    	chatBtn.addEventListener('click', Chat);
 
@@ -279,16 +275,16 @@ window.onload = function() {
 //	newKey2.addEventListener('keyup', function() {newKey2up(event)}, false);
 
 //	lockNameBox.addEventListener('keyup', function() {lockNameKeyup(event)}, false);
-	
+
 	lockBox.addEventListener('keyup', pasteLock);
 	lockBox.addEventListener('paste', pasteLock);
 
 //	userNameBox.addEventListener('keyup', function() {nameKeyup(event)}, false);
-		
+
 //	emailBox.addEventListener('keyup', function() {emailKeyup(event)}, false);
 
 	neverMode.addEventListener('click', hide5min);
-	
+
 //for the rich text editor boxes and buttons
 	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
 	fontName.addEventListener("change", function() {formatDoc('fontName',this[this.selectedIndex].value);this.selectedIndex=0;});
@@ -317,7 +313,7 @@ window.onload = function() {
 	document.images[18].addEventListener("click", function() {formatDoc('removeFormat')});
 	document.images[19].addEventListener("click", function() {formatDoc('undo')});
 	document.images[20].addEventListener("click", function() {formatDoc('redo')});
-	
+
 //for the help screens
 	aa1.addEventListener('click', function() {openHelp('a1')});
 	aa2.addEventListener('click', function() {openHelp('a2')});
@@ -377,6 +373,8 @@ window.onload = function() {
 	aa56.addEventListener('click', function() {openHelp('a56')});
 	aa57.addEventListener('click', function() {openHelp('a57')});
 	aa58.addEventListener('click', function() {openHelp('a58')});
+	aa59.addEventListener('click', function() {openHelp('a59')});
+	aa60.addEventListener('click', function() {openHelp('a60')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -384,7 +382,7 @@ window.onload = function() {
 	bb2.addEventListener('click', function() {openClose('b2')});
 //	bb3.addEventListener('click', function() {openClose('b3')});
 //	bb4.addEventListener('click', function() {openClose('b4')});
-//	bb5.addEventListener('click', function() {openClose('b5')});
+	bb5.addEventListener('click', function() {openClose('b5')});
 	bb6.addEventListener('click', function() {openClose('b6')});
 	bb7.addEventListener('click', function() {openClose('b7')});
 //	bb8.addEventListener('click', function() {openClose('b8')});
@@ -438,6 +436,8 @@ window.onload = function() {
 //	bb56.addEventListener('click', function() {openClose('b56')});
 //	bb57.addEventListener('click', function() {openClose('b57')});
 //	bb58.addEventListener('click', function() {openClose('b58')});
+	bb59.addEventListener('click', function() {openClose('b59')});
+	bb60.addEventListener('click', function() {openClose('b60')});
 
 };
 

@@ -56,6 +56,7 @@ function resetChat(){
 function clearMain(){
 	mainBox.innerHTML = '';
 	mainMsg.innerHTML = '';
+	charsLeft();
 }
 function clearLocks(){
 	lockBox.value='';
@@ -75,13 +76,13 @@ function clearIntroEmail(){
 
 //for selecting the Main box contents
 function selectMain(){
-    var range, selection;   
+    var range, selection;
     if (document.body.createTextRange) {
         range = document.body.createTextRange();
         range.moveToElementText(mainBox);
         range.select();
     } else if (window.getSelection) {
-        selection = window.getSelection();        
+        selection = window.getSelection();
         range = document.createRange();
         range.selectNodeContents(mainBox);
         selection.removeAllRanges();
@@ -135,7 +136,7 @@ function showName(){
 	}
 	userNameBox.value = userName;
 	shadow.style.display = 'block';
-	nameScr.style.display = 'block'	
+	nameScr.style.display = 'block'
 }
 
 //changes the name of the complete database, syncs if possible
@@ -158,7 +159,7 @@ function changeName(){
 	localStorage[userNameTemp] = localStorage[userName];
 	delete localStorage[userName];
 	userName = userNameTemp;
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]));
@@ -180,7 +181,7 @@ function checkboxStore(){
 		if(locDir['myself']){
 			locDir['myself'][1] = changeBase(binCode,'01',BASE64);
 			localStorage[userName] = JSON.stringify(locDir);
-		
+
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}
@@ -211,7 +212,7 @@ function code2checkbox(){
 	}
 	getCustomColors();
 	selectStyle();
-	
+
 	if(ChromeSyncOn) syncCheck.style.display = 'block'
 }
 
@@ -254,7 +255,7 @@ function cancelKey(){
 	if(firstInit) pwd.value = '';
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
-		
+
 		if (nameList.options.length == 2){						//only one user, no need to select it
 			userName = nameList.options[1].value
 		}else{												//several users
@@ -270,10 +271,10 @@ function cancelKey(){
 		if(locDir['myself']){
 			locDir['myself'][3] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
-		
+
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
-			}			
+			}
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
 			mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
@@ -480,7 +481,7 @@ function adv2basic(){
 	basicMode.checked = true;
 	advancedMode.checked = false;
 
-	BasicButtons = true;	
+	BasicButtons = true;
 	checkboxStore();
 	fillList()
 }
@@ -615,7 +616,7 @@ function email2any(){
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	if(dispLock) lockDisplay();
-		
+
 	if(fullAccess) storemyEmail();
 	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
@@ -804,7 +805,7 @@ function findString (str) {
 
 //for rich text editing
 function formatDoc(sCmd, sValue) {
-	  document.execCommand(sCmd, false, sValue); mainBox.focus(); 
+	  document.execCommand(sCmd, false, sValue); mainBox.focus();
 }
 
 var niceEditor = false;

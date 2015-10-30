@@ -1,6 +1,6 @@
 ﻿/*
    Modified JPEG decoder for Steganography by Owen Campbell-Moore, based on one released by notmasteryet, in turn based on one release by Adobe.
-  
+
    Copyright 2011 notmasteryet
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -490,7 +490,7 @@ var JpegImage = (function jpegImage() {
         dataOut[i] = sample < 0 ? 0 : sample > 0xFF ? 0xFF : sample;
       }
     }
-    
+
     DU_DCT_ARRAY[component.componentId] = new Array();
     var k = 0;
     for (var blockRow = 0; blockRow < blocksPerColumn; blockRow++) {
@@ -716,7 +716,7 @@ var JpegImage = (function jpegImage() {
                 huffmanValues[j] = data[offset];
               i += 17 + codeLengthSum;
 
-              ((huffmanTableSpec >> 4) === 0 ? 
+              ((huffmanTableSpec >> 4) === 0 ?
                 huffmanTablesDC : huffmanTablesAC)[huffmanTableSpec & 15] =
                 buildHuffmanTable(codeLengths, huffmanValues);
             }

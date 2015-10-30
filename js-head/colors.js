@@ -75,7 +75,7 @@ function storeColors(){
 		if(locDir['myself']){
 			locDir['myself'][2] = hexCode;
 			localStorage[userName] = JSON.stringify(locDir);
-		
+
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}
@@ -138,8 +138,8 @@ var	fgColor = ['202128','000000','666666','000000'],
 	fgColorStore = ['202128','000000','666666','000000'],
 	bgColor = ['c6d5c6','ffffff','e6e6e6','fffff5'],
 	bgColorStore = ['c6d5c6','ffffff','e6e6e6','fffff5'];
-		
-//gets color from picker and puts it into global variables 
+
+//gets color from picker and puts it into global variables
 function getColor(i,isPicker){
 	if(customStyle.checked){
 		if(isPicker){
@@ -219,10 +219,12 @@ function updateBtnColor(isPicker){
 		removeCSSRule(btnTextSheet,".cssbutton");
 		removeCSSRule(btnTextSheet,".custom-file-input::before");
 	}
-	addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'22'));
-	addCSSRule(btnTextSheet, ".custom-file-input::before", "color:#" + milder(fgColor[2],'22'));
+	addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'28'));
+	addCSSRule(btnTextSheet, ".custom-file-input::before", "color:#" + milder(fgColor[2],'28'));
+	decryptBtn.style.color = '#' + fgColor[2];
+	decryptBtnBasic.style.color = '#' + fgColor[2];
 }
-	
+
 //and for boxes (index 3)
 function updateBoxColor(isPicker){
 	getColor(3,isPicker);
@@ -276,7 +278,7 @@ function selectStyle(){
 		bgColor[1] = '000000';
 		fgColor[1] = 'ffffff';
 		bgColor[2] = '7b7b7b';
-		fgColor[2] = 'dddddd';
+		fgColor[2] = 'eeeeee';
 		bgColor[3] = '111111';
 		fgColor[3] = 'ffffff';
 		updateTabColor(false);
@@ -290,7 +292,7 @@ function selectStyle(){
 		bgColor[1] = 'cc3300';
 		fgColor[1] = 'ffffff';
 		bgColor[2] = '663333';
-		fgColor[2] = 'cacaca';
+		fgColor[2] = 'dddddd';
 		bgColor[3] = 'ffcc99';
 		fgColor[3] = '000000';
 		updateTabColor(false);
@@ -304,7 +306,7 @@ function selectStyle(){
 		bgColor[1] = '99cc99';
 		fgColor[1] = '000000';
 		bgColor[2] = 'ddddaa';
-		fgColor[2] = '595959';
+		fgColor[2] = '666666';
 		bgColor[3] = 'ffffcc';
 		fgColor[3] = '000000';
 		updateTabColor(false);
@@ -318,7 +320,7 @@ function selectStyle(){
 		bgColor[1] = '0099cc';
 		fgColor[1] = 'ffffff';
 		bgColor[2] = '0044cc';
-		fgColor[2] = 'cacaca';
+		fgColor[2] = 'dddddd';
 		bgColor[3] = 'd7ffd7';
 		fgColor[3] = '000000';
 		updateTabColor(false);
@@ -353,7 +355,7 @@ function randomColors(){
 	editBoxColor.checked = true;
 	for(var i=0; i<4; i++){
 		bgColor[i] = Math.floor(Math.random()*16777216).toString(16);
-		while(bgColor[i].length < 6) bgColor[i] = '0' + bgColor[i];				
+		while(bgColor[i].length < 6) bgColor[i] = '0' + bgColor[i];
 		fgColor[i] = foregColor(bgColor[i]);
 		bgColorStore[i] = bgColor[i];
 		fgColorStore[i] = fgColor[i]

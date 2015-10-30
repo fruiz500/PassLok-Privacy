@@ -7,7 +7,7 @@
  * Usage:
  * jsSteg provides two public functions, getCoefficients and reEncodeWithModifications.
  * Refer to their documentation below to understand their usage.
- * 
+ *
  * Note:
  * This library depends on jsstegdecoder-1.0.js and jsstegencoder-1.0.js which have different
  * licences and must be included before this library.
@@ -60,7 +60,7 @@ var jsSteg = (function() {
       var jpegURI = encoder.encodeAndModifyCoefficients(data, 75, modifyCoefficients);
       callback(jpegURI);
     });
-  }  
+  }
 
   return {
     getCoefficients: getCoefficients,

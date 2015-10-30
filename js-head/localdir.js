@@ -110,7 +110,7 @@ function removeLock(){
 	suspendFindLock = false;
 }
 
-//this is to just delete the PFS data for a particular key (or reset the current list)
+//this is to just delete the Read-once data for a particular key (or reset the current list)
 function resetPFS(){
 	if(!fullAccess){
 		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
@@ -125,7 +125,7 @@ function resetPFS(){
 		lockMsg.innerHTML = 'Current list reset';
 		return
 	}
-	
+
 //now the real stuff
 	var reply = confirm("The data needed to maintain a Read-once conversation with this person will be deleted. This is irreversible. Cancel if this is not what you want.");
 	if(!reply) throw("reset canceled");
@@ -138,10 +138,10 @@ function resetPFS(){
 	if (name == 'myself'){
 		lockMsg.innerHTML = 'There is a button to reset your options in the Options tab';
 		throw('no reset for myself')
-	}	
+	}
 	if ((locDir[name][1] == null) && (locDir[name][2] == null)){
 		lockMsg.innerHTML = 'Nothing to reset';
-		throw('no PFS data')
+		throw('no Read-once data')
 	}
 	locDir[name][1] = locDir[name][2] = null;
 	locDir[name][3] = 'reset';
@@ -151,7 +151,7 @@ function resetPFS(){
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 
-	lockMsg.innerHTML = 'PFS data for ' + XSSfilter(name) + " deleted. The next message to this user won't have forward secrecy.";
+	lockMsg.innerHTML = 'Read-once data for ' + XSSfilter(name) + " deleted. The next message to this user won't have forward secrecy.";
 	suspendFindLock = false
 }
 
@@ -165,7 +165,7 @@ function findLock(){
 	if(stringstrip.length == 43 || stringstrip.length == 50){									//it's a Lock in the wrong box. Move it
 		lockBox.value = string;
 		lockNameBox.value = '';
-		lockMsg.innerHTML = 'Locks go in the lower box. You can give it a name and save it';
+		lockMsg.innerHTML = 'Locks and shared Keys go in the lower box<br>You can write a name on the top box in order to save it';
 		suspendFindLock = true;
 		return
 	}
@@ -328,13 +328,13 @@ function mergeLockDB(){
 		locDir = sortObject(mergeObjects(locDir,newDB));
 		localStorage[userName] = JSON.stringify(locDir);
 		lockNames = Object.keys(locDir);
-		
+
 		if(ChromeSyncOn && chromeSyncMode.checked){
 			for(var name in locDir){								//if Chrome sync is available, put all this in sync storage
 				syncChromeLock(name,JSON.stringify(locDir[name]))
 			}
 		}
-		
+
 		var email = keyDecrypt(locDir['myself'][0]);				//populate email and recalculate Keys and Locks
 		if(email) myEmail = email;
 		var key = readKey();
@@ -342,16 +342,16 @@ function mergeLockDB(){
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 		myezLock = changeBase(myLock, BASE64, BASE36, true);
-	
+
 		fillList();
 		var reply = prompt("The items have been merged into the local directory. It might be a good idea to change the user name at this point. To do so, enter the new user name and click OK. Otherwise Cancel.");
 		if(reply){
 			userNameBox.value = reply;
 			changeName()
 		}
-		
+
 	} else if(locklen != 43 || (mainlen != 43 && mainlen != 50)){	//merging of a DH Key in the directory box and a DH Lock in main
-		
+
 		lockMsg.innerHTML = '<span style="color:orange">The items to be merged must be 256-bit and in base64 (or base36 for Locks)<span>';
 		throw('invalid DH merge')
 	}else{
@@ -399,14 +399,14 @@ function moveLockDB(){
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
 	if (!reply) throw("locDir erase canceled");
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to delete also from Chrome sync?')){
 			for(var name in locDir) remChromeLock(name);
 			chrome.storage.sync.remove(userName.toLowerCase() + '.ChromeSyncList')
 		}
 	}
-		
+
 	locDir = {};
 	delete localStorage[userName];
 	lockNames = [];
@@ -432,7 +432,7 @@ function moveMyself(){
 	}
 	optionMsg.innerHTML = '<span style="color:cyan">Backed-up settings on Main tab</span>';
 	mainMsg.innerHTML = msg;
-	
+
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your settings, including the email/token, have been backed up. If you click OK, they will now be erased from this device. This cannot be undone.");
 	if (!reply) throw("myself erase canceled");
@@ -442,11 +442,11 @@ function moveMyself(){
 	fillList();
 	mainMsg.innerHTML = 'Your settings, including the email/token, have been erased<br>' + msg;
 	optionMsg.innerHTML = 'Settings erased';
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to remove your settings also from Chrome sync?')) remChromeLock('myself')
 	}
-		
+
 	suspendFindLock = false;
 	callKey = '';
 }
@@ -499,7 +499,7 @@ function searchStringInArrayDB (str, strArray) {
 function recryptDB(newKey,newUserName){
 	var oldKeyStretched = KeyDir,
 		newKeyStretched = wiseHash(newKey,newUserName);
-			
+
 	for(var name in locDir){
 		if(name != 'myself'){
 			for(var index = 0; index < locDir[name].length; index++){
@@ -520,7 +520,7 @@ function recryptDB(newKey,newUserName){
 			}
 		}
 	}
-	
+
 //change Lock stored under name 'myself'
 	KeyDir = newKeyStretched;
 	var email = readEmail();
@@ -530,7 +530,7 @@ function recryptDB(newKey,newUserName){
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	locDir['myself'][0] = keyEncrypt(email);
 	localStorage[userName] = JSON.stringify(locDir);
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked && index == 0){
 		syncChromeLock(name,JSON.stringify(locDir['myself']))
 	}
@@ -546,7 +546,7 @@ function changeKey(){
 	if (learnMode.checked){
 		var reply = confirm("The local directory will be re-encrypted with a new Key. Cancel if this is not what you want.");
 		if(!reply) throw("locDir recrypt canceled");
-	}	
+	}
 	var newkey = newKey.value.trim(),
 		newkey2 = newKey2.value.trim();
 	if (newkey.trim() == "" || newkey2.trim() == ""){								//stop to display the entry form if new Key is empty
@@ -578,13 +578,13 @@ function changeKey(){
 	keyChange.style.display = 'none';
 	shadow.style.display = 'none';
 	pwd.value = newkey;									//refill Key box, too
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 	}
-	
+
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	mainMsg.innerHTML = '<span style="color:cyan">The Key has changed</span>';
 	lockMsg.innerHTML = '<span style="color:cyan">The Key has changed</span>';
@@ -609,10 +609,12 @@ function fillList(){
 			}
 		}
 	}else{																			//normal behavior
-		if(!isiPhone){
-			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients:</option>'
-		}else{
+		if(isiPhone){
 			lockList.innerHTML = ''
+		}else if(isMobile){
+			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients:</option>'			
+		}else{
+			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients (ctrl-click for several):</option>'
 		}
 		for(var name in locDir){
 			if(locDir[name][0].length < 500){
@@ -656,7 +658,7 @@ function fillBox(){
 		array = array.filter(function(n){return n});													//remove nulls
 		array.sort();																					//alphabetical order
 		list = '';
-		var msg = 'Lock selected for: ';
+		var msg = 'Locking for: ';
 		for(var index = 0; index < array.length; index++){
 			list = list + '\n' + array[index];
 			msg = msg + array[index] + ', '
@@ -687,20 +689,20 @@ function resetList(){
 			if(lockBox.value){
 				mainMsg.innerHTML = 'Click <strong>Edit</strong> to see loaded Keys'
 			}else{
-				mainMsg.innerHTML = 'No Locks selected'
+				mainMsg.innerHTML = 'Nobody selected'
 			};
 		},0);
 	}
 }
 
 //grab the names in localStorage and put them on the userName selection box. Buggy, so a lot of cleanup ifs
-function fillNameList(){	
+function fillNameList(){
 	nameList.innerHTML = '<option value="" disabled style="color:#639789;">Select User Name:</option>';
 	var list = [];
 	for(var name in localStorage){
 			//this if is because of a bug in Firefox
 		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem'){
-			//and this, because of a bug in Safari	
+			//and this, because of a bug in Safari
 			if(!name.match('com.apple.WebInspector') && name != 'locDir'){
 				list = list.concat(name)
 			}

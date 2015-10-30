@@ -4,7 +4,7 @@ function syncChromeLock(name,data) {
     var jsonfile = {};
     jsonfile[syncName.toLowerCase()] = data;
     chrome.storage.sync.set(jsonfile);
-	
+
 	//now update the list, also in Chrome sync
 	updateChromeSyncList();
 }
@@ -62,7 +62,7 @@ var asyncLoop = function(o){
         i++;
         if(i==o.length){o.callback(); return;}
         o.functionToLoop(loop, i);
-    } 
+    }
     loop();//init
 }
 
@@ -73,11 +73,11 @@ function retrieveAllSync(){
 		var lockdata = obj[syncName];
 		if(lockdata){
 			var ChromeSyncList = lockdata.split('|');
-				
-//asynchronous loop to fill local directory				
+
+//asynchronous loop to fill local directory
 			asyncLoop({
 				length : ChromeSyncList.length,
-	
+
 				functionToLoop : function(loop, i){
 					if (ChromeSyncList[i] != 'myself'){
 						var syncName2 = userName+'.'+ChromeSyncList[i];
@@ -91,12 +91,12 @@ function retrieveAllSync(){
 							fillList();
 						});
 					};
-					loop();					
+					loop();
     			},
-	
+
     			callback : function(){	//not used here
-				}    
-			});			
+				}
+			});
 //end of asynchronous loop, any code below won't wait for it to be done
 
 		}
