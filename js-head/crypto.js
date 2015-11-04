@@ -184,7 +184,7 @@ function Encrypt_Single(){
 		if(pfsMessage){
 			mainBox.innerHTML = "*" + noncestr + newLockCipher + cipherstr;
 		}else if(resetMessage){
-			mainBox.innerHTML = "%" + noncestr + newLockCipher + cipherstr;
+			mainBox.innerHTML = "**" + noncestr + newLockCipher + cipherstr;
 		}else{
 			mainBox.innerHTML = "$" + noncestr + newLockCipher + cipherstr;
 		}
@@ -500,10 +500,11 @@ function Decrypt_Single(){
 	}
 
 	var strippedLockBox = striptags(lockBoxItem);								//this holds a Lock or shared Key (or a name leading to it). if there is a video URL, it gets stripped, as well as any non-base64 chars
-	var type = cipherstr.slice(0,1),											//get encryption type. !=anonymous, @=symmetric, #=signed, $=read-once, *= PFS, ~=Key-encrypted
+	var type = cipherstr.slice(0,1),											//get encryption type. !=anonymous, @=symmetric, #=signed, $=Read-once, *= PFS, ~=Key-encrypted
+		type2 = cipherstr.slice(1,2),											//used by reset messages, should be '*' if reset
 		cipherstr = cipherstr.replace(/[^a-zA-Z0-9+\/ ]+/g, '');					//remove anything that is not base64
 
-	if(type == '@' || type == '#' || type == '$' || type == '*' || type == '%'){				//only one sender allowed
+	if(type == '@' || type == '#' || type == '$' || type == '*'){				//only one sender allowed
 		if(lockBoxLines.length > 1){
 			if(lockBoxLines[1].slice(0,4) != 'http'){
 				mainMsg.innerHTML = "<span style='color:orange'>Please select a single sender</span>";
@@ -606,7 +607,7 @@ function Decrypt_Single(){
 		mainMsg.innerHTML = 'Unlock successful';
 	}
 
-	else if(type == "$"|| type == "*" || type == "%"){			//PFS and Read-once decryption
+	else if(type == "$"|| type == "*"){			//PFS and Read-once decryption
 		if (learnMode.checked){
 			var reply2 = confirm("The message in the main box was locked in Read-once mode, and will now be unlocked if the sender has been selected. The result will replace the locked message. Cancel if this is not what you want.");
 			if(!reply2) throw("Read-once decryption canceled");
@@ -622,7 +623,7 @@ function Decrypt_Single(){
 			throw('sender not in directory')
 		}
 
-		if(type == '%'){											//if reset type, delete ephemeral data first
+		if(type2 == '*'){											//if reset message, delete ephemeral data first
 			locDir[name][1] = locDir[name][2] = null
 		}
 
@@ -650,7 +651,7 @@ function Decrypt_Single(){
 			}
 		}
 
-		if(type == '*' || type == '%'){												//PFS mode
+		if(type == '*'){												//PFS mode, also reset
 			if(lastKeyCipher){
 				if(Lock.length == 43){
 					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey),'read-once');
@@ -693,7 +694,7 @@ function Decrypt_Single(){
 
 		if(type == '$'){
 			mainMsg.innerHTML = 'Unlock successful. This message cannot be unlocked again'
-		}else if(type == '*' || type == '%'){
+		}else if(type == '*'){
 			mainMsg.innerHTML = 'Unlock successful. It will become unlockable after you reply'
 		}else{
 			mainMsg.innerHTML = 'Unlock successful'
