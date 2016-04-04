@@ -67,7 +67,7 @@ function clearLocks(){
 function clearIntro(){
 	pwdIntro.value = '';
 	introMsg.innerHTML = '';
-	pwd.value = '';
+	KeyStr = '';
 	keyMsg.innerHTML = '';
 }
 function clearIntroEmail(){
@@ -150,12 +150,12 @@ function changeName(){
 		if(!reply) throw("Name change canceled");
 	}
 	var oldUserName = userName,
-		userNameTemp = document.getElementById('userNameBox').value,
-		key = readKey();
+		userNameTemp = document.getElementById('userNameBox').value;
+//		key = refreshKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
 	}
-	recryptDB(key,userNameTemp);
+	recryptDB(KeyStr,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
 	delete localStorage[userName];
 	userName = userNameTemp;
@@ -198,7 +198,8 @@ function code2checkbox(){
 		for(i = 0; i < checks.length; i++){
 			checks[i].checked = (binCode[i] == '1')
 		}
-		BasicButtons = checks[0].checked;
+		var isEmailMode = checks[2].checked;
+		BasicButtons = checks[0].checked || isEmailMode;
 	}
 	if(!BasicButtons){												//retrieve Advanced interface
 		openClose("basicBtnsTop");
@@ -210,6 +211,7 @@ function code2checkbox(){
 		basicMode.checked = false;
 		advancedMode.checked = true;
 	}
+	if(isEmailMode) mode2email();						//email compatible mode
 	getCustomColors();
 	selectStyle();
 
@@ -252,7 +254,7 @@ function closeBox() {
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
 function cancelKey(){
-	if(firstInit) pwd.value = '';
+	if(firstInit) {pwd.value = ''; KeyStr = '';}
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
 
@@ -277,7 +279,7 @@ function cancelKey(){
 			}
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-			mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+			mainMsg.innerHTML = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 		}else{
 			setTimeout(function(){mainMsg.innerHTML = '<span style="color:orange">You are in Guest mode<br>For full access, reload and enter the Key</span>'},30);
 		}
@@ -359,7 +361,7 @@ function lockNameKeyup(evt){
 //displays Keys strength and resets Key timer
 function pwdKeyup(evt){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {pwd.value = ''}, 300000);
+	keytimer = setTimeout(resetKeys, 300000);
 	keytime = new Date().getTime();
 	evt = evt || window.event
 	if (evt.keyCode == 13){acceptKey()} else{
@@ -455,7 +457,7 @@ function main2extra(){
 }
 
 //switch to Advanced mode
-function basic2adv(){
+function mode2adv(){
 	mainBtnsTop.style.display = 'block';
 	basicBtnsTop.style.display = 'none'
 	lockBtnsBottom.style.display = 'block';
@@ -464,13 +466,19 @@ function basic2adv(){
 	advancedHelp.style.display = 'block';
 	basicMode.checked = false;
 	advancedMode.checked = true;
+	emailMode.checked = false;
 
+	anonMode.style.display = '';
+	anonLabel.style.display = '';
+	anonMode.checked = true;
+	signedMode.checked = false;
+	onceMode.checked = false;
 	BasicButtons = false;
 	checkboxStore()
 }
 
 //switch to Basic mode
-function adv2basic(){
+function mode2basic(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
 	basicBtnsTop.style.display = 'block'
@@ -480,7 +488,37 @@ function adv2basic(){
 	advancedHelp.style.display = 'none';
 	basicMode.checked = true;
 	advancedMode.checked = false;
+	emailMode.checked = false;
 
+	anonMode.style.display = '';
+	anonLabel.style.display = '';
+	anonMode.checked = true;
+	signedMode.checked = false;
+	onceMode.checked = false;
+	BasicButtons = true;
+	checkboxStore();
+	fillList()
+}
+
+//switch to PassLok for Email compatible mode
+function mode2email(){
+	mainBtnsTop.style.display = 'none';
+	extraButtonsTop.style.display = 'none';
+	basicBtnsTop.style.display = 'block';
+	lockBtnsBottom.style.display = 'none';
+	advancedModes.style.display = 'none';
+	advancedBtns.style.display = 'none';
+	advancedHelp.style.display = 'none';
+	basicMode.checked = false;
+	advancedMode.checked = false;
+	emailMode.checked = true;
+	ezLokMode.checked = true;
+
+	anonMode.style.display = 'none';
+	anonLabel.style.display = 'none';
+	anonMode.checked = false;
+	signedMode.checked = true;
+	onceMode.checked = false;
 	BasicButtons = true;
 	checkboxStore();
 	fillList()
@@ -589,7 +627,7 @@ function any2email(){
 //close screens and reset Key timer when leaving the Key box. Restarts whatever was being done when the Key was found missing.
 function key2any(){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {pwd.value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
+	keytimer = setTimeout(resetKeys, 300000);	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
 	keyScr.style.display = 'none';
 	shadow.style.display = 'none';
@@ -609,9 +647,10 @@ function email2any(){
 	}
 	myEmail = email;
 	emailBox.value = '';
-	var	key = readKey();
-	if(!KeyDir) KeyDir = wiseHash(key,userName);
-	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,myEmail)).secretKey;			//do this regardless in case email has changed
+//	var	key = refreshKey();
+	refreshKey();
+	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
+	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
@@ -738,7 +777,11 @@ function openHelp(theID){
         }
       }
 	  if(this.hash == '#mainTab') fillList();
-	  if(this.hash != '#optionsTab') customColors.style.display = 'none';
+	  if(this.hash != '#optionsTab'){
+		  customColors.style.display = 'none';
+		  optionMsg.innerHTML = 'Change Name, Key, etc.';
+		  fileMsg.innerHTML = 'File input/output:'
+	  }
 	  if(this.hash != '#helpTab' && !isiOS){
 			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
 	  }

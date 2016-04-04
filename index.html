@@ -419,21 +419,21 @@ img.intLink {
     <select class="cssbox" id='lockList' size='4' multiple style="padding:4px;width:30%;" title="Hold Ctrl or cmd to select several items">
     </select>
     <button class="cssbutton" id="resetListBtn" value="resetList" style="font-size: 14px; padding:4px;" title="reset selection (alt-0)" accesskey="0">Deselect</button>
-    <button class="cssbutton" id="main2lockBtn" value="editLocks" style="font-size: 14px; padding:4px; padding-left:10px;padding-right:12px;" title="add or edit items in the local directory (alt-D)" accesskey="d">Edit</button>
+    <button class="cssbutton" id="main2lockBtn" value="editLocks" style="font-size: 14px; padding:4px; padding-left:10px;padding-right:12px;" title="add or edit items in the local directory (alt-E)" accesskey="e">Edit</button>
     <br />
     <br />
 
     <!--buttons above the main box-->
     <div id="basicBtnsTop" style="display: block;">
-      <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="l">Lock</button><!--
+      <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="d">Encrypt</button><!--
 <button class="cssbutton" id="sendMailBtnBasic" value="Email" style="font-size:22px;padding:14px;" title="invite others to PassLok and put the box contents in an email using the default client (alt-E)" accesskey="e">Email</button><!--
---><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock (alt-K)" accesskey="k">myLock</button>
+--><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock or send email (alt-L)" accesskey="l">myLock</button>
     </div>
     <div id="mainBtnsTop" style="display: none;">
-      <button class="cssbutton" id="decryptBtn" value="Lock/Unlock" style="padding-right:7px;padding-left:7px;" title="lock plain text in the box, unlock locked text (alt-L)" accesskey="">Lock</button><!--
+      <button class="cssbutton" id="decryptBtn" value="Lock/Unlock" style="padding-right:7px;padding-left:7px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="">Encrypt</button><!--
 <button class="cssbutton" id="sendMailBtn" value="Email" style="padding-right:7px;padding-left:7px;" title="invite others to PassLok and put the box contents in an email using the default client (alt-E)">Email</button><!--
 --><button class="cssbutton" id="verifyBtn" value="Seal/Unseal" style="padding-right:7px;padding-left:7px;" title="add signature based on secret Key and box contents, or verify existing signature (alt-V)" accesskey="v">Seal</button><!--
---><button class="cssbutton" id="showLockBtn" value="myLock" style="padding-right:7px;padding-left:7px;" title="display your Lock (alt-K)">myLock</button><!--
+--><button class="cssbutton" id="showLockBtn" value="myLock" style="padding-right:7px;padding-left:7px;" title="display your Lock (alt-L)">myLock</button><!--
 --><button class="cssbutton" id="main2extraBtn" value="More" style="color:orange;padding-right:9px;padding-left:9px;" title="replace main buttons with those for extra functions (alt-.)" accesskey=".">&#9660;</button>
       <br />
     </div>
@@ -526,11 +526,11 @@ img.intLink {
 --><button class="cssbutton" id="sendSMSBtn" value="SMS" style="" title="mobile: open the default Texting app">SMS</button>
     </div>
     <br>
-    <input type="radio" name="lockmodes" id="anonMode"  title="anonymous locking mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>
-    <span id="anonLabel">&nbsp; Anonymous</span> &nbsp;&nbsp;
-    <input type="radio" name="lockmodes" id="signedMode" title="signed locking mode; recipient needs the sender's Lock (alt-S)" accesskey="s"/>
+    <input type="radio" name="lockmodes" id="anonMode"  title="anonymous encryption mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>
+    <span id="anonLabel">&nbsp;Anonymous&nbsp;&nbsp;</span>
+    <input type="radio" name="lockmodes" id="signedMode" title="signed encryption mode; recipient needs the sender's Lock (alt-S)" accesskey="s"/>
     &nbsp; Signed &nbsp;&nbsp;
-    <input type="radio" name="lockmodes" id="onceMode" title="Read-once: messages become unreadable after being read once (alt-1)" accesskey="1"/>
+    <input type="radio" name="lockmodes" id="onceMode" title="Read-once encryption mode; messages become unreadable after being read once (alt-1)" accesskey="1"/>
     &nbsp; Read-once </div>
 </div>
 
@@ -538,18 +538,21 @@ img.intLink {
 <div class="tabContent" id="optionsTab" style="max-width:500px;"> <br />
   <br />
   <br />
-  <div id="fileBtns" style="display: block;"> &nbsp;&nbsp;File input/output:<br />
+  <div id="fileBtns" style="display: block;">
+  &nbsp;&nbsp;<span id="fileMsg">File input/output:</span><br />
     <br>
     <input class="custom-file-input" type="file" id="mainFile" style="" title="open dialog to select file to load"/>
     <button class="cssbutton" id="saveFileBtn" value="Save file" title="save file to default Downloads folder in original format, or as a text file if type is not recognized">Save file</button>
     <hr>
   </div>
   <form name="optionchecks">
-    &nbsp;&nbsp;Interface:&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;<span id="modeLabel">Interface:&nbsp;&nbsp;&nbsp;&nbsp;</span>
     <input type="radio" name="interfacemodes" id="basicMode"  title="basic mode; only essential functions (alt-B)" accesskey="b" checked/>
     &nbsp; Basic&nbsp;&nbsp;
     <input type="radio" name="interfacemodes" id="advancedMode" title="advanced mode; all functions available (alt-A)" accesskey="a"/>
-    &nbsp; Advanced
+    &nbsp; Advanced&nbsp;&nbsp;
+	<input type="radio" name="interfacemodes" id="emailMode" title="PassLok for Email compatible output"/>
+    &nbsp; Email    
     <hr>
     &nbsp;&nbsp;Color scheme:&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="radio" name="colormodes" id="liteStyle" title="switch back to default light style" checked/>
@@ -561,7 +564,7 @@ img.intLink {
     <input type="radio" name="colormodes" id="redStyle" title="switch to red style"/>
     &nbsp; Red&nbsp;&nbsp;
     <input type="radio" name="colormodes" id="greenStyle" title="switch to green style"/>
-    &nbsp; Green&nbsp;&nbsp;
+    &nbsp; <span id="greenLabel">Green</span>&nbsp;&nbsp;
     <input type="radio" name="colormodes" id="blueStyle" title="switch to blue style"/>
     &nbsp; Blue&nbsp;&nbsp;
     <input type="radio" name="colormodes" id="customStyle" title="switch to custom style"/>
@@ -577,7 +580,7 @@ img.intLink {
       <input type="radio" name="colorareas" id="editTabColor" title="edit Tab color" checked/>
       &nbsp; Tabs&nbsp;&nbsp;
       <input type="radio" name="colorareas" id="editBgColor" title="edit Background color"/>
-      &nbsp; Backg.&nbsp;&nbsp;
+      &nbsp; <span id='backgroundLabel'>Backg.</span>&nbsp;&nbsp;
       <input type="radio" name="colorareas" id="editBtnColor" title="edit Button color"/>
       &nbsp; Btns.&nbsp;&nbsp;
       <input type="radio" name="colorareas" id="editBoxColor" title="edit Box color"/>
@@ -585,17 +588,16 @@ img.intLink {
     <hr>
     &nbsp;&nbsp;Other modes:&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="checkbox" id="learnMode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>
-    &nbsp; Learn<br />
+    &nbsp; Learn&nbsp;&nbsp;
+      <input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>
+      &nbsp; ezLok<br />
     <br />
     <div id='advancedModes' style="display: none;"> &nbsp;&nbsp;
-      <input type="checkbox" id="shortMode" title="locked message will fit within 160 characters" accesskey=""/>
+      <input type="checkbox" id="shortMode" title="encrypted message will fit within 160 characters" accesskey=""/>
       &nbsp; Short&nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;
       <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
-      &nbsp; Decoy
-      &nbsp;&nbsp;
-      <input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>
-      &nbsp; ezLok<br />
+      &nbsp; Decoy<br />
       <span id="syncCheck" style="display:none"> <br>
       &nbsp;&nbsp;
       <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
@@ -603,15 +605,15 @@ img.intLink {
       <hr>
       &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="letterMode" title="hide item into letters" checked/>
-      &nbsp; Letters&nbsp;&nbsp; <br>
+      &nbsp; Letters<br>
       <br>
-      &nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="wordMode"  title="hide item as individual words"/>
       &nbsp; Words&nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="spaceMode" title="hide item in spaces between words"/>
       &nbsp; Spaces&nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="sentenceMode" title="hide item as sentences"/>
-      &nbsp; Sentences </div>
+      &nbsp; <span id='sentencesLabel'>Sentences</span></div>
   </form>
   <div id='advancedBtns' style="display: none;">
     <hr>
@@ -661,7 +663,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>Before you do anything else, you may want to watch this three-minute video, which explains the essential concepts in a lighthearted way (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=UxgrES_CGcg" target="_blank">https://www.youtube.com/watch?v=UxgrES_CGcg</a></p>
     <ul>
       <li>PassLok locks text and files, and sets up secure real time chat sessions using strong <strong>end-to-end encryption</strong>.</li>
-      <li>PassLok is based on Keys and Locks. You lock something with <strong>someone else's Lock</strong>, so only that person can unlock it with his/her Key.</li>
+      <li>PassLok is based on Keys and Locks. You encrypt something with <strong>someone else's Lock</strong>, so only that person can decrypt it with his/her Key.</li>
       <li>Your Key is a short piece of text, which <strong>can be anything you want so you can remember it</strong>.</li>
       <li>The matching Lock is then made from your Key. It is impossible to get the Key or your email from the Lock.</li>
       <li>You should never give your Key to anyone. Your Lock, however, is meant to be distributed freely, like a phone number.</li>
@@ -676,7 +678,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Several users (or several identities) can coexist on the same device.</li>
     </ul>
     <p>PassLok is <strong>still in experimental phase</strong> since there has not been enough time for security experts to uncover possible flaws. Bear this in mind before entrusting critical secrets to it.</p>
-    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://SeeOnce.net" target="_blank">https://SeeOnce.net</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok.</p>
+    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://SeeOnce.net" target="_blank">https://SeeOnce.net</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank"><strong>PassLok for Email</strong></a>, a Chrome extension that integrates with popular email clients (currently only Gmail).</p>
   </div>
   <hr>
   <div id="aa2" class="helpitem">
@@ -687,14 +689,15 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>You can tell others about PassLok any way you want, but PassLok can help you to start your network with a single keystroke, this way:</p>
     <p>1. Type a message in the main box. Don't write anything sensitive, since <strong>invitation messages are not secure</strong>.</p>
     <p>2. Click the <strong>Invite</strong> button.</p>
-    <p>3. After confirmation, a new page should open in your default email, containing a link to PassLok that includes your personal Lock, plus your locked message and a short set of instructions. Edit it as needed, then write the recipients' email addresses and send it.</p>
+    <p>3. After confirmation, a new page should open in your default email, containing a link to PassLok that includes your personal Lock plus your encrypted message and a short set of instructions. Edit it as needed, then write the recipients' email addresses and send it.</p>
     <p>This is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=0wTJWyd9s64" target="_blank">https://www.youtube.com/watch?v=0wTJWyd9s64</a></p>
     <div id='bb2' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b2" class="texter">
+      <p>The invitation link loads the web version of PassLok, but pasting it into any other version of PassLok, or opening the email in PassLok for Email works just as well. Invitations made in PassLok for Email can also be opened in PassLok Privacy.</p>
       <p>People who did not get your email will still be able to obtain your Lock if you post it in the General Directory. To do this, click the <strong>myLock</strong> button if your Lock is not already displayed, then the small <strong>Edit</strong> button near the top, and then the large <strong>General Directory</strong> button. A new page will open where you only need to supply your email address, click <strong>Post</strong>, and reply to a confirmation email.</p>
-      <p>Those who get PassLok from your email invitation will have your Lock automatically stored in their directories, so they can lock items for you right away.</p>
+      <p>Those who get PassLok from your email invitation will have your Lock automatically stored in their directories, so they can encrypt items for you right away.</p>
     </div>
   </div>
   <hr>
@@ -726,7 +729,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>How to make a strong Key</h3>
   </div>
   <div id="a5" class="texter">
-    <p>You should be able to <strong>remember your secret Key</strong> without having to write it down. PassLok does not store the Key anywhere. In fact, it deletes it from memory after five minutes of not being used (this can be changed).</p>
+    <p>You should be able to <strong>remember your secret Key</strong> without having to write it down. PassLok does not store the Key anywhere. In fact, it deletes it from memory after five minutes of not being used (this can be overridden via a checkbox).</p>
     <p>Your Key will be stronger if it contains <strong>caPiTals</strong> in unusual places, <strong>numb3rs</strong>, and <strong>$ymbol$</strong>. If you use common words, <strong>miespell</strong> them to make harder a "dictionary attack." Break the words up with <strong>num334bers</strong> and <strong>sy#$%mbols</strong>. Avoid anything that might be easy to guess. PassLok knows frequently used words, but hackers' dictionaries are bigger. Do not use grammatically correct sentences, even if PassLok gives a big score.</p>
     <p>PassLok <strong>compensates for weak Keys by adding spurious computations</strong> and may even appear to have crashed. If PassLok is slow, this may be because your Key strength is less than Medium.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=JbNM_cf8My0" target="_blank">https://www.youtube.com/watch?v=JbNM_cf8My0</a></p>
@@ -735,7 +738,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b5" class="texter">
       <p>If you plan to use PassLok only with shared Keys, you do not need a secret Key at all. Simply Cancel when you are asked for your Key when PassLok starts, and write or paste the encryption Key into the lower box that appears when you you click the <strong>Edit</strong> button located next to the directory.</p>
-      <p>If instead of a short shared Key you paste in a piece or text at least three times as long as the message to be locked, PassLok uses it in Pad mode, which theoretically is much more secure than the regular mode (more on this in a help item below).</p>
+      <p>If instead of a short shared Key you paste in a piece or text at least three times as long as the message to be encrypted, PassLok uses it in Pad mode, which theoretically is much more secure than the regular mode (more on this in a help item below).</p>
     </div>
   </div>
   <hr>
@@ -743,8 +746,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Get a hint to remember my Key</h3>
   </div>
   <div id="a6" class="texter">
-    <p>If you are reading this, likely you have gained Guest access to PassLok by clicking <strong>Cancel</strong> at the Key entry screen. The good news is that you can still lock messages if you know the recipient's Lock or shared Key, verify signatures, and use the Locks stored in your local directory as well as all the auxiliary functions of PassLok. You can even seal items and display the matching Lock if you enter a Key when PassLok asks for it.</p>
-    <p>The bad news is that  you cannot change anything stored in the local directory, and your use of it is limited to Locks. You cannot do anything that would involve your secret Key, such as unlocking messages locked with your Lock, or continuing a Read-once conversation in course.</p>
+    <p>If you are reading this, likely you have gained Guest access to PassLok by clicking <strong>Cancel</strong> at the Key entry screen. The good news is that you can still encrypt messages if you know the recipient's Lock or shared Key, verify signatures, and use the Locks stored in your local directory as well as all the auxiliary functions of PassLok. You can even seal items and display the matching Lock if you enter a Key when PassLok asks for it.</p>
+    <p>The bad news is that  you cannot change anything stored in the local directory, and your use of it is limited to Locks. You cannot do anything that would involve your secret Key, such as decrypting messages encrypted with your Lock, or continuing a Read-once conversation in course.</p>
     <p>Well, we've got even worse news for you: we cannot help you to recover your secret Key, because PassLok never stored it or sent it out. There are no hints, either. If you forgot your Key, <strong>it's gone, along with all encrypted items in the local directory</strong>.</p>
     <div id='bb6' class="helpitem">
       <p><em>Click here for More:</em></p>
@@ -754,7 +757,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>1. Go to the <strong>Options</strong> tab.</p>
       <p>2. Click the Backup/Remove <strong>Options only</strong> box. When a popup asks for confirmation to delete your settings, click <strong>OK</strong>.</p>
       <p>3. Reload PassLok.</p>
-      <p>4. The user selection screen will appear, and this time PassLok will accept whatever new Key and email or suchlike you want to give it for the user in question. Now you're back in business and can use PassLok with the new Key to seal, unlock, store items in the local directory, etc.</p>
+      <p>4. The user selection screen will appear, and this time PassLok will accept whatever new Key and email or suchlike you want to give it for the user in question. Now you're back in business and can use PassLok with the new Key to seal, decrypt, store items in the local directory, etc.</p>
       <p>At this point, the only directory entry that will work fully is &quot;myself&quot;. You can reset or delete the entries that don't work one by one, by typing each name in the directory Edit dialog and clicking <strong>Reset</strong> (leave essential data intact) or <strong>Delete</strong> (take out everything) when the name is recognized, or all at once by following the process described in a help item below, about &quot;moving the entire local directory.&quot;</p>
     </div>
   </div>
@@ -792,13 +795,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>To back up your random token to a safe place in case of accidental deletion or to be able to use a different device:</p>
     <p>1. Click the Backup/Remove <strong>Options only</strong> button on the <strong>Options</strong> tab (visible in the Advanced interface). A backup item bracketed by &quot;PL**bak&quot; tags appears on the main box, from where you can save it to file, copy it, email it, etc.</p>
     <p>2. Then a dialog asks you if you want to reset your settings. If you click <strong>OK</strong>, PassLok will restart as if it had never started before, except that the local directory remains intact.</p>
-    <p>To restore the random token from a backup item, paste the packup into the main box and click <strong>Unlock</strong>.</p>
+    <p>To restore the random token from a backup item, paste the packup into the main box and click <strong>Decrypt</strong>.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4DjhIjU_nuM" target="_blank">https://www.youtube.com/watch?v=4DjhIjU_nuM</a></p>
     <div id='bb9' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b9" class="texter">
-      <p>The reason for the email or other additional data is to combat the &quot;rainbow table&quot; attack, where hackers pre-compute Locks made from the words in a dictionary. This data is encrypted and stored along with other settings, so you won't need to enter it again. The Lock depends both on the Key and the email or random token; this adds extra security, but it also means that if the random token gets erased you will not be able to unlock anything that was locked with your Lock. The backup item contains your settings, including the random token, double-encrypted by your secret Key. One reason to delete your settings while leaving the local directory intact is to be able to change the random token to a new value. You can also proceed without entering any email or token.</p>
+      <p>The reason for the email or other additional data is to combat the &quot;rainbow table&quot; attack, where hackers pre-compute Locks made from the words in a dictionary. This data is encrypted and stored along with other settings, so you won't need to enter it again. The Lock depends both on the Key and the email or random token; this adds extra security, but it also means that if the random token gets erased you will not be able to decrypt anything that was encrypted with your Lock. The backup item contains your settings, including the random token, double-encrypted by your secret Key. One reason to delete your settings while leaving the local directory intact is to be able to change the random token to a new value. You can also proceed without entering any email or token.</p>
+      <p>If you plan to use both PassLok and PassLok for Email, it is best if you write your real email in this box, for in this case your PassLok ezLok will be identical to the one used in PassLok for Email and you'll be able to use their main features interchangeably.</p>
     </div>
   </div>
   <hr>
@@ -806,7 +810,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Display the Lock matching your secret Key</h3>
   </div>
   <div id="a10" class="texter">
-    <p>Click the <strong>myLock</strong> button on the <strong>Main</strong> tab. The lock matching that Key will appear
+    <p>Click the <strong>myLock</strong> button on the <strong>Main</strong> tab. The Lock matching that Key will appear
       in the lower box, from where you can copy it or email it.</p>
     <p>If then you click the <strong>Edit</strong> button next to the local directory box, and after that click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=L00yybDzN6k" target="_blank">https://www.youtube.com/watch?v=L00yybDzN6k</a></p>
@@ -814,13 +818,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b10" class="texter">
-      <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. </p>
+      <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email is compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app.</p>
       <p>If you need to make a Lock for a different Key (for instance, in order to receive Decoy mode hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by typing &quot;myself&quot; at the top box of the directory Edit dialog followed by Enter, or by clicking Change Email on Options).</p>
     </div>
   </div>
   <hr>
   <div id="aa11" class="helpitem">
-    <h3>Lock a message with a Lock, to be unlocked with the matching Key (Anonymous mode)</h3>
+    <h3>Encrypt a message with a Lock, to be decrypted with the matching Key (Anonymous mode)</h3>
   </div>
   <div id="a11" class="texter">
     <p>1. Make  sure <strong>Anonymous</strong> mode is selected at the bottom of the <strong>Main</strong> tab. This is the default.</p>
@@ -829,8 +833,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>If not, click the <strong>Edit</strong> button next to the directory listing and paste the Locks, one per line, in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
     </ul>
     <p>3. Write or paste your message in the lower box of the <strong>Main</strong> tab. </p>
-    <p>4. Click the <strong>Lock</strong> button. The
-      locked message will appear in the box, replacing the original message.</p>
+    <p>4. Click the <strong>Encrypt</strong> button. The
+      encrypted message will appear in the box, replacing the original message.</p>
     <p>Copy it and paste it into your
       communications program or click <strong>Email</strong> to open your default email. </p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=nBA5JNY4gmQ" target="_blank">https://www.youtube.com/watch?v=nBA5JNY4gmQ</a></p>
@@ -838,17 +842,18 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b11" class="texter">
-      <p>This mode is called Anonymous not because it provides any protection against tracking over a network, but because the identity of the sender cannot be deduced from the encrypted message. This message can be unlocked only by someone having the Key matching one of the Locks selected. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay if the tags up to the "=" signs on the Lock are missing, or extra spaces, carriage returns, or special characters other than = + or / have been added (such as a video URL).</p>
+      <p>This mode is called Anonymous not because it provides any protection against tracking over a network, but because the identity of the sender cannot be deduced from the encrypted message. This message can be decrypted only by someone having the Key matching one of the Locks selected. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay if the tags up to the "=" signs on the Lock are missing, or extra spaces, carriage returns, or special characters other than = + or / have been added (such as a video URL).</p>
+      <p>This mode is <em>not</em> compatible with PassLok for Email, but the other two modes are.</p>
     </div>
   </div>
   <hr>
   <div id="aa12" class="helpitem">
-    <h3>Unlock an Anonymous locked message (tags are PL**msa)</h3>
+    <h3>Decrypt an Anonymous encrypted message (tags are PL**msa)</h3>
   </div>
   <div id="a12" class="texter">
-    <p>1. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>2. If the message doesn't unlock automatically, click the <strong>Unlock</strong> button. The unlocked message
-      will appear in the box, replacing the locked message.</p>
+    <p>1. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+    <p>2. If the message doesn't decrypt automatically, click the <strong>Decrypt</strong> button. The decrypted message
+      will appear in the box, replacing the encrypted message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=nBA5JNY4gmQ" target="_blank">https://www.youtube.com/watch?v=nBA5JNY4gmQ</a></p>
     <div id='bb12' class="helpitem">
       <p><em>Click here for More:</em></p>
@@ -856,12 +861,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="b12" class="texter">
       <p>It is okay if the message is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
-        missing its tags. It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+        missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>This mode is <em>not</em> compatible with PassLok for Email, but the other two modes are.</p>
     </div>
   </div>
   <hr>
   <div id="aa13" class="helpitem">
-    <h3>Lock a message with a Lock, to be unlocked with the matching Key, and sign it with your secret Key (Signed mode)</h3>
+    <h3>Encrypt a message with a Lock, to be decrypted with the matching Key, and sign it with your secret Key (Signed mode)</h3>
   </div>
   <div id="a13" class="texter">
     <p>1. Make sure <strong>Signed</strong> mode is selected at the bottom of the <strong>Main</strong> tab.</p>
@@ -870,8 +876,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the Locks, one per line, in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
     </ul>
     <p>3. Write or paste your message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>4. Click the <strong>Lock</strong> button. The
-      locked message will appear in the box, replacing the original message.</p>
+    <p>4. Click the <strong>Encrypt</strong> button. The
+      encrypted message will appear in the box, replacing the original message.</p>
     <p>Copy it and paste it into your
       communications program or click <strong>Email</strong> to open your default email.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=R9UanENF3ro" target="_blank">https://www.youtube.com/watch?v=R9UanENF3ro</a></p>
@@ -879,40 +885,42 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b13" class="texter">
-      <p> This mode is called Signed not because a digital signature is involved, but because the message can be unlocked only by
-        someone having the Key matching one of the Locks selected, and your Lock. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay to strip the tags up to the "=" sign, but not recommended.  It is also okay to split the locked message with spaces, line returns, and punctuation other than = + / or % This message can be unlocked only by someone having the Key matching the Lock used to lock it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
+      <p> This mode is called Signed not because a digital signature is involved, but because the message can be decrypted only by
+        someone having the Key matching one of the Locks selected, and your Lock. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay to strip the tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or % This message can be decrypted only by someone having the Key matching the Lock used to encrypt it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
+      <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
   <hr>
   <div id="aa14" class="helpitem">
-    <h3>Unlock a Signed message   (tags are PL**mss)</h3>
+    <h3>Decrypt a Signed message   (tags are PL**mss)</h3>
   </div>
   <div id="a14" class="texter">
     <p>1. If the sender's Lock has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
     <ul>
       <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the sender's Lock in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
     </ul>
-    <p>2. Paste the locked message in the lower box of the <strong>Main</strong> tab. </p>
-    <p>3. If the message doesn't unlock automatically, click the <strong>Unlock</strong> button. The unlocked message
-      will replace the locked message.</p>
+    <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab. </p>
+    <p>3. If the message doesn't decrypt automatically, click the <strong>Decrypt</strong> button. The decrypted message
+      will replace the encrypted message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=R9UanENF3ro" target="_blank">https://www.youtube.com/watch?v=R9UanENF3ro</a></p>
     <div id='bb14' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b14" class="texter">
-      <p>Alternatively, you can retrieve the sender's stored Lock by typing the name associated with it in the top box of the directory Edit dialog until the encrypted Lock appears on the lower box. It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags.  It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Alternatively, you can retrieve the sender's stored Lock by typing the name associated with it in the top box of the directory Edit dialog until the encrypted Lock appears on the lower box. It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags.  It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p> A message encrypted by PassLok for Email in Normal mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
     </div>
   </div>
   <hr>
   <div id="aa15" class="helpitem">
-    <h3>Lock a message so that nobody can read it after the exchange is over (Read-once mode)</h3>
+    <h3>Encrypt a message so that nobody can read it after the exchange is over (Read-once mode)</h3>
   </div>
   <div id="a15" class="texter">
     <p>1. Make sure <strong>Read-once</strong> mode is selected at the bottom of the <strong>Main</strong> tab.</p>
     <p>2. Select the recipients' Locks in the top box of the <strong>Main</strong> tab. This mode requires the recipients' Locks to be previously stored in the local directory. </p>
     <p>3. Write or paste your message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>4. Click the <strong>Lock</strong> button. The
-      locked message will appear in the box, replacing the original message.</p>
+    <p>4. Click the <strong>Encrypt</strong> button. The
+      encrypted message will appear in the box, replacing the original message.</p>
     <p>Copy it and paste it into your
       communications program or click <strong>Email</strong> to open your default email.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=VutWfWZW5bY" target="_blank">https://www.youtube.com/watch?v=VutWfWZW5bY</a></p>
@@ -920,24 +928,26 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b15" class="texter">
-      <p>This message can be unlocked only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the upper box, then lock the message normally. The first message after a reset does not have forward secrecy,  so be careful with this one. It is okay to strip the Lock tags up to the "=" sign, but not recommended.  It is also okay to split the locked message with spaces, line returns, and punctuation other than = + / or %</p>
+      <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the upper box, then encrypt the message normally. The first message after a reset does not have forward secrecy,  so be careful with this one. It is okay to strip the Lock tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or %</p>
+      <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
   <hr>
   <div id="aa16" class="helpitem">
-    <h3>Unlock a message that was locked in Read-once mode (tags are PL**mso)</h3>
+    <h3>Decrypt a message that was encrypted in Read-once mode (tags are PL**mso)</h3>
   </div>
   <div id="a16" class="texter">
     <p>1. Select the sender's Lock on the top box of the <strong>Main</strong> tab. This mode requires the sender's Lock to be previously stored in the device's local directory.</p>
-    <p>2. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>3. If the message doesn't unlock automatically, click the <strong>Unlock</strong> button. The unlocked message
-      will replace the locked message.</p>
+    <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+    <p>3. If the message doesn't decrypt automatically, click the <strong>Decrypt</strong> button. The decrypted message
+      will replace the encrypted message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=VutWfWZW5bY" target="_blank">https://www.youtube.com/watch?v=VutWfWZW5bY</a></p>
     <div id='bb16' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b16" class="texter">
-      <p>Usually you can unlock the message only once, since the ephemeral key needed to unlock it is overwritten in the process, but after a reset the first message can be unlocked forever, and the second becomes unlockable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags. It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes unlockable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>A message encrypted by PassLok for Email in Read-once mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
     </div>
   </div>
   <hr>
@@ -945,7 +955,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Reset a Read-once conversation</h3>
   </div>
   <div id="a46" class="texter">
-    <p>This may be needed if the conversation with a given correspondent has gone out of sync so that you are unable to unlock a new Read-once message from him/her. Resetting clears ephemeral Keys and Locks on both sides, and re-initiates the Read-once exchange.
+    <p>This may be needed if the conversation with a given correspondent has gone out of sync so that you are unable to decrypt a new Read-once message from him/her. Resetting clears ephemeral Keys and Locks on both sides, and re-initiates the Read-once exchange.
     <p>1. Click the <strong>Edit</strong> button next to the Lock selection box.</p>
     <p>2. Start writing the name given to the correspondent in the top box of the dialog. As you type, the line above the box displays existing items matching what you have typed so far, and the Lock or encrypted shared Key appears in the lower box. You can stop typing once you see the complete name you're looking for. Search is case-insensitive.</p>
     <p>3. Click the <strong>Reset</strong> button. A popup asks you to confirm the action, and then a message tells you that it has been done.</p>
@@ -953,7 +963,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <div id="aa17" class="helpitem">
-    <h3>Send a PassLok item (Lock, locked message, etc.) by email</h3>
+    <h3>Send a PassLok item (Lock, encrypted message, etc.) by email</h3>
   </div>
   <div id="a17" class="texter">
     <p>1. Check that the item displayed on the <strong>Main</strong> tab is PassLok output. If it is not, the button you need to press in the next step won't be there.</p>
@@ -963,7 +973,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b17" class="texter">
-      <p>Be aware that there is a limit to the size of a message that is made this way. If you get an error, you can always copy the contents of the box and paste it into a normal mail compose screen.The email includes a link that, if click, will open the contents in the web app version of PassLok. To open it in a different email client or in case the button is not visible or the new window fails to appear, copy it to the clipboard and then paste it into the &quot;compose&quot; box of your favorite email.</p>
+      <p>Be aware that there is a limit to the size of a message that is made this way. If you get an error, you can always copy the contents of the box and paste it into a normal mail compose screen.The email includes a link that, if clicked, will open the contents in the web app version of PassLok. To open it in a different email client or in case the button is not visible or the new window fails to appear, copy it to the clipboard and then paste it into the &quot;compose&quot; box of your favorite email.</p>
     </div>
   </div>
   <hr>
@@ -980,23 +990,24 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b18" class="texter">
-      <p>To unlock a locked message received by texting, you must first copy it to the clipboard, and then paste it on the <strong>Main</strong> tab of PassLok. Due to browser restrictions, there is no way to know whether the item has been copied to clipboard, but hopefully the process above is fairly foolproof.  (Advanced) If you want to make sure the locked message fits within a single text message, lock it with the <strong>Short</strong> option on.</p>
+      <p>To decrypt a encrypted message received by texting, you must first copy it to the clipboard, and then paste it on the <strong>Main</strong> tab of PassLok. Due to browser restrictions, there is no way to know whether the item has been copied to clipboard, but hopefully the process above is fairly foolproof.  (Advanced) If you want to make sure the encrypted message fits within a single text message, encrypt it with the <strong>Short</strong> option on.</p>
     </div>
   </div>
   <hr>
   <div id="aa19" class="helpitem">
-    <h3>Load a file  to be locked, sealed, or split (non-mobile)</h3>
+    <h3>Load a file to be encrypted, sealed, or split (non-mobile)</h3>
   </div>
   <div id="a19" class="texter">
     <p>1. Click the file load button on the <strong>Options</strong> tab. Different browsers put different labels on it, such as <strong>"Browse"</strong>, <strong>"Choose File"</strong>, and so forth.</p>
     <p>2. A dialog will appear so you can navigate to the file. If all goes well, the file or image loads into the box as a piece of gibberish text, with some identifying information at the top.</p>
-    <p>Now you can lock it, seal it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
+    <p>Now you can encrypt it, seal it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
     <div id='bb19' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b19" class="texter">
       <p> If the file is a text file, it will load as plain text rather than encoded. In our tests, Chrome has had difficulty loading  files larger than a few kB, but Firefox does fine. This command is not available on mobile devices because of their severe restrictions on accessing stored content. If using a Chromebook, be aware that the Files extension does not load Google documents completely.</p>
+      <p>If you plan to send a large file by email or other means, it is best to encrypt it with an archiving program such as 7zip, Winzip, or Winrar using AES and a random symmetric key, and then use PassLok to encrypt that symmetric key for transmission, along with the encrypted file as an attachment.</p>
     </div>
   </div>
   <hr>
@@ -1004,7 +1015,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Retrieve a file from encoded text (non-mobile)</h3>
   </div>
   <div id="a20" class="texter">
-    <p>1. Make sure the encoded file, which presumably has been obtained by unlocking or merging parts, is on the <strong>Main</strong> tab. </p>
+    <p>1. Make sure the encoded file, which presumably has been obtained by decrypting or merging parts, is on the <strong>Main</strong> tab. </p>
     <p>2. Click the <strong>Save file</strong> button at the top of the <strong>Options</strong> tab.</p>
     <p>3. If the content was plain text rather than encoded, you will be asked for a name. Type a name (default extension is .txt) and click <strong>OK</strong>. </p>
     <p>The file will be saved to your default downloads folder.</p>
@@ -1030,6 +1041,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b21" class="texter">
       <p> Please tell participants about the time for the chat. When the time comes, you will join the chat using the same invitation as the other parties, so make sure to save it somewhere. All browsers can make a chat invitation, but some (Internet Explorer, Safari, native Android app, anything on iOS) don't support joining the actual chat.</p>
+      <p>PassLok chat invitations encrypted in Signed or Read-once mode can be decrypted in PassLok for Email, and vice-versa.</p>
     </div>
   </div>
   <hr>
@@ -1037,7 +1049,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Use an invitation to join a real-time chat session (tags are PL**chat)</h3>
   </div>
   <div id="a22" class="texter">
-    <p>1. Place the invitation in the Main box and click the <strong>Chat</strong> or the <strong>Unlock</strong> button. If the sender added a message, it will be displayed and you will have to click <strong>OK</strong> to go on, or <strong>Cancel</strong> to try later.</p>
+    <p>1. Place the invitation in the Main box and click the <strong>Chat</strong> or the <strong>Decrypt</strong> button. If the sender added a message, it will be displayed and you will have to click <strong>OK</strong> to go on, or <strong>Cancel</strong> to try later.</p>
     <p>2. A new screen opens. Write the name you want to use for the chat in the top box, and then click <strong>Start</strong> or <strong>Join</strong> (depending on whether or not you are the first to arrive at the virtual chat room).</p>
     <p>3. As participants join the chat session, their chosen names will appear at the top of the chat screen (or a randomly-chosen tag, if they didn't supply a name). You can then post text by writing it in the Text box, followed by Enter. You can also post files by clicking the Browse or Files button.</p>
     <p>4. If the chat involves audio or video, you may be asked to give permission to access you microphone and camera. After you grant it, you will see or hear the other participants as they join, and likely yourself too.</p>
@@ -1047,11 +1059,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b22" class="texter">
       <p> Connections between participants are direct, but a signaling server is used at the start so the participants can find one another, and then it is contacted no more. PassLok will remind you that this may lead to your being tracked. After the chat has started, you can go back to PassLok and do other things, then return to the chat by clicking the <strong>Chat</strong> button. The connection will stay alive until you reload PassLok or the other participants leave. If things get out of hand, you can always reset your session with the <strong>Reset Chat</strong> button. Browsers are not equal as far as support for chat: Firefox is best, followed by Chrome and the Android browser, Maxthon, and then Opera (with problems). Internet Explorer, Tor, Safari, and anything on iOS don't yet support joining a chat, though you can make a chat invitation from them.</p>
+      <p>PassLok chat invitations encrypted in Signed or Read-once mode can be decrypted in PassLok for Email, and vice-versa.</p>
     </div>
   </div>
   <hr>
   <div id="aa23" class="helpitem">
-    <h3>Lock a message with a shared Key, to be unlocked with the same Key</h3>
+    <h3>Encrypt a message with a shared Key, to be decrypted with the same Key</h3>
   </div>
   <div id="a23" class="texter">
     <p>1. Make sure the <strong>Anonymous</strong> or <strong>Signed</strong> modes are selected at the bottom of the <strong>Main</strong> tab.</p>
@@ -1060,8 +1073,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the shared Keys, one per line, in the lower box of the dialog that appears. You can mix shared Keys and Locks. Then click <strong>Done</strong>.</li>
     </ul>
     <p>3. Write or paste the message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>4. Click the <strong>Lock</strong> button. The
-      locked message will appear in the box, replacing the original text.</p>
+    <p>4. Click the <strong>Encrypt</strong> button. The
+      encrypted message will appear in the box, replacing the original text.</p>
     <p>Copy it and paste it into your
       communications program or click <strong>Email</strong> to open your default email program. </p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number):<a href="https://www.youtube.com/watch?v=sRdpWe4zya8" target="_blank">https://www.youtube.com/watch?v=sRdpWe4zya8</a></p>
@@ -1069,24 +1082,25 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b23" class="texter">
-      <p>This message can be unlocked only by
+      <p>This message can be decrypted only by
         someone having the same shared Key. It does not matter whether Anonymous or Signed mode is selected,  since they use shared Keys identically. Alternatively, you can search for a stored shared Key by typing the name associated with it in the top box of the directory Edit dialog. When you type "Enter", the stored Key is decrypted for you to see.It is okay to strip the tags up to the "=" sign, but not recommended. It is
-        also okay to split the locked message with spaces, line returns, and
-        punctuation other than = + / or % The tags will depend on the type of locking selected for using Locks. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
+        also okay to split the encrypted message with spaces, line returns, and
+        punctuation other than = + / or % The tags will depend on the encryption mode selected. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
+      <p>Messages encrypted with a shared Key cannot be decrypted in PassLok for Email. Likewise, they cannot be opened in URSA unless they were encrypted in Short mode, which is what URSA uses, but then message length will be limited.</p>
     </div>
   </div>
   <hr>
   <div id="aa24" class="helpitem">
-    <h3>Unlock a message locked with a shared Key</h3>
+    <h3>Decrypt a message encrypted with a shared Key</h3>
   </div>
   <div id="a24" class="texter">
     <p>1. If the Key shared with the sender has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
     <ul>
       <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the shared Key in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
     </ul>
-    <p>2. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>3. If the message does not unlock automatically, click the <strong>Unlock</strong> button. The unlocked message
-      will appear in the main box, replacing the locked message.</p>
+    <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+    <p>3. If the message does not decrypt automatically, click the <strong>Decrypt</strong> button. The decrypted message
+      will appear in the main box, replacing the encrypted message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number):<a href="https://www.youtube.com/watch?v=sRdpWe4zya8" target="_blank">https://www.youtube.com/watch?v=sRdpWe4zya8</a></p>
     <div id='bb24' class="helpitem">
       <p><em>Click here for More:</em></p>
@@ -1094,20 +1108,21 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="b24" class="texter">
       <p>It is okay if the message is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
-        missing its tags. It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+        missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Messages encrypted with URSA can be decrypted in PassLok, using this procedure.</p>
     </div>
   </div>
   <hr>
   <div id="aa59" class="helpitem">
-    <h3>Lock a message with a Pad, to be unlocked with the same Pad</h3>
+    <h3>Encrypt a message with a Pad, to be decrypted with the same Pad</h3>
   </div>
   <div id="a59" class="texter">
     <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage.</p>
     <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. Then click <strong>Done</strong>.</p>
     <p>3. Write the message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>4. Click the <strong>Lock</strong> button. If Pad mode is engaged, a popup will ask for the starting position in the Pad, otherwise locking will proceed using the regular shared Key mode (a warning popup will appear if there are several paragraphs).</p>
+    <p>4. Click the <strong>Encrypt</strong> button. If Pad mode is engaged, a popup will ask for the starting position in the Pad, otherwise encryption will proceed using the regular shared Key mode (a warning popup will appear if there are several paragraphs).</p>
     <p>5. Write a number within the range given in the dialog and click <strong>OK</strong>. The
-    locked message will appear in the box, replacing the original text.</p>
+    encrypted message will appear in the box, replacing the original text.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=BEXYuaCxciM" target="_blank">https://www.youtube.com/watch?v=BEXYuaCxciM</a></p>
     <div id='bb59' class="helpitem">
       <p><em>Click here for More:</em></p>
@@ -1115,21 +1130,22 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="b59" class="texter">
       <p>Pad mode is <em>theoretically impossible to break</em>, even by brute force. Use it when you need the utmost security. The text material can be taken from a digital book, for instance. You may transmit in plain text the page number and starting position, so long as the text source is kept secret.</p>
       <p>It is
-        okay to split the locked message with spaces, line returns, and
-      punctuation other than = + or /, or to eliminate the tags at either end. It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+        okay to split the encrypted message with spaces, line returns, and
+      punctuation other than = + or /, or to eliminate the tags at either end. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>This mode is fully compatible with URSA.</p>
     </div>
   </div>
   <hr>
   <div id="aa60" class="helpitem">
-    <h3>Unlock a message locked with a Pad</h3>
+    <h3>Decrypt a message encrypted with a Pad</h3>
   </div>
   <div id="a60" class="texter">
     <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage.</p>
     <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. Then click <strong>Done</strong>.</p>
-    <p>3. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>4. Click the <strong>Unlock</strong> button if unlocking does not start automatically. A popup will ask for the starting position in the Pad.</p>
-    <p>5. Write a number within the range given in the dialog and click <strong>OK</strong>. The unlocked message
-    will appear in the main box, replacing the locked message.</p>
+    <p>3. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+    <p>4. Click the <strong>Decrypt</strong> button if decrypting does not start automatically. A popup will ask for the starting position in the Pad.</p>
+    <p>5. Write a number within the range given in the dialog and click <strong>OK</strong>. The decrypted message
+    will appear in the main box, replacing the encrypted message.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=BEXYuaCxciM" target="_blank">https://www.youtube.com/watch?v=BEXYuaCxciM</a></p>
     <div id='bb60' class="helpitem">
       <p><em>Click here for More:</em></p>
@@ -1137,7 +1153,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="b60" class="texter">
       <p>It is okay if the message is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
-        missing its tags. It doesn't matter which locking mode is selected at the botton of the <strong>Main</strong> tab.</p>
+        missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>URSA messages encrypted this way can also be decrypted in PassLok.</p>
     </div>
   </div>
   <hr>
@@ -1161,7 +1178,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b25" class="texter">
-      <p>If the given name is already in the directory,  the  Lock or shared Key will be replaced rather than added. You can store a cover text or a List besides somebody's Lock or shared Key. In the case of a List, the given name will be displayed bracketed by double dashes. Items that are not Locks are stored encrypted. When you load PassLok from an email link, a popup may open asking you to accept saving the sender's Lock to your directory. You can change its name at this point. (<em>Chrome app only</em>) If <strong>Chrome sync</strong> is checked in <strong>Options</strong>, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome.</p>
+      <p>If the given name is already in the directory, the Lock or shared Key will be replaced rather than added. You can store a cover text or a List besides somebody's Lock or shared Key. In the case of a List, the given name will be displayed bracketed by double dashes. Items that are not Locks are stored encrypted. When you load PassLok from an email link, a popup may open asking you to accept saving the sender's Lock to your directory. You can change its name at this point.</p>
+      <p>(<em>Chrome app only</em>) If <strong>Chrome sync</strong> is checked in Options, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome.</p>
     </div>
   </div>
   <hr>
@@ -1176,7 +1194,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b26" class="texter">
-      <p> You can stop typing once you see the complete name for the item you're looking for. The process also works for Lists, and cover texts stored in the local directory. Search is case-insensitive, so if the item does not appear, this probably means that the name is wrong. If the item is a cover text, it loads automatically for use in Text hiding. (<em>Chrome app only</em>) If you type "Enter" after a name that was not found on the local database and <strong>Chrome sync</strong> is checked in Options, PassLok will look for it in its Chrome sync area, which syncs across computers, and then adds it to the local directory.</p>
+      <p> You can stop typing once you see the complete name for the item you're looking for. The process also works for Lists, and cover texts stored in the local directory. Search is case-insensitive, so if the item does not appear, this probably means that the name is wrong. If the item is a cover text, it loads automatically for use in Text hiding.</p>
+      <p>(<em>Chrome app only</em>) If you type "Enter" after a name that was not found on the local database and <strong>Chrome sync</strong> is checked in Options, PassLok will look for it in its Chrome sync area, which syncs across computers, and then adds it to the local directory.</p>
     </div>
   </div>
   <hr>
@@ -1192,7 +1211,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b27" class="texter">
-      <p>You can stop typing once you see the complete name for the item you are looking for. Search is case-insensitive, so if the item does not appear, that probably means the name is wrong. (<em>Chrome app only</em>)  If <strong>Chrome sync</strong> is checked in Options,  the item will also be deleted from there, after a confirmation popup.</p>
+      <p>You can stop typing once you see the complete name for the item you are looking for. Search is case-insensitive, so if the item does not appear, that probably means the name is wrong.</p>
+      <p>(<em>Chrome app only</em>)  If <strong>Chrome sync</strong> is checked in Options,  the item will also be deleted from there, after a confirmation popup.</p>
     </div>
   </div>
   <hr>
@@ -1203,7 +1223,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>What should the video include:</p>
     <ul>
       <li> Identify yourself (First and Last name, or other).</li>
-      <li> Write your Lock on a sign and display it, and read a portion of it out loud (say, the first 12 characters after the initial tag).</li>
+      <li> Write your Lock on a sign and display it, and read a portion of it out loud (say, the first 15 characters after the initial tag).</li>
       <li>For regular Locks, make sure to distinguish capitals from smallcase letters. This is not necessary for ezLoks.</li>
       <li> The video should be short, only a few seconds long.</li>
       <li> Play a song in the background to ensure the video is not tampered with.</li>
@@ -1211,7 +1231,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>What to do with the video: </p>
     <ul>
       <li> Upload the video to the Web.</li>
-      <li> Post the video URL in the General Directory on the line immediately below  your Lock.</li>
+      <li> Post the video URL in the General Directory on the line immediately below your Lock.</li>
       <li>For more instructions on this, go to “How to add an authentication video” under the General Directory help. </li>
     </ul>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=zkcqEz3UjnM" target="_blank">https://www.youtube.com/watch?v=zkcqEz3UjnM</a></p>
@@ -1219,7 +1239,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b28" class="texter">
-      <p>It is highly recommended that you make a video whenever you change your secret Key, so that others can be assured that the matching Lock really belongs to you. When you post your Lock so that people can use it to lock messages for you, write the address of the video on the line immediately below the Lock, to facilitate the verifying process. Video URLs don't affect the function of Locks, so it is okay to handle the Lock and its video address as a unit. Obviously, you wouldn't do this for a shared Key, only for a Lock.</p>
+      <p>It is highly recommended that you make a video whenever you change your secret Key, so that others can be assured that the matching Lock really belongs to you. When you post your Lock so that people can use it to encrypt messages for you, write the address of the video on the line immediately below the Lock, to facilitate the verifying process. Video URLs don't affect the function of Locks, so it is okay to handle the Lock and its video address as a unit. Obviously, you wouldn't do this for a shared Key, only for a Lock.</p>
+      <p>Your PassLok ezLok is also used in PassLok for Email, so one video will suffice for both programs. PassLok for Email displays your ezLok at the beginning of any item you encrypt.</p>
     </div>
   </div>
   <hr>
@@ -1253,13 +1274,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>To backup and optionally remove an existing user (advanced):</p>
     <p>1. While you are logged in with that user's Key, go to the <strong>Options</strong> tab and click the Backup/Remove <strong>Whole Directory</strong> button (visible in the Advanced interface).</p>
     <p>2. Then a prompt asks you to confirm deleting the directory from the device. If you click <strong>OK,</strong> the entire local directory for that user is deleted, leaving no traces. If you click <strong>Cancel</strong>, the process ends and the directory contents are not deleted. In both cases the backup on the <strong>Main</strong> tab remains.</p>
-    <p>3. To retrieve a backed-up directory (has PL**dir tags), paste it into the <strong>Main</strong> tab, and click <strong>Unlock</strong> if it does not unlock automatically. The database will be unlocked and placed in the directory Edit dialog. Then you can add it to the device's current local directory by clicking <strong>Merge</strong>.</p>
+    <p>3. To retrieve a backed-up directory (has PL**dir tags), paste it into the <strong>Main</strong> tab, and click <strong>Decrypt</strong> if it does not decrypt automatically. The database will be decrypted and placed in the directory Edit dialog. Then you can add it to the device's current local directory by clicking <strong>Merge</strong>.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=8zo-N5O82iM" target="_blank">https://www.youtube.com/watch?v=8zo-N5O82iM</a></p>
     <div id='bb30' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b30" class="texter">
-      <p>You can maintain multiple identities, using different Keys. The backup process is useful whenever you stop using a device or just want to transfer your data to another device. (<em>Chrome app only</em>) Even if the local directory is completely deleted, the items in your Chrome sync area remain available if you click <strong>Cancel</strong> when PassLok offers to remove them from sync as well. They will load back automatically, even on a different machine, if you set up a user with <em>the same user name</em>.</p>
+      <p>You can maintain multiple identities, using different Keys. The backup process is useful whenever you stop using a device or just want to transfer your data to another device.</p>
+      <p>(<em>Chrome app only</em>) Even if the local directory is completely deleted, the items in your Chrome sync area remain available if you click <strong>Cancel</strong> when PassLok offers to remove them from sync as well. They will load back automatically, even on a different machine, if you set up a user with <em>the same user name</em>.</p>
     </div>
   </div>
   <hr>
@@ -1267,7 +1289,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Access the advanced functions of PassLok</h3>
   </div>
   <div id="a31" class="texter">
-    <p>PassLok launches first in Basic mode, so you are able to lock and unlock messages and perform the essential directory management functions. But PassLok has a lot more capabilities, which become available when you click the <strong>Advanced</strong> checkbox in the <strong>Options</strong> tab. To get back to Basic mode, click the <strong>Basic</strong> checkbox. PassLok will remember your choice of interface next time you open it.</p>
+    <p>PassLok launches first in Basic mode, so you are able to encrypt and decrypt messages and perform the essential directory management functions. But PassLok has a lot more capabilities, which become available when you click the <strong>Advanced</strong> checkbox in the <strong>Options</strong> tab. To get back to Basic mode, click the <strong>Basic</strong> checkbox. PassLok will remember your choice of interface next time you open it.</p>
     <p>Some advanced capabilities include:</p>
     <ul>
       <li>Apply a seal to a text, and verify its authenticity.</li>
@@ -1276,6 +1298,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Change the user name, the Key, or the email/token.</li>
       <li>Backup or erase user settings, or even the entire local directory.</li>
     </ul>
+    <p>There is also <strong>Email</strong> mode, which displays only the functions that are available in <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">PassLok for Email</a>. In this mode, PassLok's output is nearly identical to that of PassLok for Email, so it can be decrypted in that program. The ouput of PassLok for Email can always be handled by the standalone PassLok, no matter which interface mode is selected in Options.</p>
     <p>This and mode is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Ttyvb0Qt7h0" target="_blank">https://www.youtube.com/watch?v=Ttyvb0Qt7h0</a></p>
   </div>
   <hr>
@@ -1286,16 +1309,15 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>The main functions in PassLok can be accessed directly from the keyboard. The button tooltips tell you what the shortcut is for each button that has a shortcut, but below is a complete list, just in case: </p>
     <ul>
       <p>Alt-M: <strong>M</strong>ain tab</p>
-      <p>Alt-D: <strong>D</strong>irectory Edit dialog</p>
       <p>Alt-H: <strong>H</strong>elp tab</p>
       <p>Alt-O: <strong>O</strong>ptions tab</p>
       <p>Alt-0: Deselect all Locks</p>
-      <p>Alt- <strong>.</strong> <em>(period)</em>: extra buttons open and close</p>
-      <p>Alt-L: <strong>L</strong>ock or unlock </p>
+      <p>Alt-E: <strong>E</strong>dit the Lock directory</p>
+      <p>Alt-<strong>.</strong> <em>(period)</em>: extra buttons open and close</p>
+      <p>Alt-D: encrypt or <strong>D</strong>ecrypt</p>
       <p>Alt-V: seal or <strong>V</strong>erify seal</p>
-      <p>Alt-K: display my Loc<strong>K</strong></p>
+      <p>Alt-L: display my <strong>L</strong>ock or send emai<strong>L</strong></p>
       <p>Alt-R: toggle the <strong>R</strong>ich text editor</p>
-      <p>Alt-E: send <strong>E</strong>mail</p>
       <p>Alt-C: start or join <strong>C</strong>hat</p>
       <p>Alt-B: use the <strong>B</strong>asic interface</p>
       <p>Alt-A: use the <strong>A</strong>dvanced interface</p>
@@ -1319,40 +1341,41 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <hr>
   <div id='advancedHelp' style="display: none;">
     <div id="aa33" class="helpitem">
-      <h3>Make a short locked message suitable for texting <em>(advanced)</em></h3>
+      <h3>Make a short encrypted message suitable for texting <em>(advanced)</em></h3>
     </div>
     <div id="a33" class="texter">
-      <p>1. On the <strong>Options</strong> tab, check the <strong>Short</strong> checkbox. Also make sure the appropriate locking mode is selected with the radio buttons at the bottom of the <strong>Main</strong> tab.</p>
+      <p>1. On the <strong>Options</strong> tab, check the <strong>Short</strong> checkbox. Also make sure the appropriate encryption mode is selected with the radio buttons at the bottom of the <strong>Main</strong> tab.</p>
       <p>2. If the recipient's Lock of shared Key has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
       <ul>
         <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the Lock or shared Key in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
       </ul>
       <p>3. Write or paste your message into the lower box of the <strong>Main</strong> tab.</p>
-      <p>4. Click the <strong>Lock</strong> button. The locked message will appear in the box, replacing the original message.</p>
+      <p>4. Click the <strong>Encrypt</strong> button. The encrypted message will appear in the box, replacing the original message.</p>
       <p>Copy it and paste it into your communications program. </p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=pD-uvyxKBgQ" target="_blank">https://www.youtube.com/watch?v=pD-uvyxKBgQ</a></p>
       <div id='bb33' class="helpitem">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b33" class="texter">
-        <p>The locked message, which has no tags, will fit within one SMS message (160 characters). A message above the main box will tell you how much space is left, depending on the locking mode selected. On a mobile device, the locked message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>SMS</strong> button, which will open your texting app.  Message length is limited to 94 ASCII characters when locking with a shared Key or in Signed mode, 62 in Anonymous mode, 35 in Read-once mode. Non-ASCII characters use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost.</p>
+        <p>The encrypted message, which has no tags, will fit within one SMS message (160 characters). A message above the main box will tell you how much space is left, depending on the encryption mode selected. On a mobile device, the encrypted message will be selected and ready to be copied into the clipboard. <strong>You need to copy it</strong> manually before clicking the <strong>SMS</strong> button, which will open your texting app.  Message length is limited to 94 ASCII characters when encrypting with a shared Key or in Signed mode, 62 in Anonymous mode, 35 in Read-once mode. Non-ASCII characters use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost.</p>
+        <p>Short-mode locked items are not compatible with PassLok for Email, but if a shared Key is used they can be decrypted in URSA.</p>
       </div>
     </div>
     <hr>
     <div id="aa34" class="helpitem">
-      <h3>Unlock a short locked message (no tags) <em>(advanced)</em></h3>
+      <h3>Decrypt a short encrypted message (no tags) <em>(advanced)</em></h3>
     </div>
     <div id="a34" class="texter">
-      <p>1. If the message was locked in Signed or Read-once mode, or with a shared Key, you will need to select the sender on the directory, or enter the appropriate Lock or shared Key in the directory Edit dialog, as described above.</p>
-      <p>2. Paste the locked message in the lower box of the <strong>Main</strong> tab.</p>
-      <p>3. If it does not unlock automatically, click the <strong>Unlock</strong> button. The unlocked message will appear in the box, replacing the locked message.</p>
+      <p>1. If the message was encrypted in Signed or Read-once mode, or with a shared Key, you will need to select the sender on the directory, or enter the appropriate Lock or shared Key in the directory Edit dialog, as described above.</p>
+      <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+      <p>3. If it does not decrypt automatically, click the <strong>Decrypt</strong> button. The decrypted message will appear in the box, replacing the encrypted message.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=pD-uvyxKBgQ" target="_blank">https://www.youtube.com/watch?v=pD-uvyxKBgQ</a></p>
       <div id='bb34' class="helpitem">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b34" class="texter">
         <p>It is okay if the message is broken up by
-          spaces, carriage returns, and special characters. When unlocking, there is no need to set the locking mode at the bottom of the <strong>Main</strong> tab.</p>
+          spaces, carriage returns, and special characters. When decrypting, there is no need to set the encryption mode at the bottom of the <strong>Main</strong> tab.      </p>
       </div>
     </div>
     <hr>
@@ -1369,7 +1392,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b35" class="texter">
-        <p>It is okay to strip the tags up to the "=" sign, but not recommended. It is also okay to split the sealed item with spaces, and punctuation other than line returns or = + or /.</p>
+        <p>It is okay to strip the tags up to the "=" sign, but not recommended. It is also okay to split the sealed item with spaces, and punctuation other than line returns or = + or /. Sealed items can be unsealed only in PassLok.</p>
       </div>
     </div>
     <hr>
@@ -1392,7 +1415,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <div id="b36" class="texter">
         <p> It is okay
           if the signer's Lock is missing its tags up to the "=" signs , or extra spaces, carriage
-          returns, or special characters other than = + or / have been added. Unsealing requires a true Lock; shared Keys cannot be used for unsealing. Locking/unlocking with a shared Key partially verifies the identity of the sender, since shared Keys are not public.</p>
+          returns, or special characters other than = + or / have been added. Unsealing requires a true Lock; shared Keys cannot be used for unsealing. Encrypting/decrypting with a shared Key partially verifies the identity of the sender, since shared Keys are not public.</p>
       </div>
     </div>
     <hr>
@@ -1472,7 +1495,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b41" class="texter">
-        <p>The parts are enclosed within tags of the PL**p^^^ form, where ^^^ is the minimum number of parts that are needed to reconstruct the original. It is okay to strip the tags of the resulting parts up to the "=" sign, but not recommended.  It is also okay to split the parts with spaces and punctuation other than = + / or line returns. If you enter nothing in the second box, it is understood that all parts will be required to retrieve the original.</p>
+        <p>The parts are enclosed within tags of the PL**p^^^ form, where ^^^ is the minimum number of parts that are needed to reconstruct the original. It is okay to strip the tags of the resulting parts up to the "=" sign, but not recommended.  It is also okay to split the parts with spaces and punctuation other than = + / or line returns. If you enter nothing in the second box, it is understood that all parts will be required to retrieve the original. Split items can only be joined in PassLok.</p>
       </div>
     </div>
     <hr>
@@ -1492,13 +1515,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <hr>
     <div id="aa43" class="helpitem">
-      <h3>Lock a second, undetectable message in addition to the main message (Decoy mode) <em>(advanced)</em></h3>
+      <h3>Encrypt a second, undetectable message in addition to the main message (Decoy mode) <em>(advanced)</em></h3>
     </div>
     <div id="a43" class="texter">
       <p>1. On the <strong>Options</strong> tab, check the <strong>Decoy </strong>checkbox.</p>
-      <p>2. Follow the above instructions for any kind of regular locking (not Short). A popup will ask for a hidden message and a Decoy Key/Lock to lock it.</p>
+      <p>2. Follow the above instructions for any kind of regular encryption (not Short). A popup will ask for a hidden message and a Decoy Key/Lock to encrypt it.</p>
       <p>3. Input the  hidden message into the top box and the Decoy shared Key or Lock (either kind will work) in the bottom box. Then click <strong>OK</strong>. </p>
-      <p>The locked
+      <p>The encrypted
         message containing both the main text and the hidden text will appear in
         the main box, replacing the original text. Copy it and paste it into your
         communications program.</p>
@@ -1507,19 +1530,20 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b43" class="texter">
-        <p>It is impossible to tell whether or not a locked item contains a hidden message. The length of the hidden message is limited to
+        <p>It is impossible to tell whether or not a encrypted item contains a hidden message. The length of the hidden message is limited to
           59 ASCII characters, sufficient to include a Lock without its tags. Non-ASCII characters
           use 6 spaces each, so avoid them if you can. Any text beyond the limit will be lost.  If a shared Key is used for the second message, the same shared Key is needed to retrieve it; if a Lock was used, its matching Key will be needed.</p>
+        <p>Decoy messages added in PassLok can only be revealed in PassLok, even if the main message can be decrypted in another app such as PassLok for Email or URSA.</p>
       </div>
     </div>
     <hr>
     <div id="aa44" class="helpitem">
-      <h3>Reveal the hidden text contained within a message locked in Decoy mode <em>(advanced)</em></h3>
+      <h3>Reveal the hidden text contained within a message encrypted in Decoy mode <em>(advanced)</em></h3>
     </div>
     <div id="a44" class="texter">
       <p>1. On the <strong>Options</strong> tab, check the <strong>Decoy </strong>checkbox.</p>
-      <p>2. Follow the instructions for any of the regular unlocking modes. A popup will ask for a Decoy Key.</p>
-      <p>3. Input the Decoy Key. If it is a shared Key, leave the <strong>Shared</strong> box checked; if it is a secret Key matching the Lock that was used to lock the hidden message, uncheck the <strong>Shared</strong> box.</p>
+      <p>2. Follow the instructions for any of the regular decrypting modes. A popup will ask for a Decoy Key.</p>
+      <p>3. Input the Decoy Key. If it is a shared Key, leave the <strong>Shared</strong> box checked; if it is a secret Key matching the Lock that was used to encrypt the hidden message, uncheck the <strong>Shared</strong> box.</p>
       <p>4. Then click <strong>OK</strong>. The hidden message, if it exists,
         will appear above the main box.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4WrYEdRp2Q4" target="_blank">https://www.youtube.com/watch?v=4WrYEdRp2Q4</a></p>
@@ -1527,7 +1551,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b44" class="texter">
-        <p>Since it is impossible to detect the presence of a hidden message, it is necessary to click the <strong>Decoy</strong> checkbox in order to check for it. Likewise, there is no way to tell whether the sender used a Key or a Lock for locking the hidden message, so the recipient must tell PassLok by checking or unchecking the <strong>Shared</strong> box.</p>
+        <p>Since it is impossible to detect the presence of a hidden message, it is necessary to click the <strong>Decoy</strong> checkbox in order to check for it. Likewise, there is no way to tell whether the sender used a Key or a Lock for encrypting the hidden message, so the recipient must tell PassLok by checking or unchecking the <strong>Shared</strong> box.</p>
       </div>
     </div>
     <hr>
@@ -1581,7 +1605,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <h3>Use the List button <em>(advanced)</em></h3>
     </div>
     <div id="a49" class="texter">
-      <p>You can always make a List of Locks and shared Keys, in order to lock a message for multiple recipients, by writing the Locks or shared Keys in separate lines of the lower box in the directory edit dialog. Lists can be given names to save them in the local directory. Saved Lists appear highlighted in the top box of the <strong>Main</strong> tab. The <strong>List</strong> button, which appears after clicking the <strong>Edit</strong> button next to the Lock selection box, facilitates making Lists this way:</p>
+      <p>You can always make a List of Locks and shared Keys, in order to encrypt a message for multiple recipients, by writing the Locks or shared Keys in separate lines of the lower box in the directory edit dialog. Lists can be given names to save them in the local directory. Saved Lists appear highlighted in the top box of the <strong>Main</strong> tab. The <strong>List</strong> button, which appears after clicking the <strong>Edit</strong> button next to the Lock selection box, facilitates making Lists this way:</p>
       <p>1. If you put several items on separate lines in the lower box of the directory Edit dialog and click the <strong>List</strong> button, PassLok will remember them during the current session.</p>
       <p>2. To add one or several items to the List in memory, put them in the box and click<strong> List</strong> again. Duplicates are removed in the process.</p>
       <p>3. If you click <strong>List</strong> with the box empty, the current List in memory is displayed.</p>
@@ -1637,7 +1661,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       </div>
       <div id="b52" class="texter">
         <p>This process assumes that the Locks in your local directory have been authenticated, perhaps by following the process explained elsewhere in the help area. When asking others to authenticate themselves, it is important to ensure that the text they are asked to seal could not have been predicted ahead of time.</p>
-        <p>If there is no Lock for a participant, but rather a shared Key, he/she should instead lock the garbage text with that shared Key and post the result. Authentication will be complete once the locked text can be unlocked with the shared Key and the result matches the original.</p>
+        <p>If there is no Lock for a participant, but rather a shared Key, he/she should instead encrypt the garbage text with that shared Key and post the result. Authentication will be complete once the encrypted text can be decrypted with the shared Key and the result matches the original.</p>
       </div>
     </div>
     <hr>
@@ -1653,7 +1677,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b53" class="texter">
-        <p>If your chat invitation was locked with a shared Key rather than a Lock, you should instead lock the garbage text with that shared Key and post the result; authentication will be complete once the locked text can be unlocked with the shared Keyl.</p>
+        <p>If your chat invitation was encrypted with a shared Key rather than a Lock, you should instead encrypt the garbage text with that shared Key and post the result; authentication will be complete once the encrypted text can be decrypted with the shared Keyl.</p>
       </div>
     </div>
     <hr>
@@ -1666,17 +1690,17 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         <em>Dear So-and-So:</em><br />
         <em>I just obtained your PassLok Lock from (cite source), but I still wonder if it is authentic since I am unable to view the authenticating video. Therefore, I ask you to help me authenticate it through the interlock protocol. Here's what I want you to do:</em></p>
       <ol>
-        <li><em>Write a message asking me to take a picture or video of myself doing something of your choice. Lock the message with my Lock, which is appended to this message, and copy it to a safe place. Then split it in two and send me the first half only.</em></li>
-        <li><em>When I receive your first half, I will also write a message asking you to do something in a picture or short video. I'll lock that message with your Lock, and I'll send you half of the locked message first. When you get it, go ahead and send me the other half of your locked message.</em></li>
-        <li><em>When I get your second half, I'll put the two halves together and unlock your message. Then, following your instructions I'll send you the picture or video right away, unlocked, along with the second half of my locked request.</em></li>
-        <li><em>When you get it, please verify that what I sent conforms to your instructions. If so, put together the two halves of my locked message to you, unlock it, and send me what I ask in the message as soon as possible, unlocked as well. Then I'll know that your Lock is authentic.</em></li>
+        <li><em>Write a message asking me to take a picture or video of myself doing something of your choice. Encrypt the message with my Lock, which is appended to this message, and copy it to a safe place. Then split it in two and send me the first half only.</em></li>
+        <li><em>When I receive your first half, I will also write a message asking you to do something in a picture or short video. I'll encrypt that message with your Lock, and I'll send you half of the encrypted message first. When you get it, go ahead and send me the other half of your encrypted message.</em></li>
+        <li><em>When I get your second half, I'll put the two halves together and decrypt your message. Then, following your instructions I'll send you the picture or video right away, decrypted, along with the second half of my encrypted request.</em></li>
+        <li><em>When you get it, please verify that what I sent conforms to your instructions. If so, put together the two halves of my encrypted message to you, decrypt it, and send me what I ask in the message as soon as possible, decrypted as well. Then I'll know that your Lock is authentic.</em></li>
       </ol>
       <p><em>Many thanks. Sincerely, This-and-That</em></p>
       <div id='bb54' class="helpitem">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b54" class="texter">
-        <p>Alternatively, you can ask the other person to use PassLok's built-in <strong>Split/Join</strong> function, explained in another help item, rather than simply cutting messages in two.  The pictures or videos (or recordings) don't need to be locked. Only the instructions for making them need to be locked and transmitted with this two-step process. There is an article in the <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual21.pdf" target="_blank">PassLok manual</a> that explains how this protocol works for authenticating Locks.</p>
+        <p>Alternatively, you can ask the other person to use PassLok's built-in <strong>Split/Join</strong> function, explained in another help item, rather than simply cutting messages in two.  The pictures or videos (or recordings) don't need to be encrypted. Only the instructions for making them need to be encrypted and transmitted with this two-step process. There is an article in the <a href="http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual21.pdf" target="_blank">PassLok manual</a> that explains how this protocol works for authenticating Locks.</p>
       </div>
     </div>
     <hr>
@@ -1715,12 +1739,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <div id="aa56" class="helpitem">
-    <h3>I have an item that was locked/sealed with a previous version of PassLok, and the current version cannot handle it</h3>
+    <h3>I have an item that was encrypted/sealed with a previous version of PassLok, and the current version cannot handle it</h3>
   </div>
   <div id="a56" class="texter">
     <p>We do not recommend using old versions for new work. Newer versions have enhanced security and are more user-friendly. But sometimes you may need to handle an item that is incompatible with the current version. Here is a pretty complete list of old PassLok versions, with links to them.</p>
     <p><strong>The current version</strong> of PassLok can be obtained from the following servers (as always, be aware that following any link may reveal your location):</p>
-    <p>source server: <a href="https://passlok.com" target="_blank">https://passlok.com</a></p>
+    <p>source server: <a href="https://passlok.com/app" target="_blank">https://passlok.com/app</a></p>
     <p>information page: <a href="http://passlok.weebly.com/getpasslok.html" target="_blank">http://passlok.weebly.com</a></p>
     <p>GitHub page: <a href="https://github.com/fruiz500/passlok" target="_blank">https://github.com/fruiz500/passlok</a></p>
     <p>Chrome app: <a href="https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh" target="_blank">https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh</a></p>
@@ -1734,6 +1758,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><a href="http://passlok.weebly.com/get-passlok.html" target="_blank">http://passlok.weebly.com/get-passlok.html</a></p>
     <p>&nbsp;</p>
     <p><strong>Previous versions </strong>(SHA256 for each)<strong>:</strong></p>
+    <p><strong>2.2.8</strong> (1580-d524-c402-53bc-c973-6305-bee8-64ec-0853-2623-d9d3-a21e-1400-4a38-4b19-b07e)</p>
+    <p><a href="https://passlok.com/archive/passlok22.html" target="_blank">PassLok.com</a></p>
+    <p><a href="https://www.autistici.org/passlok/archive/passlok22.html" target="_blank">Autistici</a></p>
+    <p><a href="https://passlok.site44.com/archive/passlok22.html" target="_blank">Site44</a></p>
+    <p><a href="https://www.youtube.com/watch?v=u2aHUycmgWQ" target="_blank">Author reading the SHA256</a></p>
     <p><strong>2.1.03</strong> (fdc9-8bae-45c0-902f-bf6d-da01-ae7e-704c-8e32-4679-e691-a20d-4aee-2254-63af-b8d6)</p>
     <p><a href="https://passlok.com/archive/passlok21.html" target="_blank">PassLok.com</a></p>
     <p><a href="https://www.autistici.org/passlok/archive/passlok21.html" target="_blank">Autistici</a></p>
@@ -1807,7 +1836,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <address>
-  PassLok v2.2.8 &#169; F. Ruiz 2015
+  PassLok v2.3 &#169; F. Ruiz 2016
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1819,7 +1848,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <li> FastClick by FT Labs 2014</li>
     <li> file In/Out based on an article from the This Could Be Better blog 2012</li>
     <li> scrypt key stretching implementation and edcurve-js by D. Chestnykh 2014</li>
-    <li> erc-js Reed-Solomon error correction by cryodex 2014</li>
     <li> lz-string compression by pieroxy 2014</li>
     <li> webRTC chat by Muaz Khan 2015</li>
     <li>Letters encoding based on Advanced Unicode Stego by Adrian Crenshaw 2013</li>
@@ -1834,7 +1862,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Directory dialog-->
 <div id="lockScr" class="white_content" style="display: none;" align="center">
   <div id="locktop" align="center">
-    <button class="cssbutton" id="lock2mainBtn" value="< Back" style="float: left" title="return to main screen (alt-D)" accesskey="d">&#9668; Done</button>
+    <button class="cssbutton" id="lock2mainBtn" value="< Back" style="float: left" title="return to main screen (alt-E)" accesskey="">&#9668; Done</button>
     <button class="cssbutton" id="lock2dirBtn" value="Directory" style="float: right" title="open a screen containing the general PassLok directory (alt-G). WARNING: this involves going online, which might leak metadata" accesskey="g">&#9658; General Directory</button>
     <br />
     <br />
@@ -1903,11 +1931,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <p>In the following screens, you will be asked to provide a user name for yourself, plus a secret Key, and a piece of public data such as your email. You can go offline if you like; nothing will leave this device. Your Key will not be stored.</p>
     <p>This is needed to keep a permanent directory of your friends’ Locks and shared Keys, all securely encrypted. If you prefer not to store anything, click <strong>Exit</strong>.</p>
+    <div id='introVideoText'>
     <p>If you have three minutes to spare, you may want to watch the fun video called by the button below, which explains how PassLok works. It will load on a separate window. Click <strong>Next</strong> when you're ready.</p>
     <div align="center">
       <a href="https://www.youtube.com/watch?v=UxgrES_CGcg" target="_blank">
       <button class="cssbutton" id="introvideo" value="video" title="click this to load the introductory video. WARNING: this may leak your IP number">Alice & Bob Video</button>
-      </a></div>
+      </a></div></div>
     <button class="cssbutton" id="gotointro2" value="next" title="to step 2">Next &#9658;</button>
     <button class="cssbutton" id="skipIntroBtn" value="skip" title="skip this" style="float:right;">Exit</button>
   </div>
@@ -1956,6 +1985,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 4 of 5<br />
     <p>You will get better security if you also provide some public piece of data about yourself, such as your email address. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
+    <p>If you want your encrypted output to be compatible with that of <em>PassLok for Email</em>, you must write your email address here.</p>
     <div align="center">
       <input type="text" class="cssbox" id="emailIntro" style="width: 90%" name="text" placeholder="Optionally, enter your email or some other not secret personal info here" align="center">
       <br />
@@ -1964,7 +1994,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <button class="cssbutton" id="clearIntroRandomBtn" value="Clear" title="clear box contents">Clear</button>
       <br />
     </div>
-    <p>For ultimate security (at the expense of portability), you may want to click the Random button to use a random token.</p>
+    <p>For ultimate security (at the expense of portability), you may want to click the Random button to use a random token instead. It will be stored locally in encrypted form.</p>
     <button class="cssbutton" id="gotointro5" value="next" title="to step 5">Next &#9658;</button>
   </div>
 </div>
@@ -1974,8 +2004,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div align="left" style="width:98%;max-width:500px;">
     <button class="cssbutton" id="backtointro4" value="back" title="back to step 4">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 5 of 5<br />
-    <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's Main tab, along with some further instructions. You want to send that Lock to your friends so they can send you locked messages. You can do this any time by clicking the Email button or just by clicking the checkbox below.</p>
-    <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more features, go to the Options tab and check the Advanced checkbox.</p>
+    <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's Main screen, along with some further instructions. You want to send that Lock to your friends so they can send you encrypted messages. You can do this any time by clicking the Email button or just by clicking the checkbox below.</p>
+    <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more features, go to the Options tab and check the Advanced checkbox. There is also Email mode, which makes this app fully compatible with <em>PassLok for Email</em>.</p>
     <p>You may not see this screen again, but comprehensive help is always available on the Help tab.</p>
   </div>
   <div align="center">
@@ -2051,9 +2081,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <br />
   <input type="checkbox" id="showDecoyInCheck" title="reveal Key">
   &nbsp; Show
-  <button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not lock">Cancel</button>
+  <button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not encrypt">Cancel</button>
   &nbsp;
-  <button class="cssbutton" id="submitDecoyBtn" value="OK" title="go on with locking">OK</button>
+  <button class="cssbutton" id="submitDecoyBtn" value="OK" title="go on with encryption">OK</button>
 </div>
 
 <!--Decoy Out dialog-->
@@ -2067,9 +2097,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <input type="checkbox" id="sharedDecoyOut" title="uncheck if this is not Shared" checked>
   &nbsp; Shared <br />
   <br />
-  <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop unlock">Cancel</button>
+  <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop decrypt">Cancel</button>
   &nbsp;
-  <button class="cssbutton" id="submitDecoy2Btn" value="OK" title="go on with unlock">OK</button>
+  <button class="cssbutton" id="submitDecoy2Btn" value="OK" title="go on with decrypt">OK</button>
   <p>The Hidden message will appear on the Main tab</p>
 </div>
 

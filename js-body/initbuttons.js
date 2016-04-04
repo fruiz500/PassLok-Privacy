@@ -2,7 +2,7 @@
 window.onload = function() {
 
 	if(isMobile){
-		niceEditBtn.style.display = 'none';		//no rich text editing on mobile
+		niceEditBtn.style.display = 'none';			//no rich text editing on mobile
 		fileBtns.style.display = 'none';
 		selectMainBtn.style.display = 'none';
 		imgSpacer.style.display = 'none';
@@ -10,7 +10,7 @@ window.onload = function() {
 		preview.style.width = "40%";					//smaller image on PCs
 		sendSMSBtn.style.display = 'none';
 	}
-	if(!isMobile || isChrome){							//search box in Help tab. Works on Android Chrome, but won't detect right
+	if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
 		helpTopMobile.style.display = 'none';
 		helpTop.style.display = 'block';
 		helpSpace.style.display = 'block'
@@ -28,12 +28,20 @@ window.onload = function() {
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
-		anonLabel.innerHTML = '&nbsp; Anon.';
-		customLabel.innerHTML = '&nbsp; Cust.';
+		anonLabel.innerHTML = '&nbsp;Anon.&nbsp;&nbsp;';
+		modeLabel.style.display = 'none';
+		greenLabel.innerHTML = 'Grn';
+		customLabel.innerHTML = 'Cust';
+		backgroundLabel.innerHTML = 'Bg.';
+		sentencesLabel.innerHTML = 'Sent.';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
 		lockScr.style.height = "90%";
+	}
+	if(isiOS && isFile){								//don't display things that don't work on iOS app
+		introVideoText.style.display = 'none';
+		sendSMSBtn.style.display = 'none';
 	}
 
   //event listeners for buttons etc.
@@ -115,9 +123,11 @@ window.onload = function() {
 
    	backupSettingsBtn.addEventListener('click', moveMyself);
 
-   	basicMode.addEventListener('click', adv2basic);
+   	basicMode.addEventListener('click', mode2basic);
 
-   	advancedMode.addEventListener('click', basic2adv);
+   	advancedMode.addEventListener('click', mode2adv);
+
+	emailMode.addEventListener('click', mode2email);
 
 	liteStyle.addEventListener('click', selectStyle);
 

@@ -77,12 +77,17 @@ function chatResize(){
 function saveURLAsFile(){
 	var URLToWrite = mainBox.innerHTML.trim().replace(/<br>/g,'\n'),
 		URLToWriteSplit = URLToWrite.split('\n'),
-		fileNameToSaveAs = URLToWriteSplit[0].split(':')[1];
-	if(URLToWriteSplit.length > 1){
-		var content = URLToWriteSplit[1].trim()
-	} else {
-		var content = URLToWriteSplit[0].trim()
-	};
+		content = '',
+		fileNameToSaveAs = '';
+		
+	for(var i = 0; i < URLToWriteSplit.length; i++){
+		if(URLToWriteSplit[i].toLowerCase().match('data:;')){
+			content = URLToWriteSplit[i].trim();
+			fileNameToSaveAs = URLToWriteSplit[i - 1].split(':')[1];
+			break
+		}
+	}
+
 	var downloadLink = document.createElement("a");
 	if(content.slice(0,4).toLowerCase()=='data'){							//regular save of encoded file
 
@@ -128,7 +133,8 @@ function saveURLAsFile(){
 		document.body.appendChild(downloadLink);
 	}
 	downloadLink.click();
-	mainMsg.innerHTML = 'File saved with filename ' + downloadLink.download
+	mainMsg.innerHTML = 'File saved with filename ' + downloadLink.download;
+	fileMsg.innerHTML = 'file in Main box saved with name ' + downloadLink.download;
 }
 
 function destroyClickedElement(event)
@@ -147,16 +153,18 @@ function loadFileAsURL()
 		var fileName = fileToLoad.name;
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		if(fileToLoad.type.slice(0,4) == "text"){
-			mainBox.innerHTML = URLFromFileLoaded.replace(/  /g,' &nbsp;');
+			mainBox.innerHTML += "<br><br>" + URLFromFileLoaded.replace(/  /g,' &nbsp;');
 		}else{
-			mainBox.innerHTML = "filename:" + fileName + "<br>" + URLFromFileLoaded;
+			mainBox.innerHTML += "<br><br>filename:" + fileName + "<br>" + URLFromFileLoaded;
 		}
 	};
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8");
-		mainMsg.innerHTML = 'This is the content of file <strong>' + fileToLoad.name + '</strong>'
+		mainMsg.innerHTML = 'This is the content of file <strong>' + fileToLoad.name + '</strong>';
+		fileMsg.innerHTML = 'file ' + fileToLoad.name + ' loaded into Main box and ready to be read';
 	}else{
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
-		mainMsg.innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>'
+		mainMsg.innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>';
+		fileMsg.innerHTML = 'file ' + fileToLoad.name + ' loaded into Main box';
 	}
 }

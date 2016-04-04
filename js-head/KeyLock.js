@@ -123,13 +123,14 @@ function reduceVariants(string){
 }
 
 //these derive from the Key after running through scrypt stretching. BitArray format. Dir (salt=userName) is 32-byte, Sgn (salt=email, Edwards curve) is 64-byte; DH (Motgomery curve, deriving from Sgn) is 32-byte, myEmail is a string.
-var KeyDir,
+var KeyStr,
+	KeyDir,
 	KeySgn,
 	KeyDH,
 	myEmail = '';
 
 //reads Key box and stops if there's something wrong. If the timer has run out, the Key is deleted from box, and stretched keys are deleted from memory
-function readKey(){
+function refreshKey(){
 	clearTimeout(keytimer);
 	var period = 300000;
 
@@ -146,8 +147,7 @@ function readKey(){
 	}
     keytime = new Date().getTime();
 
-	var key = pwd.value.trim();
-	if (key == ""){
+	if (!KeyStr){
 		any2key();
 		if(callKey == 'initkey'){
 			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br />Please enter your secret Key'
@@ -157,12 +157,11 @@ function readKey(){
 		}
 		throw ('secret Key needed')
 	}
-	return key
 }
 
 //resets the Keys in memory when the timer ticks off
 function resetKeys(){
-	pwd.value = '';
+	KeyStr = '';
 	KeyDir = '';
 	KeySgn = '';
 	KeyDH = '';
@@ -196,7 +195,8 @@ function initUser(){
 		intromsg2.innerHTML = 'The User Name or the Key box is empty<br />Please go back and ensure both are filled.';
 		return
 	}
-	pwd.value = key;
+	pwdIntro.value = '';
+	emailIntro.value = '';
 	openClose('introscr5');
 
 	if(!localStorage[userName]){
@@ -208,6 +208,7 @@ function initUser(){
 	key2any();
 
 setTimeout(function(){									//do the rest after a short while to give time for the key screen to show
+	KeyStr = key;
 	KeyDir = wiseHash(key,userName);							//storage stretched key loaded into memory, will be used right away
 
 	if(ChromeSyncOn){											//if sync is available, get settings only from sync, then the rest
@@ -256,13 +257,13 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 },30);
 }
 
-//makes a special locked greeting for a new user
+//makes a special encrypted greeting for a new user
 function makeGreeting(isNewUser){
 	var Lock = lockDisplay();
 	if(isNewUser){
-		mainBox.innerHTML = "<div>Congratulations! You have unlocked your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can lock messages and files that only you can unlock:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b>.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks or shared Keys by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can lock items that they will be able to unlock. If someone invited you, that person should be there already.</div><div><br></div><div>Try locking this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Lock</b></div></div><div><br></div><div>You won't be able to unlock this back if you select someone else's name before you click <b>Lock</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
+		mainBox.innerHTML = "<div>Congratulations! You have decrypted your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can encrypt messages and files that only you can decrypt:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks or shared Keys by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can encrypt items that they will be able to decrypt. If someone invited you, that person should be there already.</div><div><br></div><div>Try encrypting this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Encrypt</b></div></div><div><br></div><div>You won't be able to decrypt this back if you select someone else's name before you click <b>Encrypt</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
 		Encrypt_List(['myself']);
-		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can lock messages that only you can unlock. You will need <i>their</i> Locks in order to lock messages for them.</div><div><br></div><div>Locked messages look like the gibberish below this line. Go ahead and unlock it by clicking the <b>Unlock</b> button.</div><div><br></div>" + mainBox.innerHTML;
+		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can encrypt messages that only you can decrypt. You will need <i>their</i> Locks in order to encrypt messages for them. You can display it any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>Encrypted messages look like the gibberish below this line. Go ahead and decrypt it by clicking the <b>Decrypt</b> button.</div><div><br></div>" + mainBox.innerHTML;
 		mainMsg.innerHTML = "PassLok Privacy";
 		charsLeft();
 	}
@@ -281,7 +282,7 @@ function acceptKey(){
 	}
 	if(striptags(key).length == 43 || striptags(key).length == 50){
 		keyMsg.innerHTML = '<span style="color:orange">This is a Lock. Enter your Key here</span>';
-		throw("lock instead of Key")
+		throw("Lock instead of Key")
 	}
 
 	var x = document.getElementById('nameList');
@@ -300,6 +301,7 @@ function acceptKey(){
 	}
 	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
 	if(firstInit) mainMsg.innerHTML = '<span class="blink" style="color:orange">LOADING...</span> for best speed, use at least a Medium Key';
+	KeyStr = key;
 	key2any();
 
 setTimeout(function(){									//execute after a delay so the key entry dialog can go away
@@ -313,8 +315,11 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		getSettings();
 
 		var hash = window.location.hash.slice(1),								//check for data in the URL
-			hashStripped = hash.match('=(.*)=') || [' ',' '];
+			hashStripped = hash.match('==(.*)==') || [' ',' '];
 		hashStripped = hashStripped[1];
+		
+		hashStripped = extractLock(hashStripped);
+		
 		if (hashStripped.length == 43 || hashStripped.length == 50){			//sender's Lock
 			var reply = prompt('Looks like you received a link containing a Lock from someone. It will be added to your directory if you write a name for it in the box.');
 			if(reply){
@@ -328,9 +333,9 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 			if(type == '!' || type == '~'){
 				lockUnlock()
 			}else if(type == '%'){
-				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Unseal</strong>"},300)
+				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Unseal</strong>"; updateButtons();},300)
 			}else if(hash){
-				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Unlock</strong>"},300)
+				setTimeout(function(){mainMsg.innerHTML= "Please select the sender and click <strong>Decrypt</strong>"; updateButtons();},300)
 			}
 		}
 
@@ -373,8 +378,10 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		}
 		checkboxStore();
 	}
+	pwd.value = '';																		//all done, so empty the box
+	
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-		mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+		mainMsg.innerHTML = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 	}
 	if (callKey == 'encrypt'){						//now complete whatever was being done when the Key was found missing
 		Encrypt_Single()
@@ -424,7 +431,7 @@ var locDir = {},
 function getSettings(){
 	if(userName in localStorage){
 		if(Object.keys(locDir).length == 0) locDir = JSON.parse(localStorage[userName]);	//database in Object form. Global variable
-		lockNames = Object.keys(locDir);												//array for finding lock names. Global variable
+		lockNames = Object.keys(locDir);												//array for finding Lock names. Global variable
 		if(locDir['myself']){															//initialize permanent settings
 			if(!firstInit) return;														//skip the rest if it's not the first time
 			if(locDir['myself'][3] == 'guest mode'){
@@ -432,7 +439,7 @@ function getSettings(){
 					if(fullAccess){
 						var reply = confirm("Last user did not enter the right Key. Would you like to re-encrypt the local directory?");
 						if(reply){
-							recryptDB(pwd.value,userName);
+							recryptDB(KeyStr,userName);
 							mainMsg.innerHTML = 'The local directory has been re-encrypted'
 						}else{
 							mainMsg.innerHTML = '<span style="color:orange"><strong>Warning: last session was in Guest mode</strong></span>'
@@ -491,7 +498,7 @@ function showLock(){
 		if(!reply) return;
 	};
 
-	readKey();
+	refreshKey();
 	if(!locDir['myself']) locDir['myself'] = [];
 	if(!myLock){
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');	//the Lock derives from the signing Key
@@ -511,10 +518,10 @@ function lockDisplay(){
 	if(ezLokMode.checked){
 		var mylocktemp = myezLock.replace(/l/g,'L');					//change smallcase l into capital L for display
 		mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading
-		mylocktemp = "PL22ezLok=" + mylocktemp + "=PL22ezLok";
+		mylocktemp = "PL23ezLok==" + mylocktemp + "==PL23ezLok";
 	}else{
 		var mylocktemp = myLock;
-		mylocktemp = "PL22lok=" + mylocktemp + "=PL22lok";
+		mylocktemp = "PL23lok==" + mylocktemp + "==PL23lok";
 	}
 	return mylocktemp
 };
@@ -595,7 +602,7 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label){
 //this strips initial and final tags, plus spaces and non-base64 characters in the middle
 function striptags(string){
 	string = string.replace(/\s/g,'');															//remove spaces
-	string = string.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+	string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
 	return string
 }
@@ -619,7 +626,7 @@ function replaceByItem(name,warning){
 	}
 
 	if (warningList != '' && warning){
-		var agree = confirm('The following name was not found in your local directory. If you click OK, this string will be used as a shared Key for locking and unlocking the message. This could be a serious security hazard:\n\n' + warningList);
+		var agree = confirm('The following name was not found in your local directory. If you click OK, this string will be used as a shared Key for encrypting and decrypting the message. This could be a serious security hazard:\n\n' + warningList);
 		if (!agree) throw('list encryption terminated by user')
 	}
 	return name
@@ -673,7 +680,7 @@ function randomToken(){
 function failedDecrypt(label){
 	if(lockBox.value.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){
 		any2key();					//this displays the Key entry dialog
-		keyMsg.innerHTML = "<span style='color:orange'>This Key won't unlock the item </span>" + nameBeingUnlocked;
+		keyMsg.innerHTML = "<span style='color:orange'>This Key won't decrypt the item </span>" + nameBeingUnlocked;
 		allowCancelWfullAccess = true;
 	}else if(keyChange.style.display == 'block'){
 		keyChange.style.display = 'none';
@@ -684,9 +691,9 @@ function failedDecrypt(label){
 		keyMsg.innerHTML = "<span style='color:orange'>Please write the last Key you used</span><br>You can change the Key in Options";
 		checkingKey = false;
 	}else if (label == 'read-once'){
-		mainMsg.innerHTML = 'Read-once unlock has Failed<br>You may have to reset the exchange with this sender';
+		mainMsg.innerHTML = 'Read-once decrypt has Failed<br>You may have to reset the exchange with this sender';
 	}else{
-		mainMsg.innerHTML = 'Unlock has Failed';
+		mainMsg.innerHTML = 'Decrypt has Failed';
 	}
 	throw('decryption failed')
 }

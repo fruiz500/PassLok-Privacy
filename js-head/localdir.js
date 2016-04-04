@@ -9,7 +9,7 @@ function pasteLock(){
 	}else{
 		var lock = strings[strings.length-2]									//in case there is a video URL as last line
 	}
-	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
+	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
 
 	suspendFindLock = true;															//allow writing a name without searching
 	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
@@ -19,7 +19,7 @@ function pasteLock(){
 function addLock(){
 	if(!fullAccess){
 		lockMsg.innerHTML = 'Save not available in Guest mode<br>Please restart PassLok';
-		throw('lock save canceled')
+		throw('Lock save canceled')
 	}
 	if (learnMode.checked){
 		var reply = confirm("The item in the box will be added to the permanent directory. Cancel if this is not what you want.");
@@ -43,11 +43,12 @@ function addLock(){
 	if (name !=''){
 		var locklength = striptags(lockarray[0]).length;
 		if((locklength == 43 || locklength == 50) && lockarray.length == 1){
+			if(locklength == 50) lock = lock.replace(/L/g,'l');					//de-capitalize L, if ezLock
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
 		}else{
-			if (lock.length > 500) lock = LZString.compressToBase64(lock);			//cover texts are compressed
-			var key = readKey(),
-				lockcrypt = keyEncrypt(lock);
+			if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
+//			var key = refreshKey(),
+			var	lockcrypt = keyEncrypt(lock);
 		}
 		if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
 			var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
@@ -82,7 +83,7 @@ function addLock(){
 function removeLock(){
 	if(!fullAccess){
 		lockMsg.innerHTML = 'Delete not available in Guest mode<br>Please restart PassLok';
-		throw('lock removal canceled')
+		throw('Lock removal canceled')
 	}
 	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
 	if(!reply) throw("locDir remove canceled");
@@ -114,7 +115,7 @@ function removeLock(){
 function resetPFS(){
 	if(!fullAccess){
 		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
-		throw('lock reset canceled')
+		throw('Lock reset canceled')
 	}
 	if (lockBox.value.trim().split('\n').length > 1){		//use button to reset current List if a List is displayed, nothing to do with normal use
 		if (learnMode.checked){
@@ -155,7 +156,7 @@ function resetPFS(){
 	suspendFindLock = false
 }
 
-var suspendFindLock = false							//when true, user can input a name without deleting the lock box
+var suspendFindLock = false							//when true, user can input a name without deleting the Lock box
 
 //searches for name in Locks database and returns the Lock, displays full name as well. Invoked as the user types
 function findLock(){
@@ -193,7 +194,7 @@ function decryptLock(){
 		var listArray = lockBox.value.split('\n');
 		if(lockBox.value.length > 500){
 			lockBox.value = LZString.decompressFromBase64(lockBox.value);
-			newcover(lockBox.value);							//this for loading cover text from lock screen
+			newcover(lockBox.value);							//this for loading cover text from Lock screen
 			lockMsg.innerHTML = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
 			lockMsg.innerHTML = 'List extracted'
@@ -211,7 +212,7 @@ function decryptLock(){
 	callKey = ''
 }
 
-//if a newline is entered, puts the expanded contents of the name box in the lock box, and waits for another item
+//if a newline is entered, puts the expanded contents of the name box in the Lock box, and waits for another item
 var currentList = '';
 
 function addToList(){
@@ -257,11 +258,12 @@ function addToList(){
 //automatically decrypts an item stored encrypted in the locDir database. It uses the permanent Key
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
-	var	key = readKey(),
-		string = lockBox.value.trim();
+//	var	key = refreshKey(),
+	refreshKey();
+	var	string = lockBox.value.trim();
 	if(string == "") throw('nothing to decrypt');
 	lockBox.value = keyDecrypt(string);
-	if(callKey != 'decryptlock') callKey = ''
+	if(callKey != 'decryptlock') callKey = '';
 }
 
 //add a few spaces and newlines, then remove brackets, etc., extra spaces, put in alphabetical order
@@ -301,7 +303,7 @@ function mergeLockDB(){
 		throw('invalid merge')
 	}
 	if (lockstr.slice(0,1) == '~') {
-		var key = readKey();
+//		var key = refreshKey();
 		lockstr = keyDecrypt(lockstr)
 	}
 	var lockstr2 = striptags(lockstr),
@@ -337,8 +339,10 @@ function mergeLockDB(){
 
 		var email = keyDecrypt(locDir['myself'][0]);				//populate email and recalculate Keys and Locks
 		if(email) myEmail = email;
-		var key = readKey();
-		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
+//		var key = refreshKey();
+//		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
+		refreshKey();
+		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 		myezLock = changeBase(myLock, BASE64, BASE36, true);
@@ -387,14 +391,15 @@ function moveLockDB(){
 		throw('DB move canceled')
 	}
 	callKey = 'movedb';
-	var key = readKey();
+//	var key = refreshKey();
+	refreshKey();
 
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
 	var datacrypt = keyEncrypt(lockBox.value.trim());
-	mainBox.innerHTML = 'PL22dir=' + datacrypt + '=PL22dir';
+	mainBox.innerHTML = 'PL23dir==' + datacrypt + '==PL23dir';
 	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
-	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Unlock';
+	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Decrypt';
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
@@ -423,10 +428,10 @@ function moveMyself(){
 	//first encrypt myself data, as displayed by showLockDB
 	showMyself();
 	if(fullAccess){
-		var key = readKey();
+//		var key = refreshKey();
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());
-		mainBox.innerHTML = 'PL22bak=' + datacrypt+ '=PL22bak';
-		var msg = 'The item in the box contains your settings<br>To restore them, click Unlock';
+		mainBox.innerHTML = 'PL23bak==' + datacrypt+ '==PL23bak';
+		var msg = 'The item in the box contains your settings<br>To restore them, click Decrypt';
 	}else{
 		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
 	}
@@ -577,7 +582,7 @@ function changeKey(){
 	newKey2.value = "";
 	keyChange.style.display = 'none';
 	shadow.style.display = 'none';
-	pwd.value = newkey;									//refill Key box, too
+	KeyStr = newkey;									//refill Key box, too
 
 	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
@@ -635,7 +640,7 @@ function fillBox(){
     	if(lockList.options[i].selected){
 			if(lockList.options[i].value.slice(0,2) == '--'){					//it's a List, so decrypt it and add the contents to the box
 				var itemcrypt = locDir[lockList.options[i].value][0];
-				if (!key) var key = readKey();
+//				if (!key) var key = refreshKey();
 				isList = true;											//to return here if the Key is wrong
 				list = list + '\n' + keyDecrypt(itemcrypt);
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
@@ -644,7 +649,7 @@ function fillBox(){
 			}else if(locDir[lockList.options[i].value][0].length > 500){		//it's a Cover, so decrypt it and make it the new Cover
 				var covername = lockList.options[i].value;
 				var covercrypt = locDir[covername][0];
-				if (!key) var key = readKey();
+//				if (!key) var key = refreshKey();
 				isList = true;
 				newcover(LZString.decompressFromBase64(keyDecrypt(covercrypt)));
 			}else{
@@ -658,7 +663,7 @@ function fillBox(){
 		array = array.filter(function(n){return n});													//remove nulls
 		array.sort();																					//alphabetical order
 		list = '';
-		var msg = 'Locking for: ';
+		var msg = 'Encrypting for: ';
 		for(var index = 0; index < array.length; index++){
 			list = list + '\n' + array[index];
 			msg = msg + array[index] + ', '

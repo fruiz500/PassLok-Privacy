@@ -1,4 +1,4 @@
-﻿//function that starts it all when the Lock/Unlock button is pushed
+﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
 	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
@@ -68,7 +68,7 @@ try{
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
 		var secret = mainBox.innerHTML.trim();
-		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret);
+		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret).replace(/=/g,'');
 		var	sechex = charArray2hex(nacl.util.decodeBase64(secret));
 		var	shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
@@ -84,11 +84,11 @@ function displayshare(shares,quorum){
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 
 	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
-	var	output = "PL22p" + quorumStr + "=" + dataItem + "=PL22p" + quorumStr;
+	var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 
 	for (var i=1; i < shares.length; i++) {
 		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
-		output = output + "<br><br>" + "PL22p" + quorumStr + "=" + dataItem + "=PL22p" + quorumStr;
+		output = output + "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 	};
 	mainBox.innerHTML = output;
 	if(!isMobile) selectMain();

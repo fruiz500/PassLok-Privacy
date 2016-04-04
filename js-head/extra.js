@@ -2,7 +2,7 @@
 function charsLeft(){
 	if(decoyIn.style.display == 'block'){					//for decoy message box
 		var chars = encodeURI(document.getElementById('decoyText').value).replace(/%20/g, ' ').length;
-		var limit = 59																//locked message, 59 chars
+		var limit = 59																//encrypted message, 59 chars
 		if (chars <= limit){
 			decoyMsg.innerHTML = chars + " characters out of " + limit + " used"
 		} else {
@@ -25,10 +25,11 @@ function charsLeft(){
 
 	//Now for main box. Short mode character count
 	else if(shortMode.checked && !mainBox.innerHTML.charAt(0).match(/[~!@#$*%]/)){
-		var chars = encodeURI(mainBox.innerHTML).replace(/%20/g, ' ').length;
-		var sharedKey = striptags(replaceByItem(lockBox.value,false));
+		updateButtons();
+		var chars = encodeURI(mainBox.innerHTML).replace(/%20/g, ' ').length,
+			sharedKey = striptags(replaceByItem(lockBox.value,false));
 		if(!sharedKey) return;
-		if(sharedKey.length != 43 && sharedKey.length != 50 && !onceMode.checked){		//Key-locked mode, 94 chars
+		if(sharedKey.length != 43 && sharedKey.length != 50 && !onceMode.checked){		//Key-encrypted mode, 94 chars
 			var limit = 94
 		} else if(anonMode.checked){						//anonymous mode, 62 chars
 			var limit = 62
@@ -42,28 +43,28 @@ function charsLeft(){
 		} else {
 			mainMsg.innerHTML = '<span style="color:orange">Maximum length exceeded. The message will be truncated</span>'
 		}
-		updateButtons()
 		
 	}else{updateButtons()}								//display button labels according to item nature
 }
 
 //changes button labels according to context
 function updateButtons(){
-	var text = XSSfilter(mainBox.innerHTML).split("=").sort(function (a, b) {return b.length - a.length;})[0].replace(/-/g,''),
-		type = text.charAt(0);
-	if(type.match(/[~!@#$*]/) || (text.length == 160 && !text.match(' '))){		//encrypted item
-		decryptBtn.innerHTML = 'Unlock';
-		decryptBtnBasic.innerHTML = 'Unlock';
+	var text = XSSfilter(mainBox.innerHTML).split("==").sort(function (a, b) {return b.length - a.length;})[0].replace(/-/g,'').trim(),
+		type = text.charAt(0),
+		typeGC = text.charAt(50);													//PassLok for Email compatible
+	if(type.match(/[~!@#$*]/) || typeGC.match(/[~!@#$*]/) || (text.length == 160 && !text.match(' '))){		//encrypted item
+		decryptBtn.innerHTML = 'Decrypt';
+		decryptBtnBasic.innerHTML = 'Decrypt';
 	}else{
-		decryptBtn.innerHTML = '&nbsp;Lock&nbsp;';
-		decryptBtnBasic.innerHTML = '&nbsp;Lock&nbsp;';
+		decryptBtn.innerHTML = 'Encrypt';
+		decryptBtnBasic.innerHTML = 'Encrypt';
 	}
 	if(type == '%'){										//sealed item
 		verifyBtn.innerHTML = 'Unseal';
 	}else{
 		verifyBtn.innerHTML = '&nbsp;Seal&nbsp;';
 	}
-	if(type.match(/[~!@#$*%]/) || ((text.length == 160 || text.length == 43 || text.length == 50) && !text.match(' '))){	//Lock
+	if(type.match(/[~!@#$*%]/) || typeGC.match(/[~!@#$*]/) || ((text.length == 160 || text.length == 43 || text.length == 50) && !text.match(' '))){	//Lock
 		showLockBtn.innerHTML = 'Email';
 		showLockBtnBasic.innerHTML = 'Email';
 	}else if(text == ''){
@@ -87,30 +88,58 @@ function pasteMain() {
 		var string = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,' ')),
 			strlength = string.trim().length;
 		string = string.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$%*]+/g,'');			//remove spaces and non-legal chars
-		if(string.match('=(.*)=')) string = string.match('=(.*)=')[1];						//extract stuff between = signs
-
-		if(string.length == 43 || string.length == 50){										//Lock detected; offer to add it
-			var name = prompt("Looks like you just pasted someone's Lock. If you give it a name in the box below, it will be saved to your local directory");
-			if (!name) return;
-			lockBox.value = string;
-			lockNameBox.value = name;
-			addLock();
-
-		}else{																				//something else
-			var type = string.charAt(0);
-			if(type.match(/[~!@#$*]/) || string.length == 160){
-				mainBox.innerHTML = string;
-				lockUnlock();
-				return
-			}
-			if(type == '%' && string.length != 160){
-				mainBox.innerHTML = string;
-				signVerify();
-				return
-			}
-			if(!legalItem(string)) textStego()
+		if(string.match('=(.*)=')) string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];						//extract stuff between = signs
+		
+		string = extractLock(string);
+		
+		var type = string.charAt(0);
+		if(type.match(/[~!@#$*]/) || string.length == 160){
+			mainBox.innerHTML = string;
+			lockUnlock();
+			return
 		}
+		if(type == '%' && string.length != 160){
+			mainBox.innerHTML = string;
+			signVerify();
+			return
+		}
+		if(!legalItem(string)) textStego()
     }, 0); //or 4
+}
+
+//extracts Lock at the start of an item, from an invitation or PassLok from email
+function extractLock(string){
+		var CGParts = string.split(/[@#$]/);											//if PassLok for Email item, extract ezLock
+		if(CGParts[0].length == 50){
+			var possibleLock = CGParts[0];
+			string = string.slice(50);
+		}else if(CGParts[0].length == 43){
+			var possibleLock = CGParts[0];
+			string = string.slice(43);
+		}else{
+			var possibleLock = string;
+		}
+		if(possibleLock.length == 43 || possibleLock.length == 50){
+			var index = 0, foundIndex;
+			for(var name in locDir){
+				if(possibleLock.length == 50) possibleLock = possibleLock.replace(/L/g,'l');
+				if(locDir[name][0] == possibleLock || possibleLock == myezLock){								//found it, so select this user
+					foundIndex = index	
+				}
+				index++
+			}
+			if(foundIndex != null){
+				lockList.options[foundIndex+1].selected = true;
+				fillBox();
+			}else{
+				name = prompt("Looks like you just entered someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.");
+				if (!name) return;
+				lockBox.value = possibleLock;
+				lockNameBox.value = name;
+				addLock();
+			}
+		}
+		return string
 }
 
 //formats results depending on tags present and sends to default email
@@ -120,41 +149,53 @@ function sendMail() {
 		return
 	}
 	var cipherstr = mainBox.innerHTML;
-	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
-	var type = cipherstr.slice(0,1);
+	cipherstr = cipherstr.split("==").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
+	cipherstr = XSSfilter(cipherstr);						//remove formatting
+	var type = cipherstr.charAt(0),
+		type2 = cipherstr.charAt(50);					//for email mode
 	if (learnMode.checked){
-		if(type.match(/[~!@#$%*]/)){
-			var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a title. Only locked or signed text are allowed. Cancel if this is not what you want.");
+		if(type.match(/[~!@#\$%*]/) || type2.match(/[@#\$]/)){
+			var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a subject line. Only encrypted or signed text are allowed. Cancel if this is not what you want.");
 		}else{
 			var reply = confirm("An invitation for others to join PassLok and containing your Lock will open in your default email. You still need to supply the recipient's address.  Cancel if this is not what you want.");
 		}
-		if(!reply) throw("email canceled");
+		if(!reply) throw("email canceled");		
+	}
+	if(!type.match(/[~!@#\$%*]/) && !type2.match(/[@#\$]/) && cipherstr.length != 43 && cipherstr.length != 50){
+		if(emailMode.checked){
+			var lockLinkText = "The gibberish below contains a message from me that has been encrypted with <b>PassLok for Email</b>. To decrypt it, do this:<ol><li>Install the PassLok for Email Chrome extension by following this link: link here</li><li>Reload your email and get back to this message.</li><li>Click the <b>PassLok</b> logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.</li><li>When asked whether to accept my new Password (which you don't know), go ahead and click <b>OK</b>.</li></ol><br><pre>----------begin invitation message encrypted with PassLok--------==<br><br>" + stripTags(makeInvitation()) + "<br><br>==---------end invitation message encrypted with PassLok-----------</pre>";
+		}else{
+			var lockLinkText = "To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + makeInvitation();
+		}
 	}
 
-	var lockHashTag = '=' + encodeURIComponent(myezLock).replace(/%3Cbr%3E/g,'%0D%0A') + '=';
-	var lockLinkText = "Click the link below if you don't have PassLok already or wish to get my Lock automatically. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com#" + lockHashTag;
-
-	var hashTag = encodeURIComponent(mainBox.innerHTML.replace(/-/g,'')).replace(/%3Cbr%3E/g,'%0D%0A');		//item ready for link
-	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.";
+	var hashTag = encodeURIComponent(mainBox.innerText.replace(/-/g,'')).replace(/%3Cbr%3E/g,'%0D%0A');		//item ready for link
+	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores.";
 
 	if(type=="!"){
-    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="@"){
-		var link = "mailto:"+ "?subject= " + "&body=Message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with shared Key.%0D%0A%0D%0A" + linkText;
-	} else if (type=="#"){
-		var link = "mailto:"+ "?subject= " + "&body=Signed message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
-	} else if (type=="$"){
-		var link = "mailto:"+ "?subject= " + "&body=PFS message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
-	} else if (type=="*"){
-		var link = "mailto:"+ "?subject= " + "&body=Read-once message locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with shared Key.%0D%0A%0D%0A" + linkText;
+	} else if (type=="#" || type2=="#"){
+		if(emailMode.checked){
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
+		}else{
+			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
+		}
+	} else if (type=="$" || type=="*" || type2=="$"){
+		if(emailMode.checked){
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
+		}else{
+			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+		}
 	} else if (type=="~"){
-		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database locked with PassLok v.2.2 %0D%0A%0D%0AUnlock with my secret Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with my secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="%"){
-		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.2. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
-	} else if (cipherstr.length==43 || cipherstr.length==50){
-		var link = "mailto:"+ "?subject= " + "&body=This is my PassLok v.2.2 Lock. Use it to lock text or files for me to unlock, or to verify my seal.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.3. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
+	} else if (cipherstr.length == 43 || cipherstr.length == 50){
+		var link = "mailto:"+ "?subject= " + "&body=This is my PassLok v.2.3 Lock. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText;
 	} else {
-		var link = "mailto:"+ "?subject=Invitation to PassLok privacy" + "&body=I would like to communicate privately with you using PassLok, a free app that you can get at https://passlok.com and other sources, plus the Chrome, Android, and iOS app stores.%0D%0A%0D%0A" + lockLinkText + encryptWithMyLock();
+		var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores. There is also PassLok for Email at the Chrome store.%0D%0A%0D%0A" + lockLinkText;
 	}
 
 	if(isMobile){ 	 											//new window for PC, same window for mobile
@@ -165,15 +206,20 @@ function sendMail() {
 }
 
 //encrypt main box with myLock in order to make an invitation
-function encryptWithMyLock(){
+function makeInvitation(){
 	if(mainBox.innerText.trim() != ''){
-		var reply = confirm('Do you want the contents of the main box to be locked and added to an invitation email? This will encourage the recipients to try PassLok, but be aware that the locked contents WILL NOT BE SECURE.');
-		if (!reply) return '';
-		var nonce = nacl.randomBytes(9),
+		var reply = confirm('Do you want the contents of the main box to be encrypted and added to an invitation email? This will encourage the recipients to try PassLok, but be aware that the encrypted contents WILL NOT BE SECURE.');
+		if (!reply) throw('invitation canceled');	
+		if(mainBox.innerText.slice(0,9) != 'filename:'){
+			var text = LZString.compressToBase64(mainBox.innerText).replace(/=/g,'')
+		}else{
+			var text = encodeURI(mainBox.innerHTML).replace(/%20/g,' ')
+		}		
+		var nonce = nacl.randomBytes(15),
 			nonce24 = makeNonce24(nonce),
 			noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
-			cipherstr = PLencrypt(encodeURI(mainBox.innerHTML).replace(/%20/g,' '),nonce24,nacl.util.decodeBase64(myLock));
-		return "%0D%0A%0D%0AOnce you load PassLok from the link and get it set up, paste the gibberish below and you'll be able to read my message:%0D%0A%0D%0APL20inv=@" + encodeURIComponent(noncestr + cipherstr) + "=PL20inv"
+			cipherstr = myezLock.replace(/l/g,'L') + '@' + noncestr + '%' + PLencrypt(text,nonce24,nacl.util.decodeBase64(myLock));
+			return "PL23inv==" + encodeURIComponent(cipherstr) + "==PL23inv"
 	}else{
 		return ''
 	}
@@ -183,7 +229,7 @@ function encryptWithMyLock(){
 function sendSMS(){
 	if(isMobile){
 		if (learnMode.checked){
-			var reply = confirm("The default texting app will now open. You need to have copied your short locked message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
+			var reply = confirm("The default texting app will now open. You need to have copied your short encrypted message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
 			if(!reply) throw("SMS canceled");
 		};
 		var text = "";
@@ -214,7 +260,7 @@ function Chat(){
 
 	var listArray = lockBox.value.trim().split('\n');
 	if (learnMode.checked){
-		var reply = confirm("A special locked item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
+		var reply = confirm("A special encrypted item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
 		if(!reply) throw("chat invite canceled");
 	};
 

@@ -1,6 +1,6 @@
 ﻿//to put Lock into sync storage
 function syncChromeLock(name,data) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     var jsonfile = {};
     jsonfile[syncName.toLowerCase()] = data;
     chrome.storage.sync.set(jsonfile);
@@ -13,13 +13,13 @@ function syncChromeLock(name,data) {
 function updateChromeSyncList(){
 	var ChromeSyncList = lockNames.join('|');
 	var jsonfile2 = {};
-	jsonfile2[userName.toLowerCase()+'.ChromeSyncList'] = ChromeSyncList;
+	jsonfile2[userName + '.ChromeSyncList'] = ChromeSyncList;
 	chrome.storage.sync.set(jsonfile2)
 }
 
 //to retrieve Lock from sync storage. The code specifying what to do with the item is here because the get operation is asynchronous
 function getChromeLock(name) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     chrome.storage.sync.get(syncName.toLowerCase(), function (obj) {
 		var lockdata = obj[syncName.toLowerCase()];
 		if(lockdata){
@@ -49,7 +49,7 @@ function storeChromeLock(name,lockdata){
 
 //to completely remove an entry
 function remChromeLock(name) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     chrome.storage.sync.remove(syncName.toLowerCase());
 	updateChromeSyncList();
 }
@@ -68,7 +68,7 @@ var asyncLoop = function(o){
 
 //get Lock list	from Chrome sync, then call an asynchronous loop to retrieve the data
 function retrieveAllSync(){
-	var syncName = userName.toLowerCase()+'.ChromeSyncList';
+	var syncName = userName + '.ChromeSyncList';
 	chrome.storage.sync.get(syncName, function (obj) {
 		var lockdata = obj[syncName];
 		if(lockdata){
@@ -80,7 +80,7 @@ function retrieveAllSync(){
 
 				functionToLoop : function(loop, i){
 					if (ChromeSyncList[i] != 'myself'){
-						var syncName2 = userName+'.'+ChromeSyncList[i];
+						var syncName2 = userName + '.' + ChromeSyncList[i];
 						var lockdata2 = {};
 						chrome.storage.sync.get(syncName2.toLowerCase(), function (obj) {
 							lockdata2 = obj[syncName2.toLowerCase()];
