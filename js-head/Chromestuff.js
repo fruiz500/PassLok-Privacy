@@ -1,25 +1,25 @@
 ﻿//to put Lock into sync storage
 function syncChromeLock(name,data) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     var jsonfile = {};
     jsonfile[syncName.toLowerCase()] = data;
     chrome.storage.sync.set(jsonfile);
-	
+
 	//now update the list, also in Chrome sync
-	updateChromeSyncList();
+	if(name != 'myself') updateChromeSyncList();
 }
 
 //to update the stored list
 function updateChromeSyncList(){
 	var ChromeSyncList = lockNames.join('|');
 	var jsonfile2 = {};
-	jsonfile2[userName.toLowerCase()+'.ChromeSyncList'] = ChromeSyncList;
+	jsonfile2[userName + '.ChromeSyncList'] = ChromeSyncList;
 	chrome.storage.sync.set(jsonfile2)
 }
 
 //to retrieve Lock from sync storage. The code specifying what to do with the item is here because the get operation is asynchronous
 function getChromeLock(name) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     chrome.storage.sync.get(syncName.toLowerCase(), function (obj) {
 		var lockdata = obj[syncName.toLowerCase()];
 		if(lockdata){
@@ -49,7 +49,7 @@ function storeChromeLock(name,lockdata){
 
 //to completely remove an entry
 function remChromeLock(name) {
-	var syncName = userName+'.'+name;
+	var syncName = userName + '.' + name;
     chrome.storage.sync.remove(syncName.toLowerCase());
 	updateChromeSyncList();
 }
@@ -62,25 +62,25 @@ var asyncLoop = function(o){
         i++;
         if(i==o.length){o.callback(); return;}
         o.functionToLoop(loop, i);
-    } 
+    }
     loop();//init
 }
 
 //get Lock list	from Chrome sync, then call an asynchronous loop to retrieve the data
 function retrieveAllSync(){
-	var syncName = userName.toLowerCase()+'.ChromeSyncList';
+	var syncName = userName + '.ChromeSyncList';
 	chrome.storage.sync.get(syncName, function (obj) {
 		var lockdata = obj[syncName];
 		if(lockdata){
 			var ChromeSyncList = lockdata.split('|');
-				
-//asynchronous loop to fill local directory				
+
+//asynchronous loop to fill local directory
 			asyncLoop({
 				length : ChromeSyncList.length,
-	
+
 				functionToLoop : function(loop, i){
 					if (ChromeSyncList[i] != 'myself'){
-						var syncName2 = userName+'.'+ChromeSyncList[i];
+						var syncName2 = userName + '.' + ChromeSyncList[i];
 						var lockdata2 = {};
 						chrome.storage.sync.get(syncName2.toLowerCase(), function (obj) {
 							lockdata2 = obj[syncName2.toLowerCase()];
@@ -91,12 +91,12 @@ function retrieveAllSync(){
 							fillList();
 						});
 					};
-					loop();					
+					loop();
     			},
-	
+
     			callback : function(){	//not used here
-				}    
-			});			
+				}
+			});
 //end of asynchronous loop, any code below won't wait for it to be done
 
 		}

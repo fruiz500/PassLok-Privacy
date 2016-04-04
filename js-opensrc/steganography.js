@@ -1,6 +1,6 @@
-/* 
+/*
  * steganography.js v1.0.1
- * 
+ *
  * Copyright (C) 2012, Peter Eigenschink (http://www.peter-eigenschink.at/)
  * Dual-licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
  * and the Beerware (http://en.wikipedia.org/wiki/Beerware) license.
@@ -46,7 +46,7 @@
       return ret;
     }
   };
-  
+
   function Cover() {};
 
   Cover.prototype = {
@@ -59,7 +59,7 @@
                 var delimiter = new Array(threshold*3);
                 for(var i = 0; i < delimiter.length; i+=1)
                   delimiter[i] = 255;
-                
+
                 return delimiter;
               },
       "messageCompleted": function(data, i, threshold) {
@@ -91,7 +91,7 @@
       } else {
         shadowCtx.drawImage(image, 0, 0);
       }
-      
+
 
       var imageData = shadowCtx.getImageData(0, 0, shadowCanvas.width, shadowCanvas.height),
         data = imageData.data;
@@ -160,7 +160,7 @@
         }
         for(var i=offset*4; i<(offset+qS.length)*4 && i<data.length; i+=4)
           data[i+3] = qS[(i/4)%threshold];
-        
+
         subOffset = qS.length;
       }
       // Write message-delimiter
@@ -177,14 +177,14 @@
     "decode": function(image, options) {
       options = options || {};
       var config = this.config;
-      
+
       var t = options.t || config.t, threshold = options.threshold || config.threshold,
         codeUnitSize = options.codeUnitSize || config.codeUnitSize, prime = util.findNextPrime(Math.pow(2, t)),
-        imageData, data, q, args = options.args || config.args, modMessage = [], 
+        imageData, data, q, args = options.args || config.args, modMessage = [],
         messageCompleted = options.messageCompleted || config.messageCompleted;
 
       if(!t || (t < 1 && t > 7)) throw "Error: Parameter t = " + t + " is not valid: 0 < t < 8";
-        
+
       var shadowCanvas = document.createElement('canvas'),
         shadowCtx = shadowCanvas.getContext('2d');
 
@@ -278,7 +278,7 @@
     "getHidingCapacity" : function(image, options) {
       options = options || {};
       var config = this.config;
-    
+
       var width = options.width || image.width,
         height = options.height || image.height,
         t = options.t || config.t,

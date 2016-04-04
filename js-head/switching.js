@@ -5,7 +5,7 @@ function showsec(){
 	}else{
 		pwd.type="PASSWORD";
 	}
-};
+}
 
 function showDecoyIn(){
 	if(showDecoyInCheck.checked){
@@ -13,7 +13,7 @@ function showDecoyIn(){
 	}else{
 		decoyPwdIn.type="PASSWORD";
 	}
-};
+}
 
 function showDecoyOut(){
 	if(showDecoyOutCheck.checked){
@@ -21,7 +21,7 @@ function showDecoyOut(){
 	}else{
 		decoyPwdOut.type="PASSWORD";
 	}
-};
+}
 
 function showIntro(){
 	if(showIntroKey.checked){
@@ -29,7 +29,7 @@ function showIntro(){
 	}else{
 		pwdIntro.type="PASSWORD";
 	}
-};
+}
 
 function showNewKey(){
 	if(showNewKeyCheck.checked){
@@ -39,10 +39,6 @@ function showNewKey(){
 		newKey.type="PASSWORD";
 		newKey2.type="PASSWORD";
 	}
-};
-
-function box2cover(){
-	newcover(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,' ').trim()))
 }
 
 function chat2main(){
@@ -60,7 +56,7 @@ function resetChat(){
 function clearMain(){
 	mainBox.innerHTML = '';
 	mainMsg.innerHTML = '';
-	detectLock = true;
+	charsLeft();
 }
 function clearLocks(){
 	lockBox.value='';
@@ -71,7 +67,7 @@ function clearLocks(){
 function clearIntro(){
 	pwdIntro.value = '';
 	introMsg.innerHTML = '';
-	pwd.value = '';
+	KeyStr = '';
 	keyMsg.innerHTML = '';
 }
 function clearIntroEmail(){
@@ -80,13 +76,13 @@ function clearIntroEmail(){
 
 //for selecting the Main box contents
 function selectMain(){
-    var range, selection;   
+    var range, selection;
     if (document.body.createTextRange) {
         range = document.body.createTextRange();
         range.moveToElementText(mainBox);
         range.select();
     } else if (window.getSelection) {
-        selection = window.getSelection();        
+        selection = window.getSelection();
         range = document.createRange();
         range.selectNodeContents(mainBox);
         selection.removeAllRanges();
@@ -97,6 +93,7 @@ function selectMain(){
 //writes five random dictionary words in the intro Key box
 function suggestIntro(){
 	var output = '';
+	var wordlist = wordListExp.toString().slice(1,-2).split('|')
 	for(var i = 1; i <=5 ; i++){
 		var rand = wordlist[Math.floor(Math.random()*wordlist.length)];
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
@@ -139,7 +136,7 @@ function showName(){
 	}
 	userNameBox.value = userName;
 	shadow.style.display = 'block';
-	nameScr.style.display = 'block'	
+	nameScr.style.display = 'block'
 }
 
 //changes the name of the complete database, syncs if possible
@@ -153,16 +150,16 @@ function changeName(){
 		if(!reply) throw("Name change canceled");
 	}
 	var oldUserName = userName,
-		userNameTemp = document.getElementById('userNameBox').value,
-		key = readKey();
+		userNameTemp = document.getElementById('userNameBox').value;
+//		key = refreshKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
 	}
-	recryptDB(key,userNameTemp);
+	recryptDB(KeyStr,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
 	delete localStorage[userName];
 	userName = userNameTemp;
-	
+
 	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]));
@@ -184,7 +181,7 @@ function checkboxStore(){
 		if(locDir['myself']){
 			locDir['myself'][1] = changeBase(binCode,'01',BASE64);
 			localStorage[userName] = JSON.stringify(locDir);
-		
+
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
 			}
@@ -201,14 +198,12 @@ function code2checkbox(){
 		for(i = 0; i < checks.length; i++){
 			checks[i].checked = (binCode[i] == '1')
 		}
-		BasicButtons = checks[0].checked;
+		var isEmailMode = checks[2].checked;
+		BasicButtons = checks[0].checked || isEmailMode;
 	}
 	if(!BasicButtons){												//retrieve Advanced interface
 		openClose("basicBtnsTop");
 		openClose("mainBtnsTop");
-		openClose("basicLockBtnsTop");
-		openClose("advLockModes");
-		openClose("lockBtnsTop");
 		openClose("lockBtnsBottom");
 		openClose('advancedModes');
 		openClose('advancedBtns');
@@ -216,9 +211,10 @@ function code2checkbox(){
 		basicMode.checked = false;
 		advancedMode.checked = true;
 	}
+	if(isEmailMode) mode2email();						//email compatible mode
 	getCustomColors();
 	selectStyle();
-	
+
 	if(ChromeSyncOn) syncCheck.style.display = 'block'
 }
 
@@ -258,10 +254,10 @@ function closeBox() {
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
 function cancelKey(){
-	if(firstInit) pwd.value = '';
+	if(firstInit) {pwd.value = ''; KeyStr = '';}
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
-		
+
 		if (nameList.options.length == 2){						//only one user, no need to select it
 			userName = nameList.options[1].value
 		}else{												//several users
@@ -277,29 +273,29 @@ function cancelKey(){
 		if(locDir['myself']){
 			locDir['myself'][3] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
-		
+
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				syncChromeLock('myself',JSON.stringify(locDir['myself']));
-			}			
+			}
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-			mainMsg.innerHTML = 'To lock a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+			mainMsg.innerHTML = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
 		}else{
 			setTimeout(function(){mainMsg.innerHTML = '<span style="color:orange">You are in Guest mode<br>For full access, reload and enter the Key</span>'},30);
 		}
 	}
 	allowCancelWfullAccess = false;
-	closeBox();
+	closeBox()
 }
 function cancelName(){
 	closeBox();
-	optionMsg.innerHTML = 'User name change canceled';
+	optionsMsg.innerHTML = 'User name change canceled';
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
-	optionMsg.innerHTML = 'Email/token change canceled';
+	optionsMsg.innerHTML = 'Email/token change canceled';
 	callKey = ''
 }
 function cancelDecoyIn(){
@@ -324,7 +320,7 @@ function cancelChat(){
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
-	optionMsg.innerHTML = 'Key change canceled';
+	optionsMsg.innerHTML = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
@@ -365,7 +361,7 @@ function lockNameKeyup(evt){
 //displays Keys strength and resets Key timer
 function pwdKeyup(evt){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {pwd.value = ''}, 300000);
+	keytimer = setTimeout(resetKeys, 300000);
 	keytime = new Date().getTime();
 	evt = evt || window.event
 	if (evt.keyCode == 13){acceptKey()} else{
@@ -461,40 +457,69 @@ function main2extra(){
 }
 
 //switch to Advanced mode
-function basic2adv(){
+function mode2adv(){
 	mainBtnsTop.style.display = 'block';
 	basicBtnsTop.style.display = 'none'
-	lockBtnsTop.style.display = 'block';
-	basicLockBtnsTop.style.display = 'none';
 	lockBtnsBottom.style.display = 'block';
-	advLockModes.style.display = 'block';
 	advancedModes.style.display = 'block';
 	advancedBtns.style.display = 'block';
 	advancedHelp.style.display = 'block';
 	basicMode.checked = false;
 	advancedMode.checked = true;
+	emailMode.checked = false;
 
+	anonMode.style.display = '';
+	anonLabel.style.display = '';
+	anonMode.checked = true;
+	signedMode.checked = false;
+	onceMode.checked = false;
 	BasicButtons = false;
 	checkboxStore()
 }
 
 //switch to Basic mode
-function adv2basic(){
+function mode2basic(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
 	basicBtnsTop.style.display = 'block'
-	lockBtnsTop.style.display = 'none';
-	basicLockBtnsTop.style.display = 'block';
 	lockBtnsBottom.style.display = 'none';
-	advLockModes.style.display = 'none';
 	advancedModes.style.display = 'none';
 	advancedBtns.style.display = 'none';
 	advancedHelp.style.display = 'none';
 	basicMode.checked = true;
 	advancedMode.checked = false;
-	anonMode.checked = true;
+	emailMode.checked = false;
 
-	BasicButtons = true;	
+	anonMode.style.display = '';
+	anonLabel.style.display = '';
+	anonMode.checked = true;
+	signedMode.checked = false;
+	onceMode.checked = false;
+	BasicButtons = true;
+	checkboxStore();
+	fillList()
+}
+
+//switch to PassLok for Email compatible mode
+function mode2email(){
+	mainBtnsTop.style.display = 'none';
+	extraButtonsTop.style.display = 'none';
+	basicBtnsTop.style.display = 'block';
+	lockBtnsBottom.style.display = 'none';
+	advancedModes.style.display = 'none';
+	advancedBtns.style.display = 'none';
+	advancedHelp.style.display = 'none';
+	basicMode.checked = false;
+	advancedMode.checked = false;
+	emailMode.checked = true;
+	ezLokMode.checked = true;
+
+	anonMode.style.display = 'none';
+	anonLabel.style.display = 'none';
+	anonMode.checked = false;
+	signedMode.checked = true;
+	onceMode.checked = false;
+	BasicButtons = true;
 	checkboxStore();
 	fillList()
 }
@@ -502,8 +527,6 @@ function adv2basic(){
 //opens local directory for input if something seems to be missing
 function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
-	openClose('lockScr');
-	openClose('shadow');
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
@@ -511,6 +534,9 @@ function main2lock(){
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newcover(string);
 	}
+	resetList();
+	openClose('lockScr');
+	openClose('shadow');
 }
 
 //open image screen
@@ -601,7 +627,7 @@ function any2email(){
 //close screens and reset Key timer when leaving the Key box. Restarts whatever was being done when the Key was found missing.
 function key2any(){
 	clearTimeout(keytimer);
-	keytimer = setTimeout(function() {pwd.value = ''}, 300000)	//reset timer for 5 minutes, then delete Key
+	keytimer = setTimeout(resetKeys, 300000);	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
 	keyScr.style.display = 'none';
 	shadow.style.display = 'none';
@@ -621,14 +647,15 @@ function email2any(){
 	}
 	myEmail = email;
 	emailBox.value = '';
-	var	key = readKey();
-	if(!KeyDir) KeyDir = wiseHash(key,userName);
-	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,myEmail)).secretKey;			//do this regardless in case email has changed
+//	var	key = refreshKey();
+	refreshKey();
+	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
+	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
 	myezLock = changeBase(myLock, BASE64, BASE36, true);
 	if(dispLock) lockDisplay();
-		
+
 	if(fullAccess) storemyEmail();
 	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
@@ -682,6 +709,22 @@ function openClose(theID) {
  else { document.getElementById(theID).style.display = "block" } };
 // end of hide trick
 
+//as above, but closes everything else in help
+function openHelp(theID){
+	var helpItems = document.getElementsByClassName('texter');
+	for(var i=0; i < helpItems.length; i++){
+		helpItems[i].style.display = 'none'
+	}
+	document.getElementById(theID).style.display = "block";
+	if(isMobile){									//scroll to the item
+		location.href = '#';
+		location.href = '#a' + theID;
+		if(!isiOS){
+			if(helpTop.style.display == 'block') helpTop.style.display = 'none'
+		}
+	}
+}
+
 <!--variables and functions for making tabs, by Matt Doyle 2009-->
     var tabLinks = new Array();
     var contentDivs = new Array();
@@ -734,6 +777,14 @@ function openClose(theID) {
         }
       }
 	  if(this.hash == '#mainTab') fillList();
+	  if(this.hash != '#optionsTab'){
+		  customColors.style.display = 'none';
+		  optionMsg.innerHTML = 'Change Name, Key, etc.';
+		  fileMsg.innerHTML = 'File input/output:'
+	  }
+	  if(this.hash != '#helpTab' && !isiOS){
+			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
+	  }
 	  storeColors();
 
       // Stop the browser following the link
@@ -797,7 +848,7 @@ function findString (str) {
 
 //for rich text editing
 function formatDoc(sCmd, sValue) {
-	  document.execCommand(sCmd, false, sValue); mainBox.focus(); 
+	  document.execCommand(sCmd, false, sValue); mainBox.focus();
 }
 
 var niceEditor = false;
@@ -805,10 +856,14 @@ var niceEditor = false;
 function toggleRichText() {
 	if(niceEditor) {
 		toolBar1.style.display = 'none';
+		mainBox.style.borderTopLeftRadius = '15px';
+		mainBox.style.borderTopRightRadius = '15px';
 		niceEditBtn.innerHTML = 'Rich';
 		niceEditor = false
 	} else {
 		toolBar1.style.display = 'block';
+		mainBox.style.borderTopLeftRadius = '0';
+		mainBox.style.borderTopRightRadius = '0';
 		niceEditBtn.innerHTML = 'Plain';
 		niceEditor = true
 	}

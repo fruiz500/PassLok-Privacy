@@ -34,38 +34,6 @@ var jscolor = {
 	},
 
 
-	getDir : function() {
-		if(!jscolor.dir) {
-			var detected = jscolor.detectDir();
-			jscolor.dir = detected!==false ? detected : 'jscolor/';
-		}
-		return jscolor.dir;
-	},
-
-
-	detectDir : function() {
-		var base = location.href;
-
-		var e = document.getElementsByTagName('base');
-		for(var i=0; i<e.length; i+=1) {
-			if(e[i].href) { base = e[i].href; }
-		}
-
-		var e = document.getElementsByTagName('script');
-		for(var i=0; i<e.length; i+=1) {
-			if(e[i].src && /(^|\/)jscolor\.js([?#].*)?$/i.test(e[i].src)) {
-				var src = new jscolor.URI(e[i].src);
-				var srcAbs = src.toAbsolute(base);
-				srcAbs.path = srcAbs.path.replace(/[^\/]+$/, ''); // remove filename
-				srcAbs.query = null;
-				srcAbs.fragment = null;
-				return srcAbs.toString();
-			}
-		}
-		return false;
-	},
-
-
 	bind : function() {
 		var matchClass = new RegExp('(^|\\s)('+jscolor.bindClass+')(\\s*(\\{[^}]*\\})|\\s|$)', 'i');
 		var e = document.getElementsByTagName('input');
@@ -102,23 +70,6 @@ var jscolor = {
 		sld : [ 16, 101 ],
 		cross : [ 15, 15 ],
 		arrow : [ 7, 11 ]
-	},
-
-
-	imgRequire : {},
-	imgLoaded : {},
-
-
-	requireImage : function(filename) {
-		jscolor.imgRequire[filename] = true;
-	},
-
-
-	loadImage : function(filename) {
-		if(!jscolor.imgLoaded[filename]) {
-			jscolor.imgLoaded[filename] = new Image();
-			jscolor.imgLoaded[filename].src = jscolor.getDir()+filename;
-		}
 	},
 
 
@@ -213,114 +164,6 @@ var jscolor = {
 			return [0, 0];
 		}
 	},
-
-
-	URI : function(uri) { // See RFC3986
-
-		this.scheme = null;
-		this.authority = null;
-		this.path = '';
-		this.query = null;
-		this.fragment = null;
-
-		this.parse = function(uri) {
-			var m = uri.match(/^(([A-Za-z][0-9A-Za-z+.-]*)(:))?((\/\/)([^\/?#]*))?([^?#]*)((\?)([^#]*))?((#)(.*))?/);
-			this.scheme = m[3] ? m[2] : null;
-			this.authority = m[5] ? m[6] : null;
-			this.path = m[7];
-			this.query = m[9] ? m[10] : null;
-			this.fragment = m[12] ? m[13] : null;
-			return this;
-		};
-
-		this.toString = function() {
-			var result = '';
-			if(this.scheme !== null) { result = result + this.scheme + ':'; }
-			if(this.authority !== null) { result = result + '//' + this.authority; }
-			if(this.path !== null) { result = result + this.path; }
-			if(this.query !== null) { result = result + '?' + this.query; }
-			if(this.fragment !== null) { result = result + '#' + this.fragment; }
-			return result;
-		};
-
-		this.toAbsolute = function(base) {
-			var base = new jscolor.URI(base);
-			var r = this;
-			var t = new jscolor.URI;
-
-			if(base.scheme === null) { return false; }
-
-			if(r.scheme !== null && r.scheme.toLowerCase() === base.scheme.toLowerCase()) {
-				r.scheme = null;
-			}
-
-			if(r.scheme !== null) {
-				t.scheme = r.scheme;
-				t.authority = r.authority;
-				t.path = removeDotSegments(r.path);
-				t.query = r.query;
-			} else {
-				if(r.authority !== null) {
-					t.authority = r.authority;
-					t.path = removeDotSegments(r.path);
-					t.query = r.query;
-				} else {
-					if(r.path === '') {
-						t.path = base.path;
-						if(r.query !== null) {
-							t.query = r.query;
-						} else {
-							t.query = base.query;
-						}
-					} else {
-						if(r.path.substr(0,1) === '/') {
-							t.path = removeDotSegments(r.path);
-						} else {
-							if(base.authority !== null && base.path === '') {
-								t.path = '/'+r.path;
-							} else {
-								t.path = base.path.replace(/[^\/]+$/,'')+r.path;
-							}
-							t.path = removeDotSegments(t.path);
-						}
-						t.query = r.query;
-					}
-					t.authority = base.authority;
-				}
-				t.scheme = base.scheme;
-			}
-			t.fragment = r.fragment;
-
-			return t;
-		};
-
-		function removeDotSegments(path) {
-			var out = '';
-			while(path) {
-				if(path.substr(0,3)==='../' || path.substr(0,2)==='./') {
-					path = path.replace(/^\.+/,'').substr(1);
-				} else if(path.substr(0,3)==='/./' || path==='/.') {
-					path = '/'+path.substr(3);
-				} else if(path.substr(0,4)==='/../' || path==='/..') {
-					path = '/'+path.substr(4);
-					out = out.replace(/\/?[^\/]*$/, '');
-				} else if(path==='.' || path==='..') {
-					path = '';
-				} else {
-					var rm = path.match(/^\/?[^\/]*/)[0];
-					path = path.substr(rm.length);
-					out = out + rm;
-				}
-			}
-			return out;
-		}
-
-		if(uri) {
-			this.parse(uri);
-		}
-
-	},
-
 
 	//
 	// Usage example:
@@ -642,7 +485,7 @@ var jscolor = {
 						holdSld && setSld(event);
 						dispatchImmediateChange();
 					}
-					e.stopPropagation(); // prevent move "view" on broswer
+					e.stopPropagation(); // prevent move "view" on browser
 					e.preventDefault(); // prevent Default - Android Fix (else android generated only 1-2 touchmove events)
 				};
 				p.box.removeEventListener('touchmove', handle_touchmove, false)
@@ -760,32 +603,8 @@ var jscolor = {
 				var pickerOutsetColor = insetColors.length < 2 ? insetColors[0] : insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1];
 				p.btn.style.borderColor = pickerOutsetColor;
 			}
-			p.btn.style.display = THIS.pickerClosable ? 'block' : 'none';
-			p.btn.style.position = 'absolute';
-			p.btn.style.left = THIS.pickerFace + 'px';
-			p.btn.style.bottom = THIS.pickerFace + 'px';
-			p.btn.style.padding = '0 15px';
-			p.btn.style.height = '18px';
-			p.btn.style.border = THIS.pickerInset + 'px solid';
-			setBtnBorder();
-			p.btn.style.color = THIS.pickerButtonColor;
-			p.btn.style.font = '12px sans-serif';
-			p.btn.style.textAlign = 'center';
-			try {
-				p.btn.style.cursor = 'pointer';
-			} catch(eOldIE) {
-				p.btn.style.cursor = 'hand';
-			}
-			p.btn.onmousedown = function () {
-				THIS.hidePicker();
-			};
-			p.btnS.style.lineHeight = p.btn.style.height;
 
-			// load images in optimal order
-//			switch(modeID) {
-//				case 0: var padImg = 'hs.png'; break;
-//				case 1: var padImg = 'hv.png'; break;
-//			}
+			//images
 			p.padM.style.backgroundImage = "url(data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=)"; //edited by F. Ruiz, as well as the next two images
 			p.padM.style.backgroundRepeat = "no-repeat";
 			p.sldM.style.backgroundImage = "url(data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7)";							//image 2 added
@@ -993,18 +812,9 @@ var jscolor = {
 			};
 		}
 
-		// require images
-//		switch(modeID) {
-//			case 0: jscolor.requireImage('hs.png'); break;
-//			case 1: jscolor.requireImage('hv.png'); break;
-//		}
-//		jscolor.requireImage('cross.gif');
-//		jscolor.requireImage('arrow.gif');
-
 		this.importColor();
 	}
 
 };
-
 
 jscolor.install();

@@ -1,4 +1,4 @@
-﻿//function that starts it all when the Lock/Unlock button is pushed
+﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
 	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
@@ -9,18 +9,17 @@ function splitJoin(){
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
 	var	main = XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n")).trim();
-	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/\n\nA/) && main.slice(0,1)=='A')){		//main box has parts: join parts
+	if(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL'){		//main box has parts: join parts
 		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = main.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
-		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it form tags
+		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it from tags
 		if(n < quorum){																//not enough parts
-			mainMsg.innerHTML = '<span style="color:orange">According to the tags, you need ' + (quorum - n) + ' more parts in the box</span>'
+			mainMsg.innerHTML = '<span style="color:orange">According to the tags, you need ' + (quorum - n) + ' more parts in the box</span>';
+			throw("insufficient parts")
 		};
 		for (var i=0; i < shares.length; i++) {
-			shares[i] = bestOfThree(shares[i]);										//undo triples, if any
-			shares[i] = applyRScode(shares[i],false);								//RS error correction
-			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(shares[i].replace(/[^a-zA-Z0-9+/ ]+/g, '')));	//retrieve from base64 back to hex and add initial "8" to each item
+			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(striptags(shares[i])));
 		};
 		if (learnMode.checked){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");
@@ -31,8 +30,8 @@ function secretshare(){
 			throw("insufficient parts")
 		};
 try{
-		var	sechex = secrets.combine(shares),
-			secret = nacl.util.encodeBase64(hex2charArray(sechex));
+		var	sechex = secrets.combine(shares);
+		var	secret = nacl.util.encodeBase64(hex2charArray(sechex));
 			if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.decompressFromBase64(secret);
 		mainBox.innerHTML = secret;
 		mainMsg.innerHTML = 'Join successful';
@@ -69,36 +68,53 @@ try{
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
 		var secret = mainBox.innerHTML.trim();
-		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret);
-		var	sechex = charArray2hex(nacl.util.decodeBase64(secret)),
-			shares = secrets.share(sechex,number,quorum);
+		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret).replace(/=/g,'');
+		var	sechex = charArray2hex(nacl.util.decodeBase64(secret));
+		var	shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
 		mainMsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
 		partsInBox = true
 	};
+	setTimeout(function(){charsLeft();},20)
 };
 
 function displayshare(shares,quorum){
 	var length = shares[0].length,
 		quorumStr = "00" + quorum;
-		quorumStr = quorumStr.substr(quorumStr.length-3);
+	quorumStr = quorumStr.substr(quorumStr.length-3);
 
-	//strip initial "8" and display each share in a new line, base 64, with tags
-	if(!noTagsMode.checked){
-		var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '')
-		var	output = triple("PL22p" + quorumStr + "=" + dataItem + calcRStag(dataItem) + "=PL22p" + quorumStr);
+	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
+	var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 
-	//trim final "=" and display with tags
-	}else{
-		var output = triple(nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, ''))
-	}
 	for (var i=1; i < shares.length; i++) {
-		if(!noTagsMode.checked){
-			dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
-			output = output + "<br><br>" + triple("PL22p" + quorumStr + "=" + dataItem + calcRStag(dataItem) + "=PL22p" + quorumStr);
-		}else{
-			output = output + "<br><br>" + triple(nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, ''))
-		}
+		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
+		output = output + "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 	};
 	mainBox.innerHTML = output;
+	if(!isMobile) selectMain();
 };
+
+//convert an array of 8-bit decimal codes into a hexadecimal string
+function charArray2hex(charArray){
+	var output = '';
+	for(var i = 0;i < charArray.length; i++){
+		var newstring = charArray[i].toString(16);
+		if (newstring.length < 2) newstring = '0' + newstring;
+		output = output + newstring
+	};
+	return output
+}
+
+//convert a hexadecimal string (two characters per byte) into an array of decimal codes. Wrong codes marked as -1
+function hex2charArray(string){
+	var output = [];
+	for(var i = 0;i < string.length; i=i+2){
+		var a = parseInt(string.slice(i,i+2),16);
+		if(isNaN(a)){
+			output[i/2] = -1
+		}else{
+			output[i/2] = a
+		}
+	};
+	return output
+}

@@ -28,7 +28,6 @@ function uniq(a) {
 
 //This function checks for legal PassLok output and calls the currently selected encoder. Otherwise it calls the decoder
 function textStego(){
-	mainMsg.innerHTML = "";
 	var text = XSSfilter(mainBox.innerHTML).replace(/-/g,'');
 	if(text == ""){
 		mainMsg.innerHTML = '<span style="color:orange">No text in the box</span>';
@@ -39,16 +38,16 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 	if(legalItem(text)){										//legal item found: encode it
 		if(sentenceMode.checked){
 			toPhrases(text);
-			mainMsg.innerHTML = 'Message encoded as sentences of varying length'
+			if(!isMobile) selectMain()
 		}else if(wordMode.checked){
 			toWords(text);
-			mainMsg.innerHTML = 'Message encoded as words of varying length'
+			if(!isMobile) selectMain()
 		}else if(spaceMode.checked){
 			toSpaces(text);
-			mainMsg.innerHTML = 'Message encoded into spaces of this text'
+			if(!isMobile) selectMain()
 		}else{
 			toLetters(text);
-			mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'	
+			if(!isMobile) selectMain()
 		}
 	}else{												//no legal item found: try to decode
 		var doublespaces = text.match(/ &nbsp;/g);
@@ -69,6 +68,7 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 			mainMsg.innerHTML = 'Message extracted from Words encoding'
 		}
 	}
+	charsLeft();
 },20);						//end of timeout
 }
 
@@ -97,7 +97,7 @@ function toWords(text){
 	}
 	var	wordArray = makeWordMatrix(covertext),
 		out = '';
-	
+
 	//now get a 2-digit code for each character in the text; each digit goes from 0 to 8, so we have 81 possibilities for 72 chars
 	for(var i = 0; i < text.length; i++){
 		var index = keyAlphabet.indexOf(text[i]),
@@ -112,6 +112,7 @@ function toWords(text){
 	out = out.slice(0,-1) + '.';
 	mainBox.innerHTML = out.trim();
 	randomBreaks(10);
+	mainMsg.innerHTML = 'Message encoded as words of varying length'
 }
 
 //words decoder. Takes groups of 2 words. Their lengths is the index of each characters, in base9
@@ -211,7 +212,7 @@ function toBin(input){
 		while(bin.length < 7) bin = '0' + bin;
         output += bin;
     }
-	return output	
+	return output
 }
 
 //retrieves ASCII string from binary string
@@ -259,7 +260,7 @@ function toPhrases(text){
 	var	phraseArray = makePhraseMatrix(covertext),
 		punct = '.,;:!?',
 		out = '';
-	
+
 	//now split the Base72-encoded string into a Base12 code to select sentence length, and a Base6 code to select punctuation
 	for(var i = 0; i < text.length; i++){
 		var index = keyAlphabet.indexOf(text[i]),
@@ -269,7 +270,8 @@ function toPhrases(text){
 	out = out.replace(/[.!?][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[,;:][\s\n][A-Z]/g,function(a){return a.toLowerCase();}).trim();  //capitalization
 	out = out.charAt(0).toUpperCase() + out.slice(1);
 	mainBox.innerHTML = out.trim();
-	randomBreaks(40)
+	randomBreaks(40);
+	mainMsg.innerHTML = 'Message encoded as sentences of varying length'
 }
 
 //decodes text encoded as sentences of varying length
@@ -341,7 +343,7 @@ var charMappings = {//Aa
 					"Z":"0", "Z0":"Z", "\u0396":"1", "Z1":"\u0396",
 					//Spaces
 					" ":"000",
-					" 000":" ",	
+					" 000":" ",
 					"\u2004":"001",
 					" 001":"\u2004",
 					"\u2005":"010",
@@ -405,6 +407,7 @@ function toLetters(text){
 		i++;
 	}
 	mainBox.innerHTML = finalString;
+	mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'
 }
 
 //gets the original text from Letters encoded text
@@ -435,12 +438,12 @@ function fromLetters(text){
 
 //this one is to display the cover text or change it as requested
 function newcover(string){
-	
+
 //remove multiple spaces, spaces after linefeed, multiple periods.
 	var newcovertext = string.replace(/   +/g,"\t").replace(/ +/g," ").replace(/ &nbsp;+/g," ").replace(/\n /g,"\n\t").replace(/--/g,', ').replace(/-/g,'').replace(/\.\.\./g,'').replace(/\. \. \. /g,'');
-	
+
 //add spaces if Chinese, Korean, or Japanese
-	if (newcovertext.match(/[\u3400-\u9FBF]/) != null) newcovertext = newcovertext.split('').join(' ').replace(/\s+/g, ' ');														
+	if (newcovertext.match(/[\u3400-\u9FBF]/) != null) newcovertext = newcovertext.split('').join(' ').replace(/\s+/g, ' ');
 	covertext = newcovertext;
 	mainMsg.innerHTML = 'Cover text changed'
 }
@@ -450,7 +453,7 @@ function newcover(string){
 	delete localStorage['container'];
 	delete localStorage['method'];
 	delete localStorage['wikisafe'];
-	
+
 // load image for hiding text
 var importImage = function(e) {
 	if (learnMode.checked){
@@ -476,8 +479,8 @@ function updateCapacity(){
 	var pngChars = Math.floor(document.getElementById('preview').naturalHeight*document.getElementById('preview').naturalWidth*3/8);
 	var textsize = mainBox.innerHTML.length;
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
-setTimeout(function(){	
-	//now measure jpeg capacity	
+setTimeout(function(){
+	//now measure jpeg capacity
 	if(document.getElementById('preview').src.slice(11,15) == 'jpeg' && !isiOS){					//true jpeg capacity calculation, gets stuck on iOS
 		var lumaCoefficients = [];
 		var count = 0;
@@ -503,9 +506,9 @@ setTimeout(function(){
 			imagemsg.innerHTML='This image can hide ' + pngChars + ' characters as PNG, at least ' + jpgChars + ' as JPG. The main box has ' + textsize + ' characters'
 		}else{
 			imagemsg.innerHTML='This image can hide ' + pngChars + ' characters as PNG. <span style="color:orange">But the main box has ' + textsize + ' characters</span>'
-		}		
+		}
 	}
-},30);						//end of timeout	
+},30);						//end of timeout
 }
 
 //put text into image, which turns into PNG
@@ -529,7 +532,7 @@ setTimeout(function(){																			//the rest after a 20 ms delay
     document.getElementById('preview').src = XSSfilter(encodedImage);
 	document.getElementById('preview').onload = function(){
 		imagemsg.innerHTML = 'Item hidden in the image. Save it now.'
-	}	
+	}
 },30);						//end of timeout
 }
 
@@ -553,14 +556,14 @@ setTimeout(function(){
 		}else{
 			mainBox.innerHTML = text;
 			imagemsg.innerHTML = 'Go back to see the text extracted from this image'
-		}		
+		}
 	}else if(loadedImage.slice(11,15) == 'jpeg'){
 		decodeJPG()
 	}
 },30);						//end of timeout
 }
 
-//this function gets the jpeg coefficients (first luma, then chroma) and extracts the hidden material. Stops when "textEnd" is found 
+//this function gets the jpeg coefficients (first luma, then chroma) and extracts the hidden material. Stops when "textEnd" is found
 var decodeJPG = function(){
 	var msgBin = '';
 	var lumaCoefficients = [];
@@ -615,13 +618,13 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 		document.getElementById('preview').onload = function(){
 			imagemsg.innerHTML = 'Item hidden in the image. Save it now.'
 		}
-  	})		
+  	})
 },30);						//end of timeout
 }
 
 /**
  * Called when encoding a JPEG
- * - coefficients: coefficients[0] is an array of luminosity blocks, coefficients[1] and 
+ * - coefficients: coefficients[0] is an array of luminosity blocks, coefficients[1] and
  *   coefficients[2] are arrays of chrominance blocks. Each block has 64 "modes"
  */
 var modifyCoefficients = function(coefficients) {
