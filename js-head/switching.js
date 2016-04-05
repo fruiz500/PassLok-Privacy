@@ -151,7 +151,6 @@ function changeName(){
 	}
 	var oldUserName = userName,
 		userNameTemp = document.getElementById('userNameBox').value;
-//		key = refreshKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
 	}
@@ -647,7 +646,6 @@ function email2any(){
 	}
 	myEmail = email;
 	emailBox.value = '';
-//	var	key = refreshKey();
 	refreshKey();
 	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed

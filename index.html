@@ -426,12 +426,10 @@ img.intLink {
     <!--buttons above the main box-->
     <div id="basicBtnsTop" style="display: block;">
       <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="d">Encrypt</button><!--
-<button class="cssbutton" id="sendMailBtnBasic" value="Email" style="font-size:22px;padding:14px;" title="invite others to PassLok and put the box contents in an email using the default client (alt-E)" accesskey="e">Email</button><!--
 --><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock or send email (alt-L)" accesskey="l">myLock</button>
     </div>
     <div id="mainBtnsTop" style="display: none;">
       <button class="cssbutton" id="decryptBtn" value="Lock/Unlock" style="padding-right:7px;padding-left:7px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="">Encrypt</button><!--
-<button class="cssbutton" id="sendMailBtn" value="Email" style="padding-right:7px;padding-left:7px;" title="invite others to PassLok and put the box contents in an email using the default client (alt-E)">Email</button><!--
 --><button class="cssbutton" id="verifyBtn" value="Seal/Unseal" style="padding-right:7px;padding-left:7px;" title="add signature based on secret Key and box contents, or verify existing signature (alt-V)" accesskey="v">Seal</button><!--
 --><button class="cssbutton" id="showLockBtn" value="myLock" style="padding-right:7px;padding-left:7px;" title="display your Lock (alt-L)">myLock</button><!--
 --><button class="cssbutton" id="main2extraBtn" value="More" style="color:orange;padding-right:9px;padding-left:9px;" title="replace main buttons with those for extra functions (alt-.)" accesskey=".">&#9660;</button>
@@ -946,7 +944,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b16" class="texter">
-      <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes unlockable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes decryptable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>A message encrypted by PassLok for Email in Read-once mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
     </div>
   </div>

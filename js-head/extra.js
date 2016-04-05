@@ -49,7 +49,7 @@ function charsLeft(){
 
 //changes button labels according to context
 function updateButtons(){
-	var text = XSSfilter(mainBox.innerHTML).split("==").sort(function (a, b) {return b.length - a.length;})[0].replace(/-/g,'').trim(),
+	var text = XSSfilter(mainBox.innerHTML).split("=").sort(function (a, b) {return b.length - a.length;})[0].replace(/-/g,'').trim(),
 		type = text.charAt(0),
 		typeGC = text.charAt(50);													//PassLok for Email compatible
 	if(type.match(/[~!@#$*]/) || typeGC.match(/[~!@#$*]/) || (text.length == 160 && !text.match(' '))){		//encrypted item
@@ -88,7 +88,7 @@ function pasteMain() {
 		var string = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,' ')),
 			strlength = string.trim().length;
 		string = string.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$%*]+/g,'');			//remove spaces and non-legal chars
-		if(string.match('=(.*)=')) string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];						//extract stuff between = signs
+		if(string.match('=(.*)=')) string = string.split("=").sort(function (a, b) { return b.length - a.length; })[0];						//extract stuff between = signs
 		
 		string = extractLock(string);
 		
@@ -149,7 +149,7 @@ function sendMail() {
 		return
 	}
 	var cipherstr = mainBox.innerHTML;
-	cipherstr = cipherstr.split("==").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
+	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
 	cipherstr = XSSfilter(cipherstr);						//remove formatting
 	var type = cipherstr.charAt(0),
 		type2 = cipherstr.charAt(50);					//for email mode
@@ -173,23 +173,23 @@ function sendMail() {
 	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores.";
 
 	if(type=="!"){
-    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="@"){
-		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with shared Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="#" || type2=="#"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
 		}else{
-			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
+			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
 		}
 	} else if (type=="$" || type=="*" || type2=="$"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
 		}else{
-			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText;
 		}
 	} else if (type=="~"){
-		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with my secret Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with my secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="%"){
 		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.3. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
 	} else if (cipherstr.length == 43 || cipherstr.length == 50){

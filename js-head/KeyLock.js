@@ -602,7 +602,7 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label){
 //this strips initial and final tags, plus spaces and non-base64 characters in the middle
 function striptags(string){
 	string = string.replace(/\s/g,'');															//remove spaces
-	string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+	string = string.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
 	return string
 }
@@ -693,7 +693,7 @@ function failedDecrypt(label){
 	}else if (label == 'read-once'){
 		mainMsg.innerHTML = 'Read-once decrypt has Failed<br>You may have to reset the exchange with this sender';
 	}else{
-		mainMsg.innerHTML = 'Decrypt has Failed';
+		mainMsg.innerHTML = 'Decryption has Failed';
 	}
 	throw('decryption failed')
 }
