@@ -60,6 +60,8 @@ function textheight(){
 		if(isMobile){
 			if(isAndroid && !isFile){
 				mainBox.style.height = fullheight - offsetheight + 40 + 'px';
+			}else if(isiPhone){
+				mainBox.style.height = fullheight - offsetheight - 10 + 'px';
 			}else{
 				mainBox.style.height = fullheight - offsetheight + 'px';
 			}
