@@ -13,18 +13,11 @@ window.onload = function() {
 	if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
 		helpTopMobile.style.display = 'none';
 		helpTop.style.display = 'block';
-		helpSpace.style.display = 'block'
+		helpSpace.style.display = 'block';
 	}
 	if(isAndroid){										//resize shift buttons on Android
-		if(isFile){
-			extra2mainBtn.style.paddingTop = '7px';
-			extra2mainBtn.style.paddingBottom = '9px';
-			main2extraBtn.style.paddingTop = '7px';
-			main2extraBtn.style.paddingBottom = '9px';
-		}else{
-			extra2mainBtn.style.padding = '9px';
-			main2extraBtn.style.padding = '9px';
-		}
+		extra2mainBtn.style.padding = '11px';
+		main2extraBtn.style.padding = '11px';
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens

@@ -108,9 +108,9 @@ function saveURLAsFile(){
 		downloadLink.innerHTML = "Download File";
 	} else {																//to save contents as text file
 		var textFileAsBlob = new Blob([mainBox.innerHTML.trim()], {type:'text/plain'});
-		fileNameToSaveAs = prompt("The box contents will be saved as a text file. Please enter a name for it.");
+		fileNameToSaveAs = prompt("The box contents will be saved as an html file. Please enter a name for it.");
 		if(fileNameToSaveAs.indexOf('.') == -1){
-			downloadLink.download = fileNameToSaveAs + '.txt';
+			downloadLink.download = fileNameToSaveAs + '.html';
 		}else{
 			downloadLink.download = fileNameToSaveAs;
 		}
