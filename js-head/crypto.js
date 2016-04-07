@@ -232,13 +232,14 @@ function Encrypt_List(listArray){
 				if(namestr.length != 43 && namestr.length != 50){
 					if (warningList == ""){warningList = name} else {warningList += '\n' + name}
 				}
-			}else if(locDir[name][0].length != 43 && locDir[name][0].length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
+			}else if(striptags(locDir[name][0]).length != 43 && striptags(locDir[name][0]).length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
 					if (warningList2 == ""){warningList2 = name} else {warningList2 += '\n' + name};
 					listArray[index] = ''
 			}
 		}
 	}
-	listArray = listArray.filter(Boolean);									//remove empty elements
+	listArray = listArray.filter(Boolean);																						//remove empty elements
+	if(emailMode.checked && signedMode.checked && listArray.indexOf('myself') == -1) listArray.push('myself');				//add 'myself' in email mode
 	
 	if ((warningList != '') && (listArray.length > 1)){
 		var agree = confirm('The names on the list below were not found in your local directory. If you click OK, they will be used as shared Keys for encrypting and decrypting the message. This could be a serious security hazard:\n\n' + warningList);

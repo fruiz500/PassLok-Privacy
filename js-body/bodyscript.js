@@ -119,7 +119,7 @@ function saveURLAsFile(){
 		downloadLink.innerHTML = "Download File";
 		content = window.URL.createObjectURL(textFileAsBlob);
 	}
-	if (window.URL != null)
+	if (!isFirefox)
 	{
 		// Chrome allows the link to be clicked
 		// without actually adding it to the DOM.
