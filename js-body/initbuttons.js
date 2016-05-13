@@ -161,7 +161,7 @@ window.onload = function() {
 
    	ezLokMode.addEventListener('click', checkboxStore);
 
-	iconMode.addEventListener('click', checkboxStore);
+	pkgMode.addEventListener('click', checkboxStore);
 
 	chromeSyncMode.addEventListener('click', checkboxStore);
 
