@@ -28,7 +28,8 @@ function uniq(a) {
 
 //This function checks for legal PassLok output and calls the currently selected encoder. Otherwise it calls the decoder
 function textStego(){
-	var text = XSSfilter(mainBox.innerHTML).replace(/-/g,'');
+	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");					//remove tags
 	if(text == ""){
 		mainMsg.innerHTML = '<span style="color:orange">No text in the box</span>';
 		throw("no text")
@@ -517,12 +518,17 @@ function encodePNG(){
 		var reply = confirm("The text in the main box will be encoded into this image as a PNG, which can then be copied and sent to others. Cancel if this is not what you want.");
 		if(!reply) throw("encode image canceled");
 	}
-	var text = XSSfilter(mainBox.innerHTML).replace(/-/g,'');
+	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 
 	//bail out if this is not a PassLok string. Otherwise, this method can handle the full UTF-16 character set
 	if(!legalItem(text)){
 		imagemsg.innerHTML = '<span style="color:orange">The text contains illegal characters for a PassLok string</span>';
 		throw("illegal characters in box")
+	}
+	if(preview.src.length < 100){											//no image loaded
+		imagemsg.innerHTML = '<span style="color:orange">Please load an image before clicking this button</span>';
+		throw("no image loaded")
 	}
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 setTimeout(function(){																			//the rest after a 20 ms delay
@@ -560,6 +566,7 @@ setTimeout(function(){
 	}else if(loadedImage.slice(11,15) == 'jpeg'){
 		decodeJPG()
 	}
+	updateButtons()
 },30);						//end of timeout
 }
 
@@ -603,12 +610,17 @@ var encodeJPG = function(){
 		var reply = confirm("The text in the main box will be encoded into this image as a JPG, which can then be copied and sent to others. Cancel if this is not what you want.");
 		if(!reply) throw("encode image canceled");
 	}
-	var text = XSSfilter(mainBox.innerHTML).replace(/-/g,'');
+	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 
 	//bail out if this is not a PassLok string. Otherwise, this method can handle the full UTF-16 character set
 	if(!legalItem(text)){
 		imagemsg.innerHTML = '<span style="color:orange">The text contains illegal characters for a PassLok string</span>';
 		throw("illegal characters in box")
+	}
+	if(preview.src.length < 100){											//no image loaded
+		imagemsg.innerHTML = '<span style="color:orange">Please load an image before clicking this button</span>';
+		throw("no image loaded")
 	}
 	mainBox.innerHTML = text;
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
@@ -628,7 +640,9 @@ setTimeout(function(){																			//the rest after a 20 ms delay
  *   coefficients[2] are arrays of chrominance blocks. Each block has 64 "modes"
  */
 var modifyCoefficients = function(coefficients) {
-	var msgBin = toBin(XSSfilter(mainBox.innerHTML).replace(/-/g,''))+toBin('textEnd');	//add label to mark the end
+	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
+	var msgBin = toBin(text)+toBin('textEnd');	//add label to mark the end
 	var indexBin = 0;
 	for(var index = 0; index < 2; index++){
 		if(indexBin >= msgBin.length) break;

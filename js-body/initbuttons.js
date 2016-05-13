@@ -3,7 +3,7 @@ window.onload = function() {
 
 	if(isMobile){
 		niceEditBtn.style.display = 'none';			//no rich text editing on mobile
-		fileBtns.style.display = 'none';
+		mainFile.style.display = 'none';
 		selectMainBtn.style.display = 'none';
 		imgSpacer.style.display = 'none';
 	} else {
@@ -23,6 +23,7 @@ window.onload = function() {
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
 		anonLabel.innerHTML = '&nbsp;Anon.&nbsp;&nbsp;';
 		modeLabel.style.display = 'none';
+		otherLabel.style.display = 'none';
 		greenLabel.innerHTML = 'Grn';
 		customLabel.innerHTML = 'Cust';
 		backgroundLabel.innerHTML = 'Bg.';
@@ -65,6 +66,8 @@ window.onload = function() {
    	main2extraBtn.addEventListener('click', main2extra);
 
    	decryptBtnBasic.addEventListener('click', lockUnlock);
+	
+	hideBtnBasic.addEventListener('click', textStego);
 
    	extra2mainBtn.addEventListener('click', main2extra);
 
@@ -79,8 +82,6 @@ window.onload = function() {
    	secretShareBtn.addEventListener('click', splitJoin);
 
 	stegoBtn.addEventListener('click', textStego);
-
-   	saveFileBtn.addEventListener('click', saveURLAsFile);
 
    	image2mainBtn.addEventListener('click', image2main);
 
@@ -159,6 +160,8 @@ window.onload = function() {
 	decoyMode.addEventListener('click', checkboxStore);
 
    	ezLokMode.addEventListener('click', checkboxStore);
+
+	iconMode.addEventListener('click', checkboxStore);
 
 	chromeSyncMode.addEventListener('click', checkboxStore);
 
@@ -286,8 +289,6 @@ window.onload = function() {
 
 //	emailBox.addEventListener('keyup', function() {emailKeyup(event)}, false);
 
-	neverMode.addEventListener('click', hide5min);
-
 //for the rich text editor boxes and buttons
 	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
 	fontName.addEventListener("change", function() {formatDoc('fontName',this[this.selectedIndex].value);this.selectedIndex=0;});
@@ -325,7 +326,7 @@ window.onload = function() {
 	aa5.addEventListener('click', function() {openHelp('a5')});
 	aa6.addEventListener('click', function() {openHelp('a6')});
 	aa7.addEventListener('click', function() {openHelp('a7')});
-	aa8.addEventListener('click', function() {openHelp('a8')});
+//	aa8.addEventListener('click', function() {openHelp('a8')});
 	aa9.addEventListener('click', function() {openHelp('a9')});
 	aa10.addEventListener('click', function() {openHelp('a10')});
 	aa11.addEventListener('click', function() {openHelp('a11')});
@@ -378,6 +379,7 @@ window.onload = function() {
 	aa58.addEventListener('click', function() {openHelp('a58')});
 	aa59.addEventListener('click', function() {openHelp('a59')});
 	aa60.addEventListener('click', function() {openHelp('a60')});
+	aa61.addEventListener('click', function() {openHelp('a61')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -441,6 +443,7 @@ window.onload = function() {
 //	bb58.addEventListener('click', function() {openClose('b58')});
 	bb59.addEventListener('click', function() {openClose('b59')});
 	bb60.addEventListener('click', function() {openClose('b60')});
+//	bb61.addEventListener('click', function() {openClose('b61')});
 
 };
 

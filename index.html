@@ -426,7 +426,8 @@ img.intLink {
     <!--buttons above the main box-->
     <div id="basicBtnsTop" style="display: block;">
       <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock" style="font-size:22px;padding:14px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="d">Encrypt</button><!--
---><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock or send email (alt-L)" accesskey="l">myLock</button>
+--><button class="cssbutton" id="showLockBtnBasic" value="myLock" style="font-size:22px;padding:14px;" title="display your Lock or send email (alt-L)" accesskey="l">myLock</button><!--
+--><button class="cssbutton" id="hideBtnBasic" value="Hide" style="font-size:22px;padding:14px;display:none;" title="hide box contents as text (alt-T)" accesskey="l">Hide</button>
     </div>
     <div id="mainBtnsTop" style="display: none;">
       <button class="cssbutton" id="decryptBtn" value="Lock/Unlock" style="padding-right:7px;padding-left:7px;" title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="">Encrypt</button><!--
@@ -516,12 +517,13 @@ img.intLink {
   <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";"></div>
   <div align="center">
     <!--buttons below the main box-->
-    <div id="mainbuttonsbot" style="display: block;">
+    <div id="mainbuttonsbot" style="">
       <button class="cssbutton" id="niceEditBtn" value="Rich" style="" title="toggle rich text editor (alt-R)" accesskey="r">Rich</button><!--
---><button class="cssbutton" id="selectMainBtn" value="Select" style="" title="select the text in the box">Select</button><!--
+--><button class="cssbutton" id="selectMainBtn" value="Select" style="" title="select the box content and copy it to clipboard">Copy</button><!--
 --><button class="cssbutton" id="clearMainBtn" value="Clear" style="" title="clear the text in the box">Clear</button><!--
 --><button class="cssbutton" id="chatBtn" value="Chat" style="" title="make a chat invitation or open it (alt-C)" accesskey="c">Chat</button><!--
---><button class="cssbutton" id="sendSMSBtn" value="SMS" style="" title="mobile: open the default Texting app">SMS</button>
+--><button class="cssbutton" id="sendSMSBtn" value="SMS" style="" title="mobile: open the default Texting app">SMS</button><!--
+--><input class="custom-file-input" type="file" id="mainFile" style="overflow:hidden;width:120px;position:absolute;" title="open dialog to select file to load"/>
     </div>
     <br>
     <input type="radio" name="lockmodes" id="anonMode"  title="anonymous encryption mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>
@@ -536,13 +538,6 @@ img.intLink {
 <div class="tabContent" id="optionsTab" style="max-width:500px;"> <br />
   <br />
   <br />
-  <div id="fileBtns" style="display: block;">
-  &nbsp;&nbsp;<span id="fileMsg">File input/output:</span><br />
-    <br>
-    <input class="custom-file-input" type="file" id="mainFile" style="" title="open dialog to select file to load"/>
-    <button class="cssbutton" id="saveFileBtn" value="Save file" title="save file to default Downloads folder in original format, or as a text file if type is not recognized">Save file</button>
-    <hr>
-  </div>
   <form name="optionchecks">
     &nbsp;&nbsp;<span id="modeLabel">Interface:&nbsp;&nbsp;&nbsp;&nbsp;</span>
     <input type="radio" name="interfacemodes" id="basicMode"  title="basic mode; only essential functions (alt-B)" accesskey="b" checked/>
@@ -584,22 +579,22 @@ img.intLink {
       <input type="radio" name="colorareas" id="editBoxColor" title="edit Box color"/>
       &nbsp; Box </div>
     <hr>
-    &nbsp;&nbsp;Other modes:&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="checkbox" id="learnMode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>
-    &nbsp; Learn&nbsp;&nbsp;
+	  &nbsp;&nbsp;<span id="otherLabel">Other:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+     <input type="checkbox" id="learnMode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>
+     &nbsp; Learn&nbsp;&nbsp;
       <input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>
-      &nbsp; ezLok<br />
+      &nbsp; ezLok&nbsp;&nbsp;
+      <span id="decoyEmail" style="display:none;"><input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
+      &nbsp; Decoy</span><br />
     <br />
     <div id='advancedModes' style="display: none;"> &nbsp;&nbsp;
       <input type="checkbox" id="shortMode" title="encrypted message will fit within 160 characters" accesskey=""/>
-      &nbsp; Short&nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;
-      <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
-      &nbsp; Decoy<br />
-      <span id="syncCheck" style="display:none"> <br>
-      &nbsp;&nbsp;
+      &nbsp; Short&nbsp;&nbsp;
+      <input type="checkbox" id="iconMode" title="encrypted output is attached to an icon" accesskey=""/>
+      &nbsp; Icon output&nbsp;&nbsp;
+      <span id="syncCheck" style="display:none">     
       <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
-      &nbsp;Chrome sync </span>
+      &nbsp;Chrome sync </span><br />     
       <hr>
       &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="letterMode" title="hide item into letters" checked/>
@@ -776,15 +771,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
   </div>
   <hr>
-  <div id="aa8" class="helpitem">
-    <h3>Make PassLok remember the secret Key for the current session</h3>
-  </div>
-  <div id="a8" class="texter">
-    <p>First, you must be aware that retaining the Key in memory could lead to compromising it. This is why PassLok's default behavior is to forget the Key if it doesn't get used for five minutes. Still, you can make PassLok remember the Key for the length of the current session by checking the <strong>Remember</strong> checkbox when you enter your Key.</p>
-    <p>If you asked PassLok to remember your Key, make sure to close the app completely when you're done. On a mobile device, this may involve removing the app in the switcher screen.</p>
-    <p>There is no way to make PassLok remember your Key after it reloads.</p>
-  </div>
-  <hr>
   <div id="aa9" class="helpitem">
     <h3>Make PassLok even more secure</h3>
   </div>
@@ -841,7 +827,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b11" class="texter">
       <p>This mode is called Anonymous not because it provides any protection against tracking over a network, but because the identity of the sender cannot be deduced from the encrypted message. This message can be decrypted only by someone having the Key matching one of the Locks selected. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay if the tags up to the "=" signs on the Lock are missing, or extra spaces, carriage returns, or special characters other than = + or / have been added (such as a video URL).</p>
-      <p>This mode is <em>not</em> compatible with PassLok for Email, but the other two modes are.</p>
+      <p>This mode is not available in Email mode because it is not compatible with PassLok for Email, but the other two modes are.</p>
     </div>
   </div>
   <hr>
@@ -860,7 +846,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>It is okay if the message is broken up by
         spaces, carriage returns, and special characters other than = + / or % or is
         missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>This mode is <em>not</em> compatible with PassLok for Email, but the other two modes are.</p>
+      <p>Even though this  mode is not available in Email mode, messages encrypted in this mode will decrypt fine anyway.</p>
     </div>
   </div>
   <hr>
@@ -993,36 +979,34 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <div id="aa19" class="helpitem">
-    <h3>Load a file to be encrypted, sealed, or split (non-mobile)</h3>
+    <h3>Load files to be encrypted, sealed, or split (non-mobile)</h3>
   </div>
   <div id="a19" class="texter">
-    <p>1. Click the file load button on the <strong>Options</strong> tab. Different browsers put different labels on it, such as <strong>"Browse"</strong>, <strong>"Choose File"</strong>, and so forth.</p>
-    <p>2. A dialog will appear so you can navigate to the file. If all goes well, the file or image loads into the box as a piece of gibberish text, with some identifying information at the top.</p>
-    <p>Now you can encrypt it, seal it, or split it like a regular piece of text. The process to retrieve the original file is explained in the help item below.</p>
-    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
+    <p>1. The button to load files is below the main box. Different browsers put different labels on it, such as <strong>"Browse"</strong>, <strong>"Choose File"</strong>, and so forth.</p>
+    <p>2. When you click it, a dialog will appear so you can navigate to the file. If all goes well, the file or image loads into the box as a link. You will see only its name, but the whole file is actually in there.</p>
+    <p>Now you can encrypt it, seal it, or split it just like a text-based message. You can also add more files if you want. The process to retrieve the original files is explained in the help item below.</p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=tPeUv6BRTrg" target="_blank">https://www.youtube.com/watch?v=tPeUv6BRTrg</a></p>
     <div id='bb19' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b19" class="texter">
-      <p> If the file is a text file, it will load as plain text rather than encoded. In our tests, Chrome has had difficulty loading  files larger than a few kB, but Firefox does fine. This command is not available on mobile devices because of their severe restrictions on accessing stored content. If using a Chromebook, be aware that the Files extension does not load Google documents completely.</p>
-      <p>If you plan to send a large file by email or other means, it is best to encrypt it with an archiving program such as 7zip, Winzip, or Winrar using AES and a random symmetric key, and then use PassLok to encrypt that symmetric key for transmission, along with the encrypted file as an attachment.</p>
+      <p> If the file is a text file, it will load as plain text rather than as a link. This command is not available on mobile devices because of their severe restrictions on accessing stored content. If using a Chromebook, be aware that the Files extension does not load Google documents completely; save the file locally in a different format and try loading it again.</p>
+      <p>If you plan to send large files by email or other means, it is best to encrypt them with an archiving program such as 7zip, Winzip, or Winrar (Windows), Keka (OSX), or p7zip (Linux) using AES and a random symmetric key, and then use PassLok to encrypt that symmetric key for transmission, along with the encrypted files as attachments.</p>
     </div>
   </div>
   <hr>
   <div id="aa20" class="helpitem">
-    <h3>Retrieve a file from encoded text (non-mobile)</h3>
+    <h3>Retrieve a file that has just been decrypted, unsealed, of joined (non-mobile)</h3>
   </div>
   <div id="a20" class="texter">
-    <p>1. Make sure the encoded file, which presumably has been obtained by decrypting or merging parts, is on the <strong>Main</strong> tab. </p>
-    <p>2. Click the <strong>Save file</strong> button at the top of the <strong>Options</strong> tab.</p>
-    <p>3. If the content was plain text rather than encoded, you will be asked for a name. Type a name (default extension is .txt) and click <strong>OK</strong>. </p>
-    <p>The file will be saved to your default downloads folder.</p>
-    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=-ifIkdredqk" target="_blank">https://www.youtube.com/watch?v=-ifIkdredqk</a></p>
+    <p>1. Make sure the file appears as a link on the Main box.</p>
+    <p>2. Right-click on it and select the <strong>Save as</strong> option. The file will be saved at the location you select.</p>
+    <p>If there are several file links, repeat the process for each one. This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=tPeUv6BRTrg" target="_blank">https://www.youtube.com/watch?v=tPeUv6BRTrg</a></p>
     <div id='bb20' class="helpitem">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b20" class="texter">
-      <p>Chrome and Firefox will save the file, using the original name if not already taken by another file, into the default download location. Safari does the same, but gives it a generic name that you will have to edit later. Internet Explorer doesn't do anything.</p>
+      <p>Chrome will not display the <strong>Save as</strong> option if the file is larger than 1.5MB. Use Firefox or Safari in this case.</p>
     </div>
   </div>
   <hr>
@@ -1553,6 +1537,16 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       </div>
     </div>
     <hr>
+    <div id="aa61" class="helpitem">
+      <h3>Output as icons <em>(advanced)</em></h3>
+    </div>
+    <div id="a61" class="texter">
+      <p>Sometimes you want the output to look small even though the encrypted item is large. You can cause the output to turn into an icon (several icons, when splitting) by selecting <strong>Icon output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting.</p>
+      <p>An iconized item can be decrypted, unsealed, or joined just like a text-based output item. Beware, however, that iconized items may not survive transmission by email or texting, since the email service may strip images contained in text areas.</p>
+      <p>Icons do not really conceal the content, but merely attach it to an image. If you want the content to be hard to detect, use image hiding (explained above).</p>
+      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=3bJIvRgtqvQ" target="_blank">https://www.youtube.com/watch?v=3bJIvRgtqvQ</a></p>
+    </div>
+    <hr>
     <div id="aa45" class="helpitem">
       <h3>Change your secret Key <em>(advanced)</em></h3>
     </div>
@@ -1829,12 +1823,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary" style="float:left;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that we have never received any requests under gag order for user data or modifications of the code. They will be absent once we receive one of such requests.</p>
+    <p>This paragraph and the canary logo above attest to the fact that we have never complied to any requests under gag order for user data or modifications of the code. They will be absent once we are forced to do so.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.3 &#169; F. Ruiz 2016
+  PassLok v2.3.1 &#169; F. Ruiz 2016
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1898,10 +1892,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <br />
   <br />
   <input type="checkbox" id="showKey" title="reveal box contents">
-  Show&nbsp;
-  <input type="checkbox" id="neverMode" title="turn off Key timer">
-  Remember<br />
-  <br />
+  Show&nbsp;&nbsp;
   <button class="cssbutton" id="cancelKeyBtn" value="cancel" style="" title="close Key dialog">Cancel</button>
   &nbsp;
   <button class="cssbutton" id="acceptKeyBtn" value="OK" style="" title="accept Key">OK</button>
@@ -2091,9 +2082,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <br />
   <br />
   <input type="checkbox" id="showDecoyOutCheck" title="reveal Password">
-  &nbsp; Show&nbsp;
-  <input type="checkbox" id="sharedDecoyOut" title="uncheck if this is not Shared" checked>
-  &nbsp; Shared <br />
+  &nbsp; Show&nbsp;<br />
   <br />
   <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop decrypt">Cancel</button>
   &nbsp;
@@ -2131,9 +2120,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <textarea id="chatDate" class="cssbox" style="width:95%;" name="chatDate" rows="1" title="additional information" placeholder="Write here the date and time for the chat"></textarea>
   <br />
   <br />
-  <!--<textarea id="chatRoom" class="cssbox" style="width:95%;" name="chatRoom" rows="1" title="chatRoom name" placeholder="Write here a nondescript name for the chat; otherwise random words will be used"></textarea>
-  <br />
-  <br />-->
   <button class="cssbutton" id="cancelChatBtn" value="Cancel" title="cancel chat invitation">Cancel</button>
   &nbsp;
   <button class="cssbutton" id="submitChatBtn" value="OK" title="make chat invitation">OK</button>
