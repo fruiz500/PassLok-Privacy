@@ -49,10 +49,11 @@ function charsLeft(){
 
 //changes button labels according to context
 function updateButtons(){
-	var text = XSSfilter(mainBox.innerHTML).split("==").sort(function (a, b) {return b.length - a.length;})[0].replace(/-/g,'').trim(),
-		type = text.charAt(0),
-		typeGC = text.charAt(50);													//PassLok for Email compatible
-	if(type.match(/[~!@#$*]/) || typeGC.match(/[~!@#$*]/) || (text.length == 160 && !text.match(' '))){		//encrypted item
+	var string = mainBox.innerHTML.trim();
+	if(string.match('==')) string = string.split('==')[1].replace(/<(.*?)>/gi,"");
+	var	type = string.charAt(0),
+		typeGC = string.charAt(50);													//PassLok for Email compatible
+	if(type.match(/[~!@#$*]/) || typeGC.match(/[~!@#$*]/) || (string.length == 160 && !string.match(' '))){		//encrypted item
 		decryptBtn.innerHTML = 'Decrypt';
 		decryptBtnBasic.innerHTML = 'Decrypt';
 	}else{
@@ -64,18 +65,18 @@ function updateButtons(){
 	}else{
 		verifyBtn.innerHTML = '&nbsp;Seal&nbsp;';
 	}
-	if(type.match(/[~!@#$*%]/) || typeGC.match(/[~!@#$*]/) || ((text.length == 160 || text.length == 43 || text.length == 50) && !text.match(' '))){	//Lock
+	if(type.match(/[~!@#$*%]/) || typeGC.match(/[~!@#$*]/) || ((string.length == 160 || string.length == 43 || string.length == 50) && !string.match(' '))){	//Lock
 		showLockBtn.innerHTML = 'Email';
 		showLockBtnBasic.innerHTML = 'Email';
-	}else if(text == ''){
+	}else if(string == ''){
 		showLockBtn.innerHTML = 'myLock';
 		showLockBtnBasic.innerHTML = 'myLock';
 	}else{
 		showLockBtn.innerHTML = 'Invite';
 		showLockBtnBasic.innerHTML = 'Invite';
 	}
-	var	main = XSSfilter(mainBox.innerHTML).trim();
-	if(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL'){			//box contains parts
+	var	main = mainBox.innerHTML.trim();
+	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || main.split('==')[0].slice(-4)=='part'){			//box contains parts
 		secretShareBtn.innerHTML = 'Join';
 	}else{
 		secretShareBtn.innerHTML = '&nbsp;Split&nbsp;';
@@ -85,21 +86,18 @@ function updateButtons(){
 //detect if a Lock has been pasted and offer to add it to the directory. Other kinds of items are also routed accordingly.
 function pasteMain() {
     setTimeout(function(){
-		var string = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,' ')),
-			strlength = string.trim().length;
-		string = string.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$%*]+/g,'');			//remove spaces and non-legal chars
-		if(string.match('=(.*)=')) string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];						//extract stuff between = signs
+		var string = mainBox.innerHTML.trim();
+		if(string.match('==')) string = string.split('==')[1];
+		string = string.replace(/<(.*?)>/gi,"").replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$%*]+/g,'');			//remove spaces and non-legal chars
 		
 		string = extractLock(string);
 		
 		var type = string.charAt(0);
 		if(type.match(/[~!@#$*]/) || string.length == 160){
-			mainBox.innerHTML = string;
 			lockUnlock();
 			return
 		}
 		if(type == '%' && string.length != 160){
-			mainBox.innerHTML = string;
 			signVerify();
 			return
 		}
@@ -107,7 +105,7 @@ function pasteMain() {
     }, 0); //or 4
 }
 
-//extracts Lock at the start of an item, from an invitation or PassLok from email
+//extracts Lock at the start of an item, from an invitation or PassLok for Email
 function extractLock(string){
 		var CGParts = string.split(/[@#$]/);											//if PassLok for Email item, extract ezLock
 		if(CGParts[0].length == 50){
@@ -149,7 +147,7 @@ function sendMail() {
 		return
 	}
 	var cipherstr = mainBox.innerHTML;
-	cipherstr = cipherstr.split("==").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
+	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
 	cipherstr = XSSfilter(cipherstr);						//remove formatting
 	var type = cipherstr.charAt(0),
 		type2 = cipherstr.charAt(50);					//for email mode
@@ -173,23 +171,23 @@ function sendMail() {
 	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores.";
 
 	if(type=="!"){
-    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="@"){
-		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with shared Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="#" || type2=="#"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
 		}else{
-			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
+			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
 		}
 	} else if (type=="$" || type=="*" || type2=="$"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%3Cbr%3E/g,'%0D%0A');
 		}else{
-			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with your secret Key.%0D%0A%0D%0A" + linkText;
+			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText;
 		}
 	} else if (type=="~"){
-		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.3 %0D%0A%0D%0AUnlock with my secret Key.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with my secret Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="%"){
 		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.3. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
 	} else if (cipherstr.length == 43 || cipherstr.length == 50){
@@ -210,7 +208,7 @@ function makeInvitation(){
 	if(mainBox.innerText.trim() != ''){
 		var reply = confirm('Do you want the contents of the main box to be encrypted and added to an invitation email? This will encourage the recipients to try PassLok, but be aware that the encrypted contents WILL NOT BE SECURE.');
 		if (!reply) throw('invitation canceled');	
-		if(mainBox.innerText.slice(0,9) != 'filename:'){
+		if(!mainBox.innerText.match('data:')){
 			var text = LZString.compressToBase64(mainBox.innerText).replace(/=/g,'')
 		}else{
 			var text = encodeURI(mainBox.innerHTML).replace(/%20/g,' ')
@@ -253,7 +251,7 @@ function Chat(){
 
 	var text = mainBox.innerHTML.trim();
 
-	if(text.slice(4,8) == 'chat'){										//there is already a chat invitation, so open it
+	if(text.match('==') && text.split('==')[0].slice(-4) == 'chat'){		//there is already a chat invitation, so open it
 		lockUnlock();
 		return
 	}
@@ -274,6 +272,7 @@ function Chat(){
 	lockBox.value = listArray.join('\n');
 	openClose('shadow');
 	openClose('chatDialog');												//stop to get chat type
+	chatDate.value = mainBox.innerText.trim().slice(0,43);
 }
 
 //continues making a chat invite after the user has chosen the chat type

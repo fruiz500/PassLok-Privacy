@@ -135,14 +135,12 @@ function refreshKey(){
 	var period = 300000;
 
 //start timer to erase Key
-	if(!neverMode.checked){
-		keytimer = setTimeout(function() {
-			resetKeys();
-		}, period);
-	}
+	keytimer = setTimeout(function() {
+		resetKeys();
+	}, period);
 
 //erase key at end of period, by a different way
-	if ((new Date().getTime() - keytime > period) && !neverMode.checked) {
+	if ((new Date().getTime() - keytime > period)) {
 		resetKeys();
 	}
     keytime = new Date().getTime();
@@ -602,7 +600,7 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label){
 //this strips initial and final tags, plus spaces and non-base64 characters in the middle
 function striptags(string){
 	string = string.replace(/\s/g,'');															//remove spaces
-	string = string.split("==").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+	if(string.match('==')) string = string.split('==')[1].replace(/<(.*?)>/gi,"");
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
 	return string
 }
@@ -692,8 +690,10 @@ function failedDecrypt(label){
 		checkingKey = false;
 	}else if (label == 'read-once'){
 		mainMsg.innerHTML = 'Read-once decrypt has Failed<br>You may have to reset the exchange with this sender';
+	}else if (label == 'decoy'){
+		mainMsg.innerHTML = 'No hidden message was found';		
 	}else{
-		mainMsg.innerHTML = 'Decrypt has Failed';
+		mainMsg.innerHTML = 'Decryption has failed';
 	}
 	throw('decryption failed')
 }

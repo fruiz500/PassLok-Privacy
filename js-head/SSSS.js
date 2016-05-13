@@ -8,11 +8,11 @@ function splitJoin(){
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
-	var	main = XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n")).trim();
-	if(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL'){		//main box has parts: join parts
+	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n").trim();
+	if(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL' || main.split('==')[0].slice(-4)=='part'){		//main box has parts: join parts
 		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
 			n = shares.length,
-			quorumarr = main.match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
+			quorumarr = shares[0].slice(0,8).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it from tags
 		if(n < quorum){																//not enough parts
 			mainMsg.innerHTML = '<span style="color:orange">According to the tags, you need ' + (quorum - n) + ' more parts in the box</span>';
@@ -31,8 +31,8 @@ function secretshare(){
 		};
 try{
 		var	sechex = secrets.combine(shares);
-		var	secret = nacl.util.encodeBase64(hex2charArray(sechex));
-			if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.decompressFromBase64(secret);
+		var	secret = nacl.util.encodeUTF8(hex2charArray(sechex));
+		if(!secret.match('data:')) secret = LZString.decompressFromEncodedURIComponent(secret);
 		mainBox.innerHTML = secret;
 		mainMsg.innerHTML = 'Join successful';
 }catch(err){
@@ -68,8 +68,8 @@ try{
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
 		var secret = mainBox.innerHTML.trim();
-		if(XSSfilter(secret).slice(0,9) != 'filename:') secret = LZString.compressToBase64(secret).replace(/=/g,'');
-		var	sechex = charArray2hex(nacl.util.decodeBase64(secret));
+		if(!secret.match('data:')) secret = LZString.compressToEncodedURIComponent(secret).replace(/=/g,'');
+		var	sechex = charArray2hex(nacl.util.decodeUTF8(secret));
 		var	shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
 		mainMsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
@@ -84,14 +84,21 @@ function displayshare(shares,quorum){
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 
 	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
-	var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+	if(iconMode.checked){
+		var	output = '<a href="part==' + dataItem + '=="><img src="' + PLicon + '"></a>'
+	}else{
+		var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+	}
 
 	for (var i=1; i < shares.length; i++) {
 		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
-		output = output + "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+		if(iconMode.checked){
+			output += "<br><br>" + '<a href="part==' + dataItem + '=="><img src="' + PLicon + '"></a>'
+		}else{
+			output += "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+		}
 	};
 	mainBox.innerHTML = output;
-	if(!isMobile) selectMain();
 };
 
 //convert an array of 8-bit decimal codes into a hexadecimal string

@@ -9,7 +9,7 @@ function pasteLock(){
 	}else{
 		var lock = strings[strings.length-2]									//in case there is a video URL as last line
 	}
-	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
+	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
 
 	suspendFindLock = true;															//allow writing a name without searching
 	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
@@ -47,7 +47,6 @@ function addLock(){
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
 		}else{
 			if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
-//			var key = refreshKey(),
 			var	lockcrypt = keyEncrypt(lock);
 		}
 		if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
@@ -258,7 +257,6 @@ function addToList(){
 //automatically decrypts an item stored encrypted in the locDir database. It uses the permanent Key
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
-//	var	key = refreshKey(),
 	refreshKey();
 	var	string = lockBox.value.trim();
 	if(string == "") throw('nothing to decrypt');
@@ -303,7 +301,6 @@ function mergeLockDB(){
 		throw('invalid merge')
 	}
 	if (lockstr.slice(0,1) == '~') {
-//		var key = refreshKey();
 		lockstr = keyDecrypt(lockstr)
 	}
 	var lockstr2 = striptags(lockstr),
@@ -339,8 +336,6 @@ function mergeLockDB(){
 
 		var email = keyDecrypt(locDir['myself'][0]);				//populate email and recalculate Keys and Locks
 		if(email) myEmail = email;
-//		var key = refreshKey();
-//		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
 		refreshKey();
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
@@ -391,7 +386,6 @@ function moveLockDB(){
 		throw('DB move canceled')
 	}
 	callKey = 'movedb';
-//	var key = refreshKey();
 	refreshKey();
 
 	//first encrypt locDir, as displayed by showLockDB
@@ -428,7 +422,6 @@ function moveMyself(){
 	//first encrypt myself data, as displayed by showLockDB
 	showMyself();
 	if(fullAccess){
-//		var key = refreshKey();
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());
 		mainBox.innerHTML = 'PL23bak==' + datacrypt+ '==PL23bak';
 		var msg = 'The item in the box contains your settings<br>To restore them, click Decrypt';
@@ -640,7 +633,6 @@ function fillBox(){
     	if(lockList.options[i].selected){
 			if(lockList.options[i].value.slice(0,2) == '--'){					//it's a List, so decrypt it and add the contents to the box
 				var itemcrypt = locDir[lockList.options[i].value][0];
-//				if (!key) var key = refreshKey();
 				isList = true;											//to return here if the Key is wrong
 				list = list + '\n' + keyDecrypt(itemcrypt);
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
@@ -649,7 +641,6 @@ function fillBox(){
 			}else if(locDir[lockList.options[i].value][0].length > 500){		//it's a Cover, so decrypt it and make it the new Cover
 				var covername = lockList.options[i].value;
 				var covercrypt = locDir[covername][0];
-//				if (!key) var key = refreshKey();
 				isList = true;
 				newcover(LZString.decompressFromBase64(keyDecrypt(covercrypt)));
 			}else{

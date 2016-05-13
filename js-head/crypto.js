@@ -192,7 +192,7 @@ function Encrypt_Single(){
 
 	mainMsg.innerHTML = 'Encryption successful';
 	if (clipped) mainMsg.innerHTML = "<span style='color:orange'>The message has been truncated</span>";
-	if (pfsMessage) mainMsg.innerHTML = "This message will become unlockable when it is replied to";
+	if (pfsMessage) mainMsg.innerHTML = "This message will become un-decryptable when it is replied to";
 	if (firstMessage || resetMessage) mainMsg.innerHTML = "This message has no forward secrecy";
 
 	if(!isMobile) selectMain();
@@ -232,13 +232,15 @@ function Encrypt_List(listArray){
 				if(namestr.length != 43 && namestr.length != 50){
 					if (warningList == ""){warningList = name} else {warningList += '\n' + name}
 				}
-			}else if(locDir[name][0].length != 43 && locDir[name][0].length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
-					if (warningList2 == ""){warningList2 = name} else {warningList2 += '\n' + name};
-					listArray[index] = ''
+			}else if(striptags(locDir[name][0]).length != 43 && striptags(locDir[name][0]).length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
+				if (warningList2 == ""){warningList2 = name} else {warningList2 += '\n' + name};
+				listArray[index] = ''
 			}
 		}
 	}
-	listArray = listArray.filter(Boolean);									//remove empty elements
+	listArray = listArray.filter(Boolean);																						//remove empty elements
+	if(emailMode.checked && signedMode.checked && listArray.indexOf('myself') == -1) listArray.push('myself');				//add 'myself' in email mode
+	listArray = shuffle(listArray);																								//extra precaution
 	
 	if ((warningList != '') && (listArray.length > 1)){
 		var agree = confirm('The names on the list below were not found in your local directory. If you click OK, they will be used as shared Keys for encrypting and decrypting the message. This could be a serious security hazard:\n\n' + warningList);
@@ -290,8 +292,7 @@ function Encrypt_List(listArray){
 		refreshKey();
 		var padding = decoyEncrypt(59,nonce24,KeyDH);
 	}
-	if(!text.toLowerCase().match('data:;')) text = LZString.compressToBase64(text).replace(/=/g,'');								//compress unless it's a file, which would grow on compression
-//	if(XSSfilter(text).slice(0,9) != 'filename:') text = LZString.compressToBase64(text).replace(/=/g,'');								//compress unless it's a file, which would grow on compression
+	if(!text.match('data:')) text = LZString.compressToBase64(text).replace(/=/g,'');						//compress unless it's a file, which would grow on compression
 	var cipher = PLencrypt(text,nonce24,msgKey);				//main encryption event, but don't add it yet
 	outString = outString + noncestr + padding;
 	if (anonMode.checked) outString = outString + pubdumstr;				//for anonymous mode, add the dummy Lock to the output string
@@ -411,36 +412,59 @@ function Encrypt_List(listArray){
 
 	//finish off by adding the encrypted message and tags
 	outString = outString + '%' + cipher;
-	if(anonMode.checked){
-		mainBox.innerHTML = "PL23msa==" + outString + "==PL23msa"
-	} else if(onceMode.checked){
-		if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
+	if(iconMode.checked){
+		mainBox.innerHTML = '<a href="==' + outString + '=="><img src="' + PLicon + '"></a>'
+	}else{
+		if(anonMode.checked){
+			mainBox.innerHTML = "PL23msa==" + outString + "==PL23msa"
+		}else if(onceMode.checked){
+			if(emailMode.checked){
+				mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
+			}else{
+				mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
+			}
 		}else{
-			mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
-		}
-	} else {
-		if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
-		}else{
+			if(emailMode.checked){
+				mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
+			}else{
 			mainBox.innerHTML = "PL23mss==" + outString + "==PL23mss"
+			}
 		}
-	}
-	if(isChatInvite){
-		if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
-		}else{
-			mainBox.innerHTML = "PL23chat==" + outString + "==PL23chat"
+		if(isChatInvite){
+			if(emailMode.checked){
+				mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
+			}else{
+				mainBox.innerHTML = "PL23chat==" + outString + "==PL23chat"
+			}
 		}
 	}
 
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
-	if(!isMobile) selectMain();
-	mainMsg.innerHTML = 'Encryption successful. Select and copy.';
+	if(!isMobile){
+		selectMain();
+		mainMsg.innerHTML = 'Encryption successful. Copied to clipboard.'
+	}else{
+		mainMsg.innerHTML = 'Encryption successful. Select and copy.'
+	}
 	if (pfsMessage) mainMsg.innerHTML = "Delayed forward secrecy for at least one recipient";
 	if (firstMessage || resetMessage) mainMsg.innerHTML = "No forward secrecy for at least one recipient";
 	callKey = '';
 }
+
+//just to shuffle the array containing the recipients' Locks
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i -= 1) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+	return a
+}
+
+//for icon mode output
+var PLicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAFVBMVEX7WiH////6UBT9mHX9rZH+18n/8+6yY5GRAAAAsElEQVQ4y93PQQoCMQwF0Fg9gKVO1yHqXkfcizMHEKwHGETvfwTTuvzJRnTjhxbaxyctfT9BF4vg/fGmKYcAsI8tV3Ygnjzo2IHYe3BByM9J4c4AK56rJAuk7haEmQNeQ2CGRiGto2ZpNLbOP1KF3JPVwBHUGu8CNjYxD2xA4nEn7YQfZII0IEz4GP5hRnIb5ECcKiK0ZAfKwDacxWk8ijejg2ctxpaBoSIsgUXoB3kBrNIma1R0mtQAAAAASUVORK5CYII';
 
 //encrypts a string with the secret Key, 12 char nonce, padding so length for ASCII input is the same no matter what
 function keyEncrypt(plainstr){
@@ -513,14 +537,14 @@ function Decrypt_Single(){
 	mainMsg.innerHTML = "";
 	if(lockBox.value.slice(0,1) == '~') decryptItem();			//if Lock or shared Key is encrypted, decrypt it
 	var name = lockMsg.innerHTML,
-		cipherstr = XSSfilter(mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,'')),	//remove HTML tags that might have been introduced and extra spaces
+		cipherstr = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,''),
 		lockBoxLines = lockBox.value.trim().split('\n'),
 		lockBoxItem = lockBoxLines[0];
+	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/<(.*?)>/gi,"");					//remove tags
 	if (cipherstr == ""){
 			mainMsg.innerHTML = 'Nothing to encrypt or decrypt';
 			throw("main box empty");
 	};
-	cipherstr = cipherstr.split("==").sort(function (a, b) { return b.length - a.length; })[0];				//remove tags
 	if(cipherstr.charAt(50).match(/[#$@]/)){										//if it comes from PassLok for Email
 		cipherstr = cipherstr.slice(50);										//remove initial ezLock
 	}
@@ -583,7 +607,6 @@ function Decrypt_Single(){
 			var noncestr = cipherstr.slice(0,12);
 			cipherstr = cipherstr.slice(12);
 		}else{												//invitations
-			var isInvite = true;
 			var noncestr = cipherstr.slice(0,20);
 			cipherstr = cipherstr.slice(20);				//the '%' character was filtered out earlier
 		}
@@ -604,14 +627,14 @@ function Decrypt_Single(){
 		}
 		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'symmetric');
 		if(!plain) failedDecrypt('symmetric');
-		if(!plain.toLowerCase().match('data:;') && isInvite){
+		if(!plain.match('data:') && (keystr.length == 43 || keystr.length == 50)){
 			mainBox.innerHTML = LZString.decompressFromBase64(plain)
 		}else{
 			mainBox.innerHTML = decodeURI(plain).trim()
 		}
 		mainMsg.innerHTML = 'Decryption successful';
 																		//additional text to accompany an invitation
-		if(keystr.length == 43){
+		if(keystr.length == 43 || keystr.length == 50){
 			mainBox.innerHTML = "This is my message to you:<blockquote><em>" + mainBox.innerHTML + "</em></blockquote><br>PassLok is now ready to encrypt your reply so that only I can decrypt it.<br><br>To do this, click <strong>Clear</strong>, type your message, select my name in the directory, and then click <strong>Encrypt</strong>. Optionally, you can select a different encryption mode at the bottom of the screen before you click the button. Then you can copy and paste it into your favorite communications program or click <strong>Email</strong> to send it with your default email.<br><br>If this is a computer, you can use rich formatting if you click the <strong>Rich</strong> button.";
 		}
 	}
@@ -789,7 +812,7 @@ function Decrypt_List(cipherArray){
 		if (type == '!'){
 			decoyDecrypt(padding,nonce24,pubdumstr)
 		}else{
-			decoyDecrypt(padding,nonce24,convertPubStr(myLock))
+			decoyDecrypt(padding,nonce24,convertPubStr(Lock))
 		}
 	}
 
@@ -952,8 +975,7 @@ function Decrypt_List(cipherArray){
 
 	//final decryption for the main message
 	var plainstr = PLdecrypt(cipher,nonce24,msgKey);
-	if(!plainstr.toLowerCase().match('data:;')) plainstr = LZString.decompressFromBase64(plainstr);		//encoded files are not compressed
-//	if(XSSfilter(plainstr).slice(0,9) != 'filename:') plainstr = LZString.decompressFromBase64(plainstr);		//encoded files are not compressed
+	if(!plainstr.match('data:')) plainstr = LZString.decompressFromBase64(plainstr);		//encoded files are not compressed
 	mainBox.innerHTML = plainstr;
 
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);				//everything Ok, so store
@@ -962,8 +984,7 @@ function Decrypt_List(cipherArray){
 }
 
 //decrypt the message hidden in the padding, for decoy mode
-function decoyDecrypt(cipher,nonce24,dummylock){
-//	mainMsg.innerHTML = "";
+function decoyDecrypt(cipherstr,nonce24,dummylock){
 	if (learnMode.checked){
 		var reply = confirm("Decoy mode is selected. If you go ahead, a dialog will ask you for the decoy Password. Cancel if this is not what you want.");
 		if(!reply) throw("decoy decrypt canceled");
@@ -976,15 +997,18 @@ function decoyDecrypt(cipher,nonce24,dummylock){
 	}
 	var keystr = decoyPwdOut.value;
 	keystr = replaceByItem(keystr,false);											//use stored item, if it exists
-	decoyPwdOut.value = ""
-	if(!sharedDecoyOut.checked){							//asymmetric mode, so now make the real encryption key
-		var email = readEmail(),
-			sharedKey = makeShared(dummylock,ed2curve.convertSecretKey(nacl.sign.keyPair.fromSeed(wiseHash(keystr,email)).secretKey));
-	}else{																				//symmetric mode
-		var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24));
+	decoyPwdOut.value = "";
+
+	var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24)),				//try symmetric first
+		cipher = nacl.util.decodeBase64(cipherstr),
+		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
+	if(!plain){																			//try asymmetric
+		var email = readEmail();
+		sharedKey = makeShared(dummylock,ed2curve.convertSecretKey(nacl.sign.keyPair.fromSeed(wiseHash(keystr,email)).secretKey));
+		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
+		if(!plain) failedDecrypt('decoy');											//now give up
 	}
-	var plain = PLdecrypt(cipher,nonce24,sharedKey,'decoy');
-	mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(plain) + '</span>'
+	mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + decodeURI(nacl.util.encodeUTF8(plain)) + '</span>'
 };
 
 //function that starts it all when the Seal/Unseal button is pushed
@@ -1006,25 +1030,31 @@ function applySignature(){
 	};
 	refreshKey();
 	var text = mainBox.innerHTML.trim();
-//	if(XSSfilter(text).slice(0,9) != 'filename:') text = LZString.compressToBase64(text).replace(/=/g,'');
-	if(!text.toLowerCase().match('data:;')) text = LZString.compressToBase64(text).replace(/=/g,'');
-	mainBox.innerHTML = 'PL23sld==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '==PL23sld';
-	if(!isMobile) selectMain();
-	mainMsg.innerHTML = 'The text has been sealed with your secret Key. It is <span class="blink">NOT LOCKED</span>';
+	if(!text.match('data:')) text = LZString.compressToBase64(text).replace(/=/g,'');
+	if(iconMode.checked){
+		mainBox.innerHTML = '<a href="==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '=="><img src="' + PLicon + '"></a>'
+	}else{
+		mainBox.innerHTML = 'PL23sld==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '==PL23sld';
+	}
+	if(!isMobile){
+		selectMain();
+		mainMsg.innerHTML = 'The text has been sealed with your secret Key and copied to clipboard. It is <span class="blink">NOT LOCKED</span>';
+	}else{
+		mainMsg.innerHTML = 'The text has been sealed with your secret Key. It is <span class="blink">NOT LOCKED</span>';
+	}
 	callKey = '';
 };
 
 //verifies the Schnorr signature of the plaintext, calls applySignature as appropriate.
 function verifySignature(){
 	keyMsg.innerHTML = "";
-	var text = mainBox.innerHTML.trim();
+	var text = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,'');
 	if (text == ""){																	//nothing in text box
 		mainMsg.innerHTML = '<span style="color:orange">Nothing to sign or verify</span>';
 		throw("no text")
 	}
 	if(lockBox.value.slice(0,1)=='~') decryptItem();
-	text = XSSfilter(text).replace(/&[^;]+;/g,'').replace(/\s/g,'');	//remove HTML tags and special characters, spaces that might have been added
-	text = text.split("==").sort(function (a, b) { return b.length - a.length; })[0];				//remove tags
+	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 	if (text.charAt(0) != '%'){															//no seal present, therefore make one
 		applySignature();
 		return
@@ -1062,8 +1092,7 @@ function verifySignature(){
 	}
 	if(result){
 		var resultstr = nacl.util.encodeUTF8(result);
-//		if(XSSfilter(resultstr).slice(0,9) != 'filename:') resultstr = LZString.decompressFromBase64(resultstr);
-		if(!resultstr.toLowerCase().match('data:;')) resultstr = LZString.decompressFromBase64(resultstr);
+		if(!resultstr.match('data:')) resultstr = LZString.decompressFromBase64(resultstr);
 		mainBox.innerHTML = resultstr;
 	}
 };
@@ -1071,15 +1100,15 @@ function verifySignature(){
 var entropyPerChar = 1.58;			//expected entropy of the key text in bits per character, from Shannon, as corrected by Guerrero; for true random UTF8 text this value is 8
 //function for encrypting with long key
 function padEncrypt(){
-	var nonce = nacl.randomBytes(9),
+	var nonce = nacl.randomBytes(15),
 		noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
 		text = mainBox.innerHTML.trim(),
 		keyText = lockBox.value.trim().replace(/\n/g,' ');
-	if(!text.toLowerCase().match('data:;')) text = LZString.compressToBase64(text).replace(/=/g,'');
+	if(!text.match('data:')) text = LZString.compressToBase64(text).replace(/=/g,'');
 
 	var textBin = nacl.util.decodeBase64(text),
 		keyTextBin = nacl.util.decodeUTF8(keyText),
-		keyLengthNeed = Math.ceil((textBin.length + 9) * 8 / entropyPerChar);
+		keyLengthNeed = Math.ceil((textBin.length + 15) * 8 / entropyPerChar);
 	if(keyLengthNeed > keyTextBin.length){
 		mainMsg.innerHTML = "The key Text is too short";
 		throw('key text too short')
@@ -1092,10 +1121,18 @@ function padEncrypt(){
 	var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex);
 	var cipherstr = nacl.util.encodeBase64(cipherBin).replace(/=/g,'');
 	var macstr = padMac(textBin, keyTextBin, nonce, startIndex);
-	mainBox.innerHTML = "PL23msp==@@" + noncestr + macstr + cipherstr + "==PL23msp";
+	if(iconMode.checked){
+		mainBox.innerHTML = '<a href="==@@' + noncestr + macstr + cipherstr + '=="><img src="' + PLicon + '"></a>'
+	}else{
+		mainBox.innerHTML = "PL23msp==@@" + noncestr + macstr + cipherstr + "==PL23msp";
+	}
 
-	mainMsg.innerHTML = 'Encryption successful. Click <strong>Email</strong> or copy and send.';
-	if(!isMobile) selectMain();
+	if(!isMobile){
+		selectMain();
+		mainMsg.innerHTML = 'Encryption successful and copied to clipboard. Click <strong>Email</strong> or paste into another app.';
+	}else{
+		mainMsg.innerHTML = 'Encryption successful. Click <strong>Email</strong> or copy and send.';
+	}
 	updateButtons();
 }
 
@@ -1185,22 +1222,23 @@ function padMac(textBin, keyTextBin, nonce, startIndex){					//startIndex is the
 function padDecrypt(){
 	mainMsg.innerHTML = "";
 	var keyText = lockBox.value.trim().replace(/\n/g,' '),
-		cipherstr = XSSfilter(mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,''));	//remove HTML tags that might have been introduced and extra spaces
+		cipherstr = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,'');
+	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/<(.*?)>/gi,"");
 	if (cipherstr == ""){
 		mainMsg.innerHTML = 'Nothing to encrypt or decrypt';
 		throw("main box empty");
 	}
-	cipherstr = cipherstr.split("==").sort(function (a, b) { return b.length - a.length; })[0];				//remove tags
+	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];				//remove tags
 	cipherstr = cipherstr.replace(/[^a-zA-Z0-9+\/ ]+/g, '');					//remove anything that is not base64
 
 	if (keyText == ''){
 		mainMsg.innerHTML = '<span style="color:orange">Click <strong>Enter</strong> and enter long shared Key, then try again</span>';
 		throw("symmetric key empty");
 	}
-	var	noncestr = cipherstr.slice(0,12),
+	var	noncestr = cipherstr.slice(0,20),
 		nonce = nacl.util.decodeBase64(noncestr),
-		macstr = cipherstr.slice(12,24);
-	cipherstr = cipherstr.slice(24);
+		macstr = cipherstr.slice(20,32);
+	cipherstr = cipherstr.slice(32);
 	try{
 		var cipherBin = nacl.util.decodeBase64(cipherstr),
 			keyTextBin = nacl.util.decodeUTF8(keyText);
@@ -1221,10 +1259,10 @@ function padDecrypt(){
 	try{
 		var plain = nacl.util.encodeBase64(plainBin).replace(/=/g,'');
 	}catch(err){
-		mainMsg.innerHTML = "Decrypt has failed"
+		mainMsg.innerHTML = "Decryption has failed"
 	}
 	if(plain){
-		if(!plain.toLowerCase().match('data:;')) plain = LZString.decompressFromBase64(plain);
+		if(!plain.match('data:')) plain = LZString.decompressFromBase64(plain);
 		if(plain){
 			if(macstr == macNew){										//check authentication
 				mainBox.innerHTML = plain;
@@ -1233,11 +1271,11 @@ function padDecrypt(){
 				mainMsg.innerHTML = 'Message authentication has failed';
 			}
 		}else{
-			mainMsg.innerHTML = 'Decrypt has failed';
+			mainMsg.innerHTML = 'Decryption has failed';
 		}
 		updateButtons();
 		openChat()	
 	}else{
-		mainMsg.innerHTML = "Decrypt has failed"
+		mainMsg.innerHTML = "Decryption has failed"
 	}
 }

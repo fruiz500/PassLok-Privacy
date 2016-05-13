@@ -74,7 +74,7 @@ function clearIntroEmail(){
 	emailIntro.value = '';
 }
 
-//for selecting the Main box contents
+//for selecting the Main box contents and copying them to clipboard
 function selectMain(){
     var range, selection;
     if (document.body.createTextRange) {
@@ -88,6 +88,7 @@ function selectMain(){
         selection.removeAllRanges();
         selection.addRange(range);
     }
+	document.execCommand('copy')
 }
 
 //writes five random dictionary words in the intro Key box
@@ -151,7 +152,6 @@ function changeName(){
 	}
 	var oldUserName = userName,
 		userNameTemp = document.getElementById('userNameBox').value;
-//		key = refreshKey();
 	if (userNameTemp.trim() == ''){
 		throw('no name');
 	}
@@ -201,17 +201,19 @@ function code2checkbox(){
 		var isEmailMode = checks[2].checked;
 		BasicButtons = checks[0].checked || isEmailMode;
 	}
+//	if(checks[0].checked) hideBtnBasic.style.display = 'none';	//don't show this button on Basic interface
 	if(!BasicButtons){												//retrieve Advanced interface
 		openClose("basicBtnsTop");
 		openClose("mainBtnsTop");
 		openClose("lockBtnsBottom");
 		openClose('advancedModes');
+		decoyEmail.style.display = '';
 		openClose('advancedBtns');
 		openClose('advancedHelp');
 		basicMode.checked = false;
 		advancedMode.checked = true;
 	}
-	if(isEmailMode) mode2email();						//email compatible mode
+	if(isEmailMode) mode2email();						//Email compatible interface
 	getCustomColors();
 	selectStyle();
 
@@ -323,13 +325,6 @@ function cancelKeyChange(){
 	optionsMsg.innerHTML = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
-}
-function hide5min(){
-	if(neverMode.checked){
-		fiveMin.style.display = "none"
-	}else{
-		fiveMin.style.display = "block"
-	}
 }
 
 //triggered if the user types Enter in the name box of the locks screen
@@ -459,7 +454,7 @@ function main2extra(){
 //switch to Advanced mode
 function mode2adv(){
 	mainBtnsTop.style.display = 'block';
-	basicBtnsTop.style.display = 'none'
+	basicBtnsTop.style.display = 'none';
 	lockBtnsBottom.style.display = 'block';
 	advancedModes.style.display = 'block';
 	advancedBtns.style.display = 'block';
@@ -467,7 +462,8 @@ function mode2adv(){
 	basicMode.checked = false;
 	advancedMode.checked = true;
 	emailMode.checked = false;
-
+	hideBtnBasic.style.display = 'none';
+	decoyEmail.style.display = '';		
 	anonMode.style.display = '';
 	anonLabel.style.display = '';
 	anonMode.checked = true;
@@ -481,7 +477,7 @@ function mode2adv(){
 function mode2basic(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
-	basicBtnsTop.style.display = 'block'
+	basicBtnsTop.style.display = 'block';	
 	lockBtnsBottom.style.display = 'none';
 	advancedModes.style.display = 'none';
 	advancedBtns.style.display = 'none';
@@ -489,7 +485,8 @@ function mode2basic(){
 	basicMode.checked = true;
 	advancedMode.checked = false;
 	emailMode.checked = false;
-
+	hideBtnBasic.style.display = 'none';
+	decoyEmail.style.display = 'none';	
 	anonMode.style.display = '';
 	anonLabel.style.display = '';
 	anonMode.checked = true;
@@ -513,7 +510,9 @@ function mode2email(){
 	advancedMode.checked = false;
 	emailMode.checked = true;
 	ezLokMode.checked = true;
-
+	hideBtnBasic.style.display = '';
+	decoyEmail.style.display = '';
+	letterMode.checked = true;
 	anonMode.style.display = 'none';
 	anonLabel.style.display = 'none';
 	anonMode.checked = false;
@@ -647,7 +646,6 @@ function email2any(){
 	}
 	myEmail = email;
 	emailBox.value = '';
-//	var	key = refreshKey();
 	refreshKey();
 	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
@@ -779,8 +777,7 @@ function openHelp(theID){
 	  if(this.hash == '#mainTab') fillList();
 	  if(this.hash != '#optionsTab'){
 		  customColors.style.display = 'none';
-		  optionMsg.innerHTML = 'Change Name, Key, etc.';
-		  fileMsg.innerHTML = 'File input/output:'
+		  optionMsg.innerHTML = 'Change Name, Key, etc.'
 	  }
 	  if(this.hash != '#helpTab' && !isiOS){
 			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
