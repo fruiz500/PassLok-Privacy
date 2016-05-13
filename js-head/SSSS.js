@@ -13,7 +13,8 @@ function secretshare(){
 		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = shares[0].slice(0,8).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
-		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};	//if tags are missing, ignore quorum, otherwise read it from tags
+		if(quorumarr == null)	quorumarr = shares[0].slice(-13).match(/ \d{3}/);										//maybe packaged; get quorum at end of label
+		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};					//if tags are missing, ignore quorum, otherwise read it from tags
 		if(n < quorum){																//not enough parts
 			mainMsg.innerHTML = '<span style="color:orange">According to the tags, you need ' + (quorum - n) + ' more parts in the box</span>';
 			throw("insufficient parts")
@@ -84,16 +85,16 @@ function displayshare(shares,quorum){
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 
 	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
-	if(iconMode.checked){
-		var	output = '<a href="part==' + dataItem + '=="><img src="' + PLicon + '"></a>'
+	if(pkgMode.checked){
+		var	output = '<a href="part==' + dataItem + '=="><h3>PassLok 2.3 Part out of '+quorumStr+'</h3></a>'
 	}else{
 		var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 	}
 
 	for (var i=1; i < shares.length; i++) {
 		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
-		if(iconMode.checked){
-			output += "<br><br>" + '<a href="part==' + dataItem + '=="><img src="' + PLicon + '"></a>'
+		if(pkgMode.checked){
+			output += "<br><br>" + '<a href="part==' + dataItem + '=="><h3>PassLok 2.3 Part out of '+quorumStr+'</h3></a>'
 		}else{
 			output += "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 		}

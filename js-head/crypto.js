@@ -412,30 +412,36 @@ function Encrypt_List(listArray){
 
 	//finish off by adding the encrypted message and tags
 	outString = outString + '%' + cipher;
-	if(iconMode.checked){
-		mainBox.innerHTML = '<a href="==' + outString + '=="><img src="' + PLicon + '"></a>'
-	}else{
-		if(anonMode.checked){
-			mainBox.innerHTML = "PL23msa==" + outString + "==PL23msa"
-		}else if(onceMode.checked){
-			if(emailMode.checked){
-				mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
-			}else{
-				mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
-			}
+	if(anonMode.checked){
+		if(pkgMode.checked){
+			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Anonymous message</h3></a>'
 		}else{
-			if(emailMode.checked){
-				mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
-			}else{
-			mainBox.innerHTML = "PL23mss==" + outString + "==PL23mss"
-			}
+			mainBox.innerHTML = "PL23msa==" + outString + "==PL23msa"
 		}
-		if(isChatInvite){
-			if(emailMode.checked){
-				mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
-			}else{
-				mainBox.innerHTML = "PL23chat==" + outString + "==PL23chat"
-			}
+	}else if(onceMode.checked){
+		if(pkgMode.checked){
+			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Read-once message</h3></a>'
+		}else if(emailMode.checked){
+			mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
+		}else{
+			mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
+		}
+	}else{
+		if(pkgMode.checked){
+			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Signed message</h3></a>'
+		}else if(emailMode.checked){
+			mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
+		}else{
+		mainBox.innerHTML = "PL23mss==" + outString + "==PL23mss"
+		}
+	}
+	if(isChatInvite){
+		if(pkgMode.checked){
+			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Chat invitation</h3></a>'
+		}else if(emailMode.checked){
+			mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
+		}else{
+			mainBox.innerHTML = "PL23chat==" + outString + "==PL23chat"
 		}
 	}
 
@@ -462,9 +468,6 @@ function shuffle(a) {
     }
 	return a
 }
-
-//for icon mode output
-var PLicon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAFVBMVEX7WiH////6UBT9mHX9rZH+18n/8+6yY5GRAAAAsElEQVQ4y93PQQoCMQwF0Fg9gKVO1yHqXkfcizMHEKwHGETvfwTTuvzJRnTjhxbaxyctfT9BF4vg/fGmKYcAsI8tV3Ygnjzo2IHYe3BByM9J4c4AK56rJAuk7haEmQNeQ2CGRiGto2ZpNLbOP1KF3JPVwBHUGu8CNjYxD2xA4nEn7YQfZII0IEz4GP5hRnIb5ECcKiK0ZAfKwDacxWk8ijejg2ctxpaBoSIsgUXoB3kBrNIma1R0mtQAAAAASUVORK5CYII';
 
 //encrypts a string with the secret Key, 12 char nonce, padding so length for ASCII input is the same no matter what
 function keyEncrypt(plainstr){
@@ -1031,8 +1034,8 @@ function applySignature(){
 	refreshKey();
 	var text = mainBox.innerHTML.trim();
 	if(!text.match('data:')) text = LZString.compressToBase64(text).replace(/=/g,'');
-	if(iconMode.checked){
-		mainBox.innerHTML = '<a href="==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '=="><img src="' + PLicon + '"></a>'
+	if(pkgMode.checked){
+		mainBox.innerHTML = '<a href="==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '=="><h3>PassLok 2.3 Sealed message</h3></a>'
 	}else{
 		mainBox.innerHTML = 'PL23sld==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '==PL23sld';
 	}
@@ -1121,8 +1124,8 @@ function padEncrypt(){
 	var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex);
 	var cipherstr = nacl.util.encodeBase64(cipherBin).replace(/=/g,'');
 	var macstr = padMac(textBin, keyTextBin, nonce, startIndex);
-	if(iconMode.checked){
-		mainBox.innerHTML = '<a href="==@@' + noncestr + macstr + cipherstr + '=="><img src="' + PLicon + '"></a>'
+	if(pkgMode.checked){
+		mainBox.innerHTML = '<a href="==@@' + noncestr + macstr + cipherstr + '=="><h3>PassLok 2.3 Pad encrypted message</h3></a>'
 	}else{
 		mainBox.innerHTML = "PL23msp==@@" + noncestr + macstr + cipherstr + "==PL23msp";
 	}
