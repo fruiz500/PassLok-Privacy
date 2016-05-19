@@ -85,17 +85,21 @@ function loadFileAsURL()
 	{
 		var fileName = fileToLoad.name;
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		if(fileToLoad.type.slice(0,4) == "text"){
-			mainBox.innerHTML += "<br><br>" + URLFromFileLoaded.replace(/  /g,' &nbsp;');
-		}else{
-			if(URLFromFileLoaded.length > 2000000){
-				var reply = confirm("This file is larger than 1.5MB and Chrome won't save it after decryption. Do you want to continue loading it?");
-				if(!reply){
-					mainMsg.innerHTML = 'File load canceled';
-					throw('file load canceled')
-				}
+		if(URLFromFileLoaded.length > 2000000){
+			var reply = confirm("This file is larger than 1.5MB and Chrome won't save it. Do you want to continue loading it?");
+			if(!reply){
+				mainMsg.innerHTML = 'File load canceled';
+				throw('file load canceled')
 			}
-			mainBox.innerHTML += '<br><a download="' + fileName + '" href="' + URLFromFileLoaded + '">' + fileName + '</a>'
+		}
+		if(fileToLoad.type.slice(0,4) == "text"){
+			if(URLFromFileLoaded.slice(0,2) == '==' && URLFromFileLoaded.slice(-2) == '=='){
+				mainBox.innerHTML += '<br><a download="' + fileName + '" href="data:,' + URLFromFileLoaded + '">' + fileName + '&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
+			}else{
+				mainBox.innerHTML += "<br><br>" + URLFromFileLoaded.replace(/  /g,' &nbsp;')
+			}
+		}else{
+			mainBox.innerHTML += '<br><a download="' + fileName + '" href="' + URLFromFileLoaded + '">' + fileName + '&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}
 	};
 	if(fileToLoad.type.slice(0,4) == "text"){
@@ -105,4 +109,29 @@ function loadFileAsURL()
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
 		mainMsg.innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>';
 	}
+	setTimeout(function(){
+		updateButtons();
+		if(decryptBtn.innerHTML == 'Decrypt') mainMsg.innerHTML = 'This file contains an encrypted item';
+		if(verifyBtn.innerHTML == 'Unseal') mainMsg.innerHTML = 'This file contains a sealed item';
+		if(secretShareBtn.innerHTML == 'Join') mainMsg.innerHTML = 'This file contains a part. Add more parts if necessary';
+	},300);
+}
+
+//used to download a packaged file
+function followLink(thisLink){
+	var downloadLink = document.createElement("a");
+	downloadLink.download = thisLink.parentElement.download;
+	downloadLink.href = thisLink.parentElement.href;
+	if (isFirefox){
+		// Firefox requires the link to be added to the DOM before it can be clicked
+		downloadLink.onclick = destroyClickedElement;
+		downloadLink.style.display = "none";
+		document.body.appendChild(downloadLink);
+	}
+	downloadLink.click();
+}
+
+function destroyClickedElement(event)
+{
+	document.body.removeChild(event.target);
 }

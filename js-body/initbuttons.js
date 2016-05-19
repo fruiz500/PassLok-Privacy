@@ -161,7 +161,7 @@ window.onload = function() {
 
    	ezLokMode.addEventListener('click', checkboxStore);
 
-	pkgMode.addEventListener('click', checkboxStore);
+	fileMode.addEventListener('click', checkboxStore);
 
 	chromeSyncMode.addEventListener('click', checkboxStore);
 
@@ -443,7 +443,7 @@ window.onload = function() {
 //	bb58.addEventListener('click', function() {openClose('b58')});
 	bb59.addEventListener('click', function() {openClose('b59')});
 	bb60.addEventListener('click', function() {openClose('b60')});
-//	bb61.addEventListener('click', function() {openClose('b61')});
+	bb61.addEventListener('click', function() {openClose('b61')});
 
 };
 

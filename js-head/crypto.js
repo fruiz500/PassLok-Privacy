@@ -3,7 +3,7 @@ function lockUnlock(){
 	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		Decrypt_Single();
-		charsLeft();
+		updateButtons();
 	},20);						//end of timeout
 };
 
@@ -218,6 +218,11 @@ function Encrypt_List(listArray){
 		mainMsg.innerHTML = '<span style="color:orange">Short mode not available for multiple recipients</span>';
 		throw('short mode not available')
 	}
+	var lengthLimit = 71000;
+	if(emailMode.checked && mainBox.innerHTML.length > lengthLimit){
+		var agree = confirm("This item is too long to be transmited in an email body and likely will be clipped by the server, rendering it undecryptable. We suggest to cancel and encrypt to file instead, then attach the file to your email");
+		if(!agree) throw('text is too long for encrypting to email')
+	}
 	var warningList = "",
 		warningList2 = "";
 	for (var index = 0; index < listArray.length; index++){		//scan lines and pop a warning if some are not names on DB or aren't Locks
@@ -402,33 +407,33 @@ function Encrypt_List(listArray){
 
 			//now add the idTag and encrypted strings to the output string, and go to the next recipient
 			if (onceMode.checked){				//these include encrypted ephemeral Locks, not the other types
-				if(name != 'myself') outString = outString + '%' + idTag.slice(0,9) + '%' + newLockCipher + cipher2 + typeChar;
+				if(name != 'myself') outString = outString + '-' + idTag.slice(0,9) + '-' + newLockCipher + cipher2 + typeChar;
 			} else {
-				outString = outString + '%' + idTag.slice(0,9) + '%' + cipher2;
+				outString = outString + '-' + idTag.slice(0,9) + '-' + cipher2;
 			}
 		}
 	}
 	//all recipients done at this point
 
 	//finish off by adding the encrypted message and tags
-	outString = outString + '%' + cipher;
+	outString = outString + '-' + cipher;
 	if(anonMode.checked){
-		if(pkgMode.checked){
-			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Anonymous message</h3></a>'
+		if(fileMode.checked){
+			mainBox.innerHTML = '<a download="PL23msa.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Anonymous message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else{
 			mainBox.innerHTML = "PL23msa==" + outString + "==PL23msa"
 		}
 	}else if(onceMode.checked){
-		if(pkgMode.checked){
-			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Read-once message</h3></a>'
+		if(fileMode.checked){
+			mainBox.innerHTML = '<a download="PL23mso.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Read-once message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
 			mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
 		}else{
 			mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
 		}
 	}else{
-		if(pkgMode.checked){
-			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Signed message</h3></a>'
+		if(fileMode.checked){
+			mainBox.innerHTML = '<a download="PL23mss.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Signed message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
 			mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
 		}else{
@@ -436,8 +441,8 @@ function Encrypt_List(listArray){
 		}
 	}
 	if(isChatInvite){
-		if(pkgMode.checked){
-			mainBox.innerHTML = '<a href="==' + outString + '=="><h3>PassLok 2.3 Chat invitation</h3></a>'
+		if(fileMode.checked){
+			mainBox.innerHTML = '<a download="PL23chat.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Chat invitation</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
 			mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
 		}else{
@@ -555,7 +560,7 @@ function Decrypt_Single(){
 	if(cipherstr.slice(0,2) == '@@' && lockBox.value.length > 43){padDecrypt();return}					//special encrypting mode for long keys
 
 	//here detect if the message is for multiple recipients, and if so call the appropriate function
-	var cipherArray = cipherstr.split('%');
+	var cipherArray = cipherstr.split('-');
 	if(cipherArray.length > 3){
 		if (cipherArray[1].length == 9){
 			Decrypt_List(cipherArray);		
@@ -611,7 +616,7 @@ function Decrypt_Single(){
 			cipherstr = cipherstr.slice(12);
 		}else{												//invitations
 			var noncestr = cipherstr.slice(0,20);
-			cipherstr = cipherstr.slice(20);				//the '%' character was filtered out earlier
+			cipherstr = cipherstr.slice(20);				//the '-' character was filtered out earlier
 		}
 		
 		if (lockBoxItem == ''){
@@ -946,6 +951,8 @@ function Decrypt_List(cipherArray){
 			typeChar = msgKeycipher.slice(-1);
 		msgKeycipher = msgKeycipher.slice(79,-1);
 		var newLock = PLdecrypt(newLockCipher,nonce24,idKey,'read-once');
+		
+		if(locDir[name][1] == null && locDir[name][2] == null){ var isVirgin = true }else{ var isVirgin = false };		//detect if this is the first message in an exchange (not a reset)
 
 		if(typeChar == 'r'){											//if reset type, delete ephemeral data first
 			locDir[name][1] = locDir[name][2] = null;
@@ -982,7 +989,10 @@ function Decrypt_List(cipherArray){
 	mainBox.innerHTML = plainstr;
 
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);				//everything Ok, so store
-	if (!decoyMode.checked) mainMsg.innerHTML = 'Decryption successful';
+	if (!decoyMode.checked){
+		mainMsg.innerHTML = 'Decryption successful';
+		if(isVirgin) mainMsg.innerHTML = 'You have just decrypted the first message in a Read-once conversation. This message can be decrypted again, but doing so will cause the conversation to go out of sync. It is best to delete it to prevent this possibility';
+	}
 	callKey = '';
 }
 
@@ -1034,10 +1044,10 @@ function applySignature(){
 	refreshKey();
 	var text = mainBox.innerHTML.trim();
 	if(!text.match('data:')) text = LZString.compressToBase64(text).replace(/=/g,'');
-	if(pkgMode.checked){
-		mainBox.innerHTML = '<a href="==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '=="><h3>PassLok 2.3 Sealed message</h3></a>'
+	if(fileMode.checked){
+		mainBox.innerHTML = '<a download="PL23sld.txt" href="data:,==-' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '=="><b>PassLok 2.3 Sealed message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 	}else{
-		mainBox.innerHTML = 'PL23sld==%' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '==PL23sld';
+		mainBox.innerHTML = 'PL23sld==-' + nacl.util.encodeBase64(nacl.sign(nacl.util.decodeUTF8(text), KeySgn)).replace(/=+$/,'') + '==PL23sld';
 	}
 	if(!isMobile){
 		selectMain();
@@ -1058,7 +1068,7 @@ function verifySignature(){
 	}
 	if(lockBox.value.slice(0,1)=='~') decryptItem();
 	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
-	if (text.charAt(0) != '%'){															//no seal present, therefore make one
+	if (text.charAt(0) != '-'){															//no seal present, therefore make one
 		applySignature();
 		return
 	}
@@ -1124,8 +1134,8 @@ function padEncrypt(){
 	var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex);
 	var cipherstr = nacl.util.encodeBase64(cipherBin).replace(/=/g,'');
 	var macstr = padMac(textBin, keyTextBin, nonce, startIndex);
-	if(pkgMode.checked){
-		mainBox.innerHTML = '<a href="==@@' + noncestr + macstr + cipherstr + '=="><h3>PassLok 2.3 Pad encrypted message</h3></a>'
+	if(fileMode.checked){
+		mainBox.innerHTML = '<a download="PL23msp.txt" href="data:,==@@' + noncestr + macstr + cipherstr + '=="><b>PassLok 2.3 Pad encrypted message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 	}else{
 		mainBox.innerHTML = "PL23msp==@@" + noncestr + macstr + cipherstr + "==PL23msp";
 	}
