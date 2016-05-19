@@ -24,7 +24,7 @@ function charsLeft(){
 	}
 
 	//Now for main box. Short mode character count
-	else if(shortMode.checked && !mainBox.innerHTML.charAt(0).match(/[~!@#$*%]/)){
+	else if(shortMode.checked && !mainBox.innerHTML.charAt(0).match(/[~!@#$*-]/)){
 		updateButtons();
 		var chars = encodeURI(mainBox.innerHTML).replace(/%20/g, ' ').length,
 			sharedKey = striptags(replaceByItem(lockBox.value,false));
@@ -60,12 +60,12 @@ function updateButtons(){
 		decryptBtn.innerHTML = 'Encrypt';
 		decryptBtnBasic.innerHTML = 'Encrypt';
 	}
-	if(type == '%'){										//sealed item
+	if(type == '-'){										//sealed item
 		verifyBtn.innerHTML = 'Unseal';
 	}else{
 		verifyBtn.innerHTML = '&nbsp;Seal&nbsp;';
 	}
-	if(type.match(/[~!@#$*%]/) || typeGC.match(/[~!@#$*]/) || ((string.length == 160 || string.length == 43 || string.length == 50) && !string.match(' '))){	//Lock
+	if(type.match(/[~!@#$*-]/) || typeGC.match(/[~!@#$*]/) || ((string.length == 160 || string.length == 43 || string.length == 50) && !string.match(' '))){	//Lock
 		showLockBtn.innerHTML = 'Email';
 		showLockBtnBasic.innerHTML = 'Email';
 	}else if(string == ''){
@@ -76,11 +76,11 @@ function updateButtons(){
 		showLockBtnBasic.innerHTML = 'Invite';
 	}
 	var	main = mainBox.innerHTML.trim();
-	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || main.split('==')[0].slice(-4)=='part'){			//box contains parts
+	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/PL\d{2}p\d{3}/) && main.match('.txt'))){			//box contains parts
 		secretShareBtn.innerHTML = 'Join';
 	}else{
 		secretShareBtn.innerHTML = '&nbsp;Split&nbsp;';
-	}	
+	}
 }
 
 //detect if a Lock has been pasted and offer to add it to the directory. Other kinds of items are also routed accordingly.
@@ -88,7 +88,8 @@ function pasteMain() {
     setTimeout(function(){
 		var string = mainBox.innerHTML.trim();
 		if(string.match('==')) string = string.split('==')[1];
-		string = string.replace(/<(.*?)>/gi,"").replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$%*]+/g,'');			//remove spaces and non-legal chars
+		var stringRaw = string.replace(/<(.*?)>/gi,"");											//remove HTML tags
+		string = stringRaw.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$-*]+/g,'');			//remove spaces and non-legal chars
 		
 		string = extractLock(string);
 		
@@ -97,11 +98,14 @@ function pasteMain() {
 			lockUnlock();
 			return
 		}
-		if(type == '%' && string.length != 160){
+		if(type == '-' && string.length != 160){
 			signVerify();
 			return
 		}
-		if(!legalItem(string)) textStego()
+		if(!legalItem(stringRaw)){
+			mainBox.innerHTML = stringRaw;
+			textStego()
+		}
     }, 0); //or 4
 }
 
@@ -146,20 +150,21 @@ function sendMail() {
 		mainMsg.innerHTML = 'Email function not available on iOS native app';
 		return
 	}
-	var cipherstr = mainBox.innerHTML;
-	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0].replace(/-/g,'');		//remove tags
+	var cipherstr = mainBox.innerHTML.trim();
+//	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
+	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1];
 	cipherstr = XSSfilter(cipherstr);						//remove formatting
 	var type = cipherstr.charAt(0),
 		type2 = cipherstr.charAt(50);					//for email mode
 	if (learnMode.checked){
-		if(type.match(/[~!@#\$%*]/) || type2.match(/[@#\$]/)){
+		if(type.match(/[~!@#\$-*]/) || type2.match(/[@#\$]/)){
 			var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a subject line. Only encrypted or signed text are allowed. Cancel if this is not what you want.");
 		}else{
 			var reply = confirm("An invitation for others to join PassLok and containing your Lock will open in your default email. You still need to supply the recipient's address.  Cancel if this is not what you want.");
 		}
 		if(!reply) throw("email canceled");		
 	}
-	if(!type.match(/[~!@#\$%*]/) && !type2.match(/[@#\$]/) && cipherstr.length != 43 && cipherstr.length != 50){
+	if(!type.match(/[~!@#\$-*]/) && !type2.match(/[@#\$]/) && cipherstr.length != 43 && cipherstr.length != 50){
 		if(emailMode.checked){
 			var lockLinkText = "The gibberish below contains a message from me that has been encrypted with <b>PassLok for Email</b>. To decrypt it, do this:<ol><li>Install the PassLok for Email Chrome extension by following this link: link here</li><li>Reload your email and get back to this message.</li><li>Click the <b>PassLok</b> logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.</li><li>When asked whether to accept my new Password (which you don't know), go ahead and click <b>OK</b>.</li></ol><br><pre>----------begin invitation message encrypted with PassLok--------==<br><br>" + stripTags(makeInvitation()) + "<br><br>==---------end invitation message encrypted with PassLok-----------</pre>";
 		}else{
@@ -167,7 +172,7 @@ function sendMail() {
 		}
 	}
 
-	var hashTag = encodeURIComponent(mainBox.innerText.replace(/-/g,'')).replace(/%3Cbr%3E/g,'%0D%0A');		//item ready for link
+	var hashTag = encodeURIComponent(mainBox.innerText).replace(/%3Cbr%3E/g,'%0D%0A');		//item ready for link
 	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores.";
 
 	if(type=="!"){
@@ -216,7 +221,7 @@ function makeInvitation(){
 		var nonce = nacl.randomBytes(15),
 			nonce24 = makeNonce24(nonce),
 			noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
-			cipherstr = myezLock.replace(/l/g,'L') + '@' + noncestr + '%' + PLencrypt(text,nonce24,nacl.util.decodeBase64(myLock));
+			cipherstr = myezLock.replace(/l/g,'L') + '@' + noncestr + '-' + PLencrypt(text,nonce24,nacl.util.decodeBase64(myLock));
 			return "PL23inv==" + encodeURIComponent(cipherstr) + "==PL23inv"
 	}else{
 		return ''

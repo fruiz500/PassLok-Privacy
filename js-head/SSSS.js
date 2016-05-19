@@ -9,7 +9,7 @@ function splitJoin(){
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
 	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n").trim();
-	if(main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL' || main.split('==')[0].slice(-4)=='part'){		//main box has parts: join parts
+	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/p\d{3}/) && main.match('.txt'))){		//main box has parts: join parts
 		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = shares[0].slice(0,8).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
@@ -85,16 +85,16 @@ function displayshare(shares,quorum){
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 
 	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
-	if(pkgMode.checked){
-		var	output = '<a href="part==' + dataItem + '=="><h3>PassLok 2.3 Part out of '+quorumStr+'</h3></a>'
+	if(fileMode.checked){
+		var	output = '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 	}else{
 		var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 	}
 
 	for (var i=1; i < shares.length; i++) {
 		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
-		if(pkgMode.checked){
-			output += "<br><br>" + '<a href="part==' + dataItem + '=="><h3>PassLok 2.3 Part out of '+quorumStr+'</h3></a>'
+		if(fileMode.checked){
+			output += "<br><br>" + '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else{
 			output += "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
 		}

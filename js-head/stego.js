@@ -3,8 +3,8 @@
 if (typeof code == 'undefined'){			//default text for base64 to words conversion, global variable
 	var defaultcovertext = "The licenses for most software and other practical works are designed to take away your freedom to share and change the works. By contrast, the GNU General Public License is intended to guarantee your freedom to share and change all versions of a program to make sure it remains free software for all its users. We, the Free Software Foundation, use the GNU General Public License for most of our software; it applies also to any other work released this way by its authors. You can apply it to your program, too. When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free softwares (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things. To protect your rights, we need to prevent others from denying you these rights or asking you to surrender the rights. Therefore, you have certain responsibilities if you distribute copies of the software, or if you modify it: responsibilities to respect the freedom of others. For example, if you distribute copies of such a program, whether gratis or for a fee, you must pass on to the recipients the same freedoms that you received. You must make sure that they, too, receive or can get the source code. And you must show them these terms so they know their rights. Developers that use the GNU GPL protect your rights with two steps: (1) assert copyright on the software, and (2) offer you this License giving you legal permission to copy, distribute and or modify it. For the developers' and authors' protection, the GPL clearly explains that there is no warranty for this free software. For both users' and authors' sake, the GPL requires that modified versions be marked as changed, so that their problems will not be attributed erroneously to authors of previous versions.";
 	var covertext = defaultcovertext;
-		covertext = covertext.replace(/   +/g, "\t").replace(/  +/g, " ").replace(/\n /g,"\n\t");	//remove multiple spaces, space after linefeed
-	var keyAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=~!@#$*%";	//base64 plus other characters used in PassLok strings
+		covertext = covertext.replace(/ +/g," ").replace(/ \n/g,"\n");									//remove multiple spaces, space before linefeed
+	var keyAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=~!@#$*-";	//base64 plus other characters used in PassLok strings
 }
 
 //detexts that all the characters in the text are in keyAlphabet
@@ -28,7 +28,7 @@ function uniq(a) {
 
 //This function checks for legal PassLok output and calls the currently selected encoder. Otherwise it calls the decoder
 function textStego(){
-	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	var text = mainBox.innerHTML;
 	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");					//remove tags
 	if(text == ""){
 		mainMsg.innerHTML = '<span style="color:orange">No text in the box</span>';
@@ -518,7 +518,7 @@ function encodePNG(){
 		var reply = confirm("The text in the main box will be encoded into this image as a PNG, which can then be copied and sent to others. Cancel if this is not what you want.");
 		if(!reply) throw("encode image canceled");
 	}
-	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	var text = mainBox.innerHTML.trim();
 	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 
 	//bail out if this is not a PassLok string. Otherwise, this method can handle the full UTF-16 character set
@@ -610,7 +610,7 @@ var encodeJPG = function(){
 		var reply = confirm("The text in the main box will be encoded into this image as a JPG, which can then be copied and sent to others. Cancel if this is not what you want.");
 		if(!reply) throw("encode image canceled");
 	}
-	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	var text = mainBox.innerHTML.trim();
 	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 
 	//bail out if this is not a PassLok string. Otherwise, this method can handle the full UTF-16 character set
@@ -640,7 +640,7 @@ setTimeout(function(){																			//the rest after a 20 ms delay
  *   coefficients[2] are arrays of chrominance blocks. Each block has 64 "modes"
  */
 var modifyCoefficients = function(coefficients) {
-	var text = mainBox.innerHTML.trim().replace(/-/g,'');
+	var text = mainBox.innerHTML.trim();
 	if(text.match('==')) text = text.split('==')[1].replace(/<(.*?)>/gi,"");
 	var msgBin = toBin(text)+toBin('textEnd');	//add label to mark the end
 	var indexBin = 0;

@@ -584,17 +584,16 @@ img.intLink {
      &nbsp; Learn&nbsp;&nbsp;
       <input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>
       &nbsp; ezLok&nbsp;&nbsp;
-      <span id="decoyEmail" style="display:none;"><input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
-      &nbsp; Decoy</span><br />
-    <br />
+      <input type="checkbox" id="fileMode" title="output is turned into files" accesskey=""/>
+      &nbsp; File output<br><br>
+      <div id="decoyEmail" style="display:none;"> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
+      &nbsp; Decoy</div><br>
     <div id='advancedModes' style="display: none;"> &nbsp;&nbsp;
       <input type="checkbox" id="shortMode" title="encrypted message will fit within 160 characters" accesskey=""/>
-      &nbsp; Short&nbsp;&nbsp;
-      <input type="checkbox" id="pkgMode" title="encrypted output is attached to a label" accesskey=""/>
-      &nbsp; Pkg output&nbsp;&nbsp;
-      <span id="syncCheck" style="display:none">     
+      &nbsp; Short    
+      <div id="syncCheck" style="display:none"> <br><br>    
       <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
-      &nbsp;Chrome sync </span><br />     
+      &nbsp;Chrome sync </div><br />     
       <hr>
       &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
       <input type="radio" name="stegomodes" id="letterMode" title="hide item into letters" checked/>
@@ -844,7 +843,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b12" class="texter">
       <p>It is okay if the message is broken up by
-        spaces, carriage returns, and special characters other than = + / or % or is
+        spaces, carriage returns, and special characters other than = + / or - or is
         missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>Even though this  mode is not available in Email mode, messages encrypted in this mode will decrypt fine anyway.</p>
     </div>
@@ -870,7 +869,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b13" class="texter">
       <p> This mode is called Signed not because a digital signature is involved, but because the message can be decrypted only by
-        someone having the Key matching one of the Locks selected, and your Lock. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay to strip the tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or % This message can be decrypted only by someone having the Key matching the Lock used to encrypt it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
+        someone having the Key matching one of the Locks selected, and your Lock. Alternatively, you can retrieve a stored Lock by  beginning to type the name associated with it in the top box of the directory Edit dialog, until the encrypted Lock appears in the lower box. You can also write the names, one per line, in the lower box. It is okay to strip the tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or - This message can be decrypted only by someone having the Key matching the Lock used to encrypt it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
       <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
@@ -891,7 +890,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b14" class="texter">
-      <p>Alternatively, you can retrieve the sender's stored Lock by typing the name associated with it in the top box of the directory Edit dialog until the encrypted Lock appears on the lower box. It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags.  It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Alternatively, you can retrieve the sender's stored Lock by typing the name associated with it in the top box of the directory Edit dialog until the encrypted Lock appears on the lower box. It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or - or is missing its tags.  It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p> A message encrypted by PassLok for Email in Normal mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
     </div>
   </div>
@@ -912,7 +911,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b15" class="texter">
-      <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the upper box, then encrypt the message normally. The first message after a reset does not have forward secrecy,  so be careful with this one. It is okay to strip the Lock tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or %</p>
+      <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the upper box, then encrypt the message normally. The first message after a reset does not have forward secrecy,  so be careful with this one. It is okay to strip the Lock tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or -</p>
       <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
@@ -930,7 +929,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b16" class="texter">
-      <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes decryptable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or % or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes decryptable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or - or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>A message encrypted by PassLok for Email in Read-once mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
     </div>
   </div>
@@ -1009,6 +1008,20 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>Chrome will not display the <strong>Save as</strong> option if the file is larger than 1.5MB. Use Firefox or Safari in this case.</p>
     </div>
   </div>
+    <hr>
+    <div id="aa61" class="helpitem">
+      <h3>File output</h3>
+    </div>
+    <div id="a61" class="texter">
+      <p>If you select <strong>File output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting, the result of the operation appears as a file (several, in the case of splitting), which you can then save to the default Downloads location through a button attached to the file, or anywhere by right-clicking on the file label.</p>
+      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Sm4f6FIOShI" target="_blank">https://www.youtube.com/watch?v=Sm4f6FIOShI</a></p>
+     <div id='bb61' class="helpitem">
+      <p><em>Click here for More:</em></p>
+    </div>
+    <div id="b61" class="texter">
+     <p>The file is made of text and can be viewed using a variety of programs. An  output item loaded as a file can be decrypted, unsealed, or joined just like an item loaded as text. It can also be sent by email as an attachment, which is handy when the item is large. Firefox and Safari have no problems with file size, but Chrome won't save the output file if it is larger than 1.5MB.</p>
+    </div>
+    </div>
   <hr>
   <div id="aa21" class="helpitem">
     <h3>Make an invitation to join a real-time multi-party chat session</h3>
@@ -1067,7 +1080,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>This message can be decrypted only by
         someone having the same shared Key. It does not matter whether Anonymous or Signed mode is selected,  since they use shared Keys identically. Alternatively, you can search for a stored shared Key by typing the name associated with it in the top box of the directory Edit dialog. When you type "Enter", the stored Key is decrypted for you to see.It is okay to strip the tags up to the "=" sign, but not recommended. It is
         also okay to split the encrypted message with spaces, line returns, and
-        punctuation other than = + / or % The tags will depend on the encryption mode selected. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
+        punctuation other than = + / or - The tags will depend on the encryption mode selected. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
       <p>Messages encrypted with a shared Key cannot be decrypted in PassLok for Email. Likewise, they cannot be opened in URSA unless they were encrypted in Short mode, which is what URSA uses, but then message length will be limited.</p>
     </div>
   </div>
@@ -1089,7 +1102,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b24" class="texter">
       <p>It is okay if the message is broken up by
-        spaces, carriage returns, and special characters other than = + / or % or is
+        spaces, carriage returns, and special characters other than = + / or - or is
         missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>Messages encrypted with URSA can be decrypted in PassLok, using this procedure.</p>
     </div>
@@ -1134,7 +1147,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b60" class="texter">
       <p>It is okay if the message is broken up by
-        spaces, carriage returns, and special characters other than = + / or % or is
+        spaces, carriage returns, and special characters other than = + / or - or is
         missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>URSA messages encrypted this way can also be decrypted in PassLok.</p>
     </div>
@@ -1537,16 +1550,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       </div>
     </div>
     <hr>
-    <div id="aa61" class="helpitem">
-      <h3>Packaged output<em>(advanced)</em></h3>
-    </div>
-    <div id="a61" class="texter">
-      <p>Sometimes you want the output to look small even though the encrypted item is large. You can cause the output to turn into a label (several labels, when splitting) by selecting <strong>Pkg output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting.</p>
-      <p>A packaged item can be decrypted, unsealed, or joined just like a regular output item. Beware, however, that packaged items may not survive transmission by email or texting, since the email service may strip the tags that wrap the main contents.</p>
-      <p>Packaging does not really conceal the content. If you want the content to be hard to detect, use text or image hiding (explained above).</p>
-      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Sm4f6FIOShI" target="_blank">https://www.youtube.com/watch?v=Sm4f6FIOShI</a></p>
-    </div>
-    <hr>
     <div id="aa45" class="helpitem">
       <h3>Change your secret Key <em>(advanced)</em></h3>
     </div>
@@ -1828,7 +1831,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <address>
-  PassLok v2.3.1 &#169; F. Ruiz 2016
+  PassLok v2.3.2 &#169; F. Ruiz 2016
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
