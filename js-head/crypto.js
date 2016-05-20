@@ -343,7 +343,7 @@ function Encrypt_List(listArray){
 						}else{
 							var lastLock = makePubStr(wiseHash(Lock,noncestr))	//if actually a shared Key, make the Lock deriving from it
 						}
-						var firstMessage = true;						//to warn user
+						if(!turnstring) turnstring = 'reset';					//to warn recipient
 					}
 					var secdum = nacl.randomBytes(32),							//different dummy key for each recipient
 						pubdumstr = makePubStr(secdum);
@@ -458,7 +458,7 @@ function Encrypt_List(listArray){
 		mainMsg.innerHTML = 'Encryption successful. Select and copy.'
 	}
 	if (pfsMessage) mainMsg.innerHTML = "Delayed forward secrecy for at least one recipient";
-	if (firstMessage || resetMessage) mainMsg.innerHTML = "No forward secrecy for at least one recipient";
+	if (resetMessage) mainMsg.innerHTML = "No forward secrecy for at least one recipient, who will be warned of the fact";
 	callKey = '';
 }
 
@@ -830,7 +830,11 @@ function Decrypt_List(cipherArray){
 	}else{
 		var stuffForId = Lock
 	}
-	if (type == '#' || (type == '$' && name == 'myself')){				//signed mode first
+	if (type == '$' && name == 'myself'){
+		mainMsg.innerHTML = 'You cannot make a Read-once message to yourself. It must be from someone else';
+		throw('Read-once message to myself')
+	}
+	if (type == '#'){											//signed mode first
 		if (learnMode.checked){
 			var reply = confirm("The contents of the message in the main box will be decrypted with your secret Key, provided the sender's Lock or shared Key are selected on the directory, or entered directly after pressing Edit. Cancel if this is not what you want.");
 			if(!reply) throw("signed list decryption canceled");
@@ -940,29 +944,22 @@ function Decrypt_List(cipherArray){
 		var msgKey = nacl.secretbox.open(nacl.util.decodeBase64(msgKeycipher),nonce24,sharedKey);
 		if(!msgKey) failedDecrypt();
 
-	} else if(name == 'myself'){		//encrypted to 'myself' in Read-once mode is actually in signed mode, but there is a dummy Lock to get rid of first
-		msgKeycipher = msgKeycipher.slice(79);
-		var msgKey = nacl.secretbox.open(nacl.util.decodeBase64(msgKeycipher),nonce24,sharedKey);
-		if(!msgKey) failedDecrypt();
-
 //for Read-once mode, first we separate the encrypted new Lock from the proper message key, then decrypt the new Lock and combine it with the stored Key (if any) to get the ephemeral shared Key, which unlocks the message Key. The particular type of encryption (Read-once or PFS) is indicated by the last character
 	} else {
 		var newLockCipher = msgKeycipher.slice(0,79),
 			typeChar = msgKeycipher.slice(-1);
 		msgKeycipher = msgKeycipher.slice(79,-1);
 		var newLock = PLdecrypt(newLockCipher,nonce24,idKey,'read-once');
-		
-		if(locDir[name][1] == null && locDir[name][2] == null){ var isVirgin = true }else{ var isVirgin = false };		//detect if this is the first message in an exchange (not a reset)
-
-		if(typeChar == 'r'){											//if reset type, delete ephemeral data first
-			locDir[name][1] = locDir[name][2] = null;
-		}
 
 		if(typeChar == 'p'){															//PFS mode: last Key and new Lock
 			var	sharedKey = makeShared(newLock,lastKey);
 
 		}else if(typeChar == 'r'){														//reset. lastKey is the permanent
-			var	sharedKey = makeShared(newLock,KeyDH);
+			var agree = confirm('If you go ahead, the current Read-once conversation with the sender will be reset. This may be OK if this is a new message, but if it is an old one the conversation will go out of sync');
+			if(!agree) throw('reset decrypt canceled');
+			var	sharedKey = makeShared(newLock,KeyDH),
+				isReset = true;
+			locDir[name][1] = locDir[name][2] = null;									//if reset type, delete ephemeral data first
 
 		}else{																			//Read-once mode: last Key and last Lock
 			var lastLockCipher = locDir[name][2];
@@ -991,7 +988,7 @@ function Decrypt_List(cipherArray){
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);				//everything Ok, so store
 	if (!decoyMode.checked){
 		mainMsg.innerHTML = 'Decryption successful';
-		if(isVirgin) mainMsg.innerHTML = 'You have just decrypted the first message in a Read-once conversation. This message can be decrypted again, but doing so will cause the conversation to go out of sync. It is best to delete it to prevent this possibility';
+		if(isReset) mainMsg.innerHTML = 'You have just decrypted the first message or one that resets a Read-once conversation. This message can be decrypted again, but doing so after more messages are exchanged will cause the conversation to go out of sync. It is best to delete it to prevent this possibility';
 	}
 	callKey = '';
 }
