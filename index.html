@@ -1112,8 +1112,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Encrypt a message with a Pad, to be decrypted with the same Pad</h3>
   </div>
   <div id="a59" class="texter">
-    <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage.</p>
-    <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. Then click <strong>Done</strong>.</p>
+    <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage. You can also load a whole file that is at least five times as long as the message.</p>
+    <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. You can also load a file by means of a button visible in the Adbanced interface. Then click <strong>Done</strong>.</p>
     <p>3. Write the message in the lower box of the <strong>Main</strong> tab.</p>
     <p>4. Click the <strong>Encrypt</strong> button. If Pad mode is engaged, a popup will ask for the starting position in the Pad, otherwise encryption will proceed using the regular shared Key mode (a warning popup will appear if there are several paragraphs).</p>
     <p>5. Write a number within the range given in the dialog and click <strong>OK</strong>. The
@@ -1127,7 +1127,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>It is
         okay to split the encrypted message with spaces, line returns, and
       punctuation other than = + or /, or to eliminate the tags at either end. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>This mode is fully compatible with URSA.</p>
+      <p>Messages encrypted this way can also be decrypted in URSA, except if a file is used as encryption key.</p>
     </div>
   </div>
   <hr>
@@ -1135,8 +1135,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Decrypt a message encrypted with a Pad</h3>
   </div>
   <div id="a60" class="texter">
-    <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage.</p>
-    <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. Then click <strong>Done</strong>.</p>
+    <p>1. Copy the text to be used as Pad from its source. It should be at least five times as long as the message, or Pad mode won't engage. You can also load a whole file that is at least five times as long as the message.</p>
+    <p>2. Click the <strong>Edit</strong> button next to the directory box and paste the shared Pad in the lower box of the dialog that appears. You can also load a file by means of a button visible in the Adbanced interface. Then click <strong>Done</strong>.</p>
     <p>3. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
     <p>4. Click the <strong>Decrypt</strong> button if decrypting does not start automatically. A popup will ask for the starting position in the Pad.</p>
     <p>5. Write a number within the range given in the dialog and click <strong>OK</strong>. The decrypted message
@@ -1719,7 +1719,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>PR Gomez.com (author's blog): <a href="http://prgomez.com/passlokcurrent/" target="_blank">http://prgomez.com/passlokcurrent/</a></li>
       <li>Chrome app description: <a href="https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh" target="_blank">https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh</a></li>
       <li>Android app description: <a href="https://play.google.com/store/apps/details?id=com.fruiz500.passlok" target="_blank">https://play.google.com/store/apps/details?id=com.fruiz500.passlok</a></li>
-      <li>iOS app description: <a href="https://itunes.apple.com/us/app/passlok-privacy/id879861603?mt=8&uo=4" target="_blank">https://itunes.apple.com/us/app/passlok-privacy/id879861603?mt=8&amp;uo=4</a></li>
     </ul>
     <p>4. Now, a hacker who could alter the source code at the server might also be able to change the published checksums so they match the tampered code. To make sure that the value is authentic you should watch the one-minute video where the author or PassLok, Francisco Ruiz, reads the SHA256 checksum aloud. A link to the video usually accompanies the published SHA256 value.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=NrAfSo2xjnY" target="_blank">https://www.youtube.com/watch?v=NrAfSo2xjnY</a></p>
@@ -1743,8 +1742,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>information page: <a href="http://passlok.weebly.com/getpasslok.html" target="_blank">http://passlok.weebly.com</a></p>
     <p>GitHub page: <a href="https://github.com/fruiz500/passlok" target="_blank">https://github.com/fruiz500/passlok</a></p>
     <p>Chrome app: <a href="https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh" target="_blank">https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh</a></p>
-    <p>Android app: <a href="https://play.google.com/store/apps/details?id=com.fruiz500.passlok" target="_blank">https://play.google.com/store/apps/details?id=com.fruiz500.passlok</a></p>
-    <p>iOS app: <a href="https://itunes.apple.com/us/app/passlok-privacy/id879861603?mt=8&uo=4" target="_blank">https://itunes.apple.com/us/app/passlok-privacy/id879861603?mt=8&amp;uo=4</a></p>
+    <p>Android app: <a href="https://play.google.com/store/apps/details?id=com.fruiz500.passlok" target="_blank">https://play.google.com/store/apps/details?id=com.fruiz500.passlok</a>    </p>
     <p>mirrors:</p>
     <p><a href="https://www.autistici.org/passlok" target="_blank">https://www.autistici.org/passlok</a> (non-US, self-certified)</p>
     <p><a href="https://passlok.site44.com" target="_blank">https://passlok.site44.com</a></p>
@@ -1831,7 +1829,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <address>
-  PassLok v2.3.2 &#169; F. Ruiz 2016
+  PassLok v2.3.3 &#169; F. Ruiz 2016
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1873,11 +1871,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 --><button class="cssbutton" id="removeLockBtn" value="Delete" style="" title="delete the item whose name is displayed">Delete</button><!--
 --><button class="cssbutton" id="resetPFSBtn" value="Reset" style="" title="reset Read-once data for the item whose name is displayed | if a List is displayed, clear the current List">Reset</button>
   </div>
-  <textarea class="cssbox" id="lockBox" style="width:95%;" name="text" rows="9" placeholder="Enter Locks and shared Keys here.   To save it, enter a name in the box above."></textarea>
+  <div align="left" contenteditable="true" class="cssbox" id="lockBox" style="width:95%;" name="text" rows="9"></div>
   <div align="center" id="lockBtnsBottom" class="texter" style="display: none;">
     <button class="cssbutton" id="addToListBtn" value="List" style="" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button><!--
 --><button class="cssbutton" id="showLockDBBtn" value="All" style="" title="show the entire local directory">All</button><!--
---><button class="cssbutton" id="mergeLockDBBtn" value="Merge" style="" title="merge lower box contents into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button>
+--><button class="cssbutton" id="mergeLockDBBtn" value="Merge" style="" title="merge lower box contents into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
+--><input class="custom-file-input" type="file" id="lockFile" style="overflow:hidden;width:120px;position:absolute;" title="open dialog to select file to load"/>
   </div>
 </div>
 

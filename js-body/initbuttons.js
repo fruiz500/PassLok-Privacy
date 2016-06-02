@@ -45,6 +45,8 @@ window.onload = function() {
 
     imageFile.addEventListener('change', importImage);
 
+	lockFile.addEventListener('change', loadLockFile);
+
     encodePNGBtn.addEventListener('click', encodePNG);
 
 	encodeJPGBtn.addEventListener('click', encodeJPG);
@@ -460,7 +462,7 @@ window.addEventListener('message', receiveMessage, false);
 //gets Lock from the general directory iframe and puts it in Lock screen
 function receiveMessage(evt){
   	if (evt.origin === 'https://www.passlok.com'){
-    	lockBox.value = evt.data;
+    	lockBox.innerText = evt.data;
 		suspendFindLock = true;
 		lockMsg.innerHTML='Give a name to this Lock and save it. Otherwise Clear.'
   	}

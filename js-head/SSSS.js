@@ -8,9 +8,9 @@ function splitJoin(){
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
-	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<br>/gi,"\n").replace(/<div>/gi,"\n").replace(/<blockquote>/gi,"\n").trim();
+	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<\/div>/gi,"").replace(/<div>/gi,"<br>").replace(/<blockquote>/gi,"<br>").trim();
 	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/p\d{3}/) && main.match('.txt'))){		//main box has parts: join parts
-		var shares = main.replace(/\n\s*\n/g, '\n').split("\n"),					//go from newline-containing string to array
+		var shares = main.split("<br>").filter(Boolean),												//go from newline-containing string to array
 			n = shares.length,
 			quorumarr = shares[0].slice(0,8).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(quorumarr == null)	quorumarr = shares[0].slice(-13).match(/ \d{3}/);										//maybe packaged; get quorum at end of label
@@ -31,9 +31,8 @@ function secretshare(){
 			throw("insufficient parts")
 		};
 try{
-		var	sechex = secrets.combine(shares);
-		var	secret = nacl.util.encodeUTF8(hex2charArray(sechex));
-		if(!secret.match('data:')) secret = LZString.decompressFromEncodedURIComponent(secret);
+		var	sechex = secrets.combine(shares),
+			secret = LZString.decompressFromUint8Array(hex2charArray(sechex));
 		mainBox.innerHTML = secret;
 		mainMsg.innerHTML = 'Join successful';
 }catch(err){
@@ -68,10 +67,9 @@ try{
 		number = parseInt(number);
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
-		var secret = mainBox.innerHTML.trim();
-		if(!secret.match('data:')) secret = LZString.compressToEncodedURIComponent(secret).replace(/=/g,'');
-		var	sechex = charArray2hex(nacl.util.decodeUTF8(secret));
-		var	shares = secrets.share(sechex,number,quorum);
+		var secret = mainBox.innerHTML.trim(),
+			sechex = charArray2hex(LZString.compressToUint8Array(secret)),
+			shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
 		mainMsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
 		partsInBox = true

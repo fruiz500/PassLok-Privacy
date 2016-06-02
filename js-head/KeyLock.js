@@ -322,7 +322,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 			var reply = prompt('Looks like you received a link containing a Lock from someone. It will be added to your directory if you write a name for it in the box.');
 			if(reply){
 				lockNameBox.value = reply;
-				lockBox.value = hashStripped;
+				lockBox.innerHTML = hashStripped;
 				addLock()
 			}
 		}else{								//process automatically the other kinds; most will need a Lock to be selected first.
@@ -583,23 +583,31 @@ function makeNonce24(nonce){
 }
 
 //encrypt string with a shared Key
-function PLencrypt(plainstr,nonce24,sharedKey){
-	var plain = nacl.util.decodeUTF8(plainstr),
-		cipher = nacl.secretbox(plain,nonce24,sharedKey);
+function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
+	if(isCompressed){
+		var plain = LZString.compressToUint8Array(plainstr)
+	}else{
+		var plain = nacl.util.decodeUTF8(plainstr)
+	}
+	var	cipher = nacl.secretbox(plain,nonce24,sharedKey);
 	return nacl.util.encodeBase64(cipher).replace(/=+$/,'')
 }
 
 //decrypt string with a shared Key. Var 'label' is to display messages
-function PLdecrypt(cipherstr,nonce24,sharedKey,label){
+function PLdecrypt(cipherstr,nonce24,sharedKey,label,isCompressed){
 	var cipher = nacl.util.decodeBase64(cipherstr),
 		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
 	if(!plain) failedDecrypt(label);
-	return nacl.util.encodeUTF8(plain)
+	if(isCompressed){
+		return LZString.decompressFromUint8Array(plain)
+	}else{
+		return nacl.util.encodeUTF8(plain)
+	}
 }
 
 //this strips initial and final tags, plus spaces and non-base64 characters in the middle
 function striptags(string){
-	string = string.replace(/\s/g,'');															//remove spaces
+	string = string.replace(/\s/g,'').replace(/==+/,'==');										//remove spaces, reduce multiple = to double
 	if(string.match('==')) string = string.split('==')[1].replace(/<(.*?)>/gi,"");
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
 	return string
@@ -676,7 +684,7 @@ function randomToken(){
 
 //takes appropriate UI action if decryption fails
 function failedDecrypt(label){
-	if(lockBox.value.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){
+	if(lockBox.innerHTML.slice(0,1) == '~' || isList || nameBeingUnlocked != ''){
 		any2key();					//this displays the Key entry dialog
 		keyMsg.innerHTML = "<span style='color:orange'>This Key won't decrypt the item </span>" + nameBeingUnlocked;
 		allowCancelWfullAccess = true;

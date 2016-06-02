@@ -38,7 +38,7 @@ function getChromeLock(name) {
 //this one is called by the above function
 function storeChromeLock(name,lockdata){
 	locDir[name] = JSON.parse(lockdata);
-	lockBox.value = locDir[name][0];
+	lockBox.innerHTML = locDir[name][0];
 	lockMsg.innerHTML = XSSfilter(name) + ' added from Chrome sync';
 	locDir = sortObject(locDir);
 	localStorage[userName] = JSON.stringify(locDir);

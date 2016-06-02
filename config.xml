@@ -5,6 +5,7 @@
         id          = "com.fruiz500.passlok"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         versionCode = "30"
         version     = "2.3" >
 =======
@@ -14,6 +15,10 @@
 =======
         versionCode = "34"
         version     = "2.3.2" >
+>>>>>>> master
+=======
+        versionCode = "35"
+        version     = "2.3.3" >
 >>>>>>> master
 		
     <name>PassLok</name>

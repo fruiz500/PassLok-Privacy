@@ -7,7 +7,7 @@ if (typeof code == 'undefined'){			//default text for base64 to words conversion
 	var keyAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=~!@#$*-";	//base64 plus other characters used in PassLok strings
 }
 
-//detexts that all the characters in the text are in keyAlphabet
+//detects that all the characters in the text are in keyAlphabet
 function legalItem(text){
 	for (var i = 0; i < text.length; i++){
 		var index = keyAlphabet.indexOf(text[i]);
@@ -51,6 +51,7 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 			if(!isMobile) selectMain()
 		}
 	}else{												//no legal item found: try to decode
+		text = text.replace(/<(.*?)>/gi,"");					//begin by removing HTML tags
 		var doublespaces = text.match(/ &nbsp;/g);
 		if(doublespaces){
 			if(doublespaces.length > 10) {				//detect at least 10 double spaces and then invoke spaces decoder
@@ -112,7 +113,6 @@ function toWords(text){
 	out = out.replace(/[a-z]/,function(a){return a.toUpperCase();});
 	out = out.slice(0,-1) + '.';
 	mainBox.innerHTML = out.trim();
-	randomBreaks(10);
 	mainMsg.innerHTML = 'Message encoded as words of varying length'
 }
 
@@ -143,20 +143,6 @@ function randompunct(){
 	} else {
 		return " "
 	}
-}
-
-//inserts random newlines in main Box to break up long paragraphs
-function randomBreaks(percentage){
-	var textArray = mainBox.innerHTML.split('. '),
-		output = textArray[0];
-	for (var i = 1; i < textArray.length; i++){
-		if (Math.ceil(Math.random() * 100) <= percentage){				//insert paragraph break after a certain percentage of periods.
-			output = output + '. <br>' + textArray[i]
-		}else{
-			output = output + '. ' + textArray[i]
-		}
-	}
-	mainBox.innerHTML = output
 }
 
 //the following functions are to hide text into a text cover, as binary double spaces. It needs a little under 7 cover words for each ASCII characters, 42 for non-ASCII
@@ -201,8 +187,7 @@ function toSpaces(text) {
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as formatted spacing. Cancel if this is not what you want.");
 		if(!reply) throw("toSpaces canceled");
 	}
-	mainBox.innerHTML = encoder(toBin(text));
-	randomBreaks(30)
+	mainBox.innerHTML = encoder(toBin(text))
 }
 
 //makes the binary equivalent (string) of an ASCII string
@@ -211,7 +196,7 @@ function toBin(input){
     for (var i = 0; i < input.length; i++) {
 		var bin = input.charCodeAt(i).toString(2);
 		while(bin.length < 7) bin = '0' + bin;
-        output += bin;
+        output += bin
     }
 	return output
 }
@@ -221,7 +206,7 @@ function fromBin(input){
 	var output = '';
 	 for (var i = 0; i < input.length; i = i+7) {
 		var bin = input.slice(i,i+7);
-        output += String.fromCharCode(parseInt(bin,2));
+        output += String.fromCharCode(parseInt(bin,2))
     }
 	return output
 }
@@ -256,7 +241,7 @@ function makePhraseMatrix(cover){
 function toPhrases(text){
 	if (learnMode.checked){
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as sentences of varying length. Cancel if this is not what you want.");
-		if(!reply) throw("toPhrases canceled");
+		if(!reply) throw("toPhrases canceled")
 	}
 	var	phraseArray = makePhraseMatrix(covertext),
 		punct = '.,;:!?',
@@ -271,7 +256,6 @@ function toPhrases(text){
 	out = out.replace(/[.!?][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[,;:][\s\n][A-Z]/g,function(a){return a.toLowerCase();}).trim();  //capitalization
 	out = out.charAt(0).toUpperCase() + out.slice(1);
 	mainBox.innerHTML = out.trim();
-	randomBreaks(40);
 	mainMsg.innerHTML = 'Message encoded as sentences of varying length'
 }
 
