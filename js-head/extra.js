@@ -27,7 +27,7 @@ function charsLeft(){
 	else if(shortMode.checked && !mainBox.innerHTML.charAt(0).match(/[~!@#$*-]/)){
 		updateButtons();
 		var chars = encodeURI(mainBox.innerHTML).replace(/%20/g, ' ').length,
-			sharedKey = striptags(replaceByItem(lockBox.value,false));
+			sharedKey = striptags(replaceByItem(lockBox.innerHTML,false));
 		if(!sharedKey) return;
 		if(sharedKey.length != 43 && sharedKey.length != 50 && !onceMode.checked){		//Key-encrypted mode, 94 chars
 			var limit = 94
@@ -86,10 +86,10 @@ function updateButtons(){
 //detect if a Lock has been pasted and offer to add it to the directory. Other kinds of items are also routed accordingly.
 function pasteMain() {
     setTimeout(function(){
-		var string = mainBox.innerHTML.trim();
+		var	string = mainBox.innerHTML.trim();
 		if(string.match('==')) string = string.split('==')[1];
-		var stringRaw = string.replace(/<(.*?)>/gi,"");											//remove HTML tags
-		string = stringRaw.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#$-*]+/g,'');			//remove spaces and non-legal chars
+		var stringText = string.replace(/<(.*?)>/gi,"");											//remove HTML tags
+		string = stringText.replace(/\s/g,'').replace(/[^a-zA-Z0-9+\/=~!@#\$-\*]+/g,'');			//remove spaces and non-legal chars
 		
 		string = extractLock(string);
 		
@@ -101,10 +101,6 @@ function pasteMain() {
 		if(type == '-' && string.length != 160){
 			signVerify();
 			return
-		}
-		if(!legalItem(stringRaw)){
-			mainBox.innerHTML = stringRaw;
-			textStego()
 		}
     }, 0); //or 4
 }
@@ -136,7 +132,7 @@ function extractLock(string){
 			}else{
 				name = prompt("Looks like you just entered someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.");
 				if (!name) return;
-				lockBox.value = possibleLock;
+				lockBox.innerHTML = possibleLock;
 				lockNameBox.value = name;
 				addLock();
 			}
@@ -151,11 +147,10 @@ function sendMail() {
 		return
 	}
 	var cipherstr = mainBox.innerHTML.trim();
-//	cipherstr = cipherstr.split("=").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
-	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1];
-	cipherstr = XSSfilter(cipherstr);						//remove formatting
+	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/-/g,'');				//remove tags and dashes
+	cipherstr = XSSfilter(cipherstr);																//remove formatting
 	var type = cipherstr.charAt(0),
-		type2 = cipherstr.charAt(50);					//for email mode
+		type2 = cipherstr.charAt(50);																	//for email mode
 	if (learnMode.checked){
 		if(type.match(/[~!@#\$-*]/) || type2.match(/[@#\$]/)){
 			var reply = confirm("A new tab will open, including the contents of this box in your default email. You still need to supply the recipient's address and a subject line. Only encrypted or signed text are allowed. Cancel if this is not what you want.");
@@ -196,7 +191,7 @@ function sendMail() {
 	} else if (type=="%"){
 		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.3. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
 	} else if (cipherstr.length == 43 || cipherstr.length == 50){
-		var link = "mailto:"+ "?subject= " + "&body=This is my PassLok v.2.3 Lock. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText;
+		var link = "mailto:"+ "?subject= " + "&body=This email contains my PassLok v.2.3 Lock. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText;
 	} else {
 		var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Android, and iOS app stores. There is also PassLok for Email at the Chrome store.%0D%0A%0D%0A" + lockLinkText;
 	}
@@ -213,15 +208,11 @@ function makeInvitation(){
 	if(mainBox.innerText.trim() != ''){
 		var reply = confirm('Do you want the contents of the main box to be encrypted and added to an invitation email? This will encourage the recipients to try PassLok, but be aware that the encrypted contents WILL NOT BE SECURE.');
 		if (!reply) throw('invitation canceled');	
-		if(!mainBox.innerText.match('data:')){
-			var text = LZString.compressToBase64(mainBox.innerText).replace(/=/g,'')
-		}else{
-			var text = encodeURI(mainBox.innerHTML).replace(/%20/g,' ')
-		}		
-		var nonce = nacl.randomBytes(15),
+		var text = mainBox.innerHTML.trim(),
+			nonce = nacl.randomBytes(15),
 			nonce24 = makeNonce24(nonce),
 			noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
-			cipherstr = myezLock.replace(/l/g,'L') + '@' + noncestr + '-' + PLencrypt(text,nonce24,nacl.util.decodeBase64(myLock));
+			cipherstr = myezLock.replace(/l/g,'L') + '@' + noncestr + '-' + PLencrypt(encodeURI(text).replace(/%20/g,' '),nonce24,nacl.util.decodeBase64(myLock),true);			//this includes compression
 			return "PL23inv==" + encodeURIComponent(cipherstr) + "==PL23inv"
 	}else{
 		return ''
@@ -261,7 +252,7 @@ function Chat(){
 		return
 	}
 
-	var listArray = lockBox.value.trim().split('\n');
+	var listArray = lockBox.innerText.trim().split('\n');
 	if (learnMode.checked){
 		var reply = confirm("A special encrypted item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
 		if(!reply) throw("chat invite canceled");
@@ -274,7 +265,7 @@ function Chat(){
 	listArray = listArray.concat('myself');								//make sure 'myself' is on the list
 	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates and nulls
 	listArray = listArray.filter(function(n){return n});
-	lockBox.value = listArray.join('\n');
+	lockBox.innrText = listArray.join('\n');
 	openClose('shadow');
 	openClose('chatDialog');												//stop to get chat type
 	chatDate.value = mainBox.innerText.trim().slice(0,43);

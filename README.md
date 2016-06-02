@@ -1,6 +1,8 @@
 PassLok Privacy
 ===============
 
+WARNING to current users: version 2.3.3 includes a change that causes its output to be incompatible with that of previous versions. We apologize for any inconvenience.
+
 PassLok is a toolkit that implements public key cryptography and steganography to supplement ANY communications program.
 
 These are the principles guiding the design of PassLok:

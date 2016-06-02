@@ -59,7 +59,7 @@ function clearMain(){
 	charsLeft();
 }
 function clearLocks(){
-	lockBox.value='';
+	lockBox.innerHTML='';
 	lockNameBox.value='';
 	lockMsg.innerHTML='';
 	suspendFindLock = false;
@@ -201,7 +201,6 @@ function code2checkbox(){
 		var isEmailMode = checks[2].checked;
 		BasicButtons = checks[0].checked || isEmailMode;
 	}
-//	if(checks[0].checked) hideBtnBasic.style.display = 'none';	//don't show this button on Basic interface
 	if(!BasicButtons){												//retrieve Advanced interface
 		openClose("basicBtnsTop");
 		openClose("mainBtnsTop");
@@ -337,7 +336,7 @@ function lockNameKeyup(evt){
 			}
 		} else {												//decrypt 1st time if found locally, 2nd time if synced from Chrome
 			if(!lockMsg.innerHTML.match('not found in Chrome sync')){
-				var firstchar = lockBox.value.slice(0,1);
+				var firstchar = lockBox.innerHTML.slice(0,1);
 				if(firstchar == '~'){
 					decryptLock()
 				}
@@ -346,7 +345,7 @@ function lockNameKeyup(evt){
 	} else if (!suspendFindLock){											//otherwise search database
 			return findLock()
 	} else {
-		if(lockBox.value.trim() == ''){
+		if(lockBox.innerHTML.trim() == ''){
 			suspendFindLock = false;
 			return findLock()
 		}
@@ -529,7 +528,7 @@ function main2lock(){
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
-	var string = lockBox.value;
+	var string = lockBox.innerHTML;
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newcover(string);
 	}

@@ -76,13 +76,10 @@ function chatResize(){
 }
 
 //this one is called by window.onload below
-function loadFileAsURL()
-{
-	var fileToLoad = mainFile.files[0];
-
-	var fileReader = new FileReader();
-	fileReader.onload = function(fileLoadedEvent)
-	{
+function loadFileAsURL(){
+	var fileToLoad = mainFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
 		var fileName = fileToLoad.name;
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		if(URLFromFileLoaded.length > 2000000){
@@ -115,6 +112,21 @@ function loadFileAsURL()
 		if(verifyBtn.innerHTML == 'Unseal') mainMsg.innerHTML = 'This file contains a sealed item';
 		if(secretShareBtn.innerHTML == 'Join') mainMsg.innerHTML = 'This file contains a part. Add more parts if necessary';
 	},300);
+}
+
+//to load a file into the directory dialog
+//this one is called by window.onload below
+function loadLockFile(){
+	var fileToLoad = lockFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var fileName = fileToLoad.name;
+		var URLFromFileLoaded = fileLoadedEvent.target.result;
+		lockBox.innerHTML = '<a download="' + fileName + '" href="' + URLFromFileLoaded + '">' + fileName + '</a>'
+	};
+
+	fileReader.readAsDataURL(fileToLoad, "UTF-8");
+	lockMsg.innerHTML = 'File <strong>' + fileToLoad.name + '</strong> has been loaded'
 }
 
 //used to download a packaged file

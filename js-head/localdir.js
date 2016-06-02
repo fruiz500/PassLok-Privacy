@@ -1,7 +1,7 @@
 ﻿//detect if Lock pasted in Lock box
 function pasteLock(){
 	lockMsg.innerHTML = '';
-	var text = lockBox.value;
+	var text = lockBox.innerText;
 	var	strings = text.split(/\r?\n/);
 	var lastline = strings[strings.length-1];
 	if (lastline.slice(0,4) != 'http'){
@@ -9,7 +9,7 @@ function pasteLock(){
 	}else{
 		var lock = strings[strings.length-2]									//in case there is a video URL as last line
 	}
-	var lockstripped = lock.replace(/[\s-]/g,'').split("=").sort(function (a, b) { return b.length - a.length; })[0];
+	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
 
 	suspendFindLock = true;															//allow writing a name without searching
 	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
@@ -27,18 +27,18 @@ function addLock(){
 	}
 	callKey = 'addlock';
 	var name = lockNameBox.value.trim(),
-		lock = lockBox.value.trim();
+		lock = lockBox.innerHTML.trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
 	if (XSSfilter(name)!=name){
 		lockMsg.innerHTML = 'This is not a valid name';
 		throw('name contained XSS-illegal characters')
 	}
-	var lockarray = lock.split('\n');
+	var lockarray = lock.split('<br>');
 	var isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
 	if (lock ==''){
 		if(!locDir['myself'] || BasicButtons) return;									//don't do it in Basic mode
 		var ran = true;
 		lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct
-		lockBox.value = lock;
+		lockBox.innerHTML = lock;
 	}
 	if (name !=''){
 		var locklength = striptags(lockarray[0]).length;
@@ -86,7 +86,7 @@ function removeLock(){
 	}
 	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
 	if(!reply) throw("locDir remove canceled");
-	var name = lockMsg.innerHTML;
+	var name = lockMsg.innerText;
 	if (locDir[name] == null){
 		lockMsg.innerHTML = 'To remove an item, its name must be displayed <strong>here</strong>';
 		throw('bad name')
@@ -116,7 +116,7 @@ function resetPFS(){
 		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
 		throw('Lock reset canceled')
 	}
-	if (lockBox.value.trim().split('\n').length > 1){		//use button to reset current List if a List is displayed, nothing to do with normal use
+	if (lockBox.innerText.trim().split('\n').length > 1){		//use button to reset current List if a List is displayed, nothing to do with normal use
 		if (learnMode.checked){
 			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
 			if(!reply) throw("List reset canceled");
@@ -163,7 +163,7 @@ function findLock(){
 	var string = lockNameBox.value;
 	var stringstrip = striptags(string);
 	if(stringstrip.length == 43 || stringstrip.length == 50){									//it's a Lock in the wrong box. Move it
-		lockBox.value = string;
+		lockBox.innerHTML = string;
 		lockNameBox.value = '';
 		lockMsg.innerHTML = 'Locks and shared Keys go in the lower box<br>You can write a name on the top box in order to save it';
 		suspendFindLock = true;
@@ -173,33 +173,33 @@ function findLock(){
 	if (index >= 0){
 		var name = lockNames[index];
 		lockMsg.innerHTML = XSSfilter(name);
-		lockBox.value = locDir[name][0]
+		lockBox.innerHTML = locDir[name][0]
 	}else{
 		lockMsg.innerHTML = '';
-		lockBox.value = ''
+		lockBox.innerHTML = ''
 	}
 }
 
 //decrypts the contents of the Locks Box
 function decryptLock(){
 	callKey = 'decryptlock';
-	var firstchar = lockBox.value.slice(0,1);
+	var firstchar = lockBox.innerHTML.slice(0,1);
 	if(firstchar == '~') {
 		nameBeingUnlocked = lockMsg.innerHTML;
 		decryptItem();
 		nameBeingUnlocked = '';
 	}
-	if(lockBox.value != ''){
-		var listArray = lockBox.value.split('\n');
-		if(lockBox.value.length > 500){
-			lockBox.value = LZString.decompressFromBase64(lockBox.value);
-			newcover(lockBox.value);							//this for loading cover text from Lock screen
+	if(lockBox.innerHTML != ''){
+		var listArray = lockBox.innerText.split('\n');
+		if(lockBox.innerHTML.length > 500){
+			lockBox.innerHTML = LZString.decompressFromBase64(lockBox.innerHTML);
+			newcover(lockBox.innerHTML);							//this for loading cover text from Lock screen
 			lockMsg.innerHTML = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
 			lockMsg.innerHTML = 'List extracted'
-		} else if(striptags(lockBox.value).length == 43 || striptags(lockBox.value).length == 50){
+		} else if(striptags(lockBox.innerHTML).length == 43 || striptags(lockBox.innerHTML).length == 50){
 			lockMsg.innerHTML = 'Lock extracted'
-		} else if(lockBox.value.length == 42){
+		} else if(lockBox.innerHTML.length == 42){
 			lockMsg.innerHTML = 'Random Key extracted'
 		} else if(lockMsg.innerHTML == 'myself'){
 			lockMsg.innerHTML = 'Email/token extracted'
@@ -213,29 +213,28 @@ function decryptLock(){
 
 //if a newline is entered, puts the expanded contents of the name box in the Lock box, and waits for another item
 var currentList = '';
-
 function addToList(){
 	if (learnMode.checked){
 		var reply = confirm("The item displayed will be added to the current list. Cancel if this is not what you want.");
 		if(!reply) throw("add to list canceled");
 	}
-	var	currentItem = lockBox.value;
+	var	currentItem = lockBox.innerHTML.replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
 	if(lockMsg.innerHTML != ''){
-		var namenumber = currentItem.split('\n').length;
+		var namenumber = currentItem.split('<br>').length;
 
 //if the item is itself a list or there is no name, add the contents rather than the displayed name
 		if (namenumber > 1 || lockNameBox.value==''){
 			if(currentList == ''){
 				currentList = currentItem
 			}else{
-				currentList = currentList + '\n' + currentItem
+				currentList += '<br>' + currentItem
 			}
 			lockMsg.innerHTML = namenumber + ' items added to the current list'
 		} else {
 			if(currentList == ''){
 				currentList = lockMsg.innerHTML
 			}else{
-				currentList = currentList + '\n' + lockMsg.innerHTML
+				currentList += '<br>' + lockMsg.innerHTML
 			}
 			lockMsg.innerHTML = XSSfilter(lockMsg.innerHTML) + ' added to the current list'
 		}
@@ -246,11 +245,11 @@ function addToList(){
 			lockMsg.innerHTML = 'No items on the current list'
 		}
 	}
-	var listArray = currentList.replace(/\n+/g,'\n').split('\n');
+	var listArray = currentList.replace(/<br>+/g,'<br>').split('<br>');
 	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});	//remove duplicates
-	currentList = listArray.join('\n');
-	lockBox.value = currentList.trim();
-	currentList = lockBox.value;
+	currentList = listArray.join('<br>');
+	lockBox.innerHTML = currentList.trim();
+	currentList = lockBox.innerHTML;
 	suspendFindLock = false
 }
 
@@ -258,9 +257,9 @@ function addToList(){
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
 	refreshKey();
-	var	string = lockBox.value.trim();
+	var	string = lockBox.innerHTML.trim();
 	if(string == "") throw('nothing to decrypt');
-	lockBox.value = keyDecrypt(string);
+	lockBox.innerHTML = keyDecrypt(string);
 	if(callKey != 'decryptlock') callKey = '';
 }
 
@@ -271,7 +270,7 @@ function showLockDB(){
 		if(!reply) throw("locDir show canceled");
 	}
 	if(localStorage[userName] != "{}"){
-		lockBox.value = JSON.stringify(locDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
+		lockBox.innerHTML = JSON.stringify(locDir,null,4).replace(/\],/g,'<br><br>').replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/: /g,':<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
 		lockMsg.innerHTML = 'These are the items stored under the current user name';
 	}else{
 		lockMsg.innerHTML = '<span style="color:orange">There are no stored items</span>';
@@ -283,7 +282,7 @@ function showLockDB(){
 function showMyself(){
 	if(locDir['myself']){
 		var alphalocDir = locDir['myself'];
-		mainBox.innerHTML = 'myself:\n' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/\n    /g,'\n').replace(/ \n/g,'\n').replace(/,\n/g,'\n').trim();
+		mainBox.innerHTML = 'myself:<br>' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
 		mainMsg.innerHTML = 'These are your stored settings';
 	}else{
 		mainMsg.innerHTML = '<span style="color:orange">No settings to store</span>';
@@ -294,7 +293,7 @@ function showMyself(){
 //reconstruct the original JSON string from the newlines and spaces as displayed by showLockDB
 function mergeLockDB(){
 	callKey = 'mergedb';
-	var	lockstr = lockBox.value.trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
+	var	lockstr = lockBox.innerHTML.trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
 		mainstr = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,''));
 	if (lockstr == ''){
 		lockMsg.innerHTML = 'Nothing to merge';
@@ -308,7 +307,7 @@ function mergeLockDB(){
 		locklen = lockstr2.length,
 		mainlen = mainstr2.length;
 
-	if(lockstr.split('\n').length > 1){			//the real database merge implies multiline
+	if(lockstr.split('<br>').length > 1){			//the real database merge implies multiline
 
 		if (learnMode.checked){
 			var reply = confirm("The items in the box will be merged into the permanent directory, replacing existing items of the same name. This is irreversible. Cancel if this is not what you want.");
@@ -322,7 +321,7 @@ function mergeLockDB(){
 			}
 			throw('DB merge canceled')
 		}
-		var newDB = JSON.parse('{"' + lockBox.value.trim().replace(/\n +/g,'\n').replace(/:\n/g,'":["').replace(/\n\n/g,'"],"').replace(/\n/g,'","') + '"]}');
+		var newDB = JSON.parse('{"' + lockBox.innerHTML.trim().replace(/<br> +/g,'<br>').replace(/:<br>/g,'":["').replace(/<br><br>/g,'"],"').replace(/<br>/g,'","') + '"]}');
 		newDB = realNulls(newDB);
 		locDir = sortObject(mergeObjects(locDir,newDB));
 		localStorage[userName] = JSON.stringify(locDir);
@@ -361,7 +360,7 @@ function mergeLockDB(){
 		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase(), BASE36, BASE64, true);
 		var merged = nacl.util.encodeBase64(makeShared(mainstr2,nacl.util.decodeBase64(lockstr2))).replace(/=+$/,'');
 		mainBox.innerHTML = merged;
-		lockBox.value = merged;
+		lockBox.innerHTML = merged;
 		lockMsg.innerHTML = 'Key merged with Lock in main box';
 		return
 	}
@@ -390,7 +389,7 @@ function moveLockDB(){
 
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
-	var datacrypt = keyEncrypt(lockBox.value.trim());
+	var datacrypt = keyEncrypt(lockBox.innerHTML.trim());
 	mainBox.innerHTML = 'PL23dir==' + datacrypt + '==PL23dir';
 	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
 	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Decrypt';
@@ -627,14 +626,15 @@ function fillList(){
 var isList = false;												//so a decryption failure knows how to end
 function fillBox(){
 	callKey = 'fillbox';
-	lockBox.value = '';
+	lockBox.innerHTML = '';
+	lockMsg.innerHTML = '';
 	var list = '';
 	for (var i = 0; i < lockList.options.length; i++) {
     	if(lockList.options[i].selected){
 			if(lockList.options[i].value.slice(0,2) == '--'){					//it's a List, so decrypt it and add the contents to the box
 				var itemcrypt = locDir[lockList.options[i].value][0];
 				isList = true;											//to return here if the Key is wrong
-				list = list + '\n' + keyDecrypt(itemcrypt);
+				list += '<br>' + keyDecrypt(itemcrypt);
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
 				var covername = 'default';
 				newcover(defaultcovertext)
@@ -644,11 +644,12 @@ function fillBox(){
 				isList = true;
 				newcover(LZString.decompressFromBase64(keyDecrypt(covercrypt)));
 			}else{
-         		list = list + '\n' + lockList.options[i].value;
+         		list += '<br>' + lockList.options[i].value;
 			}
     	}
   	}
-	var array = list.trim().split('\n');
+	list = list.replace(/<br>/,'');										//remove the first linefeed
+	var array = list.split('<br>');
 	if (array[0] != ''){
 		array = array.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates
 		array = array.filter(function(n){return n});													//remove nulls
@@ -656,16 +657,16 @@ function fillBox(){
 		list = '';
 		var msg = 'Encrypting for: ';
 		for(var index = 0; index < array.length; index++){
-			list = list + '\n' + array[index];
-			msg = msg + array[index] + ', '
+			list += '<br>' + array[index];
+			msg += array[index] + ', '
 		}
-		lockBox.value = list.trim();
+		lockBox.innerHTML = list.replace(/<br>/,'').trim();				//remove first linefeed
 	} else if(covername){
 		var msg = covername + ' Cover text loaded';
 	} else {
 		var msg = '';
 	}
-	mainMsg.innerHTML = XSSfilter(msg);
+	mainMsg.innerHTML = XSSfilter(msg).trim().replace(/,$/,'');
 	lockMsg.innerHTML = '';
 	lockNameBox.value = '';
 	isList = false;
@@ -675,20 +676,19 @@ function fillBox(){
 //empty the selection box on Main tab
 function resetList(){
 	for (var i = 0; i < lockList.options.length; i++) {
-		if(lockList.options[i].selected) lockBox.value = '';
+		if(lockList.options[i].selected) {lockBox.innerHTML = '';lockMsg.innerHTML = ''}
     	lockList.options[i].selected = false
   	}
-	if(extraButtonsTop.style.display == 'block'){
-		setTimeout(function(){mainMsg.innerHTML = 'Cover text not changed';},0);
-	}else{
-		setTimeout(function(){
-			if(lockBox.value){
-				mainMsg.innerHTML = 'Click <strong>Edit</strong> to see loaded Keys'
-			}else{
-				mainMsg.innerHTML = 'Nobody selected'
-			};
-		},0);
-	}
+	setTimeout(function(){
+		var l = lockBox.innerHTML.length;
+		if(l == 0){
+			mainMsg.innerHTML = 'Nobody selected'
+		}else if(l > 500){
+			mainMsg.innerHTML = 'Click <strong>Edit</strong> to see the Cover text'
+		}else{
+			mainMsg.innerHTML = 'Click <strong>Edit</strong> to see loaded Keys'				
+		}
+	},0)
 }
 
 //grab the names in localStorage and put them on the userName selection box. Buggy, so a lot of cleanup ifs
