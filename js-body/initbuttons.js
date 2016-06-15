@@ -157,7 +157,11 @@ window.onload = function() {
 
 	learnMode.addEventListener('click', checkboxStore);
 
+	longMode.addEventListener('click', checkboxStore);
+
 	shortMode.addEventListener('click', checkboxStore);
+
+	compatMode.addEventListener('click', checkboxStore);
 
 	decoyMode.addEventListener('click', checkboxStore);
 

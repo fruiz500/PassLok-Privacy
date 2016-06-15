@@ -179,7 +179,7 @@ function checkboxStore(){
 			binCode += checks[i].checked ? 1 : 0;
 		}
 		if(locDir['myself']){
-			locDir['myself'][1] = changeBase(binCode,'01',BASE64);
+			locDir['myself'][1] = changeBase(binCode,'01',base64);
 			localStorage[userName] = JSON.stringify(locDir);
 
 			if(ChromeSyncOn && chromeSyncMode.checked){
@@ -193,7 +193,7 @@ function checkboxStore(){
 function code2checkbox(){
 	var checks = document.optionchecks;
 	if(locDir['myself'][1]){
-		var binCode = changeBase(locDir['myself'][1],BASE64,'01'), i;
+		var binCode = changeBase(locDir['myself'][1],base64,'01'), i;
 		while(binCode.length < checks.length) binCode = '0' + binCode;
 		for(i = 0; i < checks.length; i++){
 			checks[i].checked = (binCode[i] == '1')
@@ -484,8 +484,10 @@ function mode2basic(){
 	basicMode.checked = true;
 	advancedMode.checked = false;
 	emailMode.checked = false;
+	resetAdvModes();
 	hideBtnBasic.style.display = 'none';
-	decoyEmail.style.display = 'none';	
+	decoyEmail.style.display = 'none';
+	decoyMode.checked = false;	
 	anonMode.style.display = '';
 	anonLabel.style.display = '';
 	anonMode.checked = true;
@@ -509,6 +511,7 @@ function mode2email(){
 	advancedMode.checked = false;
 	emailMode.checked = true;
 	ezLokMode.checked = true;
+	resetAdvModes();
 	hideBtnBasic.style.display = '';
 	decoyEmail.style.display = '';
 	letterMode.checked = true;
@@ -522,13 +525,24 @@ function mode2email(){
 	fillList()
 }
 
+//sets modes selectable in Advanced mode to default values
+function resetAdvModes(){
+	longMode.checked = true;
+	shortMode.checked = false;
+	compatMode.checked = false;
+	letterMode.checked = true;
+	wordMode.checkec = false;
+	spaceMode.checked = false;
+	sentenceMode.checked = false
+}
+
 //opens local directory for input if something seems to be missing
 function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
 	}
-	var string = lockBox.innerHTML;
+	var string = lockBox.innerHTML.replace(/<br>$/,"").trim();
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newcover(string);
 	}
@@ -566,7 +580,7 @@ function lock2dir(){
 	};
 	if(keyScr.style.display=='block') return;
 	if(lockdirScr.style.display=='none') loadLockDir();
-	var locklength = striptags(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
+	var locklength = stripTags(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
 //if populated, send Lock to directory
@@ -650,7 +664,7 @@ function email2any(){
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-	myezLock = changeBase(myLock, BASE64, BASE36, true);
+	myezLock = changeBase(myLock, base64, base36, true);
 	if(dispLock) lockDisplay();
 
 	if(fullAccess) storemyEmail();
