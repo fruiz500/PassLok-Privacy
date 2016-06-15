@@ -589,8 +589,12 @@ img.intLink {
       <div id="decoyEmail" style="display:none;"> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
       &nbsp; Decoy</div><br>
     <div id='advancedModes' style="display: none;"> &nbsp;&nbsp;
-      <input type="checkbox" id="shortMode" title="encrypted message will fit within 160 characters" accesskey=""/>
-      &nbsp; Short    
+      <input type="radio" name="lenghtModes" id="longMode" title="encrypted message can be as long as it needs to be" checked/>
+      &nbsp; Normal&nbsp;&nbsp;
+      <input type="radio" name="lenghtModes" id="shortMode" title="encrypted message will fit within 160 characters" />
+      &nbsp; Short&nbsp;&nbsp;
+      <input type="radio" name="lenghtModes" id="compatMode" title="encrypted message compatible with SeeOnce and URSA" />
+      &nbsp; Compatible    
       <div id="syncCheck" style="display:none"> <br><br>    
       <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
       &nbsp;Chrome sync </div><br />     
@@ -670,7 +674,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Several users (or several identities) can coexist on the same device.</li>
     </ul>
     <p>PassLok is <strong>still in experimental phase</strong> since there has not been enough time for security experts to uncover possible flaws. Bear this in mind before entrusting critical secrets to it.</p>
-    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://SeeOnce.net" target="_blank">https://SeeOnce.net</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank"><strong>PassLok for Email</strong></a>, a Chrome extension that integrates with popular email clients (currently only Gmail).</p>
+    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://SeeOnce.net" target="_blank">https://SeeOnce.net</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. PassLok . Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank"><strong>PassLok for Email</strong></a>, a Chrome extension that integrates with popular email clients (currently Gmail, Yahoo, and Outlook). All of these apps are fully compatible with PassLok, although they are not compatible with each other.</p>
   </div>
   <hr>
   <div id="aa2" class="helpitem">
@@ -687,7 +691,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b2" class="texter">
-      <p>The invitation link loads the web version of PassLok, but pasting it into any other version of PassLok, or opening the email in PassLok for Email works just as well. Invitations made in PassLok for Email can also be opened in PassLok Privacy.</p>
+      <p>The invitation link loads the web version of PassLok, but pasting it into any other version of PassLok, or opening the email in PassLok for Email or SeeOnce works just as well. Invitations made in PassLok for Email or SeeOnce can also be opened in PassLok Privacy.</p>
       <p>People who did not get your email will still be able to obtain your Lock if you post it in the General Directory. To do this, click the <strong>myLock</strong> button if your Lock is not already displayed, then the small <strong>Edit</strong> button near the top, and then the large <strong>General Directory</strong> button. A new page will open where you only need to supply your email address, click <strong>Post</strong>, and reply to a confirmation email.</p>
       <p>Those who get PassLok from your email invitation will have your Lock automatically stored in their directories, so they can encrypt items for you right away.</p>
     </div>
@@ -785,7 +789,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b9" class="texter">
       <p>The reason for the email or other additional data is to combat the &quot;rainbow table&quot; attack, where hackers pre-compute Locks made from the words in a dictionary. This data is encrypted and stored along with other settings, so you won't need to enter it again. The Lock depends both on the Key and the email or random token; this adds extra security, but it also means that if the random token gets erased you will not be able to decrypt anything that was encrypted with your Lock. The backup item contains your settings, including the random token, double-encrypted by your secret Key. One reason to delete your settings while leaving the local directory intact is to be able to change the random token to a new value. You can also proceed without entering any email or token.</p>
-      <p>If you plan to use both PassLok and PassLok for Email, it is best if you write your real email in this box, for in this case your PassLok ezLok will be identical to the one used in PassLok for Email and you'll be able to use their main features interchangeably.</p>
+      <p>If you plan to use both PassLok and PassLok for Email, it is best if you write your real email in this box, for in this case your PassLok ezLok will be identical to the one used in PassLok for Email and you'll be able to use their main features interchangeably. This precaution is not necessary if you only use one of the versions.</p>
     </div>
   </div>
   <hr>
@@ -801,7 +805,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b10" class="texter">
-      <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email is compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app.</p>
+      <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email and SeeOnce are compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app. This precaution is not necessary for SeeOnce.</p>
       <p>If you need to make a Lock for a different Key (for instance, in order to receive Decoy mode hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by typing &quot;myself&quot; at the top box of the directory Edit dialog followed by Enter, or by clicking Change Email on Options).</p>
     </div>
   </div>
@@ -912,7 +916,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b15" class="texter">
       <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the upper box, then encrypt the message normally. The first message after a reset does not have forward secrecy,  so be careful with this one. It is okay to strip the Lock tags up to the "=" sign, but not recommended.  It is also okay to split the encrypted message with spaces, line returns, and punctuation other than = + / or -</p>
-      <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
+      <p>Messages encrypted in this mode can be decrypted by PassLok for Email, if the Email mode checkbox is checked in Options before the message is encrypted. They can be read in SeeOnce if Compatibility mode is checked in Options.</p>
     </div>
   </div>
   <hr>
@@ -930,7 +934,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     </div>
     <div id="b16" class="texter">
       <p>Usually you can decrypt the message only once, since the ephemeral key needed to decrypt it is overwritten in the process, but after a reset the first message can be decrypted forever, and the second becomes decryptable only after it is replied to.  It is okay if the message is broken up by spaces, carriage returns, and special characters other than = + / or - or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>A message encrypted by PassLok for Email in Read-once mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested.</p>
+      <p>A message encrypted by PassLok for Email in Read-once mode can be decrypted by PassLok in this mode. Just paste it in and supply a name for the included ezLok, if requested. Same if it was encrypted in SeeOnce.</p>
     </div>
   </div>
   <hr>
@@ -1081,7 +1085,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
         someone having the same shared Key. It does not matter whether Anonymous or Signed mode is selected,  since they use shared Keys identically. Alternatively, you can search for a stored shared Key by typing the name associated with it in the top box of the directory Edit dialog. When you type "Enter", the stored Key is decrypted for you to see.It is okay to strip the tags up to the "=" sign, but not recommended. It is
         also okay to split the encrypted message with spaces, line returns, and
         punctuation other than = + / or - The tags will depend on the encryption mode selected. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
-      <p>Messages encrypted with a shared Key cannot be decrypted in PassLok for Email. Likewise, they cannot be opened in URSA unless they were encrypted in Short mode, which is what URSA uses, but then message length will be limited.</p>
+      <p>Messages encrypted with a shared Key cannot be decrypted in PassLok for Email. They can be decrypted in URSA if Short or Compatible mode are chosen in Options prior to encryption.</p>
     </div>
   </div>
   <hr>
@@ -1127,7 +1131,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p>It is
         okay to split the encrypted message with spaces, line returns, and
       punctuation other than = + or /, or to eliminate the tags at either end. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>Messages encrypted this way can also be decrypted in URSA, except if a file is used as encryption key.</p>
+      <p>Messages encrypted this way can also be decrypted in URSA.</p>
     </div>
   </div>
   <hr>
@@ -1294,7 +1298,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Backup or erase user settings, or even the entire local directory.</li>
     </ul>
     <p>There is also <strong>Email</strong> mode, which displays only the functions that are available in <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">PassLok for Email</a>. In this mode, PassLok's output is nearly identical to that of PassLok for Email, so it can be decrypted in that program. The ouput of PassLok for Email can always be handled by the standalone PassLok, no matter which interface mode is selected in Options.</p>
-    <p>This and mode is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Ttyvb0Qt7h0" target="_blank">https://www.youtube.com/watch?v=Ttyvb0Qt7h0</a></p>
+    <p>Finally, you can choose <strong>Compatible</strong> mode in Options, which will cause PassLok's output to be accepted by URSA and SeeOnce.</p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Ttyvb0Qt7h0" target="_blank">https://www.youtube.com/watch?v=Ttyvb0Qt7h0</a></p>
   </div>
   <hr>
   <div id="aa32" class="helpitem">
@@ -1339,7 +1344,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <h3>Make a short encrypted message suitable for texting <em>(advanced)</em></h3>
     </div>
     <div id="a33" class="texter">
-      <p>1. On the <strong>Options</strong> tab, check the <strong>Short</strong> checkbox. Also make sure the appropriate encryption mode is selected with the radio buttons at the bottom of the <strong>Main</strong> tab.</p>
+      <p>1. On the <strong>Options</strong> tab, check the <strong>Short</strong> button. Also make sure the appropriate encryption mode is selected with the radio buttons at the bottom of the <strong>Main</strong> tab.</p>
       <p>2. If the recipient's Lock of shared Key has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
       <ul>
         <li>If not, click the <strong>Edit</strong> button next to the directory box and paste the Lock or shared Key in the lower box of the dialog that appears. Then click <strong>Done</strong>.</li>
@@ -1829,7 +1834,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <hr>
   <address>
-  PassLok v2.3.3 &#169; F. Ruiz 2016
+  PassLok v2.3.4 &#169; F. Ruiz 2016
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>

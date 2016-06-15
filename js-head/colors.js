@@ -319,7 +319,7 @@ function selectStyle(){
 		fgColor[0] = 'efefef';
 		bgColor[1] = '0099cc';
 		fgColor[1] = 'ffffff';
-		bgColor[2] = '0044cc';
+		bgColor[2] = '1c57cc';
 		fgColor[2] = 'dddddd';
 		bgColor[3] = 'd7ffd7';
 		fgColor[3] = '000000';

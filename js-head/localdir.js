@@ -1,8 +1,10 @@
-﻿//detect if Lock pasted in Lock box
+﻿//detect if Lock pasted in Lock box, otherwise clean up
 function pasteLock(){
+	setTimeout(function(){
 	lockMsg.innerHTML = '';
-	var text = lockBox.innerText;
-	var	strings = text.split(/\r?\n/);
+	var text = lockBox.innerHTML.replace(/<br>/g,'\n').replace(/\<(?!\/?a).*?\>/g,'').trim().replace(/\n/g,'<br>').replace(/&nbsp;/g,' ').replace(/<br>$/,''),	//clean preserving anchors
+		strings = text.split('<br>');
+	lockBox.innerHTML = text;
 	var lastline = strings[strings.length-1];
 	if (lastline.slice(0,4) != 'http'){
 		var lock = lastline;
@@ -13,6 +15,7 @@ function pasteLock(){
 
 	suspendFindLock = true;															//allow writing a name without searching
 	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
+	},0)
 }
 
 //get name and Lock from form and merge them with the locDir object, then store
@@ -27,7 +30,7 @@ function addLock(){
 	}
 	callKey = 'addlock';
 	var name = lockNameBox.value.trim(),
-		lock = lockBox.innerHTML.trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
+		lock = lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
 	if (XSSfilter(name)!=name){
 		lockMsg.innerHTML = 'This is not a valid name';
 		throw('name contained XSS-illegal characters')
@@ -41,9 +44,8 @@ function addLock(){
 		lockBox.innerHTML = lock;
 	}
 	if (name !=''){
-		var locklength = striptags(lockarray[0]).length;
+		var locklength = stripTags(lockarray[0]).length;
 		if((locklength == 43 || locklength == 50) && lockarray.length == 1){
-			if(locklength == 50) lock = lock.replace(/L/g,'l');					//de-capitalize L, if ezLock
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
 		}else{
 			if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
@@ -57,7 +59,7 @@ function addLock(){
 			window.setTimeout(function(){											//this needs to be on a timer for iOS
 				if (ran) {
 					lockMsg.innerHTML = '<span style="color:cyan">Random Key stored to local directory with name </span>' + name
-				} else if(striptags(lock).length == 43 || striptags(lock).length == 50){
+				} else if(stripTags(lock).length == 43 || stripTags(lock).length == 50){
 					lockMsg.innerHTML = '<span style="color:cyan">Lock saved to local directory with name </span>' + name
 				} else if(isList){
 					lockMsg.innerHTML = '<span style="color:cyan">List saved to local directory with name </span>' + name
@@ -116,7 +118,7 @@ function resetPFS(){
 		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
 		throw('Lock reset canceled')
 	}
-	if (lockBox.innerText.trim().split('\n').length > 1){		//use button to reset current List if a List is displayed, nothing to do with normal use
+	if (lockBox.innerHTML.trim().split('<br>').filter(Boolean).length > 1){ //use button to reset current List if a List is displayed, nothing to do with normal use
 		if (learnMode.checked){
 			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
 			if(!reply) throw("List reset canceled");
@@ -161,7 +163,7 @@ var suspendFindLock = false							//when true, user can input a name without del
 function findLock(){
 	lockMsg.innerHTML = '';
 	var string = lockNameBox.value;
-	var stringstrip = striptags(string);
+	var stringstrip = stripTags(string);
 	if(stringstrip.length == 43 || stringstrip.length == 50){									//it's a Lock in the wrong box. Move it
 		lockBox.innerHTML = string;
 		lockNameBox.value = '';
@@ -190,14 +192,14 @@ function decryptLock(){
 		nameBeingUnlocked = '';
 	}
 	if(lockBox.innerHTML != ''){
-		var listArray = lockBox.innerText.split('\n');
+		var listArray = lockBox.innerHTML.split('<br>').filter(Boolean);
 		if(lockBox.innerHTML.length > 500){
 			lockBox.innerHTML = LZString.decompressFromBase64(lockBox.innerHTML);
 			newcover(lockBox.innerHTML);							//this for loading cover text from Lock screen
 			lockMsg.innerHTML = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
 			lockMsg.innerHTML = 'List extracted'
-		} else if(striptags(lockBox.innerHTML).length == 43 || striptags(lockBox.innerHTML).length == 50){
+		} else if(stripTags(lockBox.innerHTML).length == 43 || stripTags(lockBox.innerHTML).length == 50){
 			lockMsg.innerHTML = 'Lock extracted'
 		} else if(lockBox.innerHTML.length == 42){
 			lockMsg.innerHTML = 'Random Key extracted'
@@ -218,7 +220,7 @@ function addToList(){
 		var reply = confirm("The item displayed will be added to the current list. Cancel if this is not what you want.");
 		if(!reply) throw("add to list canceled");
 	}
-	var	currentItem = lockBox.innerHTML.replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
+	var	currentItem = lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
 	if(lockMsg.innerHTML != ''){
 		var namenumber = currentItem.split('<br>').length;
 
@@ -257,7 +259,7 @@ function addToList(){
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
 	refreshKey();
-	var	string = lockBox.innerHTML.trim();
+	var	string = lockBox.innerHTML.replace(/<br>$/,"").trim();
 	if(string == "") throw('nothing to decrypt');
 	lockBox.innerHTML = keyDecrypt(string);
 	if(callKey != 'decryptlock') callKey = '';
@@ -293,7 +295,7 @@ function showMyself(){
 //reconstruct the original JSON string from the newlines and spaces as displayed by showLockDB
 function mergeLockDB(){
 	callKey = 'mergedb';
-	var	lockstr = lockBox.innerHTML.trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
+	var	lockstr = lockBox.innerHTML.replace(/<br>$/,"").trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
 		mainstr = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,''));
 	if (lockstr == ''){
 		lockMsg.innerHTML = 'Nothing to merge';
@@ -302,8 +304,8 @@ function mergeLockDB(){
 	if (lockstr.slice(0,1) == '~') {
 		lockstr = keyDecrypt(lockstr)
 	}
-	var lockstr2 = striptags(lockstr),
-		mainstr2 = striptags(mainstr),
+	var lockstr2 = stripTags(lockstr),
+		mainstr2 = stripTags(mainstr),
 		locklen = lockstr2.length,
 		mainlen = mainstr2.length;
 
@@ -321,7 +323,7 @@ function mergeLockDB(){
 			}
 			throw('DB merge canceled')
 		}
-		var newDB = JSON.parse('{"' + lockBox.innerHTML.trim().replace(/<br> +/g,'<br>').replace(/:<br>/g,'":["').replace(/<br><br>/g,'"],"').replace(/<br>/g,'","') + '"]}');
+		var newDB = JSON.parse('{"' + lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<br> +/g,'<br>').replace(/:<br>/g,'":["').replace(/<br><br>/g,'"],"').replace(/<br>/g,'","') + '"]}');
 		newDB = realNulls(newDB);
 		locDir = sortObject(mergeObjects(locDir,newDB));
 		localStorage[userName] = JSON.stringify(locDir);
@@ -339,7 +341,7 @@ function mergeLockDB(){
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-		myezLock = changeBase(myLock, BASE64, BASE36, true);
+		myezLock = changeBase(myLock, base64, base36, true);
 
 		fillList();
 		var reply = prompt("The items have been merged into the local directory. It might be a good idea to change the user name at this point. To do so, enter the new user name and click OK. Otherwise Cancel.");
@@ -357,7 +359,7 @@ function mergeLockDB(){
 			var reply = confirm("The Key in the directory box will be combined with the Lock in the main box, and the resulting Lock will replace both. Cancel if this is not what you want.");
 			if(!reply) throw("merge canceled");
 		};
-		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase(), BASE36, BASE64, true);
+		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
 		var merged = nacl.util.encodeBase64(makeShared(mainstr2,nacl.util.decodeBase64(lockstr2))).replace(/=+$/,'');
 		mainBox.innerHTML = merged;
 		lockBox.innerHTML = merged;
@@ -389,7 +391,7 @@ function moveLockDB(){
 
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
-	var datacrypt = keyEncrypt(lockBox.innerHTML.trim());
+	var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/<br>$/,"").trim());
 	mainBox.innerHTML = 'PL23dir==' + datacrypt + '==PL23dir';
 	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
 	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Decrypt';
@@ -524,7 +526,7 @@ function recryptDB(newKey,newUserName){
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(newKey,email)).secretKey;
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-	myezLock = changeBase(myLock, BASE64, BASE36, true);
+	myezLock = changeBase(myLock, base64, base36, true);
 	locDir['myself'][0] = keyEncrypt(email);
 	localStorage[userName] = JSON.stringify(locDir);
 

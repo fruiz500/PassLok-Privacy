@@ -9,8 +9,8 @@ var keytimer = 0;
 var keytime = new Date().getTime();
 
 //Alphabets for base conversion. Used in making and reading the ezLok format and some fixes to SJCL
-var BASE36 = '0123456789abcdefghijklmnopqrstuvwxyz';
-var BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+var base36 = '0123456789abcdefghijkLmnopqrstuvwxyz';									//L is capital for readability
+var base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
 function keyStrength(pwd,display) {
@@ -278,7 +278,7 @@ function acceptKey(){
 		keyMsg.innerHTML = '<span style="color:orange">This Key is too short</span>';
 		throw("short Key")
 	}
-	if(striptags(key).length == 43 || striptags(key).length == 50){
+	if(stripTags(key).length == 43 || stripTags(key).length == 50){
 		keyMsg.innerHTML = '<span style="color:orange">This is a Lock. Enter your Key here</span>';
 		throw("Lock instead of Key")
 	}
@@ -478,7 +478,7 @@ function checkKey(key){
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
 	if(!myLock){
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-		myezLock = changeBase(myLock, BASE64, BASE36, true);
+		myezLock = changeBase(myLock, base64, base36, true);
 	}
 	checkingKey = false;
 	return
@@ -500,7 +500,7 @@ function showLock(){
 	if(!locDir['myself']) locDir['myself'] = [];
 	if(!myLock){
 		myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');	//the Lock derives from the signing Key
-		myezLock = changeBase(myLock, BASE64, BASE36, true);
+		myezLock = changeBase(myLock, base64, base36, true);
 	}
 
 	//done calculating, now display it
@@ -514,7 +514,7 @@ function showLock(){
 //just to display the Lock. Gets called above and in one more place
 function lockDisplay(){
 	if(ezLokMode.checked){
-		var mylocktemp = myezLock.replace(/l/g,'L');					//change smallcase l into capital L for display
+		var mylocktemp = myezLock;
 		mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading
 		mylocktemp = "PL23ezLok==" + mylocktemp + "==PL23ezLok";
 	}else{
@@ -606,7 +606,7 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label,isCompressed){
 }
 
 //this strips initial and final tags, plus spaces and non-base64 characters in the middle
-function striptags(string){
+function stripTags(string){
 	string = string.replace(/\s/g,'').replace(/==+/,'==');										//remove spaces, reduce multiple = to double
 	if(string.match('==')) string = string.split('==')[1].replace(/<(.*?)>/gi,"");
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
@@ -614,12 +614,11 @@ function striptags(string){
 }
 
 nameBeingUnlocked = '';
-//this function replaces an item with its value on the locDir database, decrypted if necessary, if the name exists, otherwise if gives a warning that it isn't a Lock
-function replaceByItem(name,warning){
-	var warningList = "";
-	if(!locDir[name]) {							//not on database; strip it if it's a Lock, and otherwise add to warning list
-		var stripped = striptags(name);
-		if(stripped.length == 43 || stripped.length == 50){name = stripped} else {warningList = name};
+//this function replaces an item with its value on the locDir database, decrypted if necessary, if the name exists
+function replaceByItem(name){
+	if(!locDir[name]) {							//not on database; strip it if it's a Lock
+		var stripped = stripTags(name);
+		if(stripped.length == 43 || stripped.length == 50) name = stripped;
 	} else if(name == 'myself'){
 		if(myLock) name = myLock
 	} else {									//found name on DB, so get value from the database and decrypt if necessary
@@ -627,13 +626,8 @@ function replaceByItem(name,warning){
 		nameBeingUnlocked = name;
 		var whole = keyDecrypt(string);
 		nameBeingUnlocked = '';
-		var	stripped = striptags(whole);
-		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole};	//if it's a Lock, strip the tags
-	}
-
-	if (warningList != '' && warning){
-		var agree = confirm('The following name was not found in your local directory. If you click OK, this string will be used as a shared Key for encrypting and decrypting the message. This could be a serious security hazard:\n\n' + warningList);
-		if (!agree) throw('list encryption terminated by user')
+		var	stripped = stripTags(whole);
+		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole};		//if it's a Lock, strip tags
 	}
 	return name
 }

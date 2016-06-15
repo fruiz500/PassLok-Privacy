@@ -13,7 +13,7 @@ function Encrypt_Single(){
 	callKey = 'encrypt';
 	var	name = lockMsg.innerHTML,
 		clipped = false,
-		lockBoxItem = lockBox.innerHTML.trim();			//this will be the encrypting Lock or shared Key (if it's a name, it will be replaced with value)
+		lockBoxItem = lockBox.innerHTML.replace(/<br>$/,"").trim();		//this will be the encrypting Lock or shared Key (if it's a name, it will be replaced with value)
 	if (lockBoxItem == ""){
 		mainMsg.innerHTML = 'You must select a stored Lock or shared Key, or click <strong>Edit</strong> and enter one.';
 		throw("Lock box empty");
@@ -26,23 +26,24 @@ function Encrypt_Single(){
 
 	var listArray = lockBoxItem.replace(/<div>/g,'<br>').replace(/<\/div>/g,'').split('<br>');		//see if this is actually several Locks rather than one
 	
-	if(!shortMode.checked){							//Encrypt_Single() handles only short mode, otherwise Encrypt_List() is used instead
+	if(longMode.checked){							//Encrypt_Single() handles only short and compatible modes, otherwise Encrypt_List() is used instead
 		Encrypt_List(listArray);
 		return
 	}
 	if (listArray.length > 1 && listArray[1].slice(0,4) != 'http'){			//this is a List, which is not compatible with short mode, video URLs on 2nd line don't count
-		mainMsg.innerHTML = '<span style="color:orange">Short mode not available for multiple recipients</span>';
+		mainMsg.innerHTML = '<span style="color:orange">Short and Compatible modes not available for multiple recipients</span>';
 		throw('multiple Locks for short mode')
 	}
-	var lockBoxNoVideo = listArray[0].trim(),						//strip video URL, if any
+	var lockBoxNoVideo = listArray[0].trim(),					//strip video URL, if any
 		lockBoxHold = lockBoxNoVideo,								//to hold it in case it is a name
-		Lock = replaceByItem(lockBoxNoVideo,true);			//if it's the name of a stored item, use the decrypted item instead, if not and it isn't a Lock, there will be a warning. This function removes tags and non-base64 chars from true Locks only
+		Lock = replaceByItem(lockBoxNoVideo);					//if it's the name of a stored item, use the decrypted item instead, if not and it isn't a Lock, there will be a warning. This function removes tags and non-base64 chars from true Locks only
 	if(locDir[lockBoxNoVideo]) name = lockBoxNoVideo;
-	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 		//ezLok replaced by regular Lock
+	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase().replace(/l/g,'L'), base36, base64, true) 		//ezLok replaced by regular Lock
 	var nonce = nacl.randomBytes(9),
 		nonce24 = makeNonce24(nonce),
 		noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
-		text = encodeURI(mainBox.innerHTML).replace(/%20/g,' ');		//now we do the different encryption modes
+		text = mainBox.innerHTML.trim();
+	if(shortMode.checked)	text = encodeURI(text).replace(/%20/g,' ');		//now we do the different encryption modes
 
 	if(Lock.length != 43 && !onceMode.checked){				//shared Key-locked mode, if no true Lock is entered
 		if (learnMode.checked){
@@ -50,14 +51,17 @@ function Encrypt_Single(){
 			if(!reply3) throw("sym encryption canceled");
 		};
 		var sharedKey = wiseHash(Lock,noncestr);		//use the nonce for stretching the user-supplied Key
-		if (text.length > 94) clipped = true;  			//94-char capacity
-		text = text.slice(0,94);
-		while (text.length < 94) text = text + ' ';
-		var cipherstr = PLencrypt(text,nonce24,sharedKey);
+		if(shortMode.checked){
+			if (text.length > 94) clipped = true;  			//94-char capacity
+			text = text.slice(0,94);
+			while (text.length < 94) text = text + ' ';
+		}
+		var cipherstr = PLencrypt(text,nonce24,sharedKey,compatMode.checked);				//will compress if not a short message
 		if (learnMode.checked){
 			alert(name + " will need to place the same Key in the Locks box to decrypt the message in the main box.");
 		};
 		mainBox.innerHTML = "@" + noncestr + cipherstr;
+		if(compatMode.checked) mainBox.innerHTML = 'PL23msg==' + mainBox.innerHTML + '==PL23msg'
 	}
 
 	else if (signedMode.checked){					//signed mode, make encryption key from secret Key and recipient's Lock
@@ -68,14 +72,17 @@ function Encrypt_Single(){
 		refreshKey();
 		if(!locDir[name] && locDir[lockBoxHold]) name = lockBoxHold;				//get name from Lock area
 		var sharedKey = makeShared(convertPubStr(Lock),KeyDH);
-		if (text.length > 94) clipped = true;  						//94-char capacity
-		text = text.slice(0,94);
-		while (text.length < 94) text = text + ' ';
-		var cipherstr = PLencrypt(text,nonce24,sharedKey);
+		if(shortMode.checked){
+			if (text.length > 94) clipped = true;  						//94-char capacity
+			text = text.slice(0,94);
+			while (text.length < 94) text = text + ' ';
+		}
+		var cipherstr = PLencrypt(text,nonce24,sharedKey,compatMode.checked);
 		if (learnMode.checked){
 			alert(lockMsg + " will need your Lock and his/her secret Key to decrypt the message in the main box.");
 		};
 		mainBox.innerHTML = "#" + noncestr + cipherstr;
+		if(compatMode.checked) mainBox.innerHTML = 'PL23mss==' + myezLock + mainBox.innerHTML + '==PL23mss'
 	}
 
 	else if (anonMode.checked){								//anonymous mode, using only the recipient's Lock
@@ -87,14 +94,17 @@ function Encrypt_Single(){
 		var secdum = nacl.randomBytes(32),							//make dummy Key
 			pubdumstr = makePubStr(secdum),							//matching dummy Lock
 			sharedKey = makeShared(convertPubStr(Lock),secdum);
-		if (text.length > 62) clipped = true;  			//62-char capacity because of the dummy Lock
-		text = text.slice(0,62);
-		while (text.length < 62) text = text + ' ';
-		var cipherstr = PLencrypt(text,nonce24,sharedKey);
+		if(shortMode.checked){
+			if (text.length > 62) clipped = true;  			//62-char capacity because of the dummy Lock
+			text = text.slice(0,62);
+			while (text.length < 62) text = text + ' ';
+		}
+		var cipherstr = PLencrypt(text,nonce24,sharedKey,compatMode.checked);
 		if (learnMode.checked){
 			alert(name + " will need to place his/her secret Key in the key box to decrypt the message in the main box.");
 		}
 		mainBox.innerHTML = '!' + noncestr + pubdumstr + cipherstr;
+		if(compatMode.checked) mainBox.innerHTML = 'PL23msa==' + myezLock + mainBox.innerHTML + '==PL23msa'
 	}
 
 	else if (onceMode.checked){									//Read-once mode
@@ -136,7 +146,7 @@ function Encrypt_Single(){
 		}
 		var sharedKey = makeShared(lastLock,lastKey);
 
-		if (turnstring != 'lock'){								//if out of turn don't change the dummy Key
+		if (turnstring != 'lock'){								//if out of turn don't change the dummy Key, this includes reset
 			if(turnstring == 'reset'){var resetMessage = true }else{ var pfsMessage = true};
 			if(lastLockCipher){
 				if(Lock.length == 43){
@@ -144,10 +154,9 @@ function Encrypt_Single(){
 				}else{
 					var newLockCipher = PLencrypt(makePubStr(lastKey),nonce24,makeShared(lastLock,wiseHash(Lock,noncestr)));
 				}
-			}else{												//1st message in the series is not forward-secret
-				var pubdumstr = makePubStr(secdum),
-					dualKey = getDualKey(Lock,noncestr),
-					newLockCipher = PLencrypt(pubdumstr,nonce24,dualKey);
+			}else{
+				var	dualKey = getDualKey(Lock,noncestr),
+					newLockCipher = PLencrypt(makePubStr(lastKey),nonce24,dualKey);
 			}
 
 		}else{														//normal Read-once algorithm
@@ -168,8 +177,8 @@ function Encrypt_Single(){
 			}
 		}
 
-		if(turnstring != 'unlock'){
-			locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));			//new Key is stored in the permanent database, except if out of turn
+		if(turnstring == 'lock' || !lastKeyCipher){
+			locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));			//new Key is stored in the permanent database, except if repeat
 		}
 		if(turnstring != 'reset') locDir[name][3] = 'unlock';
 		if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
@@ -178,20 +187,23 @@ function Encrypt_Single(){
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 
-		if (text.length > 35) clipped = true;  			//35-char capacity
-		text = text.slice(0,35);
-		while (text.length < 35) text = text + ' ';
-		var cipherstr = PLencrypt(text,nonce24,sharedKey);
+		if(shortMode.checked){
+			if (text.length > 35) clipped = true;  			//35-char capacity
+			text = text.slice(0,35);
+			while (text.length < 35) text = text + ' ';
+		}
+		var cipherstr = PLencrypt(text,nonce24,sharedKey,compatMode.checked);
 		if (learnMode.checked){
 			alert(name + " will need to select you in his/her directory to decrypt the message.");
 		};
 		if(resetMessage){
-			mainBox.innerHTML = "**" + noncestr + newLockCipher + cipherstr;
+			mainBox.innerHTML = ":" + noncestr + newLockCipher + cipherstr;
 		}else if(pfsMessage){
 			mainBox.innerHTML = "*" + noncestr + newLockCipher + cipherstr;
 		}else{
 			mainBox.innerHTML = "$" + noncestr + newLockCipher + cipherstr;
 		}
+		if(compatMode.checked) mainBox.innerHTML = 'PL23mso==' + myezLock + mainBox.innerHTML + '==PL23mso'			//prepend ezLock in compatibility mode
 	}
 
 	mainMsg.innerHTML = 'Encryption successful';
@@ -237,11 +249,11 @@ function Encrypt_List(listArray){
 		}
 		if (name != ''){
 			if(locDir[name] == null) {					//not on database; see if it's a Lock, and otherwise add to warning list
-				var namestr = striptags(name);
+				var namestr = stripTags(name);
 				if(namestr.length != 43 && namestr.length != 50){
 					if (warningList == ""){warningList = name} else {warningList += '\n' + name}
 				}
-			}else if(striptags(locDir[name][0]).length != 43 && striptags(locDir[name][0]).length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
+			}else if(stripTags(locDir[name][0]).length != 43 && stripTags(locDir[name][0]).length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
 				if (warningList2 == ""){warningList2 = name} else {warningList2 += '\n' + name};
 				listArray[index] = ''
 			}
@@ -282,14 +294,14 @@ function Encrypt_List(listArray){
 			if(!reply) throw("Read-once list encryption canceled");
 		}
 		var outString = "$";
-		if(emailMode.checked) outString = myezLock.replace(/l/g,'L') + outString;
+		if(emailMode.checked) outString = myezLock + outString;
 	} else {
 		if (learnMode.checked){
 			var reply = confirm("The contents of the main box will be encrypted with the Locks of the recipients listed and signed with your Key, so that all of them can read it by supplying your Lock, and the result will replace the main box. Cancel if this is not what you want.");
 			if(!reply) throw("signed list encryption canceled");
 		}
 		var outString = "#";
-		if(emailMode.checked) outString = myezLock.replace(/l/g,'L') + outString;
+		if(emailMode.checked) outString = myezLock + outString;
 	}
 
 	if (anonMode.checked) {											//for anonymous mode, make dummy Lock. Make padding in all modes
@@ -304,14 +316,14 @@ function Encrypt_List(listArray){
 
 	var cipher = PLencrypt(text,nonce24,msgKey,true);				//main encryption event including compression, but don't add the result yet
 	outString += noncestr + padding;
-	if (anonMode.checked) outString += pubdumstr;				//for anonymous mode, add the dummy Lock to the output string
+	if (anonMode.checked) outString += pubdumstr;					//for anonymous mode, add the dummy Lock to the output string
 
 	//for each item on the List (unless empty), encrypt the message key and add it, prefaced by the first 256 bits of the ciphertext when the item is encrypted with the message nonce and the shared key. Notice: same nonce, but different key for each item (unless someone planted two recipients who have the same key, but then the encrypted result will also be identical).
 	for (var index = 0; index < listArray.length; index++){
 		var name = listArray[index].trim();
 		if (name != ''){
-			var Lock = replaceByItem(name,false);				//returns item if the name is on directory. Locks are stripped
-			if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 		//get Lock from ezLok
+			var Lock = replaceByItem(name);							//returns item if the name is on directory. Locks are stripped
+			if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase().replace(/l/g,'L'), base36, base64, true) 		//get Lock from ezLok
 			if (Lock.length == 43  || onceMode.checked){				//if it's a Lock, do anonymous, Read-once or signed encryption, and add the result to the output. Same if, not being a Lock, Read-Once mode is selected. Shared Key case at the end of all this
 
 				if (signedMode.checked){
@@ -357,8 +369,10 @@ function Encrypt_List(listArray){
 						var lastKey = nacl.util.decodeBase64(keyDecrypt(lastKeyCipher));
 					} else {													//use new dummy Key if stored dummy doesn't exist
 						var lastKey = secdum;
-						typeChar = 'p';
-						var pfsMessage = true
+						if(!resetMessage){
+							typeChar = 'p';
+							var pfsMessage = true
+						}
 					}
 
 					if(!turnstring){									//so that an initial message is seen the same as a reset mesage
@@ -391,15 +405,14 @@ function Encrypt_List(listArray){
 					var cipher2 = nacl.util.encodeBase64(nacl.secretbox(msgKey,nonce24,sharedKey)).replace(/=+$/,''),
 						idTag = PLencrypt(Lock,nonce24,idKey);
 
-					if(turnstring == 'unlock'){
+					if(turnstring != 'lock'){															//if out of turn don't change the dummy Key, this includes reset
 						var newLockCipher = PLencrypt(makePubStr(lastKey),nonce24,idKey);
 					}else{
-						var pubdumstr = makePubStr(secdum),
-							newLockCipher = PLencrypt(pubdumstr,nonce24,idKey);
+						var	newLockCipher = PLencrypt(makePubStr(secdum),nonce24,idKey);
 					}
 					
-					if(turnstring != 'unlock'){
-						locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database
+					if(turnstring == 'lock' || !lastKeyCipher){
+						locDir[name][1] = keyEncrypt(nacl.util.encodeBase64(secdum));				//new Key is stored in the permanent database, unless repeat or empty
 					}
 					if(turnstring != 'reset') locDir[name][3] = 'unlock';
 
@@ -442,7 +455,7 @@ function Encrypt_List(listArray){
 		if(fileMode.checked){
 			mainBox.innerHTML = '<a download="PL23mso.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Read-once message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
+			mainBox.innerHTML = '<pre>----------begin Read-once message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,80}/g).join("<br>") + '<br><br>==---------end Read-once message encrypted with PassLok-----------</pre>'
 		}else{
 			mainBox.innerHTML = "PL23mso==" + outString + "==PL23mso"
 		}
@@ -450,7 +463,7 @@ function Encrypt_List(listArray){
 		if(fileMode.checked){
 			mainBox.innerHTML = '<a download="PL23mss.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Signed message</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
+			mainBox.innerHTML = '<pre>----------begin Signed message encrypted with PassLok--------==<br><br>' + outString.match(/.{1,80}/g).join("<br>") + '<br><br>==---------end Signed message encrypted with PassLok-----------</pre>'
 		}else{
 		mainBox.innerHTML = "PL23mss==" + outString + "==PL23mss"
 		}
@@ -459,7 +472,7 @@ function Encrypt_List(listArray){
 		if(fileMode.checked){
 			mainBox.innerHTML = '<a download="PL23chat.txt" href="data:,==' + outString + '=="><b>PassLok 2.3 Chat invitation</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
 		}else if(emailMode.checked){
-			mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,70}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
+			mainBox.innerHTML = '<pre>----------begin Chat invitation encrypted with PassLok--------==<br><br>' + outString.match(/.{1,80}/g).join("<br>") + '<br><br>==---------end Chat invitation encrypted with PassLok-----------</pre>'
 		}else{
 			mainBox.innerHTML = "PL23chat==" + outString + "==PL23chat"
 		}
@@ -468,7 +481,7 @@ function Encrypt_List(listArray){
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
 	if(!isMobile){
 		selectMain();
-		mainMsg.innerHTML = 'Encryption successful. Copied to clipboard.'
+		mainMsg.innerHTML = 'Encryption successful' + (isFirefox ? ' and selected. You may copy it now.' : ' and copied to clipboard')
 	}else{
 		mainMsg.innerHTML = 'Encryption successful. Select and copy.'
 	}
@@ -531,21 +544,21 @@ function decoyEncrypt(length,nonce24,seckey){
 		}
 		var keystr = decoyPwdIn.value,
 			text = encodeURI(decoyText.value.replace(/%20/g, ' '));
-			keystr = replaceByItem(keystr,false);													//if in database, get the real item
-		var keyStripped = striptags(keystr);
+			keystr = replaceByItem(keystr);													//if in database, get the real item
+		var keyStripped = stripTags(keystr);
 
-		if (keyStripped.length == 43 || keyStripped.length == 50){						//the key is a Lock, so do asymmetric encryption
-			if (keyStripped.length == 50) keyStripped = changeBase(keyStripped.toLowerCase(), BASE36, BASE64, true) //ezLok replaced by regular Lock
+		if (keyStripped.length == 43 || keyStripped.length == 50){							//the key is a Lock, so do asymmetric encryption
+			if (keyStripped.length == 50) keyStripped = changeBase(keyStripped.toLowerCase(), base36, base64, true) //ezLok replaced by regular Lock
 			var sharedKey = makeShared(convertPubStr(keyStripped),seckey);
 		}else{
-			var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24));			//symmetric encryption for true shared key
+			var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24));				//symmetric encryption for true shared key
 		}
 
-	} else {																		//no decoy mode, so salt comes from random text and key
+	} else {																					//no decoy mode, so salt comes from random text and key
 		var sharedKey = nacl.randomBytes(32),
 			text = nacl.util.encodeBase64(nacl.randomBytes(44)).replace(/=+$/,'');
 	};
-	while (text.length < length) text = text + ' ';				//add spaces to make the number of characters required
+	while (text.length < length) text = text + ' ';											//add spaces to make the number of characters required
 	text = text.slice(0,length);
 	var cipher = PLencrypt(text,nonce24,sharedKey);
 	decoyPwdIn.value = "";
@@ -560,19 +573,20 @@ function Decrypt_Single(){
 	mainMsg.innerHTML = "";
 	if(lockBox.innerHTML.slice(0,1) == '~') decryptItem();			//if Lock or shared Key is encrypted, decrypt it
 	var name = lockMsg.innerHTML,
-		cipherstr = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,''),
-		lockBoxLines = lockBox.innerText.trim().split('\n'),
+		cipherstr = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,'').replace(/<span(.*?)>/,'').replace(/<\/span>$/,''),		//fixes for Firefox
+		lockBoxLines = lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<div>/g,"<br>").replace(/<\/div>/g,"").split('<br>'),
 		lockBoxItem = lockBoxLines[0];
 	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/<(.*?)>/gi,"");					//remove tags
 	if (cipherstr == ""){
 			mainMsg.innerHTML = 'Nothing to encrypt or decrypt';
 			throw("main box empty");
 	};
-	if(cipherstr.charAt(50).match(/[#$@]/)){										//if it comes from PassLok for Email
+	if(cipherstr.charAt(50).match(/[#$@*:]/)){										//if it comes from PassLok for Email or SeeOnce
 		cipherstr = cipherstr.slice(50);										//remove initial ezLock
+		var isCompressed = true;					//will be used to get the right encoding
 	}
 	
-	if(cipherstr.slice(0,2) == '@@' && lockBox.innerHTML.length > 43){padDecrypt();return}					//special encrypting mode for long keys
+	if(cipherstr.slice(0,2) == '@@' && lockBox.innerHTML.replace(/<br>$/,"").trim().length > 43){padDecrypt();return}		//special encrypting mode for long keys
 
 	//here detect if the message is for multiple recipients, and if so call the appropriate function
 	var cipherArray = cipherstr.split('-');
@@ -584,12 +598,13 @@ function Decrypt_Single(){
 		}
 	}
 
-	var strippedLockBox = striptags(lockBoxItem);								//this holds a Lock or shared Key (or a name leading to it). if there is a video URL, it gets stripped, as well as any non-base64 chars
-	var type = cipherstr.slice(0,1),											//get encryption type. !=anonymous, @=symmetric, #=signed, $=Read-once, *= PFS, ~=Key-encrypted
-		type2 = cipherstr.slice(1,2),											//used by reset messages, should be '*' if reset
+	if(cipherstr.charAt(0) == '@' && cipherstr.length != 160) var isCompressed = true;						//detect URSA message
+
+	var strippedLockBox = stripTags(lockBoxItem);								//this holds a Lock or shared Key (or a name leading to it). if there is a video URL, it gets stripped, as well as any non-base64 chars
+	var type = cipherstr.slice(0,1),											//get encryption type. !=anonymous, @=symmetric, #=signed, $=Read-once, *= PFS, := reset, ~=Key-encrypted
 		cipherstr = cipherstr.replace(/[^a-zA-Z0-9+\/ ]+/g, '');					//remove anything that is not base64
 
-	if(type == '@' || type == '#' || type == '$' || type == '*'){				//only one sender allowed
+	if(type == '@' || type == '#' || type == '$' || type == '*' || type == ':'){				//only one sender allowed
 		if(lockBoxLines.length > 1){
 			if(lockBoxLines[1].slice(0,4) != 'http'){
 				mainMsg.innerHTML = "<span style='color:orange'>Please select a single sender</span>";
@@ -598,7 +613,7 @@ function Decrypt_Single(){
 		}
 	}
 
-	if (type == "~"){																//secret Key encrypted item, such as a complete locDir database
+	if (type == "~"){																//secret Key-encrypted item, such as a complete locDir database
 		if (learnMode.checked){
 			var reply = confirm("The message in the main box was encrypted with your secret Key, and will now be decrypted if your secret Key has been entered. If it is a database it will be placed in the Locks screen so you can merge it into the stored database. If it contains settings, they will replace your current setings, including the email/token.  Cancel if this is not what you want.");
 			if(!reply) throw("secret Key decryption canceled");
@@ -624,36 +639,33 @@ function Decrypt_Single(){
 		if (learnMode.checked){
 			var reply2 = confirm("The message in the main box was encrypted with a shared Key, and will now be decrypted if the same Key is present in the Locks box. The result will replace the encrypted message. Cancel if this is not what you want.");
 			if(!reply2) throw("sym decryption canceled");
-		};
-		
-		if(cipherstr.length == 159){						//real short messages
-			var noncestr = cipherstr.slice(0,12);
-			cipherstr = cipherstr.slice(12);
-		}else{												//invitations
-			var noncestr = cipherstr.slice(0,20);
-			cipherstr = cipherstr.slice(20);				//the '-' character was filtered out earlier
-		}
-		
+		};		
+		var noncestr = cipherstr.slice(0,12),
+			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr));
+			cipherstr = cipherstr.slice(12);		
 		if (lockBoxItem == ''){
 			mainMsg.innerHTML = '<span style="color:orange">Enter shared Key or select the sender</span>';
 			throw("symmetric key empty");
 		}
-		lockBoxItem = replaceByItem(lockBoxItem,false);					//if it's a name in the box, get the real item
-		var	keystr = lockBoxItem,
-			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr));
+		lockBoxItem = replaceByItem(lockBoxItem);						//if it's a name in the box, get the real item
+		var	keystr = lockBoxItem;
 		if(keystr.length == 43){
 			var sharedKey = nacl.util.decodeBase64(keystr)				//sender's Lock, likely from an invitation email
 		}else if(keystr.length == 50){
-			var sharedKey = nacl.util.decodeBase64(changeBase(keystr,BASE36,BASE64))		//sender's ezLok, likely from an invitation email
+			var sharedKey = nacl.util.decodeBase64(changeBase(keystr.toLowerCase().replace(/l/g,'L'),base36,base64))		//sender's ezLok, likely from an invitation email
 		}else{
 			var sharedKey = wiseHash(keystr,noncestr)					//real shared Key
 		}
-		if(keystr.length == 43 || keystr.length == 50){	
+		if(keystr.length == 43 || keystr.length == 50 || isCompressed){	
 			var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'symmetric',true)		
 		}else{
 			var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'symmetric',false)
 		}
-		mainBox.innerHTML = decodeURI(plain).trim();
+		if(isCompressed){
+			mainBox.innerHTML = plain.trim()
+		}else{
+			mainBox.innerHTML = decodeURI(plain).trim()
+		}
 		mainMsg.innerHTML = 'Decryption successful';
 																		//additional text to accompany an invitation
 		if(keystr.length == 43 || keystr.length == 50){
@@ -674,15 +686,19 @@ function Decrypt_Single(){
 		if (locDir[name] == null){
 			name = lockBoxItem;							//try again using the string in the lockBox as name, not stripped
 		}
-		strippedLockBox = replaceByItem(lockBoxItem,false);
-		if (strippedLockBox.length == 50) strippedLockBox = changeBase(strippedLockBox.toLowerCase(), BASE36, BASE64, true) 		//replace ezLok with standard
+		strippedLockBox = replaceByItem(lockBoxItem);
+		if (strippedLockBox.length == 50) strippedLockBox = changeBase(strippedLockBox.toLowerCase(), base36, base64, true) 		//replace ezLok with standard
 		var sharedKey = makeShared(convertPubStr(strippedLockBox),KeyDH),
 			noncestr = cipherstr.slice(0,12),
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr));
 		cipherstr = cipherstr.slice(12);
-		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'signed');
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'signed',isCompressed);
 		if(!plain) failedDecrypt('signed');
-		mainBox.innerHTML = decodeURI(plain).trim();
+		if(isCompressed){
+			mainBox.innerHTML = plain.trim()
+		}else{
+			mainBox.innerHTML = decodeURI(plain).trim()
+		}
 		mainMsg.innerHTML = 'Decryption successful';
 	}
 
@@ -697,13 +713,17 @@ function Decrypt_Single(){
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr)),
 			sharedKey = makeShared(pubdumstr,KeyDH);
 		cipherstr = cipherstr.slice(55);
-		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'anon');
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'anon',isCompressed);
 		if(!plain) failedDecrypt('anon');
-		mainBox.innerHTML = decodeURI(plain).trim();
+		if(isCompressed){
+			mainBox.innerHTML = plain.trim()
+		}else{
+			mainBox.innerHTML = decodeURI(plain).trim()
+		}
 		mainMsg.innerHTML = 'Decryption successful';
 	}
 
-	else if(type == "$"|| type == "*"){			//PFS and Read-once decryption
+	else if(type == "$" || type == "*" || type == ":"){			//Read-once and PFS decryption, may be SeeOnce
 		if (learnMode.checked){
 			var reply2 = confirm("The message in the main box was encrypted in Read-once mode, and will now be decrypted if the sender has been selected. The result will replace the encrypted message. Cancel if this is not what you want.");
 			if(!reply2) throw("Read-once decryption canceled");
@@ -723,15 +743,15 @@ function Decrypt_Single(){
 			throw('sender not in directory')
 		}
 
-		if(type2 == '*'){											//if a reset message, delete ephemeral data first, after recipient agrees
+		if(type == ':'){											//if a reset message, delete ephemeral data first, after recipient agrees
 			var agree = confirm('If you go ahead, the current Read-once conversation with the sender will be reset. This may be OK if this is a new message, but if it is an old one the conversation will go out of sync');
 			if(!agree) throw('reset decrypt canceled');
 			locDir[name][1] = locDir[name][2] = null;
 			var isReset = true;
 		}
 
-		var Lock = replaceByItem(lockBoxItem,false);					//if it's a name in the box, get the real item
-		if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true); 		//replace ezLok with standard
+		var Lock = replaceByItem(lockBoxItem);					//if it's a name in the box, get the real item
+		if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase().replace(/l/g,'L'), base36, base64, true); 		//replace ezLok with standard
 		var	keystr = lockBoxItem,
 			noncestr = cipherstr.slice(0,12),
 			nonce24 = makeNonce24(nacl.util.decodeBase64(noncestr)),
@@ -754,7 +774,7 @@ function Decrypt_Single(){
 			}
 		}
 
-		if(type == '*'){												//PFS mode, also reset
+		if(type == '*' || type == ':'){												//PFS mode, also reset
 			if(lastKeyCipher){
 				if(Lock.length == 43){
 					var newLock = PLdecrypt(newLockCipher,nonce24,makeShared(convertPubStr(Lock),lastKey),'read-once');
@@ -791,9 +811,13 @@ function Decrypt_Single(){
 			}
 			var	sharedKey = makeShared(lastLock,lastKey);
 		}
-		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'read-once');
+		var plain = PLdecrypt(cipherstr,nonce24,sharedKey,'read-once',isCompressed);
 		if(!plain) failedDecrypt('read-once');
-		mainBox.innerHTML = decodeURI(plain).trim();
+		if(isCompressed){
+			mainBox.innerHTML = plain.trim()
+		}else{
+			mainBox.innerHTML = decodeURI(plain).trim()
+		}
 
 		locDir[name][2] = keyEncrypt(newLock);										//store the new dummy Lock
 		locDir[name][3] = 'lock';
@@ -832,11 +856,11 @@ function Decrypt_List(cipherArray){
 	var padding = cipherArray[0].slice(20,120);
 	var cipher = cipherArray[cipherArray.length - 1];
 	if (type == '!') var pubdumstr = cipherArray[0].slice(120,163);
-	var lockBoxItem = lockBox.innerHTML.trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'').split('<br>')[0],
-		Lock = replaceByItem(lockBoxItem,false);			//if it's a name, replace it with the decrypted item, no warning. Locks are stripped of their tags in any case.
+	var lockBoxItem = lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'').split('<br>')[0],
+		Lock = replaceByItem(lockBoxItem);					//if it's a name, replace it with the decrypted item. Locks are stripped of their tags in any case.
 	if(!locDir[name] && locDir[lockBoxItem]) name = lockBoxItem;	//name placed in the box
 
-	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 				//ezLok case
+	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase().replace(/l/g,'L'), base36, base64, true) 				//ezLok case
 	if(locDir['myself'] == null && fullAccess) key2any();									//make this entry if it has been deleted
 
 	if (decoyMode.checked){																			//decoy decryption of the padding
@@ -866,7 +890,7 @@ function Decrypt_List(cipherArray){
 			mainMsg.innerHTML = "<span style='color:orange'>Enter the sender's Lock or shared Key</span>";
 			throw("Lock box empty");
 		}
-		var lockBoxLines = lockBox.innerText.trim().split('\n');
+		var lockBoxLines = lockBox.innerHTML.trim().split('<br>').filter(Boolean);
 		if(lockBoxLines.length > 1){
 			if(lockBoxLines[1].slice(0,4) != 'http'){
 				mainMsg.innerHTML = "<span style='color:orange'>Please select a single sender</span>";
@@ -1034,7 +1058,7 @@ function decoyDecrypt(cipherstr,nonce24,dummylock){
 		throw ("stopped for decoy input")
 	}
 	var keystr = decoyPwdOut.value;
-	keystr = replaceByItem(keystr,false);											//use stored item, if it exists
+	keystr = replaceByItem(keystr);													//use stored item, if it exists
 	decoyPwdOut.value = "";
 
 	var sharedKey = wiseHash(keystr,nacl.util.encodeBase64(nonce24)),				//try symmetric first
@@ -1076,7 +1100,7 @@ function applySignature(){
 	}
 	if(!isMobile){
 		selectMain();
-		mainMsg.innerHTML = 'The text has been sealed with your secret Key and copied to clipboard. It is <span class="blink">NOT LOCKED</span>';
+		mainMsg.innerHTML = 'The text has been sealed with your secret Key' + (isFirefox ? ' and selected. You may copy it now.' : ' and copied to clipboard') + '. It is <span class="blink">NOT LOCKED</span>';
 	}else{
 		mainMsg.innerHTML = 'The text has been sealed with your secret Key. It is <span class="blink">NOT LOCKED</span>';
 	}
@@ -1106,17 +1130,17 @@ function verifySignature(){
 		setTimeout(function(){mainMsg.innerHTML = 'Please select the sealer first, then click <strong>Unseal</strong>';},500);
 		return
 	}
-	var	Lockstripped = striptags(Lock);
+	var	Lockstripped = stripTags(Lock);
 	if (Lockstripped.length != 43 && Lockstripped.length != 50){									//not a Lock, but maybe it's a name
 		if (locDir[Lock]){
 			var name = Lock;
-			Lock = replaceByItem(Lock,false)
+			Lock = replaceByItem(Lock)
 		}
 	}else{
 		var name = lockMsg.innerHTML;
 		Lock = Lockstripped
 	}
-	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase(), BASE36, BASE64, true) 		//ezLok replaced by regular Lock
+	if (Lock.length == 50) Lock = changeBase(Lock.toLowerCase().replace(/l/g,'L'), base36, base64, true) 		//ezLok replaced by regular Lock
 	if (Lock.length != 43){
 		mainMsg.innerHTML = '<span style="color:orange">Enter a valid Lock</span>';
 		throw("invalid public key")
@@ -1137,7 +1161,7 @@ function padEncrypt(){
 	var nonce = nacl.randomBytes(15),
 		noncestr = nacl.util.encodeBase64(nonce).replace(/=+$/,''),
 		text = mainBox.innerHTML.trim(),
-		keyText = lockBox.innerHTML.trim();
+		keyText = lockBox.innerHTML.replace(/<br>$/,"").trim();
 
 	var textBin = LZString.compressToUint8Array(text),
 		keyTextBin = nacl.util.decodeUTF8(keyText),
@@ -1162,7 +1186,7 @@ function padEncrypt(){
 
 	if(!isMobile){
 		selectMain();
-		mainMsg.innerHTML = 'Encryption successful and copied to clipboard. Click <strong>Email</strong> or paste into another app.';
+		mainMsg.innerHTML = 'Encryption successful' + (isFirefox ? ' and selected. You may copy it now.' : ' and copied to clipboard') + '. Click <strong>Email</strong> or paste into another app.';
 	}else{
 		mainMsg.innerHTML = 'Encryption successful. Click <strong>Email</strong> or copy and send.';
 	}
@@ -1254,7 +1278,7 @@ function padMac(textBin, keyTextBin, nonce, startIndex){					//startIndex is the
 //for decrypting with long key
 function padDecrypt(){
 	mainMsg.innerHTML = "";
-	var keyText = lockBox.innerHTML.trim(),
+	var keyText = lockBox.innerHTML.replace(/<br>$/,"").trim(),
 		cipherstr = mainBox.innerHTML.trim().replace(/&[^;]+;/g,'').replace(/\s/g,'');
 	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/<(.*?)>/gi,"");
 	if (cipherstr == ""){

@@ -20,7 +20,7 @@ function secretshare(){
 			throw("insufficient parts")
 		};
 		for (var i=0; i < shares.length; i++) {
-			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(striptags(shares[i])));
+			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(stripTags(shares[i])));
 		};
 		if (learnMode.checked){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");
