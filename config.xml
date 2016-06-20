@@ -4,10 +4,8 @@
         xmlns:gap   = "http://phonegap.com/ns/1.0"
         id          = "com.fruiz500.passlok"
         versionCode = "37"
-        version     = "2.3.5"
-        versionCode = "36"
-        version     = "2.3.4" >
-		
+        version     = "2.3.5">
+
     <name>PassLok</name>
 
     <description>
