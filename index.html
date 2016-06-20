@@ -595,7 +595,7 @@ img.intLink {
       &nbsp; Short&nbsp;&nbsp;
       <input type="radio" name="lenghtModes" id="compatMode" title="encrypted message compatible with SeeOnce and URSA" />
       &nbsp; Compatible    
-      <div id="syncCheck" style="display:none"> <br><br>    
+      <div id="syncCheck" style="display:none"> <br><br>&nbsp;&nbsp;
       <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
       &nbsp;Chrome sync </div><br />     
       <hr>
@@ -1868,7 +1868,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="lockMsg" style="height:25px;">Enter Locks in the lower box. The top box is for Lock names</div>
     <br />
     <br />
-    <input type="text" class="cssbox" id="lockNameBox" onKeyUp="lockNameKeyup(event,'lockNameBox');" style="width:95%;" name="text" placeholder="Enter the name here."/>
+    <input type="text" class="cssbox" id="lockNameBox" style="width:95%;" name="text" placeholder="Enter the name here."/>
   </div>
   <div align="center" id="lockBtnsTop">
     <button class="cssbutton" id="clearLocksBtn" value="Clear" style="" title="clear both boxes">Clear</button><!--
@@ -1895,7 +1895,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <button class="cssbutton" id="newUserBtn" value="new user" style="font-size: 14px; padding: 4px;" title="set up a new user">New User</button>
   <br />
   <br />
-  <input type="password" class="cssbox" autocomplete="off" id="pwd" onKeyUp="pwdKeyup(event);" style="width:95%;" name="text" placeholder="Enter your secret Key here." align="center">
+  <input type="password" class="cssbox" autocomplete="off" id="pwd" style="width:95%;" name="text" placeholder="Enter your secret Key here." align="center">
   <br />
   <br />
   <input type="checkbox" id="showKey" title="reveal box contents">
@@ -2020,7 +2020,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div id="namechangemsg" style="height:30px;">Please enter a new User name for this account</div>
     <br />
     <br />
-    <input type="text" class="cssbox" autocomplete="off" id="userNameBox" onKeyUp="nameKeyup(event);" style="width:95%;" name="name" placeholder="Enter your new User Name here." align="center">
+    <input type="text" class="cssbox" autocomplete="off" id="userNameBox" style="width:95%;" name="name" placeholder="Enter your new User Name here." align="center">
     <br />
     <br />
     <button class="cssbutton" id="cancelNameBtn" value="cancel" style="" title="close name change dialog">Cancel</button>
@@ -2041,7 +2041,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <input type="checkbox" id="showNewKeyCheck" title="reveal new Key">
   Show <br />
   <br />
-  <input type="password" id="newKey2" class="cssbox"  onKeyUp="newKey2up(event);" style="width:95%;" name="newkey2" placeholder="Enter the new Key again."/>
+  <input type="password" id="newKey2" class="cssbox"  style="width:95%;" name="newkey2" placeholder="Enter the new Key again."/>
   <br />
   <br />
   <button class="cssbutton" id="cancelKeyChangeBtn" value="Cancel" title="do not change the Key">Cancel</button>
@@ -2056,7 +2056,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <button class="cssbutton" id="randomEmailBtn" value="random" style="" title="insert random token">Random</button>
     <br />
     <br />
-    <input type="text" class="cssbox" autocomplete="off" id='emailBox' onKeyUp="emailKeyup(event);" style="width:95%;" name='emailBox' placeholder="Enter your email or some other not secret personal info here." align="center">
+    <input type="text" class="cssbox" autocomplete="off" id='emailBox' style="width:95%;" name='emailBox' placeholder="Enter your email or some other not secret personal info here." align="center">
     <br />
     <br />
     <button class="cssbutton" id="cancelEmailBtn" value="cancel" style="" title="close email dialog">Cancel</button>
@@ -2069,11 +2069,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--Decoy In dialog-->
 <div id="decoyIn" class="white_content" align="center"> <br />
-  <p>Enter the Hidden Message</p>
+  <span id="decoyMsg">Enter the Hidden Message</span>
   <br />
   <textarea id="decoyText" class="cssbox" style="width:95%;" name="text" rows="3"></textarea>
-  <p>Enter the Decoy Key/Lock</p>
-  <input type="password" class="cssbox" id="decoyPwdIn" onKeyUp="decoyKeyup(event);" style="width:95%;" name="key"/>
+  <p>Enter the Decoy Key/Lock<p>
+  <input type="password" class="cssbox" id="decoyPwdIn" style="width:95%;" name="key"/>
   <br />
   <input type="checkbox" id="showDecoyInCheck" title="reveal Key">
   &nbsp; Show
@@ -2085,7 +2085,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Decoy Out dialog-->
 <div id="decoyOut" class="white_content" align="center"> <br />
   <p>Enter the Decoy Key</p>
-  <input type="password" class="cssbox" id="decoyPwdOut" onKeyUp="decoyKeyupOut(event);" style="width:95%;" name="key"/>
+  <input type="password" class="cssbox" id="decoyPwdOut" style="width:95%;" name="key"/>
   <br />
   <br />
   <input type="checkbox" id="showDecoyOutCheck" title="reveal Password">
@@ -2100,7 +2100,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Parts for SSSS dialog-->
 <div id="partsIn" class="white_content" align="center"> <br />
   <p>Enter the total number of parts (between 2 and 255)</p>
-  <input type="text" class="cssbox" id="partsNumber" onKeyUp="partsKeyup(event);" style="width: 30%" name="text" rows="1"/>
+  <input type="text" class="cssbox" id="partsNumber" style="width: 30%" name="text" rows="1"/>
   <br />
   <p>And the number of parts needed to retrieve the item</p>
   <input type="text" class="cssbox" id="partsQuorum" style="width: 30%" name="text" rows="1"/>

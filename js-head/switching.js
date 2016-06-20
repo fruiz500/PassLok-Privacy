@@ -108,7 +108,7 @@ function suggestIntro(){
 var friendsLock = '';
 //makes a new user account
 function newUser(){
-	var referrer = decodeURIComponent(window.location.hash.slice(1)).split('&');
+	var referrer = decodeURI(window.location.hash).slice(1).split('&');
 	if (referrer.length > 1){
 		friendsName.value = referrer[0].replace(/_/g,' ');
 		friendsLock = referrer[1];
@@ -328,8 +328,9 @@ function cancelKeyChange(){
 
 //triggered if the user types Enter in the name box of the locks screen
 function lockNameKeyup(evt){
-	evt = evt || window.event												//IE6 compliance
-	if (evt.keyCode == 13) {												//sync from Chrome or decrypt if hit Return
+	evt = evt || window.event;												//IE6 compliance
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13) {												//sync from Chrome or decrypt if hit Return
 		if(lockMsg.innerHTML == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				getChromeLock(lockNameBox.value);
@@ -357,8 +358,9 @@ function pwdKeyup(evt){
 	clearTimeout(keytimer);
 	keytimer = setTimeout(resetKeys, 300000);
 	keytime = new Date().getTime();
-	evt = evt || window.event
-	if (evt.keyCode == 13){acceptKey()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){acceptKey()} else{
 		 return keyStrength(pwd.value,true);
 	}
 }
@@ -370,24 +372,27 @@ function introKeyup(){
 
 //same but for decoy In screen
 function decoyKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitDecoyIn()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitDecoyIn()} else{
 		 return keyStrength(decoyPwdIn.value,true);
 	}
 }
 
 //same for key Change screen
 function newKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){changeKey()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){changeKey()} else{
 		 return keyStrength(newKey.value,true);
 	}
 }
 
 //this one looks at the second box and announces a match
 function newKey2up(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){changeKey()} else {
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){changeKey()} else {
 		var	newkey = newKey.value,
 			newkey2 = newKey2.value,
 			length = newkey.length,
@@ -416,16 +421,18 @@ function submitDecoyIn(){
 
 //Enter has the same effect as clicking OK in decoy and parts box
 function decoyKeyupOut(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitDecoyOut()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitDecoyOut()};
 }
 function submitDecoyOut(){
 	closeBox();
 	lockUnlock()
 }
 function partsKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitParts()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitParts()};
 }
 function submitParts(){
 	if(!isNaN(partsNumber.value)){
@@ -434,12 +441,14 @@ function submitParts(){
 	}
 }
 function emailKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){email2any()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){email2any()};
 }
 function nameKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){name2any()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){name2any()};
 }
 
 //for switching between sets of buttons

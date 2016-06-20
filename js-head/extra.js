@@ -108,7 +108,7 @@ function pasteMain() {
 
 //extracts Lock at the start of an item, from an invitation or PassLok for Email
 function extractLock(string){
-		var CGParts = string.split(/[@#$]/);											//if PassLok for Email item, extract ezLock
+		var CGParts = string.replace(/-/g,'').split(/[!@#$*:]/);											//if PassLok for Email or SeeOnce item, extract ezLock
 		if(CGParts[0].length == 50){
 			var possibleLock = CGParts[0];
 			string = string.slice(50);
@@ -259,14 +259,14 @@ function Chat(){
 		if(!reply) throw("chat invite canceled");
 	};
 
-	if(listArray[0] == '' || (listArray[0] == 'myself' && listArray.length == 1)){
+	if(listArray.length == 0 || (listArray.length == 1 && listArray[0] == 'myself')){
 		mainMsg.innerHTML = 'Please select those invited to chat';
 		throw("nobody invited to chat");
 	}
 	listArray = listArray.concat('myself');								//make sure 'myself' is on the list
 	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates and nulls
 	listArray = listArray.filter(function(n){return n});
-	lockBox.innrText = listArray.join('\n');
+	lockBox.innerText = listArray.join('\n');
 	openClose('shadow');
 	openClose('chatDialog');												//stop to get chat type
 	chatDate.value = mainBox.innerText.trim().slice(0,43);
