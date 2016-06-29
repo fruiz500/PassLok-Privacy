@@ -1,6 +1,7 @@
 ﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
 	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	reduceChromeLag();
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		secretshare();
 	},20);						//end of timeout
@@ -32,12 +33,22 @@ function secretshare(){
 		};
 try{
 		var	sechex = secrets.combine(shares),
-			secret = LZString.decompressFromUint8Array(hex2charArray(sechex));
-		mainBox.innerHTML = secret;
-		mainMsg.innerHTML = 'Join successful';
+			secBin = hex2charArray(sechex);
+		try{
+			var result = nacl.util.encodeUTF8(secBin)
+		}catch(err){
+			var result = ''
+		}
+		if(result.toLowerCase().match('data:')){
+			var secret = result
+		}else{
+			var secret = LZString.decompressFromUint8Array(secBin)
+		}
+		mainBox.innerHTML = safeHTML(secret);									//disable non-whitelisted tags and attributes
+		mainMsg.innerText = 'Join successful';
 }catch(err){
 	//the encodeUTF8 is the likely culprit
-	mainMsg.innerHTML = 'There was an error.';
+	mainMsg.innerText = 'There was an error';
 }
 	} else {																		//parts not detected, split instead
 		if (main == "") {
@@ -67,11 +78,16 @@ try{
 		number = parseInt(number);
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
-		var secret = mainBox.innerHTML.trim(),
-			sechex = charArray2hex(LZString.compressToUint8Array(secret)),
+		var secret = mainBox.innerHTML.trim();
+		if(secret.match('data:')){									//no compression if it includes a file
+			var secBin = nacl.util.decodeUTF8(secret)
+		}else{
+			var secBin = LZString.compressToUint8Array(secret)
+		}
+		var	sechex = charArray2hex(secBin),
 			shares = secrets.share(sechex,number,quorum);
 		displayshare(shares,quorum);
-		mainMsg.innerHTML = number + ' parts made. ' + quorum + ' required to reconstruct';
+		mainMsg.innerText = number + ' parts made. ' + quorum + ' required to reconstruct';
 		partsInBox = true
 	};
 	setTimeout(function(){charsLeft();},20)

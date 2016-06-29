@@ -1,10 +1,9 @@
 ﻿//detect if Lock pasted in Lock box, otherwise clean up
 function pasteLock(){
 	setTimeout(function(){
-	lockMsg.innerHTML = '';
-	var text = lockBox.innerHTML.replace(/<br>/g,'\n').replace(/\<(?!\/?a).*?\>/g,'').trim().replace(/\n/g,'<br>').replace(/&nbsp;/g,' ').replace(/<br>$/,''),	//clean preserving anchors
+	lockMsg.innerText = '';
+	var text = lockBox.innerHTML.replace(/<br>/gi,'\n').replace(/\<(?!\/?a).*?\>/gi,'').trim().replace(/\n/g,'<br>').replace(/&nbsp;/gi,' ').replace(/<br>$/i,''),	//clean preserving anchors
 		strings = text.split('<br>');
-	lockBox.innerHTML = text;
 	var lastline = strings[strings.length-1];
 	if (lastline.slice(0,4) != 'http'){
 		var lock = lastline;
@@ -14,14 +13,14 @@ function pasteLock(){
 	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
 
 	suspendFindLock = true;															//allow writing a name without searching
-	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerHTML = 'Lock detected';
+	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.innerText = 'Lock detected';
 	},0)
 }
 
 //get name and Lock from form and merge them with the locDir object, then store
 function addLock(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Save not available in Guest mode<br>Please restart PassLok';
+		lockMsg.innerText = 'Save not available in Guest mode<br>Please restart PassLok';
 		throw('Lock save canceled')
 	}
 	if (learnMode.checked){
@@ -30,10 +29,10 @@ function addLock(){
 	}
 	callKey = 'addlock';
 	var name = lockNameBox.value.trim(),
-		lock = lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<div>/g,'<br>').replace(/<\/div>/g,'');
-	if (XSSfilter(name)!=name){
-		lockMsg.innerHTML = 'This is not a valid name';
-		throw('name contained XSS-illegal characters')
+		lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
+	if (removeHTMLtags(name)!=name){
+		lockMsg.innerText = 'This is not a valid name';
+		throw('name contained illegal characters')
 	}
 	var lockarray = lock.split('<br>');
 	var isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
@@ -41,7 +40,7 @@ function addLock(){
 		if(!locDir['myself'] || BasicButtons) return;									//don't do it in Basic mode
 		var ran = true;
 		lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct
-		lockBox.innerHTML = lock;
+		lockBox.innerText = lock;
 	}
 	if (name !=''){
 		var locklength = stripTags(lockarray[0]).length;
@@ -83,7 +82,7 @@ function addLock(){
 //delete a particular key in Object locDir, then store
 function removeLock(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Delete not available in Guest mode<br>Please restart PassLok';
+		lockMsg.innerText = 'Delete not available in Guest mode\nPlease restart PassLok';
 		throw('Lock removal canceled')
 	}
 	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
@@ -94,14 +93,14 @@ function removeLock(){
 		throw('bad name')
 	}
 	if (name == 'myself'){
-		lockMsg.innerHTML = 'There is a button to reset your options in the Options tab';
+		lockMsg.innerText = 'There is a button to reset your options in the Options tab';
 		throw('no delete for myself')
 	}
 	delete locDir[name];
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);
 	window.setTimeout(function(){										//this needs to be on a timer for iOS
-		lockMsg.innerHTML = XSSfilter(name) + ' deleted';
+		lockMsg.innerText = name + ' deleted';
 	}, 100);
 	fillList();
 
@@ -115,7 +114,7 @@ function removeLock(){
 //this is to just delete the Read-once data for a particular key (or reset the current list)
 function resetPFS(){
 	if(!fullAccess){
-		lockMsg.innerHTML = 'Reset not available in Guest mode<br>Please restart PassLok';
+		lockMsg.innerText = 'Reset not available in Guest mode\nPlease restart PassLok';
 		throw('Lock reset canceled')
 	}
 	if (lockBox.innerHTML.trim().split('<br>').filter(Boolean).length > 1){ //use button to reset current List if a List is displayed, nothing to do with normal use
@@ -124,7 +123,7 @@ function resetPFS(){
 			if(!reply) throw("List reset canceled");
 		}
 		currentList = '';
-		lockMsg.innerHTML = 'Current list reset';
+		lockMsg.innerText = 'Current list reset';
 		return
 	}
 
@@ -134,15 +133,15 @@ function resetPFS(){
 
 	var name = lockMsg.innerHTML;
 	if (locDir[name] == null){
-		lockMsg.innerHTML = 'The item to be reset must be displayed first';
+		lockMsg.innerText = 'The item to be reset must be displayed first';
 		throw('bad name')
 	}
 	if (name == 'myself'){
-		lockMsg.innerHTML = 'There is a button to reset your options in the Options tab';
+		lockMsg.innerText = 'There is a button to reset your options in the Options tab';
 		throw('no reset for myself')
 	}
 	if ((locDir[name][1] == null) && (locDir[name][2] == null)){
-		lockMsg.innerHTML = 'Nothing to reset';
+		lockMsg.innerText = 'Nothing to reset';
 		throw('no Read-once data')
 	}
 	locDir[name][1] = locDir[name][2] = null;
@@ -153,7 +152,7 @@ function resetPFS(){
 			syncChromeLock(name,JSON.stringify(locDir[name]))
 		}
 
-	lockMsg.innerHTML = 'Read-once data for ' + XSSfilter(name) + " deleted. The next message to this user won't have forward secrecy.";
+	lockMsg.innerText = 'Read-once data for ' + name + " deleted. The next message to this user won't have forward secrecy.";
 	suspendFindLock = false
 }
 
@@ -161,24 +160,24 @@ var suspendFindLock = false							//when true, user can input a name without del
 
 //searches for name in Locks database and returns the Lock, displays full name as well. Invoked as the user types
 function findLock(){
-	lockMsg.innerHTML = '';
-	var string = lockNameBox.value;
+	lockMsg.innerText = '';
+	var string = removeHTMLtags(lockNameBox.value.trim());
 	var stringstrip = stripTags(string);
 	if(stringstrip.length == 43 || stringstrip.length == 50){									//it's a Lock in the wrong box. Move it
-		lockBox.innerHTML = string;
+		lockBox.innerText = string;
 		lockNameBox.value = '';
-		lockMsg.innerHTML = 'Locks and shared Keys go in the lower box<br>You can write a name on the top box in order to save it';
+		lockMsg.innerText = 'Locks and shared Keys go in the lower box<br>You can write a name on the top box in order to save it';
 		suspendFindLock = true;
 		return
 	}
 	var index = searchStringInArrayDB(string,lockNames);
 	if (index >= 0){
 		var name = lockNames[index];
-		lockMsg.innerHTML = XSSfilter(name);
-		lockBox.innerHTML = locDir[name][0]
+		lockMsg.innerText = name;
+		lockBox.innerText = locDir[name][0]
 	}else{
-		lockMsg.innerHTML = '';
-		lockBox.innerHTML = ''
+		lockMsg.innerText = '';
+		lockBox.innerText = ''
 	}
 }
 
@@ -194,19 +193,19 @@ function decryptLock(){
 	if(lockBox.innerHTML != ''){
 		var listArray = lockBox.innerHTML.split('<br>').filter(Boolean);
 		if(lockBox.innerHTML.length > 500){
-			lockBox.innerHTML = LZString.decompressFromBase64(lockBox.innerHTML);
+			lockBox.innerHTML = safeHTML(LZString.decompressFromBase64(lockBox.innerHTML).trim());
 			newcover(lockBox.innerHTML);							//this for loading cover text from Lock screen
-			lockMsg.innerHTML = 'New Cover text extracted and ready to use'
+			lockMsg.innerText = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
-			lockMsg.innerHTML = 'List extracted'
+			lockMsg.innerText = 'List extracted'
 		} else if(stripTags(lockBox.innerHTML).length == 43 || stripTags(lockBox.innerHTML).length == 50){
-			lockMsg.innerHTML = 'Lock extracted'
-		} else if(lockBox.innerHTML.length == 42){
-			lockMsg.innerHTML = 'Random Key extracted'
-		} else if(lockMsg.innerHTML == 'myself'){
-			lockMsg.innerHTML = 'Email/token extracted'
+			lockMsg.innerText = 'Lock extracted'
+		} else if(lockBox.innerText.length == 42){
+			lockMsg.innerText = 'Random Key extracted'
+		} else if(lockMsg.innerText == 'myself'){
+			lockMsg.innerText = 'Email/token extracted'
 		} else {
-			lockMsg.innerHTML = 'Shared Key extracted'
+			lockMsg.innerText = 'Shared Key extracted'
 		}
 	}
 	if(lockScr.style.display == 'none') main2lock();
@@ -231,20 +230,20 @@ function addToList(){
 			}else{
 				currentList += '<br>' + currentItem
 			}
-			lockMsg.innerHTML = namenumber + ' items added to the current list'
+			lockMsg.innerText = namenumber + ' items added to the current list'
 		} else {
 			if(currentList == ''){
 				currentList = lockMsg.innerHTML
 			}else{
 				currentList += '<br>' + lockMsg.innerHTML
 			}
-			lockMsg.innerHTML = XSSfilter(lockMsg.innerHTML) + ' added to the current list'
+			lockMsg.innerText = lockMsg.innerHTML + ' added to the current list'
 		}
 	} else {
 		if (currentList !=''){
-			lockMsg.innerHTML = 'This is the (temporary) current list'
+			lockMsg.innerText = 'This is the (temporary) current list'
 		} else {
-			lockMsg.innerHTML = 'No items on the current list'
+			lockMsg.innerText = 'No items on the current list'
 		}
 	}
 	var listArray = currentList.replace(/<br>+/g,'<br>').split('<br>');
@@ -261,7 +260,7 @@ function decryptItem(){
 	refreshKey();
 	var	string = lockBox.innerHTML.replace(/<br>$/,"").trim();
 	if(string == "") throw('nothing to decrypt');
-	lockBox.innerHTML = keyDecrypt(string);
+	lockBox.innerHTML = safeHTML(keyDecrypt(string));
 	if(callKey != 'decryptlock') callKey = '';
 }
 
@@ -272,8 +271,8 @@ function showLockDB(){
 		if(!reply) throw("locDir show canceled");
 	}
 	if(localStorage[userName] != "{}"){
-		lockBox.innerHTML = JSON.stringify(locDir,null,4).replace(/\],/g,'<br><br>').replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/: /g,':<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
-		lockMsg.innerHTML = 'These are the items stored under the current user name';
+		lockBox.innerText = JSON.stringify(locDir,null,4).replace(/\],/g,'<br><br>').replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/: /g,':<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
+		lockMsg.innerText = 'These are the items stored under the current user name';
 	}else{
 		lockMsg.innerHTML = '<span style="color:orange">There are no stored items</span>';
 	}
@@ -285,7 +284,7 @@ function showMyself(){
 	if(locDir['myself']){
 		var alphalocDir = locDir['myself'];
 		mainBox.innerHTML = 'myself:<br>' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
-		mainMsg.innerHTML = 'These are your stored settings';
+		mainMsg.innerText = 'These are your stored settings';
 	}else{
 		mainMsg.innerHTML = '<span style="color:orange">No settings to store</span>';
 	}
@@ -296,9 +295,9 @@ function showMyself(){
 function mergeLockDB(){
 	callKey = 'mergedb';
 	var	lockstr = lockBox.innerHTML.replace(/<br>$/,"").trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
-		mainstr = XSSfilter(mainBox.innerHTML.trim().replace(/\&nbsp;/g,''));
+		mainstr = mainBox.innerHTML.trim().replace(/\&nbsp;/g,'');
 	if (lockstr == ''){
-		lockMsg.innerHTML = 'Nothing to merge';
+		lockMsg.innerText = 'Nothing to merge';
 		throw('invalid merge')
 	}
 	if (lockstr.slice(0,1) == '~') {
@@ -317,9 +316,9 @@ function mergeLockDB(){
 		}
 		if(!fullAccess){
 			if(lockScr.style.display == 'block'){
-				lockMsg.innerHTML = 'Merge not available in Guest mode<br>Please restart PassLok';
+				lockMsg.innerText = 'Merge not available in Guest mode<br>Please restart PassLok';
 			}else{
-				mainMsg.innerHTML = 'Settings update not available in Guest mode<br>Please restart PassLok';
+				mainMsg.innerText = 'Settings update not available in Guest mode\nPlease restart PassLok';
 			}
 			throw('DB merge canceled')
 		}
@@ -361,9 +360,9 @@ function mergeLockDB(){
 		};
 		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
 		var merged = nacl.util.encodeBase64(makeShared(mainstr2,nacl.util.decodeBase64(lockstr2))).replace(/=+$/,'');
-		mainBox.innerHTML = merged;
-		lockBox.innerHTML = merged;
-		lockMsg.innerHTML = 'Key merged with Lock in main box';
+		mainBox.innerText = merged;
+		lockBox.innerText = merged;
+		lockMsg.innerText = 'Key merged with Lock in main box';
 		return
 	}
 	suspendFindLock = false;
@@ -383,7 +382,7 @@ function realNulls(object){
 //makes encrypted backup of the whole DB, then if allowed clears locDir object, then stores
 function moveLockDB(){
 	if(!fullAccess){
-		optionMsg.innerHTML = 'Move not allowed in Guest mode<br>Please restart PassLok';
+		optionMsg.innerText = 'Move not allowed in Guest mode\nPlease restart PassLok';
 		throw('DB move canceled')
 	}
 	callKey = 'movedb';
@@ -392,9 +391,9 @@ function moveLockDB(){
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
 	var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/<br>$/,"").trim());
-	mainBox.innerHTML = 'PL23dir==' + datacrypt + '==PL23dir';
+	mainBox.innerText = 'PL23dir==' + datacrypt + '==PL23dir';
 	optionMsg.innerHTML = '<span style="color:cyan">Database in Main tab</span>';
-	mainMsg.innerHTML = 'The item in the box contains your directory<br>To restore it, click Decrypt';
+	mainMsg.innerText = 'The item in the box contains your directory<br>To restore it, click Decrypt';
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
@@ -424,13 +423,13 @@ function moveMyself(){
 	showMyself();
 	if(fullAccess){
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());
-		mainBox.innerHTML = 'PL23bak==' + datacrypt+ '==PL23bak';
-		var msg = 'The item in the box contains your settings<br>To restore them, click Decrypt';
+		mainBox.innerText = 'PL23bak==' + datacrypt+ '==PL23bak';
+		var msg = 'The item in the box contains your settings\nTo restore them, click Decrypt';
 	}else{
 		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
 	}
 	optionMsg.innerHTML = '<span style="color:cyan">Backed-up settings on Main tab</span>';
-	mainMsg.innerHTML = msg;
+	mainMsg.innerText = msg;
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your settings, including the email/token, have been backed up. If you click OK, they will now be erased from this device. This cannot be undone.");
@@ -439,8 +438,8 @@ function moveMyself(){
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);
 	fillList();
-	mainMsg.innerHTML = 'Your settings, including the email/token, have been erased<br>' + msg;
-	optionMsg.innerHTML = 'Settings erased';
+	mainMsg.innerText = 'Your settings, including the email/token, have been erased\n' + msg;
+	optionMsg.innerText = 'Settings erased';
 
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to remove your settings also from Chrome sync?')) remChromeLock('myself')
@@ -538,7 +537,7 @@ function recryptDB(newKey,newUserName){
 //reads old and new Key from boxes and calls recryptDB so locDir is re-encrypted with the new Key
 function changeKey(){
 	if(!fullAccess){
-		optionMsg.innerHTML = 'Key change not allowed in Guest mode<br>Please restart PassLok';
+		optionMsg.innerText = 'Key change not allowed in Guest mode\nPlease restart PassLok';
 		throw('key change canceled')
 	}
 	callKey = 'changekey';
@@ -551,7 +550,7 @@ function changeKey(){
 	if (newkey.trim() == "" || newkey2.trim() == ""){								//stop to display the entry form if new Key is empty
 		keyChange.style.display = "block";
 		shadow.style.display = "block";
-		keyChangeMsg.innerHTML = 'Enter the new Key in both boxes';
+		keyChangeMsg.innerText = 'Enter the new Key in both boxes';
 		if(!isMobile){
 			if(newkey.trim() == ""){
 				newKey.focus()
@@ -568,7 +567,7 @@ function changeKey(){
 
 //everything OK, so do it!
 	if(!fullAccess){
-		keyChangeMsg.innerHTML = 'Key change not allowed in Guest mode';
+		keyChangeMsg.innerText = 'Key change not allowed in Guest mode';
 		throw('Key change canceled')
 	}
 	recryptDB(newkey,userName);
@@ -609,7 +608,7 @@ function fillList(){
 		}
 	}else{																			//normal behavior
 		if(isiPhone){
-			lockList.innerHTML = ''
+			lockList.innerText = ''
 		}else if(isMobile){
 			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients:</option>'			
 		}else{
@@ -628,8 +627,8 @@ function fillList(){
 var isList = false;												//so a decryption failure knows how to end
 function fillBox(){
 	callKey = 'fillbox';
-	lockBox.innerHTML = '';
-	lockMsg.innerHTML = '';
+	lockBox.innerText = '';
+	lockMsg.innerText = '';
 	var list = '';
 	for (var i = 0; i < lockList.options.length; i++) {
     	if(lockList.options[i].selected){
@@ -650,7 +649,7 @@ function fillBox(){
 			}
     	}
   	}
-	list = list.replace(/<br>/,'');										//remove the first linefeed
+	list = list.replace(/<br>/i,'');										//remove the first linefeed
 	var array = list.split('<br>');
 	if (array[0] != ''){
 		array = array.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates
@@ -662,14 +661,14 @@ function fillBox(){
 			list += '<br>' + array[index];
 			msg += array[index] + ', '
 		}
-		lockBox.innerHTML = list.replace(/<br>/,'').trim();				//remove first linefeed
+		lockBox.innerHTML = list.replace(/<br>/i,'').trim();				//remove first linefeed
 	} else if(covername){
 		var msg = covername + ' Cover text loaded';
 	} else {
 		var msg = '';
 	}
-	mainMsg.innerHTML = XSSfilter(msg).trim().replace(/,$/,'');
-	lockMsg.innerHTML = '';
+	mainMsg.innerText = msg.trim().replace(/,$/,'');
+	lockMsg.innerText = '';
 	lockNameBox.value = '';
 	isList = false;
 	callKey = '';
@@ -678,13 +677,13 @@ function fillBox(){
 //empty the selection box on Main tab
 function resetList(){
 	for (var i = 0; i < lockList.options.length; i++) {
-		if(lockList.options[i].selected) {lockBox.innerHTML = '';lockMsg.innerHTML = ''}
+		if(lockList.options[i].selected) {lockBox.innerText = '';lockMsg.innerText = ''}
     	lockList.options[i].selected = false
   	}
 	setTimeout(function(){
 		var l = lockBox.innerHTML.length;
 		if(l == 0){
-			mainMsg.innerHTML = 'Nobody selected'
+			mainMsg.innerText = 'Nobody selected'
 		}else if(l > 500){
 			mainMsg.innerHTML = 'Click <strong>Edit</strong> to see the Cover text'
 		}else{
@@ -702,7 +701,7 @@ function fillNameList(){
 		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem'){
 			//and this, because of a bug in Safari
 			if(!name.match('com.apple.WebInspector') && name != 'locDir'){
-				list = list.concat(name)
+				list = list.concat(removeHTMLtags(name))
 			}
 		}
 	}

@@ -2,9 +2,9 @@
 function charsLeft(){
 	if(decoyIn.style.display == 'block'){					//for decoy message box
 		var chars = encodeURI(document.getElementById('decoyText').value).replace(/%20/g, ' ').length;
-		var limit = 59																//encrypted message, 59 chars
+		var limit = 59;															//encrypted message, 59 chars
 		if (chars <= limit){
-			decoyMsg.innerHTML = chars + " characters out of " + limit + " used"
+			decoyMsg.innerText = chars + " characters out of " + limit + " used"
 		} else {
 			decoyMsg.innerHTML = '<span style="color:orange">Maximum length exceeded. The message will be truncated</span>'
 		}
@@ -16,7 +16,7 @@ function charsLeft(){
 		var chars = chatDate.value.length;
 		var limit = 43;
 		if (chars <= limit){
-			chatmsg.innerHTML = chars + " characters out of " + limit + " used"
+			chatmsg.innerText = chars + " characters out of " + limit + " used"
 		} else {
 			chatmsg.innerHTML = '<span style="color:orange">Maximum length exceeded. The message will be truncated</span>'
 		}
@@ -39,11 +39,10 @@ function charsLeft(){
 			var limit = 35
 		}
 		if (chars <= limit){
-			mainMsg.innerHTML = chars + " characters out of " + limit + " used"
+			mainMsg.innerText = chars + " characters out of " + limit + " used"
 		} else {
 			mainMsg.innerHTML = '<span style="color:orange">Maximum length exceeded. The message will be truncated</span>'
 		}
-		
 	}else{updateButtons()}								//display button labels according to item nature
 }
 
@@ -54,32 +53,32 @@ function updateButtons(){
 	var	type = string.charAt(0),
 		typeGC = string.charAt(50);													//PassLok for Email compatible
 	if(type.match(/[~!@#$*]/) || typeGC.match(/[~!@#$*]/) || (string.length == 160 && !string.match(' '))){		//encrypted item
-		decryptBtn.innerHTML = 'Decrypt';
-		decryptBtnBasic.innerHTML = 'Decrypt';
+		decryptBtn.innerText = 'Decrypt';
+		decryptBtnBasic.innerText = 'Decrypt';
 	}else{
-		decryptBtn.innerHTML = 'Encrypt';
-		decryptBtnBasic.innerHTML = 'Encrypt';
+		decryptBtn.innerText = 'Encrypt';
+		decryptBtnBasic.innerText = 'Encrypt';
 	}
 	if(type == '-'){										//sealed item
-		verifyBtn.innerHTML = 'Unseal';
+		verifyBtn.innerText = 'Unseal';
 	}else{
-		verifyBtn.innerHTML = '&nbsp;Seal&nbsp;';
+		verifyBtn.innerText = ' Seal ';
 	}
 	if(type.match(/[~!@#$*-]/) || typeGC.match(/[~!@#$*]/) || ((string.length == 160 || string.length == 43 || string.length == 50) && !string.match(' '))){	//Lock
-		showLockBtn.innerHTML = 'Email';
-		showLockBtnBasic.innerHTML = 'Email';
+		showLockBtn.innerText = 'Email';
+		showLockBtnBasic.innerText = 'Email';
 	}else if(string == ''){
-		showLockBtn.innerHTML = 'myLock';
-		showLockBtnBasic.innerHTML = 'myLock';
+		showLockBtn.innerText = 'myLock';
+		showLockBtnBasic.innerText = 'myLock';
 	}else{
-		showLockBtn.innerHTML = 'Invite';
-		showLockBtnBasic.innerHTML = 'Invite';
+		showLockBtn.innerText = 'Invite';
+		showLockBtnBasic.innerText = 'Invite';
 	}
 	var	main = mainBox.innerHTML.trim();
 	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/PL\d{2}p\d{3}/) && main.match('.txt'))){			//box contains parts
-		secretShareBtn.innerHTML = 'Join';
+		secretShareBtn.innerText = 'Join';
 	}else{
-		secretShareBtn.innerHTML = '&nbsp;Split&nbsp;';
+		secretShareBtn.innerText = ' Split ';
 	}
 }
 
@@ -108,7 +107,7 @@ function pasteMain() {
 
 //extracts Lock at the start of an item, from an invitation or PassLok for Email
 function extractLock(string){
-		var CGParts = string.replace(/-/g,'').split(/[!@#$*:]/);											//if PassLok for Email or SeeOnce item, extract ezLock
+		var CGParts = removeHTMLtags(string).replace(/-/g,'').split(/[!@#$*:]/);				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
 		if(CGParts[0].length == 50){
 			var possibleLock = CGParts[0];
 			string = string.slice(50);
@@ -116,7 +115,7 @@ function extractLock(string){
 			var possibleLock = CGParts[0];
 			string = string.slice(43);
 		}else{
-			var possibleLock = string;
+			var possibleLock = removeHTMLtags(string);
 		}
 		if(possibleLock.length == 43 || possibleLock.length == 50){
 			var index = 0, foundIndex;
@@ -133,7 +132,7 @@ function extractLock(string){
 			}else{
 				name = prompt("Looks like you just entered someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.");
 				if (!name) return;
-				lockBox.innerHTML = possibleLock;
+				lockBox.innerText = possibleLock;
 				lockNameBox.value = name;
 				addLock();
 			}
@@ -144,12 +143,12 @@ function extractLock(string){
 //formats results depending on tags present and sends to default email
 function sendMail() {
 	if(isiOS && isFile){
-		mainMsg.innerHTML = 'Email function not available on iOS native app';
+		mainMsg.innerText = 'Email function not available on iOS native app';
 		return
 	}
 	var cipherstr = mainBox.innerHTML.trim();
 	if(cipherstr.match('==')) cipherstr = cipherstr.split('==')[1].replace(/-/g,'');				//remove tags and dashes
-	cipherstr = XSSfilter(cipherstr);																//remove formatting
+	cipherstr = removeHTMLtags(cipherstr);															//remove formatting
 	var type = cipherstr.charAt(0),
 		type2 = cipherstr.charAt(50);																	//for email mode
 	if (learnMode.checked){
@@ -177,13 +176,13 @@ function sendMail() {
 		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText;
 	} else if (type=="#" || type2=="#"){
 		if(emailMode.checked){
-			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%0A/g,'%0D%0A');
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(removeHTMLtags(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%0A/g,'%0D%0A');
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key and my Lock.%0D%0A%0D%0A" + linkText;
 		}
 	} else if (type=="$" || type=="*" || type2=="$"){
 		if(emailMode.checked){
-			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(XSSfilter(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%0A/g,'%0D%0A');
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(removeHTMLtags(mainBox.innerHTML.trim().replace(/<br>/g,'\n'))).replace(/%0A/g,'%0D%0A');
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.3 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText;
 		}
@@ -235,7 +234,7 @@ function sendSMS(){
     	}
 		window.open("SMS:","_parent")							//open SMS on mobile
 	} else {
-		mainMsg.innerHTML = 'SMS function is only available on mobile devices'
+		mainMsg.innerText = 'SMS function is only available on mobile devices'
 	}
 };
 
@@ -260,7 +259,7 @@ function Chat(){
 	};
 
 	if(listArray.length == 0 || (listArray.length == 1 && listArray[0] == 'myself')){
-		mainMsg.innerHTML = 'Please select those invited to chat';
+		mainMsg.innerText = 'Please select those invited to chat';
 		throw("nobody invited to chat");
 	}
 	listArray = listArray.concat('myself');								//make sure 'myself' is on the list
@@ -287,7 +286,7 @@ function makeChat(){
 	while(date.length < 43) date += ' ';
 	var password = nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,'');
 	var chatRoom = makeChatRoom();
-	mainBox.innerHTML = date + type + chatRoom + password;
+	mainBox.innerText = date + type + chatRoom + password;
 	lockUnlock();
 }
 
@@ -319,7 +318,7 @@ function randomBlackIndex(){
 function openChat(){
 	var typetoken = mainBox.innerHTML.trim();
 	if (typetoken.length == 107 && !typetoken.slice(-43).match(' ')){			//chat invite detected, so open chat
-		mainBox.innerHTML = '';
+		mainBox.innerText = '';
 		var date = typetoken.slice(0,43).trim();									//the first 43 characters are for the date and time etc.
 		if(date != 'noDate'){
 			var msgStart = "This chat invitation says:\n\n" + date + "\n\n"
@@ -328,11 +327,11 @@ function openChat(){
 		}
 		var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might give away your location.");
 		if(!reply){
-			mainBox.innerHTML = '';
+			mainBox.innerText = '';
 			throw("chat start canceled");
 		}
 		if(isSafari || isIE || isiOS){
-			mainMsg.innerHTML = 'Sorry, but chat is not yet supported by your browser or OS';
+			mainMsg.innerText = 'Sorry, but chat is not yet supported by your browser or OS';
 			throw('browser does not support webRTC')
 		}
 		main2chat(typetoken.slice(43));

@@ -21,13 +21,13 @@ window.onload = function() {
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
-		anonLabel.innerHTML = '&nbsp;Anon.&nbsp;&nbsp;';
+		anonLabel.innerText = ' Anon.  ';
 		modeLabel.style.display = 'none';
 		otherLabel.style.display = 'none';
-		greenLabel.innerHTML = 'Grn';
-		customLabel.innerHTML = 'Cust';
-		backgroundLabel.innerHTML = 'Bg.';
-		sentencesLabel.innerHTML = 'Sent.';
+		greenLabel.innerText = 'Grn';
+		customLabel.innerText = 'Cust';
+		backgroundLabel.innerText = 'Bg.';
+		sentencesLabel.innerText = 'Sent.';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
@@ -41,11 +41,17 @@ window.onload = function() {
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
 
-    mainFile.addEventListener('change', loadFileAsURL);
+	mainFile.addEventListener('change', loadFileAsURL);
+	mainFile.addEventListener('click', function(){this.value = '';});
+	
+	imgFile.addEventListener('change', loadImage);
+	imgFile.addEventListener('click', function(){this.value = '';});
 
-    imageFile.addEventListener('change', importImage);
+	imageFile.addEventListener('change', importImage);
+	imageFile.addEventListener('click', function(){this.value = '';});
 
 	lockFile.addEventListener('change', loadLockFile);
+	lockFile.addEventListener('click', function(){this.value = '';});
 
     encodePNGBtn.addEventListener('click', encodePNG);
 
@@ -68,7 +74,7 @@ window.onload = function() {
    	main2extraBtn.addEventListener('click', main2extra);
 
    	decryptBtnBasic.addEventListener('click', lockUnlock);
-	
+
 	hideBtnBasic.addEventListener('click', textStego);
 
    	extra2mainBtn.addEventListener('click', main2extra);
