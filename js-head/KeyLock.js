@@ -312,7 +312,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		checkKey(key);
 		getSettings();
 
-		var hash = window.location.hash.slice(1),								//check for data in the URL
+		var hash = decodeURI(window.location.hash).slice(1),								//check for data in the URL
 			hashStripped = hash.match('==(.*)==') || [' ',' '];
 		hashStripped = hashStripped[1];
 		
@@ -578,14 +578,18 @@ function convertPubStr(Lock){
 //stretches nonce to 24 bytes
 function makeNonce24(nonce){
 	var	result = new Uint8Array(24);
-	for(i=0;i<nonce.length;i++){result[i] = nonce[i]};
+	for(i=0;i<nonce.length;i++){result[i] = nonce[i]}
 	return result
 }
 
 //encrypt string with a shared Key
 function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
 	if(isCompressed){
-		var plain = LZString.compressToUint8Array(plainstr)
+		if(plainstr.match('data:')){									//no compression if it includes a file
+			var plain = nacl.util.decodeUTF8(plainstr)
+		}else{
+			var plain = LZString.compressToUint8Array(plainstr)
+		}
 	}else{
 		var plain = nacl.util.decodeUTF8(plainstr)
 	}
@@ -598,10 +602,19 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label,isCompressed){
 	var cipher = nacl.util.decodeBase64(cipherstr),
 		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
 	if(!plain) failedDecrypt(label);
-	if(isCompressed){
-		return LZString.decompressFromUint8Array(plain)
+	try{
+		var result = nacl.util.encodeUTF8(plain)
+	}catch(err){
+		var result = ''
+	}
+	if(isCompressed){		
+		if(result.toLowerCase().match('data:')){
+			return result
+		}else{
+			return LZString.decompressFromUint8Array(plain)
+		}
 	}else{
-		return nacl.util.encodeUTF8(plain)
+		return result
 	}
 }
 
@@ -610,6 +623,47 @@ function stripTags(string){
 	string = string.replace(/\s/g,'').replace(/==+/,'==');										//remove spaces, reduce multiple = to double
 	if(string.match('==')) string = string.split('==')[1].replace(/<(.*?)>/gi,"");
 	string = string.replace(/[^a-zA-Z0-9+\/]+/g,''); 											//takes out anything that is not base64
+	return string
+}
+
+//removes stuff between angle brackets
+function removeHTMLtags(string){
+	return string.replace(/<(.*?)>/gi, "")
+}
+
+//this one escapes dangerous characters, preserving non-breaking spaces
+function escapeHTML(str){
+	escapeHTML.replacements = { "&": "&amp;", '"': "&quot;", "'": "&#039;", "<": "&lt;", ">": "&gt;" };
+	str = str.replace(/&nbsp;/gi,'non-breaking-space')
+	str = str.replace(/[&"'<>]/g, function (m){
+		return escapeHTML.replacements[m];
+	});
+	return str.replace(/non-breaking-space/g,'&nbsp;')
+}
+
+//mess up all tags except those whitelisted: formatting, images, and links containing a web reference or a file
+function safeHTML(string){
+	//first mess up attributes with values not properly enclosed within quotes, because Chrome likes to complete those; extra replaces needed to preserve encrypted material
+	string = string.replace(/==/g,'double-equal').replace(/<(.*?)=[^"'](.*?)>/g,'').replace(/double-equal/g,'==');
+	//now escape every dangerous character; we'll recover tags and attributes on the whitelist later on
+	string = escapeHTML(string);
+	//make regular expressions containing whitelisted tags, attributes, and origins; sometimes two versions to account for single quotes
+	var allowedTags = '(b|i|strong|em|u|strike|sub|sup|blockquote|ul|ol|li|pre|div|span|a|h1|h2|h3|h4|h5|h6|p|pre|table|tbody|tr|td|img|br|hr|font)',
+		tagReg = new RegExp('&lt;(\/?)' + allowedTags + '(.*?)&gt;','gi'),
+		allowedAttribs = '(download|style|src|target|name|id|class|color|size|cellpadding|tabindex|type|start|align)',
+		attribReg1 = new RegExp(allowedAttribs + '=\&quot;(.*?)\&quot;','gi'),
+		attribReg2 = new RegExp(allowedAttribs + '=\&#039;(.*?)\&#039;','gi'),
+		allowedOrigins = '(http:\/\/|https:\/\/|mailto:\/\/|#)',
+		origReg1 = new RegExp('href=\&quot;' + allowedOrigins + '(.*?)\&quot;','gi'),
+		origReg2 = new RegExp('href=\&#039;' + allowedOrigins + '(.*?)\&#039;','gi');
+	//recover allowed tags
+	string = string.replace(tagReg,'<$1$2$3>');
+	//recover allowed attributes
+	string = string.replace(attribReg1,'$1="$2"').replace(attribReg2,"$1='$2'");
+	//recover file-containing links
+	string = string.replace(/href=\&quot;data:(.*?),(.*?)\&quot;/gi,'href="data:$1,$2"').replace(/href=\&#039;data:(.*?),(.*?)\&#039;/gi,"href='data:$1,$2'");
+	//recover web links and local anchors
+	string = string.replace(origReg1,'href="$1$2"').replace(origReg2,"href='$1$2'");
 	return string
 }
 
@@ -627,7 +681,7 @@ function replaceByItem(name){
 		var whole = keyDecrypt(string);
 		nameBeingUnlocked = '';
 		var	stripped = stripTags(whole);
-		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole};		//if it's a Lock, strip tags
+		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole}		//if it's a Lock, strip tags
 	}
 	return name
 }
@@ -661,9 +715,9 @@ function changeBase(number, inAlpha, outAlpha, isLock) {
 	//add leading zeroes in Locks
 	if(isLock){
 		if(targetBase == 64){
-			while(result.length < 43) result = 'A'+ result;
+			while(result.length < 43) result = 'A'+ result
 		} else if (targetBase == 36){
-			while(result.length < 50) result = '0'+ result;
+			while(result.length < 50) result = '0'+ result
 		}
 	}
     return result;

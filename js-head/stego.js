@@ -38,17 +38,13 @@ function textStego(){
 setTimeout(function(){																			//the rest after a 20 ms delay
 	if(legalItem(text)){										//legal item found: encode it
 		if(sentenceMode.checked){
-			toPhrases(text);
-			if(!isMobile) selectMain()
+			toPhrases(text)
 		}else if(wordMode.checked){
-			toWords(text);
-			if(!isMobile) selectMain()
+			toWords(text)
 		}else if(spaceMode.checked){
-			toSpaces(text);
-			if(!isMobile) selectMain()
+			toSpaces(text)
 		}else{
-			toLetters(text);
-			if(!isMobile) selectMain()
+			toLetters(text)
 		}
 	}else{												//no legal item found: try to decode
 		text = text.replace(/<(.*?)>/gi,"");					//begin by removing HTML tags
@@ -56,18 +52,18 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 		if(doublespaces){
 			if(doublespaces.length > 10) {				//detect at least 10 double spaces and then invoke spaces decoder
 				fromSpaces(text);
-				mainMsg.innerHTML = 'Message extracted from Spaces encoding';
+				mainMsg.innerText = 'Message extracted from Spaces encoding';
 				return
 			}
 		}else if(text.match('\u2004') || text.match('\u2005') || text.match('\u2006')){			//detect special characters used in Letters encoding
 			fromLetters(text);
-			mainMsg.innerHTML = 'Message extracted from Letters'
+			mainMsg.innerText = 'Message extracted from Letters'
 		}else if(text.match(':') != null){				//detect colons and if there are any invoke Sentences decoder
 			fromPhrases(text);
-			mainMsg.innerHTML = 'Message extracted from Sentences'
+			mainMsg.innerText = 'Message extracted from Sentences'
 		}else{												//no special characters detected: words decoder
 			fromWords(text);
-			mainMsg.innerHTML = 'Message extracted from Words encoding'
+			mainMsg.innerText = 'Message extracted from Words encoding'
 		}
 	}
 	charsLeft();
@@ -84,7 +80,7 @@ function makeWordMatrix(cover){
 	}
 	for(var i = 0; i < 9; i++){
 		if(bins[i].length == 0){
-			mainMsg.innerHTML = 'Please use a Cover text with more variation.';
+			mainMsg.innerText = 'Please use a Cover text with more variation';
 			throw('Insufficient variety in covertext')
 		}
 	}
@@ -112,8 +108,8 @@ function toWords(text){
 	out = out.toLowerCase().replace(/[.][\s\n][a-z]/g,function(a){return a.toUpperCase();});
 	out = out.replace(/[a-z]/,function(a){return a.toUpperCase();});
 	out = out.slice(0,-1) + '.';
-	mainBox.innerHTML = out.trim();
-	mainMsg.innerHTML = 'Message encoded as words of varying length'
+	mainBox.innerText = out.trim();
+	mainMsg.innerText = 'Message encoded as words of varying length'
 }
 
 //words decoder. Takes groups of 2 words. Their lengths is the index of each characters, in base9
@@ -130,7 +126,7 @@ function fromWords(text){
 			index2 = textArray[i+1].trim().length % 9;
 		out = out + keyAlphabet[index1 * 9 + index2]
 	}
-	mainBox.innerHTML = out
+	mainBox.innerHTML = safeHTML(out.trim())									//disable non-whitelisted tags and attributes
 }
 
 //This is to generate random periods, commans and newlines, per the percentage brackets below, plus spaces when appropriate
@@ -157,7 +153,7 @@ function encoder(bin){
 			spaces = textsplit.length - 1;
 			turns = turns + 1
 		}
-		mainMsg.innerHTML = 'Message encoded into spaces of this text. It was repeated ' + turns + ' times.';
+		mainMsg.innerText = 'Message encoded into spaces of this text. It was repeated ' + turns + ' times.';
 	}
 		textsplit = textsplit.slice(0,bin.length + 1);
 	var newtext = textsplit[0];
@@ -187,7 +183,7 @@ function toSpaces(text) {
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as formatted spacing. Cancel if this is not what you want.");
 		if(!reply) throw("toSpaces canceled");
 	}
-	mainBox.innerHTML = encoder(toBin(text))
+	mainBox.innerText = encoder(toBin(text))
 }
 
 //makes the binary equivalent (string) of an ASCII string
@@ -217,7 +213,7 @@ function fromSpaces(text) {
 		if(!reply) throw("fromSpaces canceled");
 	}
 	var input = decoder(text.replace(/\.&nbsp;/g,'. ').replace(/ &nbsp; ?/g,'  '));
-	mainBox.innerHTML = fromBin(input).replace(/\x00/g,'');		//take out nulls, in case text was added to finish the last sentence.
+	mainBox.innerHTML = safeHTML(fromBin(input).replace(/\x00/g,'').trim());		//take out nulls, in case text was added to finish the last sentence.
 }
 
 //makes phrase matrix for a given cover text, where sentences are catalogued by length mod 12
@@ -230,7 +226,7 @@ function makePhraseMatrix(cover){
 	}
 	for(var i = 0; i < 12; i++){
 		if(bins[i].length == 0){
-			mainMsg.innerHTML = 'Please use a Cover text with more variation.';
+			mainMsg.innerText = 'Please use a Cover text with more variation.';
 			throw('Insufficient variety in covertext')
 		}
 	}
@@ -255,8 +251,8 @@ function toPhrases(text){
 	}
 	out = out.replace(/[.!?][\s\n][a-z]/g,function(a){return a.toUpperCase();}).replace(/[,;:][\s\n][A-Z]/g,function(a){return a.toLowerCase();}).trim();  //capitalization
 	out = out.charAt(0).toUpperCase() + out.slice(1);
-	mainBox.innerHTML = out.trim();
-	mainMsg.innerHTML = 'Message encoded as sentences of varying length'
+	mainBox.innerText = out.trim();
+	mainMsg.innerText = 'Message encoded as sentences of varying length'
 }
 
 //decodes text encoded as sentences of varying length
@@ -275,7 +271,7 @@ function fromPhrases(text){
 			index6 = punct.indexOf(punctArray[i]);
 		out = out + keyAlphabet[index6 * 12 + index12]
 	}
-	mainBox.innerHTML = out
+	mainBox.innerHTML = safeHTML(out.trim())
 }
 
 //Letters encoding is based on code at: http://www.irongeek.com/i.php?page=security/unicode-steganography-homoglyph-encoder, by Adrian Crenshaw, 2013
@@ -373,7 +369,7 @@ function toLetters(text){
 			index++;
 		};
 		capacity = encodableBits(cover);
-		mainMsg.innerHTML = 'Message encoded into letters of this text. It was repeated ' + turns + ' times. Please complete it.';
+		mainMsg.innerText = 'Message encoded into letters of this text. It was repeated ' + turns + ' times. Please complete it.';
 	}
 	var finalString = "",
 		bitsIndex = 0,
@@ -391,8 +387,8 @@ function toLetters(text){
 		}
 		i++;
 	}
-	mainBox.innerHTML = finalString;
-	mainMsg.innerHTML = 'Message encoded into letters of this text. Please complete it.'
+	mainBox.innerText = finalString;
+	mainMsg.innerText = 'Message encoded into letters of this text. Please complete it.'
 }
 
 //gets the original text from Letters encoded text
@@ -418,7 +414,7 @@ function fromLetters(text){
 			finalString = finalString + mybyte;
 		}
 	}
-	mainBox.innerHTML = finalString;
+	mainBox.innerHTML = safeHTML(finalString);
 }
 
 //this one is to display the cover text or change it as requested
@@ -430,7 +426,7 @@ function newcover(string){
 //add spaces if Chinese, Korean, or Japanese
 	if (newcovertext.match(/[\u3400-\u9FBF]/) != null) newcovertext = newcovertext.split('').join(' ').replace(/\s+/g, ' ');
 	covertext = newcovertext;
-	mainMsg.innerHTML = 'Cover text changed'
+	mainMsg.innerText = 'Cover text changed'
 }
 
 //clean up some junk possibly left by JPG hiding functions
@@ -451,7 +447,7 @@ var importImage = function(e) {
     reader.onload = function(event) {
         // set the preview
         preview.style.display = 'block';
-        document.getElementById('preview').src = XSSfilter(event.target.result);
+        document.getElementById('preview').src = event.target.result;
     };
 
     reader.readAsDataURL(e.target.files[0]);
@@ -519,9 +515,9 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 	var encodedImage = steganography.encode(text,document.getElementById('preview').src,{"codeUnitSize": 8});
 
     // view the new image
-    document.getElementById('preview').src = XSSfilter(encodedImage);
+    document.getElementById('preview').src = encodedImage;
 	document.getElementById('preview').onload = function(){
-		imagemsg.innerHTML = 'Item hidden in the image. Save it now.'
+		imagemsg.innerText = 'Item hidden in the image. Save it now.'
 	}
 },30);						//end of timeout
 }
@@ -538,14 +534,14 @@ function decodeImage(){
 	}
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 setTimeout(function(){
-	var loadedImage = XSSfilter(document.getElementById('preview').src);
+	var loadedImage = document.getElementById('preview').src;
 	if(loadedImage.slice(11,15) == 'png;'){
 		var text = steganography.decode(loadedImage,{"codeUnitSize": 8});
 		if (text == ''){
-			imagemsg.innerHTML = 'This image does not contain any hidden text'
+			imagemsg.innerText = 'This image does not contain any hidden text'
 		}else{
-			mainBox.innerHTML = text;
-			imagemsg.innerHTML = 'Go back to see the text extracted from this image'
+			mainBox.innerHTML = safeHTML(text.trim());
+			imagemsg.innerText = 'Go back to see the text extracted from this image'
 		}
 	}else if(loadedImage.slice(11,15) == 'jpeg'){
 		decodeJPG()
@@ -580,10 +576,10 @@ var decodeJPG = function(){
 		}
 		var text = fromBin(msgBin.slice(0,-49));
 		if (!legalItem(text)){
-			imagemsg.innerHTML = 'This image does not contain any hidden text'
+			imagemsg.innerText = 'This image does not contain any hidden text'
 		}else{
-			mainBox.innerHTML = text;
-			imagemsg.innerHTML = 'Go back to see the text extracted from this image'
+			mainBox.innerHTML = safeHTML(text.trim());
+			imagemsg.innerText = 'Go back to see the text extracted from this image'
 		}
 	});
 }
@@ -606,13 +602,12 @@ var encodeJPG = function(){
 		imagemsg.innerHTML = '<span style="color:orange">Please load an image before clicking this button</span>';
 		throw("no image loaded")
 	}
-	mainBox.innerHTML = text;
 	imagemsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
 setTimeout(function(){																			//the rest after a 20 ms delay
 	jsSteg.reEncodeWithModifications(document.getElementById('preview').src, modifyCoefficients, function (resultUri) {
 		document.getElementById('preview').src = resultUri;
 		document.getElementById('preview').onload = function(){
-			imagemsg.innerHTML = 'Item hidden in the image. Save it now.'
+			imagemsg.innerText = 'Item hidden in the image. Save it now.'
 		}
   	})
 },30);						//end of timeout
@@ -655,7 +650,7 @@ var modifyCoefficients = function(coefficients) {
 		}
 	}
 	if(indexBin < msgBin.length){
-		imagemsg.innerHTML = 'This image does not have enough capacity to hide the item as JGP';
+		imagemsg.innerText = 'This image does not have enough capacity to hide the item as JGP';
 		throw('jpg image too small')
 	}
 }

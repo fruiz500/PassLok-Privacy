@@ -54,8 +54,10 @@ function resetChat(){
 
 //for clearing different boxes
 function clearMain(){
-	mainBox.innerHTML = '';
-	mainMsg.innerHTML = '';
+	mainBox.innerText = '';
+	mainMsg.innerText = '';
+	mainBox.style.textOverflow = '';
+	mainBox.style.whiteSpace = '';
 	charsLeft();
 }
 function clearLocks(){
@@ -66,9 +68,9 @@ function clearLocks(){
 }
 function clearIntro(){
 	pwdIntro.value = '';
-	introMsg.innerHTML = '';
+	introMsg.innerText = '';
 	KeyStr = '';
-	keyMsg.innerHTML = '';
+	keyMsg.innerText = '';
 }
 function clearIntroEmail(){
 	emailIntro.value = '';
@@ -108,7 +110,7 @@ function suggestIntro(){
 var friendsLock = '';
 //makes a new user account
 function newUser(){
-	var referrer = decodeURIComponent(window.location.hash.slice(1)).split('&');
+	var referrer = decodeURI(window.location.hash).slice(1).split('&');
 	if (referrer.length > 1){
 		friendsName.value = referrer[0].replace(/_/g,' ');
 		friendsLock = referrer[1];
@@ -121,7 +123,7 @@ function newUser(){
 //shows email screen so email/token can be changed
 function showEmail(){
 	if(!fullAccess){
-		optionMsg.innerHTML = 'Email change not allowed in Guest mode<br>Please restart PassLok';
+		optionMsg.innerText = 'Email change not allowed in Guest mode\nPlease restart PassLok';
 		throw('email change canceled')
 	}
 	if(myEmail) emailBox.value = myEmail;
@@ -132,7 +134,7 @@ function showEmail(){
 //shows user name so it can be changed
 function showName(){
 	if(!fullAccess){
-		optionMsg.innerHTML = 'Name change not allowed in Guest mode<br>Please restart PassLok';
+		optionMsg.innerText = 'Name change not allowed in Guest mode\nPlease restart PassLok';
 		throw('name change canceled')
 	}
 	userNameBox.value = userName;
@@ -143,7 +145,7 @@ function showName(){
 //changes the name of the complete database, syncs if possible
 function changeName(){
 	if(!fullAccess){
-		namechangemsg.innerHTML = 'Name change not allowed in Guest mode';
+		namechangemsg.innerText = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
 	if (learnMode.checked){
@@ -233,7 +235,7 @@ function go2intro4(){
 	openClose('introscr4');
 }
 function go2intro5(){
-	intromsg2.innerHTML = '';
+	intromsg2.innerText = '';
 	openClose('introscr4');
 	openClose('introscr5');
 }
@@ -290,47 +292,48 @@ function cancelKey(){
 }
 function cancelName(){
 	closeBox();
-	optionsMsg.innerHTML = 'User name change canceled';
+	optionsMsg.innerText = 'User name change canceled';
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
-	optionsMsg.innerHTML = 'Email/token change canceled';
+	optionsMsg.innerText = 'Email/token change canceled';
 	callKey = ''
 }
 function cancelDecoyIn(){
 	decoyPwdIn.value = '';
 	closeBox();
-	mainMsg.innerHTML = 'Hidden message canceled';
+	mainMsg.innerText = 'Hidden message canceled';
 }
 function cancelDecoyOut(){
 	decoyPwdOut.value = '';
 	closeBox();
-	mainMsg.innerHTML = 'Hidden message canceled';
+	mainMsg.innerText = 'Hidden message canceled';
 }
 function cancelPartsIn(){
 	partsNumber.value = '';
 	closeBox();
-	mainMsg.innerHTML = 'Split canceled';
+	mainMsg.innerText = 'Split canceled';
 }
 function cancelChat(){
 	closeBox();
-	mainMsg.innerHTML = 'Chat canceled';
+	mainMsg.innerText = 'Chat canceled';
 }
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
-	optionsMsg.innerHTML = 'Key change canceled';
+	optionsMsg.innerText = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
 
 //triggered if the user types Enter in the name box of the locks screen
 function lockNameKeyup(evt){
-	evt = evt || window.event												//IE6 compliance
-	if (evt.keyCode == 13) {												//sync from Chrome or decrypt if hit Return
-		if(lockMsg.innerHTML == ''){				//found nothing, so try to get it from Chrome sync
+	evt = evt || window.event;												//IE6 compliance
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13) {												//sync from Chrome or decrypt if hit Return
+		if(lockMsg.innerText == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				getChromeLock(lockNameBox.value);
 			}
@@ -357,8 +360,9 @@ function pwdKeyup(evt){
 	clearTimeout(keytimer);
 	keytimer = setTimeout(resetKeys, 300000);
 	keytime = new Date().getTime();
-	evt = evt || window.event
-	if (evt.keyCode == 13){acceptKey()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){acceptKey()} else{
 		 return keyStrength(pwd.value,true);
 	}
 }
@@ -370,31 +374,34 @@ function introKeyup(){
 
 //same but for decoy In screen
 function decoyKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitDecoyIn()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitDecoyIn()} else{
 		 return keyStrength(decoyPwdIn.value,true);
 	}
 }
 
 //same for key Change screen
 function newKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){changeKey()} else{
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){changeKey()} else{
 		 return keyStrength(newKey.value,true);
 	}
 }
 
 //this one looks at the second box and announces a match
 function newKey2up(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){changeKey()} else {
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){changeKey()} else {
 		var	newkey = newKey.value,
 			newkey2 = newKey2.value,
 			length = newkey.length,
 			length2 = newkey2.length;
 		if(length != length2){
 			if(newkey2 == newkey.slice(0,length2)){
-				keyChangeMsg.innerHTML = 'Keys match so far. ' + (length - length2) + ' characters to go'
+				keyChangeMsg.innerText = 'Keys match so far. ' + (length - length2) + ' characters to go'
 			} else {
 				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
 			}
@@ -416,16 +423,18 @@ function submitDecoyIn(){
 
 //Enter has the same effect as clicking OK in decoy and parts box
 function decoyKeyupOut(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitDecoyOut()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitDecoyOut()};
 }
 function submitDecoyOut(){
 	closeBox();
 	lockUnlock()
 }
 function partsKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){submitParts()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){submitParts()};
 }
 function submitParts(){
 	if(!isNaN(partsNumber.value)){
@@ -434,12 +443,14 @@ function submitParts(){
 	}
 }
 function emailKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){email2any()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){email2any()};
 }
 function nameKeyup(evt){
-	evt = evt || window.event
-	if (evt.keyCode == 13){name2any()};
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if (key == 13){name2any()};
 }
 
 //for switching between sets of buttons
@@ -580,14 +591,14 @@ function lock2dir(){
 	};
 	if(keyScr.style.display=='block') return;
 	if(lockdirScr.style.display=='none') loadLockDir();
-	var locklength = stripTags(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
+	var locklength = stripTags(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
-//if populated, send Lock to directory
+//if populated, send Lock to General Directory
 		var frame = document.getElementById('lockdirFrame');
-		frame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');
+		frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');			//no formatting
 		frame.onload = function() {
-	    	frame.contentWindow.postMessage(XSSfilter(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
+	    	frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
 		};
 		lockdirScr.style.display = "block";
 		return
@@ -614,7 +625,7 @@ function main2chat(token){
 		if(!reply) throw('chat canceled by user');
 	}
 	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;
-	chatBtn.innerHTML = 'Back to Chat';
+	chatBtn.innerText = 'Back to Chat';
 	chatBtn.style.color = 'orange';
 	chatScr.style.display = 'block';
 }
@@ -632,7 +643,7 @@ function any2key(){
 function any2email(){
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block';
-	emailMsg.innerHTML = 'Please enter your new email or similar item, or a new random token';
+	emailMsg.innerText = 'Please enter your new email or similar item, or a new random token';
 	if(!isMobile) emailBox.focus()
 }
 
@@ -653,7 +664,7 @@ function email2any(){
 	if(myEmail.length == 43 && fullAccess){
 		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
 		if(!result){
-			emailMsg.innerHTML = 'Random token overwrite canceled';
+			emailMsg.innerText = 'Random token overwrite canceled';
 			throw ('random token overwrite canceled')
 		}
 	}
@@ -683,7 +694,7 @@ function name2any(){
 	if(fullAccess){
 		changeName()
 	}else{
-		namechangemsg.innerHTML = 'Name change not allowed in Guest mode';
+		namechangemsg.innerText = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
 	closeBox();
@@ -702,11 +713,6 @@ function focusBox(){
 			mainBox.focus()
 		}
 	}
-}
-
-//simple XSS filter for use in innerHTML-editing statements. Removes stuff between angle brackets
-function XSSfilter(string){
-	return string.replace(/<(.*?)>/gi, "")
 }
 
 <!-- Text hide trick, by Sandeep Gangadharan 2005-->
@@ -790,7 +796,7 @@ function openHelp(theID){
 	  if(this.hash == '#mainTab') fillList();
 	  if(this.hash != '#optionsTab'){
 		  customColors.style.display = 'none';
-		  optionMsg.innerHTML = 'Change Name, Key, etc.'
+		  optionMsg.innerText = 'Change Name, Key, etc.'
 	  }
 	  if(this.hash != '#helpTab' && !isiOS){
 			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
@@ -849,9 +855,9 @@ function findString (str) {
   return;
  }
  if (!strFound){
-	 helpmsg.innerHTML = 'Text not found in the titles'
+	 helpmsg.innerText = 'Text not found in the titles'
  }else{
-	 helpmsg.innerHTML = 'Text highlighted below. Click again to see more results'
+	 helpmsg.innerText = 'Text highlighted below. Click again to see more results'
  }
  return;
 }
@@ -868,13 +874,13 @@ function toggleRichText() {
 		toolBar1.style.display = 'none';
 		mainBox.style.borderTopLeftRadius = '15px';
 		mainBox.style.borderTopRightRadius = '15px';
-		niceEditBtn.innerHTML = 'Rich';
+		niceEditBtn.innerText = 'Rich';
 		niceEditor = false
 	} else {
 		toolBar1.style.display = 'block';
 		mainBox.style.borderTopLeftRadius = '0';
 		mainBox.style.borderTopRightRadius = '0';
-		niceEditBtn.innerHTML = 'Plain';
+		niceEditBtn.innerText = 'Plain';
 		niceEditor = true
 	}
 	textheight();

@@ -30,7 +30,7 @@ function getChromeLock(name) {
 			getChromeLock(name2)
 		} else {
 			if (name.slice(0,2) == '--') name = name.slice(2,name.length-2);
-			lockMsg.innerHTML = XSSfilter(name) + ' not found in Chrome sync'
+			lockMsg.innerText = name + ' not found in Chrome sync'
 		}
 	});
 }
@@ -38,8 +38,8 @@ function getChromeLock(name) {
 //this one is called by the above function
 function storeChromeLock(name,lockdata){
 	locDir[name] = JSON.parse(lockdata);
-	lockBox.innerHTML = locDir[name][0];
-	lockMsg.innerHTML = XSSfilter(name) + ' added from Chrome sync';
+	lockBox.innerText = removeHTMLtags(locDir[name][0]);			//extra precaution, in case something slipped in
+	lockMsg.innerText = name + ' added from Chrome sync';
 	locDir = sortObject(locDir);
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);

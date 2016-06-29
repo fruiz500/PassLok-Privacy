@@ -91,12 +91,12 @@ function loadFileAsURL(){
 		}
 		if(fileToLoad.type.slice(0,4) == "text"){
 			if(URLFromFileLoaded.slice(0,2) == '==' && URLFromFileLoaded.slice(-2) == '=='){
-				mainBox.innerHTML += '<br><a download="' + fileName + '" href="data:,' + URLFromFileLoaded + '">' + fileName + '&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
+				mainBox.innerHTML += safeHTML('<a download="' + fileName + '" href="data:,' + URLFromFileLoaded + '">' + fileName + '</a>')						//filter before adding to the DOM
 			}else{
-				mainBox.innerHTML += "<br><br>" + URLFromFileLoaded.replace(/  /g,' &nbsp;')
+				mainBox.innerHTML += safeHTML('<br>' + URLFromFileLoaded.replace(/  /g,' &nbsp;'))
 			}
 		}else{
-			mainBox.innerHTML += '<br><a download="' + fileName + '" href="' + URLFromFileLoaded + '">' + fileName + '&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
+			mainBox.innerHTML += safeHTML('<a download="' + fileName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + fileName + '</a>')
 		}
 	};
 	if(fileToLoad.type.slice(0,4) == "text"){
@@ -108,42 +108,38 @@ function loadFileAsURL(){
 	}
 	setTimeout(function(){
 		updateButtons();
-		if(decryptBtn.innerHTML == 'Decrypt') mainMsg.innerHTML = 'This file contains an encrypted item';
-		if(verifyBtn.innerHTML == 'Unseal') mainMsg.innerHTML = 'This file contains a sealed item';
-		if(secretShareBtn.innerHTML == 'Join') mainMsg.innerHTML = 'This file contains a part. Add more parts if necessary';
+		if(decryptBtn.innerText == 'Decrypt') mainMsg.innerText = 'This file contains an encrypted item';
+		if(verifyBtn.innerText == 'Unseal') mainMsg.innerText = 'This file contains a sealed item';
+		if(secretShareBtn.innerText == 'Join') mainMsg.innerHTML = 'This file contains a part. Add more parts if necessary';
 	},300);
 }
 
 //to load a file into the directory dialog
-//this one is called by window.onload below
 function loadLockFile(){
 	var fileToLoad = lockFile.files[0],
 		fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent){
 		var fileName = fileToLoad.name;
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		lockBox.innerHTML = '<a download="' + fileName + '" href="' + URLFromFileLoaded + '">' + fileName + '</a>'
+		lockBox.innerHTML = safeHTML('<a download="' + fileName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + fileName + '</a>')
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");
 	lockMsg.innerHTML = 'File <strong>' + fileToLoad.name + '</strong> has been loaded'
 }
 
-//used to download a packaged file
-function followLink(thisLink){
-	var downloadLink = document.createElement("a");
-	downloadLink.download = thisLink.parentElement.download;
-	downloadLink.href = thisLink.parentElement.href;
-	if (isFirefox){
-		// Firefox requires the link to be added to the DOM before it can be clicked
-		downloadLink.onclick = destroyClickedElement;
-		downloadLink.style.display = "none";
-		document.body.appendChild(downloadLink);
-	}
-	downloadLink.click();
-}
+//to load an image into the main box
+function loadImage(){
+	var fileToLoad = imgFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var URLFromFileLoaded = fileLoadedEvent.target.result;
+		if(URLFromFileLoaded.slice(0,10) != 'data:image'){
+			mainMsg.innerText = 'This file is not a recognized image type';
+			return
+		}
+		mainBox.innerHTML += safeHTML('<img style="width:50%;" src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
+	};
 
-function destroyClickedElement(event)
-{
-	document.body.removeChild(event.target);
+	fileReader.readAsDataURL(fileToLoad, "UTF-8");
 }

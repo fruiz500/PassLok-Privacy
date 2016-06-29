@@ -21,13 +21,13 @@ window.onload = function() {
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
-		anonLabel.innerHTML = '&nbsp;Anon.&nbsp;&nbsp;';
+		anonLabel.innerText = ' Anon.  ';
 		modeLabel.style.display = 'none';
 		otherLabel.style.display = 'none';
-		greenLabel.innerHTML = 'Grn';
-		customLabel.innerHTML = 'Cust';
-		backgroundLabel.innerHTML = 'Bg.';
-		sentencesLabel.innerHTML = 'Sent.';
+		greenLabel.innerText = 'Grn';
+		customLabel.innerText = 'Cust';
+		backgroundLabel.innerText = 'Bg.';
+		sentencesLabel.innerText = 'Sent.';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
@@ -41,11 +41,17 @@ window.onload = function() {
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
 
-    mainFile.addEventListener('change', loadFileAsURL);
+	mainFile.addEventListener('change', loadFileAsURL);
+	mainFile.addEventListener('click', function(){this.value = '';});
+	
+	imgFile.addEventListener('change', loadImage);
+	imgFile.addEventListener('click', function(){this.value = '';});
 
-    imageFile.addEventListener('change', importImage);
+	imageFile.addEventListener('change', importImage);
+	imageFile.addEventListener('click', function(){this.value = '';});
 
 	lockFile.addEventListener('change', loadLockFile);
+	lockFile.addEventListener('click', function(){this.value = '';});
 
     encodePNGBtn.addEventListener('click', encodePNG);
 
@@ -68,7 +74,7 @@ window.onload = function() {
    	main2extraBtn.addEventListener('click', main2extra);
 
    	decryptBtnBasic.addEventListener('click', lockUnlock);
-	
+
 	hideBtnBasic.addEventListener('click', textStego);
 
    	extra2mainBtn.addEventListener('click', main2extra);
@@ -269,31 +275,28 @@ window.onload = function() {
 
    	chatDate.addEventListener('keyup', charsLeft);
 
-//Firefox requires the keyup code to be inline if it refers to the event
-//but this must be removed for the Chrome app and replaced with those commented below
-
-//	pwd.addEventListener('keyup', function() {pwdKeyup(event)}, false);
+	pwd.addEventListener('keyup', function(event) {pwdKeyup(event)}, false);
 
    	pwdIntro.addEventListener('keyup', introKeyup);
 
-//	decoyPwdIn.addEventListener('keyup', function() {decoyKeyup(event)}, false);
+	decoyPwdIn.addEventListener('keyup', function(event) {decoyKeyup(event)}, false);
 
-//	decoyPwdOut.addEventListener('keyup', function() {decoyKeyupOut(event)}, false);
+	decoyPwdOut.addEventListener('keyup', function(event) {decoyKeyupOut(event)}, false);
 
-//	partsIn.addEventListener('keyup', function() {partsKeyup(event)}, false);
+	partsIn.addEventListener('keyup', function(event) {partsKeyup(event)}, false);
 
 	newKey.addEventListener('keyup', newKeyup);
 
-//	newKey2.addEventListener('keyup', function() {newKey2up(event)}, false);
+	newKey2.addEventListener('keyup', function(event) {newKey2up(event)}, false);
 
-//	lockNameBox.addEventListener('keyup', function() {lockNameKeyup(event)}, false);
+	lockNameBox.addEventListener('keyup', function(event) {lockNameKeyup(event)}, false);
 
 	lockBox.addEventListener('keyup', pasteLock);
 	lockBox.addEventListener('paste', pasteLock);
 
-//	userNameBox.addEventListener('keyup', function() {nameKeyup(event)}, false);
+	userNameBox.addEventListener('keyup', function(event) {nameKeyup(event)}, false);
 
-//	emailBox.addEventListener('keyup', function() {emailKeyup(event)}, false);
+	emailBox.addEventListener('keyup', function(event) {emailKeyup(event)}, false);
 
 //for the rich text editor boxes and buttons
 	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
