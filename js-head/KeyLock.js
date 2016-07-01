@@ -585,7 +585,7 @@ function makeNonce24(nonce){
 //encrypt string with a shared Key
 function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
 	if(isCompressed){
-		if(plainstr.match('data:')){									//no compression if it includes a file
+		if(plainstr.match('="data:')){									//no compression if it includes a file
 			var plain = nacl.util.decodeUTF8(plainstr)
 		}else{
 			var plain = LZString.compressToUint8Array(plainstr)
@@ -602,19 +602,14 @@ function PLdecrypt(cipherstr,nonce24,sharedKey,label,isCompressed){
 	var cipher = nacl.util.decodeBase64(cipherstr),
 		plain = nacl.secretbox.open(cipher,nonce24,sharedKey);
 	if(!plain) failedDecrypt(label);
-	try{
-		var result = nacl.util.encodeUTF8(plain)
-	}catch(err){
-		var result = ''
-	}
-	if(isCompressed){		
-		if(result.toLowerCase().match('data:')){
-			return result
+	if(isCompressed){
+		if(plain.join().match(",61,34,100,97,116,97,58,")){		//this is '="data:' after encoding
+			return nacl.util.encodeUTF8(plain)
 		}else{
 			return LZString.decompressFromUint8Array(plain)
 		}
 	}else{
-		return result
+		return nacl.util.encodeUTF8(plain)
 	}
 }
 
@@ -648,7 +643,7 @@ function safeHTML(string){
 	//now escape every dangerous character; we'll recover tags and attributes on the whitelist later on
 	string = escapeHTML(string);
 	//make regular expressions containing whitelisted tags, attributes, and origins; sometimes two versions to account for single quotes
-	var allowedTags = '(b|i|strong|em|u|strike|sub|sup|blockquote|ul|ol|li|pre|div|span|a|h1|h2|h3|h4|h5|h6|p|pre|table|tbody|tr|td|img|br|hr|font)',
+	var allowedTags = '(b|i|strong|em|u|strike|sub|sup|blockquote|ul|ol|li|pre|div|span|a|h1|h2|h3|h4|h5|h6|p|pre|table|tbody|tr|td|img|br|wbr|hr|font)',
 		tagReg = new RegExp('&lt;(\/?)' + allowedTags + '(.*?)&gt;','gi'),
 		allowedAttribs = '(download|style|src|target|name|id|class|color|size|cellpadding|tabindex|type|start|align)',
 		attribReg1 = new RegExp(allowedAttribs + '=\&quot;(.*?)\&quot;','gi'),

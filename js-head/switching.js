@@ -56,8 +56,6 @@ function resetChat(){
 function clearMain(){
 	mainBox.innerText = '';
 	mainMsg.innerText = '';
-	mainBox.style.textOverflow = '';
-	mainBox.style.whiteSpace = '';
 	charsLeft();
 }
 function clearLocks(){
@@ -624,7 +622,7 @@ function main2chat(token){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
 		if(!reply) throw('chat canceled by user');
 	}
-	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;
+	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;			//this link should be local in the Chrome app
 	chatBtn.innerText = 'Back to Chat';
 	chatBtn.style.color = 'orange';
 	chatScr.style.display = 'block';
@@ -755,7 +753,7 @@ function openHelp(theID){
           var tabLink = getFirstChildWithTagName( tabListItems[i], 'A' );
           var id = getHash( tabLink.getAttribute('href') );
           tabLinks[id] = tabLink;
-          contentDivs[id] = document.getElementById(id);
+          contentDivs[id] = document.getElementById(id)
         }
       }
 
@@ -767,7 +765,7 @@ function openHelp(theID){
         tabLinks[id].onclick = showTab;
         tabLinks[id].onfocus = function() { this.blur() };
         if ( i == 0 ) tabLinks[id].className = 'selected';
-        i++;
+        i++
       }
 
       // Hide all content divs except the first
@@ -775,7 +773,7 @@ function openHelp(theID){
 
       for ( var id in contentDivs ) {
         if ( i != 0 ) contentDivs[id].className = 'tabContent hide';
-        i++;
+        i++
       }
     }
 
@@ -787,10 +785,10 @@ function openHelp(theID){
       for ( var id in contentDivs ) {
         if ( id == selectedId ) {
           tabLinks[id].className = 'selected';
-          contentDivs[id].className = 'tabContent';
+          contentDivs[id].className = 'tabContent'
         } else {
           tabLinks[id].className = '';
-          contentDivs[id].className = 'tabContent hide';
+          contentDivs[id].className = 'tabContent hide'
         }
       }
 	  if(this.hash == '#mainTab') fillList();
@@ -804,18 +802,18 @@ function openHelp(theID){
 	  storeColors();
 
       // Stop the browser following the link
-      return false;
+      return false
     }
 
     function getFirstChildWithTagName( element, tagName ) {
       for ( var i = 0; i < element.childNodes.length; i++ ) {
-        if ( element.childNodes[i].nodeName == tagName ) return element.childNodes[i];
+        if ( element.childNodes[i].nodeName == tagName ) return element.childNodes[i]
       }
     }
 
     function getHash( url ) {
       var hashPos = url.lastIndexOf ( '#' );
-      return url.substring( hashPos + 1 );
+      return url.substring( hashPos + 1 )
     }
 //end of tab functions
 
@@ -832,7 +830,7 @@ function findString (str) {
   strFound=self.find(str);
   if (!strFound) {
    strFound=self.find(str,0,1);
-   while (self.find(str,0,1)) continue;
+   while (self.find(str,0,1)) continue
   }
  }
  else if (navigator.appName.indexOf("Microsoft")!=-1) {
@@ -847,24 +845,24 @@ function findString (str) {
   if (TRange==null || strFound==0) {
    TRange=self.document.body.createTextRange();
    strFound=TRange.findText(str);
-   if (strFound) TRange.select();
+   if (strFound) TRange.select()
   }
  }
  else if (navigator.appName=="Opera") {
   alert ("Opera browsers not supported, sorry...")
-  return;
+  return
  }
  if (!strFound){
 	 helpmsg.innerText = 'Text not found in the titles'
  }else{
 	 helpmsg.innerText = 'Text highlighted below. Click again to see more results'
  }
- return;
+ return
 }
 
 //for rich text editing
 function formatDoc(sCmd, sValue) {
-	  document.execCommand(sCmd, false, sValue); mainBox.focus();
+	  document.execCommand(sCmd, false, sValue); mainBox.focus()
 }
 
 var niceEditor = false;
@@ -883,5 +881,5 @@ function toggleRichText() {
 		niceEditBtn.innerText = 'Plain';
 		niceEditor = true
 	}
-	textheight();
+	textheight()
 }

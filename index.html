@@ -1890,7 +1890,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <button class="cssbutton" id="addToListBtn" value="List" style="" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button><!--
 --><button class="cssbutton" id="showLockDBBtn" value="All" style="" title="show the entire local directory">All</button><!--
 --><button class="cssbutton" id="mergeLockDBBtn" value="Merge" style="" title="merge lower box contents into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
---><input class="custom-file-input" type="file" id="lockFile" style="overflow:hidden;width:120px;position:absolute;" title="open dialog to select file to load"/>
+--><label for="lockFile" title="open dialog to select file to load"><span class="cssbutton">Load file</span></label><input type="file" id="lockFile" style="display:none;" title="open dialog to select file to load"/>
   </div>
 </div>
 
@@ -2155,7 +2155,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <button class="cssbutton" id="decodeImgBtn" value="Reveal" title="extract hidden content and put it in main box">Reveal</button>
   <br />
   <br />
-  <input class="custom-file-input" type='file' id='imageFile' style="" title="open a dialog to select the cover image"/>
+  <label for="imageFile" title="open dialog to select the cover image"><span class="cssbutton">Select image</span></label>
+  <input type='file' id='imageFile' style="display:none;"/>
   <br />
   <br />
   <div id="imagemsg" style="height:30px;"></div>

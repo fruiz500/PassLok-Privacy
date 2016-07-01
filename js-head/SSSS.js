@@ -1,7 +1,6 @@
 ﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
 	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
-	reduceChromeLag();
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		secretshare();
 	},20);						//end of timeout
@@ -9,11 +8,11 @@ function splitJoin(){
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
-	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<\/div>/gi,"").replace(/<div>/gi,"<br>").replace(/<blockquote>/gi,"<br>").trim();
-	if((main.slice(0,8).match(/p\d{3}/) && main.slice(0,2)=='PL') || (main.match(/p\d{3}/) && main.match('.txt'))){		//main box has parts: join parts
-		var shares = main.split("<br>").filter(Boolean),												//go from newline-containing string to array
+	var	main = mainBox.innerHTML.replace(/\&nbsp;/g,'').replace(/<\/?(br|div|pre|blockquote)>/gi,"\n").replace(/<(.*?)>/g,'').trim();
+	if((main.slice(0,13).match(/p\d{3}/) && main.slice(0,7).match('PL')) || (main.match(/p\d{3}/) && main.match('.txt'))){		//main box has parts: join parts
+		var shares = main.split("\n\n").filter(Boolean),												//go from newline-containing string to array
 			n = shares.length,
-			quorumarr = shares[0].slice(0,8).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
+			quorumarr = shares[0].slice(0,13).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(quorumarr == null)	quorumarr = shares[0].slice(-13).match(/ \d{3}/);										//maybe packaged; get quorum at end of label
 		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};					//if tags are missing, ignore quorum, otherwise read it from tags
 		if(n < quorum){																//not enough parts
@@ -34,13 +33,8 @@ function secretshare(){
 try{
 		var	sechex = secrets.combine(shares),
 			secBin = hex2charArray(sechex);
-		try{
-			var result = nacl.util.encodeUTF8(secBin)
-		}catch(err){
-			var result = ''
-		}
-		if(result.toLowerCase().match('data:')){
-			var secret = result
+		if(secBin.join().match(",61,34,100,97,116,97,58,")){
+			var secret = nacl.util.encodeUTF8(secBin)
 		}else{
 			var secret = LZString.decompressFromUint8Array(secBin)
 		}
@@ -79,7 +73,7 @@ try{
 		if(number < 2){number = 2} else if(number > 255) {number = 255};
 		if (quorum > number) quorum = number;
 		var secret = mainBox.innerHTML.trim();
-		if(secret.match('data:')){									//no compression if it includes a file
+		if(secret.match('="data:')){									//no compression if it includes a file
 			var secBin = nacl.util.decodeUTF8(secret)
 		}else{
 			var secBin = LZString.compressToUint8Array(secret)
@@ -98,19 +92,20 @@ function displayshare(shares,quorum){
 		quorumStr = "00" + quorum;
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 
-	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
+	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, ''),
+		rowsReg = new RegExp('.{1,' + Math.floor(mainBox.clientWidth / 8) + '}','g');
 	if(fileMode.checked){
-		var	output = '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
+		var	output = '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b></a>'
 	}else{
-		var	output = "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+		var	output = "<pre>" + ("PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr).match(rowsReg).join("<br>") + "</pre>";
 	}
 
 	for (var i=1; i < shares.length; i++) {
 		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
 		if(fileMode.checked){
-			output += "<br><br>" + '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b>&nbsp;&nbsp;<button onClick="followLink(this);">Save</button></a>'
+			output += "<br><br>" + '<a download="PL23p' + quorumStr + '.txt" href="data:,==' + dataItem + '=="><b>PassLok 2.3 Part out of '+ quorumStr +'</b></a>'
 		}else{
-			output += "<br><br>" + "PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr;
+			output += "<br><br>" + "<pre>" + ("PL23p" + quorumStr + "==" + dataItem + "==PL23p" + quorumStr).match(rowsReg).join("<br>") + "</pre>";
 		}
 	};
 	mainBox.innerHTML = output;
