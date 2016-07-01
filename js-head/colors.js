@@ -3,66 +3,66 @@ var btnSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var tabSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var boxSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var bgSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var btnTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var tabTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var boxTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 var bgTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
 	document.head.appendChild(style);
-	return style.sheet;
+	return style.sheet
 })();
 
 //these two are to add a rule (usually a changed color) to a dummy stylesheet, or to remove it
 function addCSSRule(sheet, selector, rules, index) {
 	if("insertRule" in sheet) {
-		sheet.insertRule(selector + "{" + rules + "}", index);
+		sheet.insertRule(selector + "{" + rules + "}", index)
 	}
 	else if("addRule" in sheet) {
-		sheet.addRule(selector, rules, index);
+		sheet.addRule(selector, rules, index)
 	}
 }
 function removeCSSRule(sheet, selector, rules, index) {
 	if("deleteRule" in sheet) {
-		sheet.deleteRule(selector + "{" + rules + "}", index);
+		sheet.deleteRule(selector + "{" + rules + "}", index)
 	}
 	else if("removeRule" in sheet) {
-		sheet.removeRule(selector, rules, index);
+		sheet.removeRule(selector, rules, index)
 	}
 }
 
@@ -77,7 +77,7 @@ function storeColors(){
 			localStorage[userName] = JSON.stringify(locDir);
 
 			if(ChromeSyncOn && chromeSyncMode.checked){
-				syncChromeLock('myself',JSON.stringify(locDir['myself']));
+				syncChromeLock('myself',JSON.stringify(locDir['myself']))
 			}
 		}
 	}
@@ -102,7 +102,7 @@ function foregColor(bgColor){
 	var red = parseInt(bgColor.slice(0,2),16),
 		green = parseInt(bgColor.slice(2,4),16),
 		blue = parseInt(bgColor.slice(4,6),16);
-	return 0.213 * red + 0.715 * green + 0.072 * blue < 128 ? 'FFFFFF' : '000000';
+	return 0.213 * red + 0.715 * green + 0.072 * blue < 128 ? 'FFFFFF' : '000000'
 }
 
 //returns a closer to neutral gray version of a hex color, as given by a hex offset (1 byte)
@@ -114,11 +114,11 @@ function milder(color, offset){
 	if(0.213 * red + 0.715 * green + 0.072 * blue < 128){		//dark or light condition is the same as for foreground color
 		red = Math.min((red + offset10),255).toString(16);
 		green = Math.min((green + offset10),255).toString(16);
-		blue = Math.min((blue + offset10),255).toString(16);
+		blue = Math.min((blue + offset10),255).toString(16)
 	}else{
 		red = Math.max((red - offset10),0).toString(16);
 		green = Math.max((green - offset10),0).toString(16);
-		blue = Math.max((blue - offset10),0).toString(16);
+		blue = Math.max((blue - offset10),0).toString(16)
 	}
 	if(red.length < 2) red = '0' + red;				//take care of single-digit colors
 	if(green.length < 2) green = '0' + green;
@@ -162,7 +162,7 @@ function updateTabColor(isPicker){
 	addCSSRule(tabSheet, "ul#tabs li a", "background-color:#" + bgColor[0]);
 	addCSSRule(tabSheet, "ul#tabs li a:hover", "background-color:#" + milder(bgColor[0],'22'));
 	while(tabTextSheet.cssRules.length) removeCSSRule(tabTextSheet,"ul#tabs");
-	addCSSRule(tabTextSheet, "ul#tabs li a", "color:#" + milder(fgColor[0],'22'));
+	addCSSRule(tabTextSheet, "ul#tabs li a", "color:#" + milder(fgColor[0],'22'))
 }
 
 //same for general background (index 1)
@@ -174,7 +174,7 @@ function updateBgColor(isPicker){
 		removeCSSRule(bgSheet,".white_content");
 		removeCSSRule(bgSheet,"ul#tabs");
 		removeCSSRule(bgSheet,"div.tabContent");
-		removeCSSRule(bgSheet,".helpitem:hover");
+		removeCSSRule(bgSheet,".helpitem:hover")
 	}
 	addCSSRule(bgSheet, "body", "background-color:#" + bgColor[1]);
 	addCSSRule(bgSheet, ".block_page", "background-color:#" + bgColor[1]);
@@ -188,14 +188,14 @@ function updateBgColor(isPicker){
 		removeCSSRule(bgTextSheet,".white_content");
 		removeCSSRule(bgTextSheet,"ul#tabs");
 		removeCSSRule(bgTextSheet,"div.tabContent");
-		removeCSSRule(bgTextSheet,".custom-file-input");
+		removeCSSRule(bgTextSheet,".custom-file-input")
 	}
 	addCSSRule(bgTextSheet, "body", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, ".block_page", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, ".white_content", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, "ul#tabs li a.selected", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, "div.tabContent", "color:#" + fgColor[1]);
-	addCSSRule(bgTextSheet, ".custom-file-input", "color:#" + bgColor[1]);		//bg color so it's invisible
+	addCSSRule(bgTextSheet, ".custom-file-input", "color:#" + bgColor[1])		//bg color so it's invisible
 }
 
 //and for buttons (index 2)
@@ -207,7 +207,7 @@ function updateBtnColor(isPicker){
 		removeCSSRule(btnSheet,".custom-file-input::before");
 		removeCSSRule(btnSheet,".custom-file-input:hover::before");
 		removeCSSRule(btnSheet,".custom-file-input:active::before");
-		removeCSSRule(btnSheet,"#toolBar1");
+		removeCSSRule(btnSheet,"#toolBar1")
 	}
 	addCSSRule(btnSheet, ".cssbutton", "background-color:#" + bgColor[2]);
 	addCSSRule(btnSheet, ".cssbutton:hover", "background-color:#" + milder(bgColor[2],'22'));
@@ -217,12 +217,12 @@ function updateBtnColor(isPicker){
 	addCSSRule(btnSheet, "#toolBar1", "background-color:#" + bgColor[2]);
 	while(btnTextSheet.cssRules.length){
 		removeCSSRule(btnTextSheet,".cssbutton");
-		removeCSSRule(btnTextSheet,".custom-file-input::before");
+		removeCSSRule(btnTextSheet,".custom-file-input::before")
 	}
 	addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'28'));
 	addCSSRule(btnTextSheet, ".custom-file-input::before", "color:#" + milder(fgColor[2],'28'));
 	decryptBtn.style.color = '#' + fgColor[2];
-	decryptBtnBasic.style.color = '#' + fgColor[2];
+	decryptBtnBasic.style.color = '#' + fgColor[2]
 }
 
 //and for boxes (index 3)
@@ -230,13 +230,13 @@ function updateBoxColor(isPicker){
 	getColor(3,isPicker);
 	while(boxSheet.cssRules.length){
 		removeCSSRule(boxSheet,".cssbox");
-		removeCSSRule(boxSheet,"select");
+		removeCSSRule(boxSheet,"select")
 	}
 	addCSSRule(boxSheet, ".cssbox", "background-color:#" + bgColor[3]);
 	addCSSRule(boxSheet, "select", "background-color:#" + bgColor[3]);
 	while(boxTextSheet.cssRules.length){
 		removeCSSRule(boxTextSheet,".cssbox");
-		removeCSSRule(boxTextSheet,"select");
+		removeCSSRule(boxTextSheet,"select")
 	}
 	addCSSRule(boxTextSheet, ".cssbox", "color:#" + fgColor[3]);
 	addCSSRule(boxTextSheet, "select", "color:#" + fgColor[3]);
@@ -270,7 +270,7 @@ function selectStyle(){
 		updateTabColor(false);
 		updateBgColor(false);
 		updateBtnColor(false);
-		updateBoxColor(false);
+		updateBoxColor(false)
 	}else if(darkStyle.checked){
 		customColors.style.display = 'none';
 		bgColor[0] = '455245';
@@ -284,7 +284,7 @@ function selectStyle(){
 		updateTabColor(false);
 		updateBgColor(false);
 		updateBtnColor(false);
-		updateBoxColor(false);
+		updateBoxColor(false)
 	}else if(redStyle.checked){
 		customColors.style.display = 'none';
 		bgColor[0] = '000000';
@@ -298,7 +298,7 @@ function selectStyle(){
 		updateTabColor(false);
 		updateBgColor(false);
 		updateBtnColor(false);
-		updateBoxColor(false);
+		updateBoxColor(false)
 	}else if(greenStyle.checked){
 		customColors.style.display = 'none';
 		bgColor[0] = '9999cc';
@@ -312,7 +312,7 @@ function selectStyle(){
 		updateTabColor(false);
 		updateBgColor(false);
 		updateBtnColor(false);
-		updateBoxColor(false);
+		updateBoxColor(false)
 	}else if(blueStyle.checked){
 		customColors.style.display = 'none';
 		bgColor[0] = '003399';
@@ -326,7 +326,7 @@ function selectStyle(){
 		updateTabColor(false);
 		updateBgColor(false);
 		updateBtnColor(false);
-		updateBoxColor(false);
+		updateBoxColor(false)
 	}else{
 		if(customColors.style.display == 'none'){
 			customColors.style.display = 'block'
@@ -347,7 +347,7 @@ function selectStyle(){
 		updateBoxColor(false);
 		initPicker()
 	}
-	checkboxStore();
+	checkboxStore()
 }
 
 //selects random colors for the custom setting
@@ -364,6 +364,6 @@ function randomColors(){
 	updateTabColor(false);
 	updateBgColor(false);
 	updateBtnColor(false);
-	updateBoxColor(false);
+	updateBoxColor(false)
 }
 //The main script in the head ends here.

@@ -120,12 +120,13 @@ function loadLockFile(){
 		fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent){
 		var fileName = fileToLoad.name;
-		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		lockBox.innerHTML = safeHTML('<a download="' + fileName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + fileName + '</a>')
+			URLFromFileLoaded = fileLoadedEvent.target.result,
+			escapedName = escapeHTML(fileName);
+		lockBox.innerHTML = safeHTML('<a download="' + escapedName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + escapedName + '</a>')
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");
-	lockMsg.innerHTML = 'File <strong>' + fileToLoad.name + '</strong> has been loaded'
+	lockMsg.innerHTML = 'File <strong>' + escapedHTML(fileToLoad.name) + '</strong> has been loaded'
 }
 
 //to load an image into the main box
