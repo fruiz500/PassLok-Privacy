@@ -1,43 +1,177 @@
-﻿//this is for showing and hiding text in key box and other password input boxes
+﻿//displays how many characters are left, in Short mode and Decoy In box
+function charsLeft(){
+	//for decoy message box
+	if(decoyIn.style.display == 'block'){
+		var chars = encodeURI(decoyText.value).replace(/%20/g,' ').length,
+			limit = 75;	
+		if(chars <= limit){
+			decoyMsg.textContent = chars + " characters out of " + limit + " used"
+		}else{
+			decoyMsg.textContent = 'Maximum length exceeded. The message will be truncated'
+		}
+		return
+	}
+
+	//this one is for the text in the chat making dialog
+	else if(chatDialog.style.display == 'block'){
+		var chars = chatDate.value.length;
+		var limit = 43;
+		if(chars <= limit){
+			chatmsg.textContent = chars + " characters out of " + limit + " used"
+		}else{
+			chatmsg.textContent = 'Maximum length exceeded. The message will be truncated'
+		}
+		return
+	}
+
+	//Now for main box. Short mode character count
+	else if(shortMode.checked && mainBox.textContent.match(/[^a-zA-Z0-9+\/=-]/)){		//don't display character count if this is output
+		updateButtons();
+		var chars = encodeURI(mainBox.textContent).replace(/%20/g,' ').length,
+			sharedKey = stripTags(replaceByItem(lockBox.textContent.trim()));
+		if(!sharedKey) return;
+		if(sharedKey.length != 43 && sharedKey.length != 50 && !onceMode.checked){	
+			var limit = 94									//Key-encrypted mode, 94 chars
+		}else if(anonMode.checked){
+			var limit = 62									//anonymous mode, 62 chars
+		}else if(signedMode.checked){
+			var limit = 94									//signed mode, 94 chars
+		}else if(onceMode.checked){
+			var limit = 46									//Read-once mode, 46 chars
+		}
+		if(extra2mainBtn.style.display != ''){		//don't show this if hiding or splitting
+			if(chars <= limit){
+				mainMsg.textContent = chars + " characters out of " + limit + " used"
+			}else{
+				mainMsg.textContent = 'Maximum length exceeded. The message will be truncated'
+			}
+		}
+	}else{updateButtons()}								//display button labels according to item nature
+}
+
+//changes button labels according to context
+function updateButtons(){
+	var string = mainBox.innerHTML.trim(),
+		type = getType(string)[0],
+		isRecipient = !!lockBox.textContent.trim();
+
+	if(type && type.match(/[hkdsgasoprASO]/)){
+		decryptBtn.textContent = 'Decrypt';
+		decryptBtnBasic.textContent = 'Decrypt';
+		decryptBtnEmail.textContent = 'Decrypt';
+		showLockBtn.textContent = 'Email';
+		showLockBtnBasic.textContent = 'Email'	
+	}else if(type && type.match(/[lc]/) && isRecipient){
+		decryptBtn.textContent = 'Encrypt';
+		decryptBtnBasic.textContent = 'Encrypt';
+		decryptBtnEmail.textContent = 'Encrypt';
+		showLockBtn.textContent = 'Email';
+		showLockBtnBasic.textContent = 'Email';
+	}else if(isRecipient){
+		decryptBtn.textContent = 'Encrypt';
+		decryptBtnBasic.textContent = 'Encrypt';
+		decryptBtnEmail.textContent = 'Encrypt';
+		showLockBtn.textContent = 'myLock';
+		showLockBtnBasic.textContent = 'myLock'	
+	}else{
+		decryptBtn.textContent = 'Invite';
+		decryptBtnBasic.textContent = 'Invite';
+		decryptBtnEmail.textContent = 'Invite';
+		showLockBtn.textContent = 'myLock';
+		showLockBtnBasic.textContent = 'myLock'	
+	}
+	if(type && type == 'l'){verifyBtn.textContent = 'Unseal'}else{verifyBtn.textContent = 'Seal'};
+
+	if((string.slice(0,13).match(/p\d{3}/) && string.slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){			//box contains parts
+		secretShareBtn.textContent = 'Join'
+	}else{
+		secretShareBtn.textContent = 'Split'
+	}
+}
+
+//gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
+function getType(stringIn){
+	var string = stringIn.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/"(.*?)\/a>/,'');
+	if(string.match('==')) string = string.split('==')[1].replace(/-/g,'');		//remove tags and dashes from Locks
+	string = string.replace(/<(.*?)>/g,'');
+
+	var	type = string.charAt(0),
+		typeGC = string.charAt(56),												//PassLok for Email compatible
+		isBase64 = !string.match(/[^a-zA-Z0-9+\/]/),
+		isBase26 = !string.match(/[^A-Z]/),
+		isNoLock = string.length != 43 && string.length != 50;
+
+	if(type.match(/[lkgdasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){
+		return [type, string]
+	}else if(typeGC.match(/[gasoprSO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){
+		return [typeGC, string]
+	}else if(!isNoLock && isBase64 && !isBase26 && string.length > 40){
+		return ['c'	, string]																//special type for a Lock
+	}else if(string && isBase26){
+		return ['h', string]																//human-computable encrypted
+	}else{
+		return [false, stringIn]
+	}
+}
+
+//start decrypt or verify if the item pasted in is recognized
+function pasteMain() {
+    setTimeout(function(){
+		var array = getType(mainBox.innerHTML.trim()),
+			type = array[0],
+			lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
+		if(type && type.match(/[hkdsgasoprASO]/)){							//known encrypted type: decrypt
+			unlock(type,array[1],lockBoxHTML);
+			return
+		}else if(type && type == 'l'){										//unseal
+			verifySignature(array[1],lockBoxHTML);
+			return
+		}else if(type && type == 'c'){										//store new Lock
+			extractLock(mainBox.innerHTML.trim())
+		}
+    }, 0)
+}
+
+//this is for showing and hiding text in key box and other password input boxes
 function showsec(){
 	if(showKey.checked){
-		pwd.type="TEXT";
+		pwd.type="TEXT"
 	}else{
-		pwd.type="PASSWORD";
+		pwd.type="PASSWORD"
 	}
 }
 
 function showDecoyIn(){
 	if(showDecoyInCheck.checked){
-		decoyPwdIn.type="TEXT";
+		decoyPwdIn.type="TEXT"
 	}else{
-		decoyPwdIn.type="PASSWORD";
+		decoyPwdIn.type="PASSWORD"
 	}
 }
 
 function showDecoyOut(){
 	if(showDecoyOutCheck.checked){
-		decoyPwdOut.type="TEXT";
+		decoyPwdOut.type="TEXT"
 	}else{
-		decoyPwdOut.type="PASSWORD";
+		decoyPwdOut.type="PASSWORD"
 	}
 }
 
 function showIntro(){
 	if(showIntroKey.checked){
-		pwdIntro.type="TEXT";
+		pwdIntro.type="TEXT"
 	}else{
-		pwdIntro.type="PASSWORD";
+		pwdIntro.type="PASSWORD"
 	}
 }
 
 function showNewKey(){
 	if(showNewKeyCheck.checked){
-		newKey.type="TEXT";
-		newKey2.type="TEXT";
+		newKey.type="TEXT"
+		newKey2.type="TEXT"
 	}else{
-		newKey.type="PASSWORD";
-		newKey2.type="PASSWORD";
+		newKey.type="PASSWORD"
+		newKey2.type="PASSWORD"
 	}
 }
 
@@ -46,59 +180,76 @@ function chat2main(){
 }
 
 function resetChat(){
-	var frame = document.getElementById('chatFrame');
-	var src = frame.src;
+	var frame = document.getElementById('chatFrame'),
+		src = frame.src;
 	frame.src = '';
-	setTimeout(function(){frame.src = src;}, 0);
+	setTimeout(function(){frame.src = src;}, 0)
 }
 
 //for clearing different boxes
 function clearMain(){
-	mainBox.innerText = '';
-	mainMsg.innerText = '';
-	charsLeft();
+	mainBox.textContent = '';
+	mainMsg.textContent = '';
+	charsLeft()
 }
 function clearLocks(){
-	lockBox.innerHTML='';
+	lockBox.textContent='';
 	lockNameBox.value='';
-	lockMsg.innerHTML='';
-	suspendFindLock = false;
+	lockMsg.textContent='';
+	suspendFindLock = false
 }
 function clearIntro(){
 	pwdIntro.value = '';
-	introMsg.innerText = '';
+	introMsg.textContent = '';
 	KeyStr = '';
-	keyMsg.innerText = '';
+	keyMsg.textContent = ''
 }
 function clearIntroEmail(){
-	emailIntro.value = '';
+	emailIntro.value = ''
+}
+
+//encrypts, decrypts, or sends invite depending on main box content
+function lockBtnAction(){
+	var array = getType(mainBox.innerHTML.trim()),
+		type = array[0],
+		lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
+	if(type && type.match(/[hkdgasoprASO]/)){								//known encrypted type: decrypt
+		unlock(type,array[1],lockBoxHTML)
+	}else if(!!lockBoxHTML){												//recipients selected: encrypt and send if Email mode
+		lock(lockBoxHTML,array[1]);
+		setTimeout(function(){
+			if(emailMode.checked) sendMail()
+		},50)
+	}else{
+		sendMail()															//no recipients: invite
+	}
 }
 
 //for selecting the Main box contents and copying them to clipboard
 function selectMain(){
     var range, selection;
-    if (document.body.createTextRange) {
+    if(document.body.createTextRange){
         range = document.body.createTextRange();
         range.moveToElementText(mainBox);
-        range.select();
-    } else if (window.getSelection) {
+        range.select()
+    }else if (window.getSelection){
         selection = window.getSelection();
         range = document.createRange();
         range.selectNodeContents(mainBox);
         selection.removeAllRanges();
-        selection.addRange(range);
+        selection.addRange(range)
     }
 	document.execCommand('copy')
 }
 
 //writes five random dictionary words in the intro Key box
 function suggestIntro(){
-	var output = '';
-	var wordlist = wordListExp.toString().slice(1,-2).split('|')
-	for(var i = 1; i <=5 ; i++){
+	var output = '',
+		wordlist = wordListExp.toString().slice(1,-2).split('|')
+	for(var i = 1; i <= 5 ; i++){
 		var rand = wordlist[Math.floor(Math.random()*wordlist.length)];
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
-		output = output + ' ' + rand;
+		output = output + ' ' + rand
 	}
 	pwdIntro.type="TEXT";
 	pwdIntro.value = output.trim();
@@ -109,30 +260,30 @@ var friendsLock = '';
 //makes a new user account
 function newUser(){
 	var referrer = decodeURI(window.location.hash).slice(1).split('&');
-	if (referrer.length > 1){
+	if(referrer.length > 1){
 		friendsName.value = referrer[0].replace(/_/g,' ');
 		friendsLock = referrer[1];
-		referrerMsg.style.display = "block";
+		referrerMsg.style.display = "block"
 	}
 	introscr.style.display = "block";
-	BasicButtons = true;
+	BasicButtons = true
 }
 
 //shows email screen so email/token can be changed
 function showEmail(){
 	if(!fullAccess){
-		optionMsg.innerText = 'Email change not allowed in Guest mode\nPlease restart PassLok';
+		optionMsg.textContent = 'Email change not allowed in Guest mode. Please restart PassLok';
 		throw('email change canceled')
 	}
 	if(myEmail) emailBox.value = myEmail;
 	shadow.style.display = 'block';
-	emailScr.style.display = 'block';
+	emailScr.style.display = 'block'
 }
 
 //shows user name so it can be changed
 function showName(){
 	if(!fullAccess){
-		optionMsg.innerText = 'Name change not allowed in Guest mode\nPlease restart PassLok';
+		optionMsg.textContent = 'Name change not allowed in Guest mode. Please restart PassLok';
 		throw('name change canceled')
 	}
 	userNameBox.value = userName;
@@ -143,17 +294,17 @@ function showName(){
 //changes the name of the complete database, syncs if possible
 function changeName(){
 	if(!fullAccess){
-		namechangemsg.innerText = 'Name change not allowed in Guest mode';
+		namechangemsg.textContent = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
-	if (learnMode.checked){
+	if(learnMode.checked){
 		var reply = confirm("The current User Name will be changed. Cancel if this is not what you want.");
-		if(!reply) throw("Name change canceled");
+		if(!reply) throw("Name change canceled")
 	}
 	var oldUserName = userName,
 		userNameTemp = document.getElementById('userNameBox').value;
 	if (userNameTemp.trim() == ''){
-		throw('no name');
+		throw('no name')
 	}
 	recryptDB(KeyStr,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
@@ -163,10 +314,10 @@ function changeName(){
 	if(ChromeSyncOn && chromeSyncMode.checked){
 		for(var name in locDir){
 			syncChromeLock(name,JSON.stringify(locDir[name]));
-			chrome.storage.sync.remove((oldUserName+'.'+name).toLowerCase());
+			chrome.storage.sync.remove((oldUserName+'.'+name).toLowerCase())
 		}
 		updateChromeSyncList();
-		chrome.storage.sync.remove(oldUserName.toLowerCase()+'.ChromeSyncList');
+		chrome.storage.sync.remove(oldUserName.toLowerCase()+'.ChromeSyncList')
 	}
 }
 
@@ -176,14 +327,14 @@ function checkboxStore(){
 		var checks = document.optionchecks;
 		var binCode = '', i;
 		for(i = 0; i < checks.length; i++){
-			binCode += checks[i].checked ? 1 : 0;
+			binCode += checks[i].checked ? 1 : 0
 		}
 		if(locDir['myself']){
 			locDir['myself'][1] = changeBase(binCode,'01',base64);
 			localStorage[userName] = JSON.stringify(locDir);
 
 			if(ChromeSyncOn && chromeSyncMode.checked){
-				syncChromeLock('myself',JSON.stringify(locDir['myself']));
+				syncChromeLock('myself',JSON.stringify(locDir['myself']))
 			}
 		}
 	}
@@ -199,20 +350,24 @@ function code2checkbox(){
 			checks[i].checked = (binCode[i] == '1')
 		}
 		var isEmailMode = checks[2].checked;
-		BasicButtons = checks[0].checked || isEmailMode;
+		BasicButtons = checks[0].checked || isEmailMode
 	}
-	if(!BasicButtons){												//retrieve Advanced interface
+	if(!BasicButtons){									//retrieve Advanced interface
 		openClose("basicBtnsTop");
 		openClose("mainBtnsTop");
 		openClose("lockBtnsBottom");
+		openClose("basicHideModes");
 		openClose('advancedModes');
-		decoyEmail.style.display = '';
+		openClose('specialEncryptModes');
 		openClose('advancedBtns');
 		openClose('advancedHelp');
 		basicMode.checked = false;
-		advancedMode.checked = true;
+		advancedMode.checked = true
 	}
-	if(isEmailMode) mode2email();						//Email compatible interface
+	if(isEmailMode){									//Email compatible interface
+		mode2email();
+		updateButtons()
+	}
 	getCustomColors();
 	selectStyle();
 
@@ -222,24 +377,24 @@ function code2checkbox(){
 //go to 2nd intro screen, and back. The others are similar
 function go2intro2(){
 	openClose('introscr');
-	openClose('introscr2');
+	openClose('introscr2')
 }
 function go2intro3(){
 	openClose('introscr2');
-	openClose('introscr3');
+	openClose('introscr3')
 }
 function go2intro4(){
 	openClose('introscr3');
-	openClose('introscr4');
+	openClose('introscr4')
 }
 function go2intro5(){
-	intromsg2.innerText = '';
+	intromsg2.textContent = '';
 	openClose('introscr4');
-	openClose('introscr5');
+	openClose('introscr5')
 }
 
 //these close input dialogs
-function closeBox() {
+function closeBox(){
 	shadow.style.display = "none";
 	keyScr.style.display = "none";
 	lockScr.style.display = "none";
@@ -250,7 +405,7 @@ function closeBox() {
 	emailScr.style.display = "none";
 	chatDialog.style.display = "none";
 	nameScr.style.display = "none";
-	introscr.style.display = "none";
+	introscr.style.display = "none"
 }
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
@@ -259,10 +414,10 @@ function cancelKey(){
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
 
-		if (nameList.options.length == 2){						//only one user, no need to select it
+		if(nameList.options.length == 2){						//only one user, no need to select it
 			userName = nameList.options[1].value
 		}else{												//several users
-			for (var i = 0; i < nameList.options.length; i++) {
+			for(var i = 0; i < nameList.options.length; i++){
     			if(nameList.options[i].selected){
 					userName = nameList.options[i].value
     			}
@@ -276,13 +431,13 @@ function cancelKey(){
 			localStorage[userName] = JSON.stringify(locDir);
 
 			if(ChromeSyncOn && chromeSyncMode.checked){
-				syncChromeLock('myself',JSON.stringify(locDir['myself']));
+				syncChromeLock('myself',JSON.stringify(locDir['myself']))
 			}
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-			mainMsg.innerHTML = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the <strong>Edit</strong> button'
+			mainMsg.textContent = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the Edit button'
 		}else{
-			setTimeout(function(){mainMsg.innerHTML = '<span style="color:orange">You are in Guest mode<br>For full access, reload and enter the Key</span>'},30);
+			setTimeout(function(){mainMsg.textContent = 'You are in Guest mode. For full access, reload and enter your Key'},30)
 		}
 	}
 	allowCancelWfullAccess = false;
@@ -290,38 +445,34 @@ function cancelKey(){
 }
 function cancelName(){
 	closeBox();
-	optionsMsg.innerText = 'User name change canceled';
+	mainMsg.textContent = 'User name change canceled';
 	callKey = ''
 }
 function cancelEmail(){
 	emailBox.value = '';
 	closeBox();
-	optionsMsg.innerText = 'Email/token change canceled';
+	mainMsg.textContent = 'Email/token change canceled';
 	callKey = ''
 }
-function cancelDecoyIn(){
+function cancelDecoy(){
 	decoyPwdIn.value = '';
-	closeBox();
-	mainMsg.innerText = 'Hidden message canceled';
-}
-function cancelDecoyOut(){
 	decoyPwdOut.value = '';
 	closeBox();
-	mainMsg.innerText = 'Hidden message canceled';
+	mainMsg.textContent = 'Hidden message canceled'
 }
 function cancelPartsIn(){
 	partsNumber.value = '';
 	closeBox();
-	mainMsg.innerText = 'Split canceled';
+	mainMsg.textContent = 'Split canceled'
 }
 function cancelChat(){
 	closeBox();
-	mainMsg.innerText = 'Chat canceled';
+	mainMsg.textContent = 'Chat canceled'
 }
 function cancelKeyChange(){
 	newKey.value = '';
 	closeBox();
-	optionsMsg.innerText = 'Key change canceled';
+	mainMsg.textContent = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
 }
@@ -330,23 +481,23 @@ function cancelKeyChange(){
 function lockNameKeyup(evt){
 	evt = evt || window.event;												//IE6 compliance
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13) {												//sync from Chrome or decrypt if hit Return
-		if(lockMsg.innerText == ''){				//found nothing, so try to get it from Chrome sync
+	if(key == 13) {												//sync from Chrome or decrypt if hit Return
+		if(lockMsg.textContent == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn && chromeSyncMode.checked){
 				getChromeLock(lockNameBox.value);
 			}
-		} else {												//decrypt 1st time if found locally, 2nd time if synced from Chrome
-			if(!lockMsg.innerHTML.match('not found in Chrome sync')){
-				var firstchar = lockBox.innerHTML.slice(0,1);
-				if(firstchar == '~'){
+		}else{												//decrypt 1st time if found locally, 2nd time if synced from Chrome
+			if(!lockMsg.textContent.match('not found in Chrome sync')){
+				var firstchar = lockBox.textContent.slice(0,1);
+				if(firstchar == 'k'){
 					decryptLock()
 				}
 			}
 		}
-	} else if (!suspendFindLock){											//otherwise search database
+	}else if(!suspendFindLock){											//otherwise search database
 			return findLock()
-	} else {
-		if(lockBox.innerHTML.trim() == ''){
+	}else{
+		if(lockBox.textContent.trim() == ''){
 			suspendFindLock = false;
 			return findLock()
 		}
@@ -360,22 +511,27 @@ function pwdKeyup(evt){
 	keytime = new Date().getTime();
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){acceptKey()} else{
-		 return keyStrength(pwd.value,true);
+	if(key == 13){acceptKey()} else{
+		 return keyStrength(pwd.value,true)
 	}
 }
 
 //Key strength display on intro screen
 function introKeyup(){
-	return keyStrength(pwdIntro.value,true);
+	return keyStrength(pwdIntro.value,true)
+}
+
+//Key strength display on image hide screen
+function imageKeyup(){
+	return keyStrength(imagePwd.value,true)
 }
 
 //same but for decoy In screen
 function decoyKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){submitDecoyIn()} else{
-		 return keyStrength(decoyPwdIn.value,true);
+	if(key == 13){submitDecoyIn()} else{
+		 return keyStrength(decoyPwdIn.value,true)
 	}
 }
 
@@ -383,8 +539,8 @@ function decoyKeyup(evt){
 function newKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){changeKey()} else{
-		 return keyStrength(newKey.value,true);
+	if(key == 13){changeKey()} else{
+		 return keyStrength(newKey.value,true)
 	}
 }
 
@@ -392,63 +548,63 @@ function newKeyup(evt){
 function newKey2up(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){changeKey()} else {
+	if(key == 13){changeKey()}else{
 		var	newkey = newKey.value,
 			newkey2 = newKey2.value,
 			length = newkey.length,
 			length2 = newkey2.length;
 		if(length != length2){
 			if(newkey2 == newkey.slice(0,length2)){
-				keyChangeMsg.innerText = 'Keys match so far. ' + (length - length2) + ' characters to go'
-			} else {
-				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
+				keyChangeMsg.textContent = 'Keys match so far. ' + (length - length2) + ' characters to go'
+			}else{
+				keyChangeMsg.textContent = "Keys don't match"
 			}
 		}else{
 			if(newkey2 == newkey){
-				keyChangeMsg.innerHTML = "<span style='color:cyan'>Keys match!</span>"
-			} else {
-				keyChangeMsg.innerHTML = "<span style='color:magenta'>Keys don't match</span>"
+				keyChangeMsg.textContent = "Keys match!>"
+			}else{
+				keyChangeMsg.textContent = "Keys don't match"
 			}
 		}
 	}
 }
 
 //activated when the user clicks OK on a decoy screen
-function submitDecoyIn(){
+function submitDecoy(){
 	closeBox();
-	lockUnlock()
+	if(callKey == 'sign'){
+		signVerify()
+	}else{
+		lockBtnAction()
+	}
 }
 
 //Enter has the same effect as clicking OK in decoy and parts box
 function decoyKeyupOut(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){submitDecoyOut()};
-}
-function submitDecoyOut(){
-	closeBox();
-	lockUnlock()
+	if(key == 13){submitDecoy()}
 }
 function partsKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){submitParts()};
+	if(key == 13){submitParts()}
 }
 function submitParts(){
 	if(!isNaN(partsNumber.value)){
 	closeBox();
-	secretshare();
+	secretshare()
 	}
 }
 function emailKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){email2any()};
+	if(key == 13){email2any()}
 }
 function nameKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if (key == 13){name2any()};
+	if(key == 13){name2any()}
 }
 
 //for switching between sets of buttons
@@ -456,22 +612,23 @@ function main2extra(){
 	if(basicMode.checked) return;
 	openClose("mainBtnsTop");
 	openClose("extraButtonsTop");
-	fillList();
+	fillList()
 }
 
 //switch to Advanced mode
 function mode2adv(){
 	mainBtnsTop.style.display = 'block';
 	basicBtnsTop.style.display = 'none';
+	emailBtnsTop.style.display = 'none';
 	lockBtnsBottom.style.display = 'block';
 	advancedModes.style.display = 'block';
+	basicHideModes.style.display = 'block';
+	specialEncryptModes.style.display = 'block';
 	advancedBtns.style.display = 'block';
 	advancedHelp.style.display = 'block';
 	basicMode.checked = false;
 	advancedMode.checked = true;
-	emailMode.checked = false;
-	hideBtnBasic.style.display = 'none';
-	decoyEmail.style.display = '';		
+	emailMode.checked = false;	
 	anonMode.style.display = '';
 	anonLabel.style.display = '';
 	anonMode.checked = true;
@@ -485,17 +642,18 @@ function mode2adv(){
 function mode2basic(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
-	basicBtnsTop.style.display = 'block';	
+	basicBtnsTop.style.display = 'block';
+	emailBtnsTop.style.display = 'none';	
 	lockBtnsBottom.style.display = 'none';
+	basicHideModes.style.display = 'none';
 	advancedModes.style.display = 'none';
+	specialEncryptModes.style.display = 'none';
 	advancedBtns.style.display = 'none';
 	advancedHelp.style.display = 'none';
 	basicMode.checked = true;
 	advancedMode.checked = false;
 	emailMode.checked = false;
 	resetAdvModes();
-	hideBtnBasic.style.display = 'none';
-	decoyEmail.style.display = 'none';
 	decoyMode.checked = false;	
 	anonMode.style.display = '';
 	anonLabel.style.display = '';
@@ -511,9 +669,12 @@ function mode2basic(){
 function mode2email(){
 	mainBtnsTop.style.display = 'none';
 	extraButtonsTop.style.display = 'none';
-	basicBtnsTop.style.display = 'block';
+	basicBtnsTop.style.display = 'none';
+	emailBtnsTop.style.display = 'block';
 	lockBtnsBottom.style.display = 'none';
+	basicHideModes.style.display = 'block';
 	advancedModes.style.display = 'none';
+	specialEncryptModes.style.display = 'none';
 	advancedBtns.style.display = 'none';
 	advancedHelp.style.display = 'none';
 	basicMode.checked = false;
@@ -521,8 +682,6 @@ function mode2email(){
 	emailMode.checked = true;
 	ezLokMode.checked = true;
 	resetAdvModes();
-	hideBtnBasic.style.display = '';
-	decoyEmail.style.display = '';
 	letterMode.checked = true;
 	anonMode.style.display = 'none';
 	anonLabel.style.display = 'none';
@@ -549,47 +708,34 @@ function resetAdvModes(){
 function main2lock(){
 	if(tabLinks['mainTab'].className == '') return;
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
-		lockMsg.innerHTML = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click <strong>Save</strong>.'
+		lockMsg.textContent = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click Save'
 	}
-	var string = lockBox.innerHTML.replace(/<br>$/,"").trim();
+	var string = lockBox.textContent.trim();
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
-		newcover(string);
+		newCover(string)
 	}
 	resetList();
 	openClose('lockScr');
-	openClose('shadow');
+	openClose('shadow')
 }
 
-//open image screen
-function main2image(){
-	if (learnMode.checked){
-		var reply = confirm("A new screen will open so you can load an image and hide the contents of the box in it. This only works for valid PassLok output. Cancel if this is not what you want.");
-		if(!reply) throw("Image canceled");
-	};
-	openClose('imageScr');
-	if(document.getElementById('preview').src.slice(0,4)!='data'){
-		imagemsg.innerHTML='Click the button above to load an image'
-	}else{
-		updateCapacity()
-	}
-};
-
-//return from image screen
+//close image screen
 function image2main(){
 	if(imageScr.style.display=='block'){
 		openClose('imageScr');
+		openClose('shadow')
 	}
 }
 
 //go to general directory frame
 function lock2dir(){
-	if (learnMode.checked){
+	if(learnMode.checked){
 		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
-		if(!reply) throw("General Directory canceled");
-	};
+		if(!reply) throw("General Directory canceled")
+	}
 	if(keyScr.style.display=='block') return;
 	if(lockdirScr.style.display=='none') loadLockDir();
-	var locklength = stripTags(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,''))).length;
+	var locklength = stripTags(removeHTMLtags(mainBox.textContent)).length;
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
 //if populated, send Lock to General Directory
@@ -597,7 +743,7 @@ function lock2dir(){
 		frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');			//no formatting
 		frame.onload = function() {
 	    	frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
-		};
+		}
 		lockdirScr.style.display = "block";
 		return
 	}
@@ -613,19 +759,19 @@ function dir2any(){
 
 //to load general Lock directory only once
 function loadLockDir(){
-	if(document.getElementById('lockdirFrame').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirFrame').src = 'https://www.passlok.com/lockdir';
+	if(document.getElementById('lockdirFrame').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirFrame').src = 'https://www.passlok.com/lockdir'
 }
 
 //loads the chat frame
 function main2chat(token){
 	if(isAndroid){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
-		if(!reply) throw('chat canceled by user');
+		if(!reply) throw('chat canceled by user')
 	}
 	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;			//this link should be local in the Chrome app
-	chatBtn.innerText = 'Back to Chat';
+	chatBtn.textContent = 'Back to Chat';
 	chatBtn.style.color = 'orange';
-	chatScr.style.display = 'block';
+	chatScr.style.display = 'block'
 }
 
 //called when the Key box is empty
@@ -641,7 +787,7 @@ function any2key(){
 function any2email(){
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block';
-	emailMsg.innerText = 'Please enter your new email or similar item, or a new random token';
+	emailMsg.textContent = 'Please enter your new email or similar item, or a new random token';
 	if(!isMobile) emailBox.focus()
 }
 
@@ -651,7 +797,7 @@ function key2any(){
 	keytimer = setTimeout(resetKeys, 300000);	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
 	keyScr.style.display = 'none';
-	shadow.style.display = 'none';
+	shadow.style.display = 'none'
 }
 
 //leave email screen
@@ -662,7 +808,7 @@ function email2any(){
 	if(myEmail.length == 43 && fullAccess){
 		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
 		if(!result){
-			emailMsg.innerText = 'Random token overwrite canceled';
+			emailMsg.textContent = 'Random token overwrite canceled';
 			throw ('random token overwrite canceled')
 		}
 	}
@@ -672,15 +818,16 @@ function email2any(){
 	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
-	myLock = nacl.util.encodeBase64(nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey).replace(/=+$/,'');
-	myezLock = changeBase(myLock, base64, base36, true);
+	myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
+	myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
+	myezLock = changeBase(myLockStr, base64, base36, true);
 	if(dispLock) lockDisplay();
 
 	if(fullAccess) storemyEmail();
 	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
 	if(tabLinks['optionsTab'].className == 'selected'){
-		optionMsg.innerHTML = '<span style="color:cyan">Email/token changed</span>';
+		optionMsg.textContent = 'Email/token changed';
 	}
 	fillList();
 	callKey = ''
@@ -692,11 +839,11 @@ function name2any(){
 	if(fullAccess){
 		changeName()
 	}else{
-		namechangemsg.innerText = 'Name change not allowed in Guest mode';
+		namechangemsg.textContent = 'Name change not allowed in Guest mode';
 		throw('Name change canceled')
 	}
 	closeBox();
-	optionMsg.innerHTML = '<span style="color:cyan">The User Name has changed to: </span>'+ userName;
+	optionMsg.textContent = 'The User Name has changed to: '+ userName;
 	callKey = ''
 }
 
@@ -720,8 +867,12 @@ if (document.getElementById) {
  document.writeln('//--></style>') }
 
 function openClose(theID) {
- if (document.getElementById(theID).style.display === "block") { document.getElementById(theID).style.display = "none" }
- else { document.getElementById(theID).style.display = "block" } };
+	if(document.getElementById(theID).style.display === "block"){
+		document.getElementById(theID).style.display = "none"
+	}else{
+		document.getElementById(theID).style.display = "block"
+	}
+}
 // end of hide trick
 
 //as above, but closes everything else in help
@@ -741,17 +892,17 @@ function openHelp(theID){
 }
 
 <!--variables and functions for making tabs, by Matt Doyle 2009-->
-    var tabLinks = new Array();
-    var contentDivs = new Array();
+var tabLinks = new Array(),
+	contentDivs = new Array();
 
-    function initTabs() {
+function initTabs(){
 
       // Grab the tab links and content divs from the page
       var tabListItems = document.getElementById('tabs').childNodes;
-      for ( var i = 0; i < tabListItems.length; i++ ) {
-        if ( tabListItems[i].nodeName == "LI" ) {
+      for( var i = 0; i < tabListItems.length; i++){
+        if(tabListItems[i].nodeName == "LI"){
           var tabLink = getFirstChildWithTagName( tabListItems[i], 'A' );
-          var id = getHash( tabLink.getAttribute('href') );
+          var id = getHash( tabLink.getAttribute('href'));
           tabLinks[id] = tabLink;
           contentDivs[id] = document.getElementById(id)
         }
@@ -761,32 +912,32 @@ function openHelp(theID){
       // highlight the first tab
       var i = 0;
 
-      for ( var id in tabLinks ) {
+      for(var id in tabLinks){
         tabLinks[id].onclick = showTab;
-        tabLinks[id].onfocus = function() { this.blur() };
-        if ( i == 0 ) tabLinks[id].className = 'selected';
+        tabLinks[id].onfocus = function(){ this.blur()};
+        if (i == 0) tabLinks[id].className = 'selected';
         i++
       }
 
       // Hide all content divs except the first
       var i = 0;
 
-      for ( var id in contentDivs ) {
-        if ( i != 0 ) contentDivs[id].className = 'tabContent hide';
+      for(var id in contentDivs){
+        if( i != 0 ) contentDivs[id].className = 'tabContent hide';
         i++
       }
-    }
+}
 
-    function showTab() {
-      var selectedId = getHash( this.getAttribute('href') );
+function showTab(){
+      var selectedId = getHash( this.getAttribute('href'));
 
       // Highlight the selected tab, and dim all others.
       // Also show the selected content div, and hide all others.
-      for ( var id in contentDivs ) {
-        if ( id == selectedId ) {
+      for(var id in contentDivs){
+        if(id == selectedId){
           tabLinks[id].className = 'selected';
           contentDivs[id].className = 'tabContent'
-        } else {
+        }else{
           tabLinks[id].className = '';
           contentDivs[id].className = 'tabContent hide'
         }
@@ -794,7 +945,7 @@ function openHelp(theID){
 	  if(this.hash == '#mainTab') fillList();
 	  if(this.hash != '#optionsTab'){
 		  customColors.style.display = 'none';
-		  optionMsg.innerText = 'Change Name, Key, etc.'
+		  optionMsg.textContent = 'Change Name, Key, etc.'
 	  }
 	  if(this.hash != '#helpTab' && !isiOS){
 			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
@@ -803,78 +954,78 @@ function openHelp(theID){
 
       // Stop the browser following the link
       return false
-    }
+}
 
-    function getFirstChildWithTagName( element, tagName ) {
-      for ( var i = 0; i < element.childNodes.length; i++ ) {
-        if ( element.childNodes[i].nodeName == tagName ) return element.childNodes[i]
+function getFirstChildWithTagName(element, tagName){
+      for(var i = 0; i < element.childNodes.length; i++){
+        if(element.childNodes[i].nodeName == tagName) return element.childNodes[i]
       }
-    }
+}
 
-    function getHash( url ) {
-      var hashPos = url.lastIndexOf ( '#' );
-      return url.substring( hashPos + 1 )
-    }
+function getHash(url){
+      var hashPos = url.lastIndexOf('#');
+      return url.substring(hashPos + 1)
+}
 //end of tab functions
 
 //function to search in Help tab, from JAVASCRIPTER.NET 2011
 var TRange=null;
 
-function findString (str) {
- if (parseInt(navigator.appVersion)<4) return;
+function findString (str){
+ if (parseInt(navigator.appVersion) < 4) return;
  var strFound;
- if (window.find) {
+ if (window.find){
 
   // CODE FOR BROWSERS THAT SUPPORT window.find
 
-  strFound=self.find(str);
-  if (!strFound) {
-   strFound=self.find(str,0,1);
-   while (self.find(str,0,1)) continue
+  strFound = self.find(str);
+  if (!strFound){
+   strFound = self.find(str,0,1);
+   while(self.find(str,0,1)) continue
   }
  }
- else if (navigator.appName.indexOf("Microsoft")!=-1) {
+ else if(navigator.appName.indexOf("Microsoft") != -1){
 
   // EXPLORER-SPECIFIC CODE
 
-  if (TRange!=null) {
+  if(TRange != null){
    TRange.collapse(false);
-   strFound=TRange.findText(str);
-   if (strFound) TRange.select();
+   strFound = TRange.findText(str);
+   if(strFound) TRange.select();
   }
-  if (TRange==null || strFound==0) {
-   TRange=self.document.body.createTextRange();
-   strFound=TRange.findText(str);
-   if (strFound) TRange.select()
+  if(TRange == null || strFound == 0){
+   TRange = self.document.body.createTextRange();
+   strFound = TRange.findText(str);
+   if(strFound) TRange.select()
   }
  }
- else if (navigator.appName=="Opera") {
+ else if(navigator.appName == "Opera"){
   alert ("Opera browsers not supported, sorry...")
   return
  }
- if (!strFound){
-	 helpmsg.innerText = 'Text not found in the titles'
+ if(!strFound){
+	 helpmsg.textContent = 'Text not found in the titles'
  }else{
-	 helpmsg.innerText = 'Text highlighted below. Click again to see more results'
+	 helpmsg.textContent = 'Text highlighted below. Click again to see more results'
  }
  return
 }
 
 //for rich text editing
-function formatDoc(sCmd, sValue) {
+function formatDoc(sCmd, sValue){
 	  document.execCommand(sCmd, false, sValue); mainBox.focus()
 }
 
 var niceEditor = false;
 //function to toggle rich text editing on mainBox
-function toggleRichText() {
-	if(niceEditor) {
+function toggleRichText(){
+	if(niceEditor){
 		toolBar1.style.display = 'none';
 		mainBox.style.borderTopLeftRadius = '15px';
 		mainBox.style.borderTopRightRadius = '15px';
 		niceEditBtn.innerText = 'Rich';
 		niceEditor = false
-	} else {
+	}else{
 		toolBar1.style.display = 'block';
 		mainBox.style.borderTopLeftRadius = '0';
 		mainBox.style.borderTopRightRadius = '0';

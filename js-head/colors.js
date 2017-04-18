@@ -222,7 +222,8 @@ function updateBtnColor(isPicker){
 	addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'28'));
 	addCSSRule(btnTextSheet, ".custom-file-input::before", "color:#" + milder(fgColor[2],'28'));
 	decryptBtn.style.color = '#' + fgColor[2];
-	decryptBtnBasic.style.color = '#' + fgColor[2]
+	decryptBtnBasic.style.color = '#' + fgColor[2];
+	decryptBtnEmail.style.color = '#' + fgColor[2];
 }
 
 //and for boxes (index 3)

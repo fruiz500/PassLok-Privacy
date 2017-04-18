@@ -7,7 +7,7 @@ window.onload = function() {
 		selectMainBtn.style.display = 'none';
 		imgSpacer.style.display = 'none';
 	} else {
-		preview.style.width = "40%";					//smaller image on PCs
+		previewImg.style.width = "80%";					//smaller image on PCs
 		sendSMSBtn.style.display = 'none';
 	}
 	if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
@@ -21,13 +21,13 @@ window.onload = function() {
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
-		anonLabel.innerText = ' Anon.  ';
+		anonLabel.textContent = ' Anon.  ';
 		modeLabel.style.display = 'none';
 		otherLabel.style.display = 'none';
-		greenLabel.innerText = 'Grn';
-		customLabel.innerText = 'Cust';
-		backgroundLabel.innerText = 'Bg.';
-		sentencesLabel.innerText = 'Sent.';
+		greenLabel.textContent = 'Grn';
+		customLabel.textContent = 'Cust';
+		backgroundLabel.textContent = 'Bg.';
+		sentencesLabel.textContent = 'Sent.';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
@@ -50,6 +50,9 @@ window.onload = function() {
 	imageFile.addEventListener('change', importImage);
 	imageFile.addEventListener('click', function(){this.value = '';});
 
+	imageFileEmail.addEventListener('change', importImage);
+	imageFileEmail.addEventListener('click', function(){this.value = '';});
+
 	lockFile.addEventListener('change', loadLockFile);
 	lockFile.addEventListener('click', function(){this.value = '';});
 
@@ -59,23 +62,25 @@ window.onload = function() {
 
     decodeImgBtn.addEventListener('click', decodeImage);
 
-   	showLockBtn.addEventListener('click', showLock);
+	imagePwd.addEventListener('keyup', imageKeyup);
+
+	showLockBtn.addEventListener('click', showLock);
 
 	selectMainBtn.addEventListener('click', selectMain);
 
    	clearMainBtn.addEventListener('click', clearMain);
 
-   	showLockBtnBasic.addEventListener('click', showLock);
+	showLockBtnBasic.addEventListener('click', showLock);
 
-   	decryptBtn.addEventListener('click', lockUnlock);
+   	decryptBtn.addEventListener('click', lockBtnAction);
 
 	verifyBtn.addEventListener('click', signVerify);
 
    	main2extraBtn.addEventListener('click', main2extra);
 
-   	decryptBtnBasic.addEventListener('click', lockUnlock);
+   	decryptBtnBasic.addEventListener('click', lockBtnAction);
 
-	hideBtnBasic.addEventListener('click', textStego);
+	decryptBtnEmail.addEventListener('click', lockBtnAction);
 
    	extra2mainBtn.addEventListener('click', main2extra);
 
@@ -85,11 +90,11 @@ window.onload = function() {
 
    	sendSMSBtn.addEventListener('click', sendSMS);
 
-   	imageBtn.addEventListener('click', main2image);
-
    	secretShareBtn.addEventListener('click', splitJoin);
 
 	stegoBtn.addEventListener('click', textStego);
+
+	stegoBtnEmail.addEventListener('click', textStego);
 
    	image2mainBtn.addEventListener('click', image2main);
 
@@ -175,11 +180,17 @@ window.onload = function() {
 
 	fileMode.addEventListener('click', checkboxStore);
 
+	binaryMode.addEventListener('click', checkboxStore);
+
+	textMode.addEventListener('click', checkboxStore);
+
 	chromeSyncMode.addEventListener('click', checkboxStore);
 
 	sentenceMode.addEventListener('click', checkboxStore);
 
 	letterMode.addEventListener('click', checkboxStore);
+
+	invisibleMode.addEventListener('click', checkboxStore);
 
 	wordMode.addEventListener('click', checkboxStore);
 
@@ -211,15 +222,15 @@ window.onload = function() {
 
    	showDecoyInCheck.addEventListener('click', showDecoyIn);
 
-   	submitDecoyBtn.addEventListener('click', submitDecoyIn);
+   	submitDecoyBtn.addEventListener('click', submitDecoy);
 
-   	cancelDecoyBtn.addEventListener('click', cancelDecoyIn);
+   	cancelDecoyBtn.addEventListener('click', cancelDecoy);
 
    	showDecoyOutCheck.addEventListener('click', showDecoyOut);
 
-   	submitDecoy2Btn.addEventListener('click', submitDecoyOut);
+   	submitDecoy2Btn.addEventListener('click', submitDecoy);
 
-   	cancelDecoy2Btn.addEventListener('click', cancelDecoyOut);
+   	cancelDecoy2Btn.addEventListener('click', cancelDecoy);
 
    	submitPartsBtn.addEventListener('click', submitParts);
 
@@ -335,7 +346,7 @@ window.onload = function() {
 	aa5.addEventListener('click', function() {openHelp('a5')});
 	aa6.addEventListener('click', function() {openHelp('a6')});
 	aa7.addEventListener('click', function() {openHelp('a7')});
-//	aa8.addEventListener('click', function() {openHelp('a8')});
+	aa8.addEventListener('click', function() {openHelp('a8')});
 	aa9.addEventListener('click', function() {openHelp('a9')});
 	aa10.addEventListener('click', function() {openHelp('a10')});
 	aa11.addEventListener('click', function() {openHelp('a11')});
@@ -389,6 +400,7 @@ window.onload = function() {
 	aa59.addEventListener('click', function() {openHelp('a59')});
 	aa60.addEventListener('click', function() {openHelp('a60')});
 	aa61.addEventListener('click', function() {openHelp('a61')});
+	aa62.addEventListener('click', function() {openHelp('a62')});
 
 //a few help items don't have extra material, but are ready here just in case. Uncomment as needed
 
@@ -399,7 +411,7 @@ window.onload = function() {
 	bb5.addEventListener('click', function() {openClose('b5')});
 	bb6.addEventListener('click', function() {openClose('b6')});
 	bb7.addEventListener('click', function() {openClose('b7')});
-//	bb8.addEventListener('click', function() {openClose('b8')});
+	bb8.addEventListener('click', function() {openClose('b8')});
 	bb9.addEventListener('click', function() {openClose('b9')});
 	bb10.addEventListener('click', function() {openClose('b10')});
 	bb11.addEventListener('click', function() {openClose('b11')});
@@ -407,7 +419,7 @@ window.onload = function() {
 	bb13.addEventListener('click', function() {openClose('b13')});
 	bb14.addEventListener('click', function() {openClose('b14')});
 	bb15.addEventListener('click', function() {openClose('b15')});
-	bb16.addEventListener('click', function() {openClose('b16')});
+//	bb16.addEventListener('click', function() {openClose('b16')});
 	bb17.addEventListener('click', function() {openClose('b17')});
 	bb18.addEventListener('click', function() {openClose('b18')});
 	bb19.addEventListener('click', function() {openClose('b19')});
@@ -422,37 +434,38 @@ window.onload = function() {
 	bb28.addEventListener('click', function() {openClose('b28')});
 	bb29.addEventListener('click', function() {openClose('b29')});
 	bb30.addEventListener('click', function() {openClose('b30')});
-//	bb31.addEventListener('click', function() {openClose('b31')});
+	bb31.addEventListener('click', function() {openClose('b31')});
 	bb32.addEventListener('click', function() {openClose('b32')});
 	bb33.addEventListener('click', function() {openClose('b33')});
 	bb34.addEventListener('click', function() {openClose('b34')});
 	bb35.addEventListener('click', function() {openClose('b35')});
-	bb36.addEventListener('click', function() {openClose('b36')});
+//	bb36.addEventListener('click', function() {openClose('b36')});
 	bb37.addEventListener('click', function() {openClose('b37')});
-//	bb38.addEventListener('click', function() {openClose('b38')});
+	bb38.addEventListener('click', function() {openClose('b38')});
 	bb39.addEventListener('click', function() {openClose('b39')});
 	bb40.addEventListener('click', function() {openClose('b40')});
 	bb41.addEventListener('click', function() {openClose('b41')});
 	bb42.addEventListener('click', function() {openClose('b42')});
-	bb43.addEventListener('click', function() {openClose('b43')});
+//	bb43.addEventListener('click', function() {openClose('b43')});
 	bb44.addEventListener('click', function() {openClose('b44')});
 	bb45.addEventListener('click', function() {openClose('b45')});
-//	bb46.addEventListener('click', function() {openClose('b46')});
+	bb46.addEventListener('click', function() {openClose('b46')});
 	bb47.addEventListener('click', function() {openClose('b47')});
 	bb48.addEventListener('click', function() {openClose('b48')});
 	bb49.addEventListener('click', function() {openClose('b49')});
-//	bb50.addEventListener('click', function() {openClose('b50')});
+	bb50.addEventListener('click', function() {openClose('b50')});
 	bb51.addEventListener('click', function() {openClose('b51')});
 	bb52.addEventListener('click', function() {openClose('b52')});
 	bb53.addEventListener('click', function() {openClose('b53')});
-	bb54.addEventListener('click', function() {openClose('b54')});
+//	bb54.addEventListener('click', function() {openClose('b54')});
 	bb55.addEventListener('click', function() {openClose('b55')});
-//	bb56.addEventListener('click', function() {openClose('b56')});
-//	bb57.addEventListener('click', function() {openClose('b57')});
-//	bb58.addEventListener('click', function() {openClose('b58')});
+	bb56.addEventListener('click', function() {openClose('b56')});
+	bb57.addEventListener('click', function() {openClose('b57')});
+	bb58.addEventListener('click', function() {openClose('b58')});
 	bb59.addEventListener('click', function() {openClose('b59')});
-	bb60.addEventListener('click', function() {openClose('b60')});
-	bb61.addEventListener('click', function() {openClose('b61')});
+//	bb60.addEventListener('click', function() {openClose('b60')});
+//	bb61.addEventListener('click', function() {openClose('b61')});
+//	bb62.addEventListener('click', function() {openClose('b62')});
 
 };
 
@@ -469,9 +482,9 @@ window.addEventListener('message', receiveMessage, false);
 //gets Lock from the general directory iframe and puts it in Lock screen
 function receiveMessage(evt){
   	if (evt.origin === 'https://www.passlok.com'){
-    	lockBox.innerText = evt.data;
+    	lockBox.textContent = evt.data;
 		suspendFindLock = true;
-		lockMsg.innerHTML='Give a name to this Lock and save it. Otherwise Clear.'
+		lockMsg.textContent='Give a name to this Lock and save it. Otherwise Clear.'
   	}
 }
 

@@ -33,8 +33,8 @@ if(isChrome){
 //clears the no JavaScript warning and displays an initial message depending on the type of source
 function showGreeting(){
 	var protocol = window.location.protocol;
-	var msgStart = "<span style='color:green'><strong>Welcome to PassLok Privacy</strong></span><br />",
-		msgEnd = "<br />Select your user name and enter your Key. Then click OK";
+	var msgStart = "<span style='color:green'><strong>Welcome to PassLok Privacy</strong></span><br>",
+		msgEnd = "<br>Select your user name and enter your Key. Then click OK";
 	if(protocol == 'file:'){
 		keyMsg.innerHTML = msgStart + 'running from a saved file' + msgEnd
 	}else if(protocol == 'https:'){
@@ -85,7 +85,7 @@ function loadFileAsURL(){
 		if(URLFromFileLoaded.length > 2000000){
 			var reply = confirm("This file is larger than 1.5MB and Chrome won't save it. Do you want to continue loading it?");
 			if(!reply){
-				mainMsg.innerHTML = 'File load canceled';
+				mainMsg.textContent = 'File load canceled';
 				throw('file load canceled')
 			}
 		}
@@ -101,16 +101,16 @@ function loadFileAsURL(){
 	};
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8");
-		mainMsg.innerHTML = 'This is the content of file <strong>' + fileToLoad.name + '</strong>';
+		mainMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
 	}else{
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
-		mainMsg.innerHTML = 'The file has been loaded in encoded form. It is <strong>not encrypted.</strong>';
+		mainMsg.textContent = 'The file has been loaded in encoded form. It is NOT ENCRYPTED';
 	}
 	setTimeout(function(){
 		updateButtons();
-		if(decryptBtn.innerText == 'Decrypt') mainMsg.innerText = 'This file contains an encrypted item';
-		if(verifyBtn.innerText == 'Unseal') mainMsg.innerText = 'This file contains a sealed item';
-		if(secretShareBtn.innerText == 'Join') mainMsg.innerHTML = 'This file contains a part. Add more parts if necessary';
+		if(decryptBtn.textContent == 'Decrypt') mainMsg.textContent = 'This file may contain an encrypted item';
+		if(verifyBtn.textContent == 'Unseal') mainMsg.textContent = 'This file may contain a sealed item';
+		if(secretShareBtn.textContent == 'Join') mainMsg.textContent = 'This file may contain a part. Add more parts if necessary';
 	},300);
 }
 
@@ -126,7 +126,7 @@ function loadLockFile(){
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");
-	lockMsg.innerHTML = 'File <strong>' + escapedHTML(fileToLoad.name) + '</strong> has been loaded'
+	lockMsg.textContent = 'File ' + escapedName + ' has been loaded'
 }
 
 //to load an image into the main box
@@ -136,10 +136,10 @@ function loadImage(){
 	fileReader.onload = function(fileLoadedEvent){
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		if(URLFromFileLoaded.slice(0,10) != 'data:image'){
-			mainMsg.innerText = 'This file is not a recognized image type';
+			mainMsg.textContent = 'This file is not a recognized image type';
 			return
 		}
-		mainBox.innerHTML += safeHTML('<img style="width:50%;" src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
+		mainBox.innerHTML += safeHTML('<img style="width:100%;" src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");

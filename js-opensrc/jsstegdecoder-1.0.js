@@ -310,8 +310,8 @@ var JpegImage = (function jpegImage() {
       bitsCount = 0;
       marker = (data[offset] << 8) | data[offset + 1];
       if (marker <= 0xFF00) {
-		  imagemsg.innerHTML = 'This JPG image has errors';		//warning added by F. Ruiz for use in PassLok
-        throw "marker was not found";
+		  imageMsg.textContent = 'This JPG image has errors';		//warning added by F. Ruiz for use in PassLok
+//        throw "marker was not found";
       }
 
       if (marker >= 0xFFD0 && marker <= 0xFFD7) { // RSTx
@@ -748,7 +748,7 @@ var JpegImage = (function jpegImage() {
             offset += processed;
             break;
           default:
-            throw "unknown JPEG marker " + fileMarker.toString(16);
+//            throw "unknown JPEG marker " + fileMarker.toString(16);
         }
         fileMarker = readUint16();
       }
