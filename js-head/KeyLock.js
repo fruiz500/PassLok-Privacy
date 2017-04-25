@@ -165,6 +165,7 @@ function resetKeys(){
 	KeySgn = '';
 	KeyDH = '';
 	myEmail = '';
+	pwd.value = '';
 	imagePwd.value = ''
 }
 
