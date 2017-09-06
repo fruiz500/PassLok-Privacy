@@ -680,7 +680,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Several users (or several identities) can coexist on the same device.</li>
     </ul>
     <p>PassLok is <strong>still in experimental phase</strong> since there has not been enough time for security experts to uncover possible flaws. Bear this in mind before entrusting critical secrets to it.</p>
-    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://SeeOnce.net" target="_blank">https://SeeOnce.net</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. PassLok . Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <strong>PassLok for Email</strong>, an extension for <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/" target="_blank">Firefox</a> that integrates with popular email clients (currently Gmail, Yahoo, and Outlook). All of these apps are fully compatible with PassLok, although they are not compatible with each other.</p>
+    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://passlok.com/seeonce" target="_blank">https://passlok.com/seeonce</a>. SeeOnce implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. PassLok . Even easier is URSA, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <strong>PassLok for Email</strong>, an extension for <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/" target="_blank">Firefox</a> that integrates with popular email clients (currently Gmail, Yahoo, and Outlook). All of these apps are fully compatible with PassLok, although they are not compatible with each other.</p>
   </div>
   <hr>
   <div id="aa2" class="helpitem">
@@ -1167,7 +1167,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="a28" class="texter">
   	<p>1. If the three-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
     <ul>
-      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by vertical bars </em>&quot; | &quot;. Then click <strong>Done</strong>.    </li>
+      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by tildes </em>&quot;~&quot;. Then click <strong>Done</strong>.    </li>
     </ul>
     <p>2. Write the message in the lower box of the <strong>Main</strong> tab. This mode understands only Latin characters, and removes any accents and diacritic marks. </p>
     <p>3. Click the <strong>Encrypt</strong> button.    </p>
@@ -1176,7 +1176,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b28" class="texter">
-      <p>This mode engages automatically if the Key consists of three strings separated by vertical bars. If you have a single string, write two bars after it in order to use this mode. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab or on the <strong>Options</strong> tab.</p>
+      <p>This mode engages automatically if the Key consists of three strings separated by tildes. If you have a single string, write two tildes after it in order to use this mode. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab or on the <strong>Options</strong> tab.</p>
       <p>The method is described in detail in this page, which can also encrypt and decrypt messages: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. URSA can also encrypt and decrypt in this mode. Even though encryption and decryption can be performed without a computer, security against computer-based cryptanalysis is comparable to that of computer-based ciphers.</p>
     </div>
   </div>
@@ -1187,7 +1187,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="a29" class="texter">
     <p>1. If the three-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
     <ul>
-      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by vertical bars </em>&quot; | &quot;. Then click <strong>Done</strong>.</li>
+      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by tildes </em>&quot;~&quot;. Then click <strong>Done</strong>.</li>
     </ul>
     <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
     <p>3. Click the <strong>Decrypt</strong> button if decrypting does not start automatically. Unlike in other modes, you won't get a message telling you whether or not the decryption has been successful.</p>
@@ -1196,9 +1196,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b29" class="texter">
-      <p>It is okay if the message is broken up by
-        carriage returns or is
-        missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
+      <p>It is okay if the message is broken up by carriage returns or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
       <p>If you want to learn how to encrypt or decrypt in this mode, using simply paper and pencil, look at the instructions in this page, which also does encryption and decryption: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. URSA can also encrypt and decrypt in this mode.</p>
     </div>
   </div>
@@ -1878,12 +1876,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary" style="float:left;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4 (March 2017) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.2 (September 2017) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.1 &#169; F. Ruiz 2017
+  PassLok v2.4.2 &#169; F. Ruiz 2017
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -2227,5 +2225,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--initialization, button connections--> 
 <script src="js-body/initbuttons.js"></script>
+
 </body>
 </html>

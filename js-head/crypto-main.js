@@ -25,7 +25,7 @@ function Encrypt_Single(lockBoxItem,text){
 		throw("Lock box empty")
 	}
 
-	if(lockBoxItem.length*entropyPerChar > (mainBox.textContent.length+9)*8 && lockBoxItem.length > 43){		//special mode for long keys, first cut
+	if(lockBoxItem.length*entropyPerChar > (mainBox.textContent.length + 64) * 8 && lockBoxItem.length > 43){		//special mode for long keys, first cut
 		padEncrypt(text);
 		return
 	}
@@ -37,7 +37,7 @@ function Encrypt_Single(lockBoxItem,text){
 		LockStr = replaceByItem(lockBoxNoVideo),				//if it's the name of a stored item, use the decrypted item instead, if not and it isn't a Lock, there will be a warning. This function removes tags and non-base64 chars from true Locks only
 		name = lockMsg.textContent;
 	
-	if(LockStr.split('|').length == 3){																//key is three strings separated by bars: human-computable encryption
+	if(LockStr.split('~').length == 3){																//key is three strings separated by tildes: human-computable encryption
 		lockBox.textContent = LockStr;
 		humanEncrypt(text,true);
 		return
@@ -679,8 +679,8 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 	
 	if(type == 'h')	{																		//special human encrypted mode
 		lockBox.textContent = replaceByItem(lockBoxItem);
-		if(lockBox.textContent.split('|').length != 3){
-			mainMsg.textContent = 'Please supply a correct Key for human decryption: three strings separated by commas';
+		if(lockBox.textContent.split('~').length != 3){
+			mainMsg.textContent = 'Please supply a correct Key for human decryption: three strings separated by tildes';
 			return
 		}
 		humanEncrypt(cipherStr,false);													//when set to false the process decrypts
