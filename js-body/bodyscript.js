@@ -20,9 +20,9 @@
 //  Clear out "sorry, no JavaScript" warning and display the type of source
 	showGreeting();
 
-//set global variable indicating if there is a Chrome sync data area. Works for Chrome apps and extension
+//set global variable indicating if there is a Chrome sync data area. Works for Chrome and Firefox apps and extension
 var ChromeSyncOn = false;
-if(isChrome){
+if(chrome){
 	if(chrome.storage){
 		if(chrome.storage.sync){
 			ChromeSyncOn = true
@@ -33,17 +33,17 @@ if(isChrome){
 //clears the no JavaScript warning and displays an initial message depending on the type of source
 function showGreeting(){
 	var protocol = window.location.protocol;
-	var msgStart = "<span style='color:green'><strong>Welcome to PassLok Privacy</strong></span><br>",
+	var msgStart = "Welcome to PassLok Privacy<br>",
 		msgEnd = "<br>Select your user name and enter your Key. Then click OK";
 	if(protocol == 'file:'){
 		keyMsg.innerHTML = msgStart + 'running from a saved file' + msgEnd
 	}else if(protocol == 'https:'){
 		keyMsg.innerHTML = msgStart + 'downloaded from a secure server' + msgEnd
-	}else if(protocol == 'chrome-extension:'){
-		keyMsg.innerHTML = msgStart + 'running as a Chrome app' + msgEnd
+	}else if(protocol == 'chrome-extension:' || protocol == 'moz-extension:'){
+		keyMsg.innerHTML = msgStart + 'running as a Chrome or Firefox addon' + msgEnd
 	}else{
 		mainTab.style.backgroundColor = '#ffd0ff';
-		keyMsg.innerHTML = msgStart + '<span style="color:orange">WARNING: running from an insecure source!</span>' + msgEnd
+		keyMsg.innerHTML = msgStart + 'WARNING: running from an insecure source!' + msgEnd
 	}
 }
 
@@ -93,7 +93,7 @@ function loadFileAsURL(){
 			if(URLFromFileLoaded.slice(0,2) == '==' && URLFromFileLoaded.slice(-2) == '=='){
 				mainBox.innerHTML += safeHTML('<a download="' + fileName + '" href="data:,' + URLFromFileLoaded + '">' + fileName + '</a>')						//filter before adding to the DOM
 			}else{
-				mainBox.innerHTML += safeHTML('<br>' + URLFromFileLoaded.replace(/  /g,' &nbsp;'))
+				mainBox.innerHTML += DOMPurify.sanitize('<br>' + URLFromFileLoaded.replace(/  /g,' &nbsp;'))
 			}
 		}else{
 			mainBox.innerHTML += safeHTML('<a download="' + fileName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + fileName + '</a>')
@@ -122,7 +122,7 @@ function loadLockFile(){
 		var fileName = fileToLoad.name;
 			URLFromFileLoaded = fileLoadedEvent.target.result,
 			escapedName = escapeHTML(fileName);
-		lockBox.innerHTML = safeHTML('<a download="' + escapedName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + escapedName + '</a>')
+		lockBox.innerHTML = DOMPurify.sanitize('<a download="' + escapedName + '" href="' + URLFromFileLoaded.replace(/=+$/,'') + '">' + escapedName + '</a>')
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");
@@ -139,7 +139,7 @@ function loadImage(){
 			mainMsg.textContent = 'This file is not a recognized image type';
 			return
 		}
-		mainBox.innerHTML += safeHTML('<img style="width:100%;" src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
+		mainBox.innerHTML += DOMPurify.sanitize('<img src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");

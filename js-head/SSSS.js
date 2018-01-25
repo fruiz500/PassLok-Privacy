@@ -1,6 +1,6 @@
 ﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
-	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		secretshare()
 	},20)					//end of timeout
@@ -38,7 +38,7 @@ try{
 		}else{
 			var secret = LZString.decompressFromUint8Array(secBin)
 		}
-		mainBox.innerHTML = safeHTML(secret);									//disable non-whitelisted tags and attributes
+		mainBox.innerHTML = decryptSanitizer(secret);									//disable non-whitelisted tags and attributes
 		mainMsg.textContent = 'Join successful'
 }catch(err){
 	mainMsg.textContent = 'There was an error'									//the encodeUTF8 is the likely culprit

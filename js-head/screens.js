@@ -87,6 +87,8 @@ function updateButtons(){
 	}else{
 		secretShareBtn.textContent = 'Split'
 	}
+	
+	if(string){ selectMainBtn.textContent = 'Copy' }else{ selectMainBtn.textContent = 'Paste' }
 }
 
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
@@ -183,13 +185,14 @@ function resetChat(){
 	var frame = document.getElementById('chatFrame'),
 		src = frame.src;
 	frame.src = '';
-	setTimeout(function(){frame.src = src;}, 0)
+	setTimeout(function(){frame.src = src;}, 10)
 }
 
 //for clearing different boxes
 function clearMain(){
 	mainBox.textContent = '';
 	mainMsg.textContent = '';
+	selectMainBtn.textContent = 'Paste'
 	charsLeft()
 }
 function clearLocks(){
@@ -225,8 +228,9 @@ function lockBtnAction(){
 	}
 }
 
-//for selecting the Main box contents and copying them to clipboard
+//for selecting the Main box contents and copying them to clipboard, or pasting the clipboard if there is nothing
 function selectMain(){
+  if(mainBox.textContent.trim() != ''){
     var range, selection;
     if(document.body.createTextRange){
         range = document.body.createTextRange();
@@ -240,6 +244,10 @@ function selectMain(){
         selection.addRange(range)
     }
 	document.execCommand('copy')
+  }else{
+	document.execCommand("paste")	;
+	selectMainBtn.textContent = 'Copy'
+  }
 }
 
 //writes five random dictionary words in the intro Key box
@@ -734,7 +742,8 @@ function lock2dir(){
 		if(!reply) throw("General Directory canceled")
 	}
 	if(keyScr.style.display=='block') return;
-	if(lockdirScr.style.display=='none') loadLockDir();
+
+	if(lockdirScr.style.display=='none') loadLockDir();	
 	var locklength = stripTags(removeHTMLtags(mainBox.textContent)).length;
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
@@ -764,11 +773,11 @@ function loadLockDir(){
 
 //loads the chat frame
 function main2chat(token){
-	if(isAndroid){
+	if(isAndroid && isChrome){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
 		if(!reply) throw('chat canceled by user')
 	}
-	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;			//this link should be local in the Chrome app
+	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;				//open chat iframe; remote because of the CSP
 	chatBtn.textContent = 'Back to Chat';
 	chatBtn.style.color = 'orange';
 	chatScr.style.display = 'block'
@@ -860,12 +869,7 @@ function focusBox(){
 	}
 }
 
-<!-- Text hide trick, by Sandeep Gangadharan 2005-->
-if (document.getElementById) {
- document.writeln('<style type="text/css"><!--')
- document.writeln('.texter {display:none} @media print {.texter {display:block;}}')
- document.writeln('//--></style>') }
-
+//to hide and unhide stuff
 function openClose(theID) {
 	if(document.getElementById(theID).style.display === "block"){
 		document.getElementById(theID).style.display = "none"
@@ -873,11 +877,10 @@ function openClose(theID) {
 		document.getElementById(theID).style.display = "block"
 	}
 }
-// end of hide trick
 
 //as above, but closes everything else in help
 function openHelp(theID){
-	var helpItems = document.getElementsByClassName('texter');
+	var helpItems = document.getElementsByClassName('helpItem');
 	for(var i=0; i < helpItems.length; i++){
 		helpItems[i].style.display = 'none'
 	}

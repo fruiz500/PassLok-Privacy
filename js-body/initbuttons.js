@@ -236,7 +236,7 @@ window.onload = function() {
 
    	cancelPartsBtn.addEventListener('click', cancelPartsIn);
 
-   	closeLockdirBtn.addEventListener('click', lock2dir);
+	closeLockdirBtn.addEventListener('click', lock2dir);
 
    	closeChatBtn.addEventListener('click', chat2main);
 
@@ -467,10 +467,15 @@ window.onload = function() {
 //	bb61.addEventListener('click', function() {openClose('b61')});
 //	bb62.addEventListener('click', function() {openClose('b62')});
 
+//fixes after inline styles were moved to css file
+
+	lockList.style.padding = '4px';
+	lockList.style.width = '30%';
+	basicBtnsTop.style.display = 'block';
 };
 
 
-//this one is for mobile only. Remove for the Chrome app
+//this one is for mobile only. Remove for the extension
 window.addEventListener('load', function() {
 	FastClick.attach(document.body);
 }, false);

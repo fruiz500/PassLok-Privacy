@@ -1,6 +1,6 @@
 ﻿//function that starts it all when the Decrypt button is pushed
 function lock(lockBoxHTML,plainText){
-	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 10 ms delay
 		Encrypt_Single(lockBoxHTML,plainText);
 		updateButtons()
@@ -9,7 +9,7 @@ function lock(lockBoxHTML,plainText){
 
 //function that starts it all when the Decrypt button is pushed
 function unlock(type,cipherText,lockBoxHTML){
-	mainMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 10 ms delay
 		Decrypt_Single(type,cipherText,lockBoxHTML);
 		updateButtons()
@@ -753,9 +753,9 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 		var plain = PLdecrypt(cipher,nonce24,sharedKey,isCompressed,'symmetric');			//main decryption instruction	
 
 		if(isCompressed){
-			mainBox.innerHTML = safeHTML(plain.trim())					//make sure non-allowed tags and attributes are disabled
+			mainBox.innerHTML = decryptSanitizer(plain.trim())					//make sure non-allowed tags and attributes are disabled
 		}else{
-			mainBox.innerHTML = safeHTML(decodeURI(plain).trim())
+			mainBox.innerHTML = decryptSanitizer(decodeURI(plain).trim())
 		}
 		mainMsg.textContent = 'Decryption successful';
 																		//additional text to accompany an invitation
@@ -787,9 +787,9 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 		var plain = PLdecrypt(cipher,nonce24,sharedKey,isCompressed,'signed');			//decryption step
 
 		if(isCompressed){
-			mainBox.innerHTML = safeHTML(plain.trim())
+			mainBox.innerHTML = decryptSanitizer(plain.trim())
 		}else{
-			mainBox.innerHTML = safeHTML(decodeURI(plain).trim())
+			mainBox.innerHTML = decryptSanitizer(decodeURI(plain).trim())
 		}
 		mainMsg.textContent = 'Decryption successful'
 
@@ -809,9 +809,9 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 		var plain = PLdecrypt(cipher,nonce24,sharedKey,isCompressed,'anon');			//decryption step
 
 		if(isCompressed){
-			mainBox.innerHTML = safeHTML(plain.trim())
+			mainBox.innerHTML = decryptSanitizer(plain.trim())
 		}else{
-			mainBox.innerHTML = safeHTML(decodeURI(plain).trim())
+			mainBox.innerHTML = decryptSanitizer(decodeURI(plain).trim())
 		}
 		mainMsg.textContent = 'Decryption successful'
 
@@ -915,9 +915,9 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 		var plain = PLdecrypt(cipher,nonce24,sharedKey,isCompressed,'read-once');		//main decryption step
 
 		if(isCompressed){
-			mainBox.innerHTML = safeHTML(plain.trim())
+			mainBox.innerHTML = decryptSanitizer(plain.trim())
 		}else{
-			mainBox.innerHTML = safeHTML(decodeURI(plain).trim())
+			mainBox.innerHTML = decryptSanitizer(decodeURI(plain).trim())
 		}
 
 		locDir[name][2] = keyEncrypt(newLock);										//store the new ephemeral Lock
@@ -1174,7 +1174,7 @@ function Decrypt_List(type,cipherStr){
 
 	//final decryption for the main message, plus decompression
 	var plainstr = PLdecrypt(cipher,nonce24,msgKey,true);
-	mainBox.innerHTML = safeHTML(plainstr);											//non-whitelisted tags and attributes disabled
+	mainBox.innerHTML = decryptSanitizer(plainstr);											//non-whitelisted tags and attributes disabled
 
 	if(fullAccess) localStorage[userName] = JSON.stringify(locDir);				//everything OK, so store
 	if (!decoyMode.checked){
@@ -1224,5 +1224,5 @@ function decoyDecrypt(cipher,dummyLock){
 		plain = nacl.secretbox.open(cipherMsg,nonce24,sharedKey);
 		if(!plain) failedDecrypt('decoy')											//now give up
 	}
-	mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + safeHTML(decodeURI(nacl.util.encodeUTF8(plain))) + '</span>'		//color the hidden message
+	mainMsg.textContent = 'Hidden message: ' + decryptSanitizer(decodeURI(nacl.util.encodeUTF8(plain)))
 }

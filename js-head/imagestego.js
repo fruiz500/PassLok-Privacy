@@ -50,7 +50,7 @@ var importImage = function(e) {
 function updateCapacity(){
 	var	textsize = mainBox.textContent.length;
 
-	imageMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																				//give it 2 seconds to complete
 		if(imageMsg.textContent == 'PROCESSING') imageMsg.textContent = 'There was an error calculating the capacity, but the image is still usable'
 	},2000)
@@ -127,7 +127,7 @@ function encodePNG(){
 		throw("no image loaded")
 	}
 	
-	imageMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 
 	var resultURI = encodePNGprocess(text);																//this is the main process, in next functions
 
@@ -227,7 +227,7 @@ function decodeImage(){
 		if(!reply) throw("decode image canceled")
 	}
 	
-	imageMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	
 setTimeout(function(){
 	if(previewImg.src.slice(11,15) == 'png;'){							//two cases: png and jpeg
@@ -283,13 +283,13 @@ function decodePNG(){
 	permutation2 = [];
 	allCoefficients = [];
 	var text = fromBin(result[0]);
-	mainBox.innerHTML = safeHTML(text.trim());
+	mainBox.innerHTML = decryptSanitizer(text.trim());
 	image2main();
 	imagePwd.value = '';
 	updateButtons();
 	if(advancedMode.checked) main2extra();
 	if(result2){
-		mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + safeHTML(LZString.decompressFromBase64(fromBin(result2[0]))) + '</span>'
+		mainMsg.textContent = 'Hidden message: ' + decryptSanitizer(LZString.decompressFromBase64(fromBin(result2[0])))
 	}else{
 		mainMsg.textContent = 'This is what was hidden in the image'
 	}
@@ -333,7 +333,7 @@ var decodeJPG = function(){
 		}
 		
 		var text = fromBin(result[0]);
-		mainBox.innerHTML = safeHTML(text.trim());
+		mainBox.innerHTML = decryptSanitizer(text.trim());
 		image2main();
 		permutation = [];
 		permutation2 = [];
@@ -342,7 +342,7 @@ var decodeJPG = function(){
 		updateButtons();
 		if(advancedMode.checked) main2extra();
 		if(result2){
-			mainMsg.innerHTML = 'Hidden message: <span style="color:blue">' + safeHTML(LZString.decompressFromBase64(fromBin(result2[0]))) + '</span>'
+			mainMsg.textContent = 'Hidden message: ' + decryptSanitizer(LZString.decompressFromBase64(fromBin(result2[0])))
 		}else{
 			mainMsg.textContent = 'This is what was hidden in the image'
 		}
@@ -371,7 +371,7 @@ var encodeJPG = function(){
 		imageMsg.textContent = 'Please load an image before clicking this button';
 		throw("no image loaded")
 	}
-	imageMsg.innerHTML = '<span class="blink" style="color:cyan">PROCESSING</span>';				//Get blinking message started
+	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	
 setTimeout(function(){																			//the rest after a 30 ms delay
 	if(previewImg.src.slice(11,15).match(/gif;|png;/)) transparent2white();		//first remove transparency

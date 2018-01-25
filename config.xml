@@ -3,8 +3,8 @@
 <widget xmlns   = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
         id          = "com.fruiz500.passlok"
-        versionCode = "40"
-        version     = "2.4.2">
+        versionCode = "41"
+        version     = "2.4.6">
 
     <name>PassLok</name>
 

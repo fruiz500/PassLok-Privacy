@@ -13,7 +13,10 @@ function pasteLock(){
 	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
 
 	suspendFindLock = true;															//allow writing a name without searching
-	if (lockstripped.length == 43 || lockstripped.length == 50) lockMsg.textContent = 'Lock detected';
+	if (lockstripped.length == 43 || lockstripped.length == 50){
+		lockMsg.textContent = 'Lock detected';
+		lockBox.textContent = lockstripped
+	}
 	},0)
 }
 
@@ -105,7 +108,7 @@ function removeLock(){
 	fillList();
 
 		if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
-			if(confirm('Item removed from local storage. Do you want to remove it also from Chrome sync?')) remChromeLock(name)
+			if(confirm('Item removed from local storage. Do you want to remove it also from sync storage?')) remChromeLock(name)
 		}
 
 	suspendFindLock = false
@@ -194,7 +197,7 @@ function decryptLock(){
 	if(lockBox.textContent != ''){
 		var listArray = lockBox.innerHTML.split('<br>').filter(Boolean);
 		if(lockBox.textContent.length > 500){
-			lockBox.innerHTML = safeHTML(LZString.decompressFromBase64(lockBox.textContent).trim());
+			lockBox.innerHTML = decryptSanitizer(LZString.decompressFromBase64(lockBox.textContent).trim());
 			newCover(lockBox.textContent.trim());							//this for loading cover text from Lock screen
 			lockMsg.textContent = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
@@ -261,7 +264,7 @@ function decryptItem(){
 	refreshKey();
 	var	string = lockBox.textContent.trim();
 	if(string == "") throw('nothing to decrypt');
-	lockBox.innerHTML = safeHTML(keyDecrypt(string));
+	lockBox.innerHTML = decryptSanitizer(keyDecrypt(string));
 	if(callKey != 'decryptlock') callKey = ''
 }
 
@@ -615,7 +618,7 @@ function fillList(){
 	}else{var headingColor = '639789'};
 	if(extraButtonsTop.style.display == 'block'){									//steganography buttons showing
 		if(!isiPhone){
-			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Choose one stored Cover text:</option><option value="default">default</option>'
+			lockList.innerHTML = '<option value="" disabled selected>Choose one stored Cover text:</option><option value="default">default</option>'
 		}else{
 			lockList.innerHTML = '<option value="default">default</option>'
 		}
@@ -628,9 +631,9 @@ function fillList(){
 		if(isiPhone){
 			lockList.textContent = ''
 		}else if(isMobile){
-			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients:</option>'			
+			lockList.innerHTML = '<option value="" disabled selected>Select recipients:</option>'			
 		}else{
-			lockList.innerHTML = '<option value="" disabled selected style="color:#' + headingColor + ';">Select recipients (ctrl-click for several):</option>'
+			lockList.innerHTML = '<option value="" disabled selected>Select recipients (ctrl-click for several):</option>'
 		}
 		for(var name in locDir){
 			if(locDir[name][0].length < 500){
@@ -638,6 +641,7 @@ function fillList(){
 			}
 		}
 	}
+	lockList.style.color = '#' + headingColor;
 	lockList.options[0].selected = false
 }
 
@@ -714,7 +718,8 @@ function resetList(){
 
 //grab the names in localStorage and put them on the userName selection box. Buggy, so a lot of cleanup ifs
 function fillNameList(){
-	nameList.innerHTML = '<option value="" disabled style="color:#639789;">Select User Name:</option>';
+	nameList.innerHTML = '<option value="" disabled>Select User Name:</option>';
+	nameList.style.color = '#639789';
 	var list = [];
 	for(var name in localStorage){
 			//this if is because of a bug in Firefox

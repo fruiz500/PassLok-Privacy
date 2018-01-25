@@ -15,22 +15,31 @@ var base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
 function keyStrength(pwd,display) {
 	var entropy = entropycalc(pwd);
-
+	
+if(display){
 	if(entropy == 0){
-		var msg = 'This is a known <span style="color:magenta">bad Key!</span>';
+		var msg = 'This is a known bad Key!';
+		var colorName = 'magenta'
 	}else if(entropy < 20){
-		var msg = '<span style="color:magenta">Terrible!</span>';
+		var msg = 'Terrible!';
+		var colorName = 'magenta'
 	}else if(entropy < 40){
-		var msg = '<span style="color:red">Weak!</span>';
+		var msg = 'Weak!';
+		var colorName = 'red'
 	}else if(entropy < 60){
-		var msg = '<span style="color:orange">Medium</span>';
+		var msg = 'Medium';
+		var colorName = 'orange'
 	}else if(entropy < 90){
-		var msg = '<span style="color:green">Good!</span>';
+		var msg = 'Good!';
+		var colorName = 'green'
 	}else if(entropy < 120){
-		var msg = '<span style="color:blue">Great!</span>';
+		var msg = 'Great!';
+		var colorName = 'blue'
 	}else{
-		var msg = '<span style="color:cyan">Overkill  !!</span>';
+		var msg = 'Overkill  !';
+		var colorName = 'cyan'
 	}
+}
 
 	var iter = Math.max(1,Math.min(20,Math.ceil(24 - entropy/5)));			//set the scrypt iteration exponent based on entropy: 1 for entropy >= 120, 20(max) for entropy <= 20
 
@@ -49,12 +58,15 @@ function keyStrength(pwd,display) {
 			msg = 'Key entropy: ' + Math.round(entropy*100)/100 + ' bits. ' + msg + '<br>Up to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
 		}
 	}
-if(display){																//these are to display the appropriate messages. Use innerHTML to display colors
-	if(keyScr.style.display == "block") keyMsg.innerHTML = msg;
-	if(decoyIn.style.display == "block") decoyMsg.innerHTML = msg;
-	if(introscr3.style.display == "block") introMsg.innerHTML = msg;
-	if(keyChange.style.display == "block") keyChangeMsg.innerHTML = msg;
-	if(imageScr.style.display == "block") imageMsg.innerHTML = msg;
+if(display){											//these are to display the appropriate messages
+	var msgName = '';
+	if(keyScr.style.display != "none") msgName = 'keyMsg';
+	if(decoyIn.style.display == "block") msgName = 'decoyMsg';
+	if(introscr3.style.display == "block") msgName = 'introMsg';
+	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
+	if(imageScr.style.display == "block") msgName = 'imageMsg';
+	document.getElementById(msgName).innerHTML = msg;				//innerHTML to preserve the line break
+	document.getElementById(msgName).style.color = colorName;
 }
 	return iter
 };
@@ -149,7 +161,7 @@ function refreshKey(){
 	if (!KeyStr){
 		any2key();
 		if(callKey == 'initkey'){
-			keyMsg.innerHTML = '<span style="color:green"><strong>Welcome to PassLok Privacy</strong></span><br>Please enter your secret Key'
+			keyMsg.innerHTML = '<strong>Welcome to PassLok Privacy</strong><br>Please enter your secret Key'
 		}else{
 			keyMsg.textContent = 'Please enter your secret Key';
 			shadow.style.display = 'block'
@@ -205,7 +217,7 @@ function initUser(){
 		localStorage[userName] = JSON.stringify(locDir)
 	}
 	locDir = JSON.parse(localStorage[userName]);
-	mainMsg.innerHTML = '<span class="blink" style="color:orange">LOADING...</span> for best speed, use at least a Medium Key';
+	mainMsg.innerHTML = '<span class="blink">LOADING...</span> for best speed, use at least a Medium Key';
 	key2any();
 
 setTimeout(function(){									//do the rest after a short while to give time for the key screen to show
@@ -301,7 +313,7 @@ function acceptKey(){
 		throw("no userName")
 	}
 	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
-	if(firstInit) mainMsg.innerHTML = '<span class="blink" style="color:orange">LOADING...</span> for best speed, use at least a Medium Key';
+	if(firstInit) mainMsg.innerHTML = '<span class="blink">LOADING...</span> for best speed, use at least a Medium Key';
 	KeyStr = key;
 	key2any();
 
@@ -545,7 +557,7 @@ function extractLock(string){
 				fillBox()
 			}else{																				//not found, so store after asking for a name
 				var name = prompt("Looks like you just entered someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.");
-				if (!name) return;
+				if (!name) return string;
 				lockBox.textContent = possibleLock;
 				lockNameBox.value = name;
 				addLock()
@@ -666,7 +678,7 @@ function keyEncrypt(plainstr){
 
 //decrypts a string encrypted with the secret Key, 9 byte nonce. Returns original if not encrypted. If isArray set, return uint8 array
 function keyDecrypt(cipherStr,isArray){
-	var cipher = nacl.util.decodeBase64(cipherStr);
+	var cipher = nacl.util.decodeBase64(cipherStr.replace(/[^a-zA-Z0-9+\/]+/g,''));
 	if (cipher[0] == 144){
 		refreshKey();																	//make sure the Key is still alive
 		var	nonce = cipher.slice(1,10),												//ignore the marker byte
@@ -731,6 +743,20 @@ function safeHTML(string){
 	//recover web links and local anchors
 	string = string.replace(origReg1,'href="$1$2"').replace(origReg2,"href='$1$2'");
 	return string
+}
+
+//detects the presence of data URI scheme and offers to use the safeHTML filter rather than DOMPurify, which removes that content
+function decryptSanitizer(string){
+	if(string.indexOf('href="data:') == -1){		//check the absence of a link containing data
+		var result = DOMPurify.sanitize(string)
+	}else{											//otherwise ask the user what to do
+		if(confirm('The decrypted material seems to contain binary data, which might lead to unsafe execution in Firefox. If you click OK, it will be preserved, otherwise it will be removed.')){
+			var result = safeHTML(string)
+		}else{
+			var result = DOMPurify.sanitize(string)
+		}		
+	}
+	return result
 }
 
 nameBeingUnlocked = '';

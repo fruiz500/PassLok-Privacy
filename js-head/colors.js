@@ -2,48 +2,56 @@
 var btnSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';				//a nonce added because otherwise the CSP of the extension will refuse next statement
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var tabSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var boxSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var bgSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var btnTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var tabTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var boxTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
 var bgTextSheet = (function() {
 	var style = document.createElement("style");
 	style.appendChild(document.createTextNode(""));
+	style.nonce = '4AEemGb0yJptoIGFP3Nd';
 	document.head.appendChild(style);
 	return style.sheet
 })();
@@ -65,7 +73,6 @@ function removeCSSRule(sheet, selector, rules, index) {
 		sheet.removeRule(selector, rules, index)
 	}
 }
-
 
 //stores custom colors
 function storeColors(){
@@ -174,28 +181,26 @@ function updateBgColor(isPicker){
 		removeCSSRule(bgSheet,".white_content");
 		removeCSSRule(bgSheet,"ul#tabs");
 		removeCSSRule(bgSheet,"div.tabContent");
-		removeCSSRule(bgSheet,".helpitem:hover")
+		removeCSSRule(bgSheet,".helpHeading:hover")
 	}
 	addCSSRule(bgSheet, "body", "background-color:#" + bgColor[1]);
 	addCSSRule(bgSheet, ".block_page", "background-color:#" + bgColor[1]);
 	addCSSRule(bgSheet, ".white_content", "background-color:#" + bgColor[1]);
 	addCSSRule(bgSheet, "ul#tabs li a.selected", "background-color:#" + bgColor[1]);
 	addCSSRule(bgSheet, "div.tabContent", "background-color:#" + bgColor[1]);
-	addCSSRule(bgSheet, ".helpitem:hover", "background-color:#" + milder(bgColor[1],'11'));
+	addCSSRule(bgSheet, ".helpHeading:hover", "background-color:#" + milder(bgColor[1],'11'));
 	while(bgTextSheet.cssRules.length){
 		removeCSSRule(bgTextSheet,"body");
 		removeCSSRule(bgTextSheet,".block_page");
 		removeCSSRule(bgTextSheet,".white_content");
 		removeCSSRule(bgTextSheet,"ul#tabs");
-		removeCSSRule(bgTextSheet,"div.tabContent");
-		removeCSSRule(bgTextSheet,".custom-file-input")
+		removeCSSRule(bgTextSheet,"div.tabContent")
 	}
 	addCSSRule(bgTextSheet, "body", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, ".block_page", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, ".white_content", "color:#" + fgColor[1]);
 	addCSSRule(bgTextSheet, "ul#tabs li a.selected", "color:#" + fgColor[1]);
-	addCSSRule(bgTextSheet, "div.tabContent", "color:#" + fgColor[1]);
-	addCSSRule(bgTextSheet, ".custom-file-input", "color:#" + bgColor[1])		//bg color so it's invisible
+	addCSSRule(bgTextSheet, "div.tabContent", "color:#" + fgColor[1])
 }
 
 //and for buttons (index 2)
@@ -204,23 +209,15 @@ function updateBtnColor(isPicker){
 	while(btnSheet.cssRules.length){
 		removeCSSRule(btnSheet,".cssbutton");
 		removeCSSRule(btnSheet,".cssbutton:hover");
-		removeCSSRule(btnSheet,".custom-file-input::before");
-		removeCSSRule(btnSheet,".custom-file-input:hover::before");
-		removeCSSRule(btnSheet,".custom-file-input:active::before");
 		removeCSSRule(btnSheet,"#toolBar1")
 	}
 	addCSSRule(btnSheet, ".cssbutton", "background-color:#" + bgColor[2]);
 	addCSSRule(btnSheet, ".cssbutton:hover", "background-color:#" + milder(bgColor[2],'22'));
-	addCSSRule(btnSheet, ".custom-file-input::before", "background-color:#" + bgColor[2]);
-	addCSSRule(btnSheet, ".custom-file-input:hover::before", "background-color:#" + milder(bgColor[2],'22'));
-	addCSSRule(btnSheet, ".custom-file-input:active::before", "background-color:#" + milder(bgColor[2],'22'));
 	addCSSRule(btnSheet, "#toolBar1", "background-color:#" + bgColor[2]);
 	while(btnTextSheet.cssRules.length){
-		removeCSSRule(btnTextSheet,".cssbutton");
-		removeCSSRule(btnTextSheet,".custom-file-input::before")
+		removeCSSRule(btnTextSheet,".cssbutton")
 	}
 	addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'28'));
-	addCSSRule(btnTextSheet, ".custom-file-input::before", "color:#" + milder(fgColor[2],'28'));
 	decryptBtn.style.color = '#' + fgColor[2];
 	decryptBtnBasic.style.color = '#' + fgColor[2];
 	decryptBtnEmail.style.color = '#' + fgColor[2];
