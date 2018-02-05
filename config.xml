@@ -16,7 +16,7 @@
         Francisco Ruiz 
     </author>
     
-<preference name='phonegap-version' value='cli-6.5.0' />
+<preference name='phonegap-version' value='cli-8.0.0' />
 
 <!--Don't ask for any permissions other than file access-->	
 <preference name="permissions" value="none"/>
