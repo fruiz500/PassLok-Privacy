@@ -534,7 +534,7 @@ function showLock(){
 
 //extracts Lock at the start of an item, from an invitation or PassLok for Email
 function extractLock(string){
-		var CGParts = removeHTMLtags(string).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
+		var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
 		if(CGParts[0].length == 50){
 			var possibleLock = CGParts[0];
 			string = string.slice(56)
