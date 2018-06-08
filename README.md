@@ -23,7 +23,7 @@ These are the open source libraries used in PassLok, which can be found in the j
 * SCRYPT key stretching, edited to make it synchronous. https://github.com/dchest/scrypt-async-js
 * Reed-Solomon error correction: https://github.com/louismullie/erc-js
 * lz-string compression algorithm: https://github.com/pieroxy/lz-string
-* Markov chain text steganography. Edited RegEx: https://github.com/jthuraisamy/markovTextStego.js
+* DOMpurify XSS filter: https://github.com/cure53/DOMPurify
 
 The PassLok original code is in directories js-head and js-body:
 * this only loads two word arrays: wordlist and blacklist: dictionary_en.js
