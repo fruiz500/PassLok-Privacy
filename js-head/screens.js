@@ -273,9 +273,10 @@ function suggestIntro(){
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
 		output = output + ' ' + rand
 	}
-	pwdIntro.type="TEXT";
+	pwdIntro.type="text";
 	pwdIntro.value = output.trim();
-	showIntroKey.checked = true
+	showIntroKey.checked = true;
+	keyStrength(output.trim(),true)
 }
 
 var friendsLock = '';
