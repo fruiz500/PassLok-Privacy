@@ -65,8 +65,13 @@ if(display){											//these are to display the appropriate messages
 	if(introscr3.style.display == "block") msgName = 'introMsg';
 	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
 	if(imageScr.style.display == "block") msgName = 'imageMsg';
-	document.getElementById(msgName).innerHTML = msg;				//innerHTML to preserve the line break
-	document.getElementById(msgName).style.color = colorName;
+	if(pwd){
+		document.getElementById(msgName).innerHTML = msg + "<br>" + hashili(pwd);			//innerHTML to preserve the line breaks
+		document.getElementById(msgName).style.color = colorName
+	}else{
+		document.getElementById(msgName).textContent = "Enter your Key";
+		document.getElementById(msgName).style.color = ''
+	}
 }
 	return iter
 };
@@ -133,6 +138,22 @@ function entropycalc(pwd){
 //take into account common substitutions, ignore spaces and case
 function reduceVariants(string){
 	return string.toLowerCase().replace(/[óòöôõo]/g,'0').replace(/[!íìïîi]/g,'1').replace(/[z]/g,'2').replace(/[éèëêe]/g,'3').replace(/[@áàäâãa]/g,'4').replace(/[$s]/g,'5').replace(/[t]/g,'7').replace(/[b]/g,'8').replace(/[g]/g,'9').replace(/[úùüû]/g,'u');
+}
+
+//makes 'pronounceable' hash of a string, so user can be sure the password was entered correctly
+var vowel = 'aeiou',
+	consonant = 'bcdfghjklmnprstvwxyz';
+function hashili(string){
+	var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-4),			//take last 8 bytes of the SHA512		
+		code10 = ((((code[0]*256)+code[1])*256+code[2])*256+code[3]) % 100000000,		//convert to decimal
+		output = '';
+
+	for(var i = 0; i < 4; i++){
+		var remainder = code10 % 100;								//there are 5 vowels and 20 consonants; encode every 2 digits into a pair
+		output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
+		code10 = (code10 - remainder) / 100
+	}
+	return output
 }
 
 //these derive from the Key after running through scrypt stretching. BitArray format. Dir (salt=userName) is 32-byte, Sgn (salt=email, Edwards curve) is 64-byte; DH (Motgomery curve, deriving from Sgn) is 32-byte, myEmail is a string.
@@ -536,10 +557,12 @@ function showLock(){
 function extractLock(string){
 		var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
 		if(CGParts[0].length == 50){
-			var possibleLock = CGParts[0];
+			var possibleLock = CGParts[0],
+				possibleLock64 = changeBase(possibleLock, base36, base64, true);
 			string = string.slice(56)
 		}else if(CGParts[0].length == 43){
-			var possibleLock = CGParts[0];
+			var possibleLock = CGParts[0],
+				possibleLock64 = possibleLock;
 			string = string.slice(49)
 		}else{
 			var possibleLock = removeHTMLtags(string)
@@ -547,7 +570,7 @@ function extractLock(string){
 		if(possibleLock.length == 43 || possibleLock.length == 50){
 			var index = 0, foundIndex;
 			for(var name in locDir){
-				if(locDir[name][0] == possibleLock || possibleLock == myezLock){
+				if(locDir[name][0] == possibleLock || locDir[name][0] == possibleLock64){
 					foundIndex = index	
 				}
 				index++

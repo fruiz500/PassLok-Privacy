@@ -10,6 +10,25 @@ body {
 	background-color: #FFFFFF;
 	color: #000000;
 }
+input:focus {
+    outline: none !important;
+    border:1px solid #00CA68;
+    box-shadow: 0 0 10px #77b5a4;
+}
+div:focus {
+    outline: none !important;
+    border:1px solid #00CA68;
+    box-shadow: 0 0 10px #719ECE;
+}
+button:focus {
+    outline: none !important;
+    box-shadow: 0 0 10px #75b3a2;
+}
+select:focus {
+    outline: none !important;
+    border:1px solid #00CA68;
+    box-shadow: 0 0 10px #719ECE;
+}
 .black_overlay {
 	display: block;
 	position: absolute;
@@ -86,6 +105,11 @@ body {
 	background: #fffff5;
 	border: 1px solid #dedede;
 	overflow: auto;
+}
+.field-icon {
+  margin-left: -30px;
+  height: 18px;
+  z-index: 2;
 }
 .helpHeading {
 	cursor: pointer;

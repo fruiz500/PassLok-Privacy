@@ -134,46 +134,60 @@ function pasteMain() {
     }, 0)
 }
 
+//for showing.hiding password fields
+var eyeImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAASFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACrhKybAAAAF3RSTlMA5Qyz9kEFh3rd1sjDoGsfHRKwQIp+Qzv02bEAAACJSURBVCjPvVBJEoQgDMwCAfeFmfH/P51KkFKL0qN9SXdDVngRy8joHPK4XGyJbtvhohz+3G0ndHPxp0b1mojSqqyZsk+tqphFVN6S8cH+g3wQgwCrGtT3VjhB0BB26QGgN0aAGhDIZP/wUHLrUrk5g4RT83rcbxn3WJA90Y/zgs8nqY94d/b38AeFUhCT+3yIqgAAAABJRU5ErkJggg==",
+	hideImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJHRSTlMAFNTiDPTNBvnaulFBAe/osrGBZCXSwIdnLhzIqKd7XFRLSjAYduwyAAAAuklEQVQoz62QRxbDIAwFhWkhwb07PeH+Z4wQPMjCS89KegP6AjiWSbF9oVzBQNyNlKZZ/s+wwpvLyXlkp7P5umiIcYDIwB0ZLWzrTb3GSQYbMsjDl3wj0fj6TDmpK7F60nnLeDCW2h6rgioBVZgmwlwUJoo6bkC7KRQ9iQ/MzuWtXyjKKcTpmVc8mht4Nu5NV+Y/UAKItaY7byHsOeSkp48uQSahO+kiISfD+ha/nbcLwxwFuzB1hUP5AR4JF1hy2DV7AAAAAElFTkSuQmCC";
+	
 //this is for showing and hiding text in key box and other password input boxes
 function showsec(){
-	if(showKey.checked){
-		pwd.type="TEXT"
+	if(pwd.type=="password"){
+		pwd.type="text";
+		showKey.src = hideImg
 	}else{
-		pwd.type="PASSWORD"
+		pwd.type="password";
+		showKey.src = eyeImg
 	}
 }
 
 function showDecoyIn(){
-	if(showDecoyInCheck.checked){
-		decoyPwdIn.type="TEXT"
+	if(decoyPwdIn.type=="password"){
+		decoyPwdIn.type="text";
+		showDecoyInCheck.src = hideImg
 	}else{
-		decoyPwdIn.type="PASSWORD"
+		decoyPwdIn.type="password";
+		howDecoyInCheck.src = eyeImg
 	}
 }
 
 function showDecoyOut(){
-	if(showDecoyOutCheck.checked){
-		decoyPwdOut.type="TEXT"
+	if(decoyPwdOut.type=="password"){
+		decoyPwdOut.type="text";
+		howDecoyOutCheck.src = hideImg
 	}else{
-		decoyPwdOut.type="PASSWORD"
+		decoyPwdOut.type="password";
+		owDecoyOutCheck.src = eyeImg
 	}
 }
 
 function showIntro(){
-	if(showIntroKey.checked){
-		pwdIntro.type="TEXT"
+	if(pwdIntro.type=="password"){
+		pwdIntro.type="text";
+		showIntroKey.src = hideImg
 	}else{
-		pwdIntro.type="PASSWORD"
+		pwdIntro.type="password";
+		showIntroKey.src = eyeImg
 	}
 }
 
 function showNewKey(){
-	if(showNewKeyCheck.checked){
-		newKey.type="TEXT"
-		newKey2.type="TEXT"
+	if(newKey.type=="password"){
+		newKey.type="text";
+		newKey2.type="text";
+		showNewKeyCheck.src = hideImg
 	}else{
-		newKey.type="PASSWORD"
-		newKey2.type="PASSWORD"
+		newKey.type="password";
+		newKey2.type="password";
+		showNewKeyCheck.src = eyeImg
 	}
 }
 
@@ -569,7 +583,7 @@ function newKey2up(evt){
 			}
 		}else{
 			if(newkey2 == newkey){
-				keyChangeMsg.textContent = "Keys match!>"
+				keyChangeMsg.textContent = "Keys match!"
 			}else{
 				keyChangeMsg.textContent = "Keys don't match"
 			}

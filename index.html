@@ -455,6 +455,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <div id="a5" class="helpItem">
     <p>You should be able to <strong>remember your secret Key</strong> without having to write it down. PassLok does not store the Key anywhere. In fact, it deletes it from memory after five minutes of not being used (this can be overridden via a checkbox).</p>
+    <p>As you type your Key, PassLok displays a color-coded message telling you how strong it is. By default, your Key will be masked, but you can reveal it by clicking the eye icon on the right. A mnemonic &quot;Hashili&quot; word based on your Key is displayed right under the strength score, to reassure you that you have typed the Key correctly, even if you cannot see it.</p>
     <p>Your Key will be stronger if it contains <strong>caPiTals</strong> in unusual places, <strong>numb3rs</strong>, and <strong>$ymbol$</strong>. If you use common words, <strong>miespell</strong> them to make harder a "dictionary attack." Break the words up with <strong>num334bers</strong> and <strong>sy#$%mbols</strong>. Avoid anything that might be easy to guess. PassLok knows frequently used words, but hackers' dictionaries are bigger. Do not use grammatically correct sentences, even if PassLok gives a big score.</p>
     <p>PassLok <strong>compensates for weak Keys by adding spurious computations</strong> and may even appear to have crashed. If PassLok is slow, this may be because your Key strength is less than Medium.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=JbNM_cf8My0" target="_blank">https://www.youtube.com/watch?v=JbNM_cf8My0</a></p>
@@ -507,7 +508,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Make PassLok even more secure</h3>
   </div>
   <div id="a8" class="helpItem">
-    <p>When you first opened PassLok, you were asked to optionally enter your email or similar public, easy to recall personal information. But if instead of entering your email you click the <strong>Random</strong> button next to the input box, an 43-character random token is used. This makes your Lock  much harder to crack, but it becomes tied to the device where it was created  (except for the Chrome app, which can sync it across devices).</p>
+    <p>When you first opened PassLok, you were asked to optionally enter your email or similar public, easy to recall personal information. But if instead of entering your email you click the <strong>Random</strong> button next to the input box, an 43-character random token is used. This makes your Lock  much harder to crack, but it becomes tied to the device where it was created  (except for the Chrome and Firefox extensions, which can sync it across devices).</p>
     <p>To back up your random token to a safe place in case of accidental deletion or to be able to use a different device:</p>
     <p>1. Click the Backup/Remove <strong>Options only</strong> button on the <strong>Options</strong> tab (visible in the Advanced interface). A backup item bracketed by &quot;PL**bak&quot; tags appears on the main box, from where you can save it to file, copy it, email it, etc.</p>
     <p>2. Then a dialog asks you if you want to reset your settings. If you click <strong>OK</strong>, PassLok will restart as if it had never started before, except that the local directory remains intact.</p>
@@ -534,7 +535,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b9" class="helpItem">
-      <p>By default, PassLok displays the Lock in ezLok format, consisting only of smallcase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email and SeeOnce are compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app. This precaution is not necessary for SeeOnce.</p>
+      <p>By default, PassLok displays the Lock in ezLok format, consisting only of lowercase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email and SeeOnce are compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app. This precaution is not necessary for SeeOnce.</p>
       <p>If you need to make a Lock for a different Key (for instance, in order to receive hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by typing &quot;myself&quot; at the top box of the directory Edit dialog followed by Enter, or by clicking Change Email on Options).</p>
     </div>
   </div>
@@ -1600,12 +1601,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.7 (May 2018) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.9 (September 2018) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.7 &#169; F. Ruiz 2018
+  PassLok v2.4.9 &#169; F. Ruiz 2018
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1668,11 +1669,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <button class="cssbutton" id="newUserBtn" value="new user" title="set up a new user">New User</button>
   <br>
   <br>
-  <input type="password" class="cssbox" autocomplete="off" id="pwd" name="text" placeholder="Enter your secret Key here." align="center">
+  <input type="password" class="cssbox" autocomplete="off" id="pwd" name="text" placeholder="Enter your secret Key here." align="center"><img id='showKey' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
-  <input type="checkbox" id="showKey" title="reveal box contents">
-  Show&nbsp;&nbsp;
   <button class="cssbutton" id="cancelKeyBtn" value="cancel" title="close Key dialog">Cancel</button>
   &nbsp;
   <button class="cssbutton" id="acceptKeyBtn" value="OK" title="accept Key">OK</button>
@@ -1735,10 +1734,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>The Suggest button will get you started with five words, which you can modify at will.</p>
     <div align="center"> <span id="introMsg">This is where the Key score will appear</span><br>
       <br>
-      <input type="password" class="cssbox" autocomplete="off" id="pwdIntro" name="text" placeholder="Enter your secret Key here" align="center">
+      <input type="password" class="cssbox" autocomplete="off" id="pwdIntro" name="text" placeholder="Enter your secret Key here" align="center"><img id='showIntroKey' class="field-icon" src="" title="click this to see/hide the Password">
       <br>
-      <input type="checkbox" id="showIntroKey" title="reveal box contents">
-      Show
+      <br>
       <button class="cssbutton" id="suggestIntroBtn" value="Suggest" title="suggest a Key made of five common words">Suggest</button>
       <button class="cssbutton" id="clearIntroBtn" value="Clear" title="clear box contents">Clear</button>
       <br>
@@ -1808,11 +1806,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="keyChangeMsg"></div>
   <br>
   <br>
-  <input type="password" id="newKey" class="cssbox" name="newkey" placeholder="Enter the new Key here."/>
+  <input type="password" id="newKey" class="cssbox" name="newkey" placeholder="Enter the new Key here."/><img id='showNewKeyCheck' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
-  <br>
-  <input type="checkbox" id="showNewKeyCheck" title="reveal new Key">
-  Show <br>
   <br>
   <input type="password" id="newKey2" class="cssbox" name="newkey2" placeholder="Enter the new Key again."/>
   <br>
@@ -1846,10 +1841,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <br>
   <textarea id="decoyText" class="cssbox" name="text" rows="3"></textarea>
   <p>Enter the Key/Lock<p>
-  <input type="password" class="cssbox" id="decoyPwdIn" name="key"/>
+  <input type="password" class="cssbox" id="decoyPwdIn" name="key"/><img id='showDecoyInCheck' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
-  <input type="checkbox" id="showDecoyInCheck" title="reveal Key">
-  &nbsp; Show
+  <br>
   <button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not encrypt">Cancel</button>
   &nbsp;
   <button class="cssbutton" id="submitDecoyBtn" value="OK" title="go on with encryption">OK</button>
@@ -1858,11 +1852,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Decoy Out dialog-->
 <div id="decoyOut" class="white_content" align="center"> <br>
   <p>Enter the Key for the Hidden message</p>
-  <input type="password" class="cssbox" id="decoyPwdOut" name="key"/>
+  <input type="password" class="cssbox" id="decoyPwdOut" name="key"/><img id='showDecoyOutCheck' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
-  <br>
-  <input type="checkbox" id="showDecoyOutCheck" title="reveal Password">
-  &nbsp; Show&nbsp;<br>
   <br>
   <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop decrypt">Cancel</button>
   &nbsp;

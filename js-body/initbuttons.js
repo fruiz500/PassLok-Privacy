@@ -37,6 +37,13 @@ window.onload = function() {
 		introVideoText.style.display = 'none';
 		sendSMSBtn.style.display = 'none';
 	}
+	
+	//load field icons
+	showKey.src = eyeImg;
+	showIntroKey.src = eyeImg;
+	showNewKeyCheck.src = eyeImg;
+	showDecoyInCheck.src = eyeImg;
+	showDecoyOutCheck.src = eyeImg;
 
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
