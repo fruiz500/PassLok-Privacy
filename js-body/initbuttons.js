@@ -479,6 +479,7 @@ window.onload = function() {
 	lockList.style.padding = '4px';
 	lockList.style.width = '30%';
 	basicBtnsTop.style.display = 'block';
+	mainMsg.style.minHeight = '20px'
 };
 
 

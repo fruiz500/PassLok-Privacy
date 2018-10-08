@@ -82,13 +82,12 @@ function updateButtons(){
 	}
 	if(type && type == 'l'){verifyBtn.textContent = 'Unseal'}else{verifyBtn.textContent = 'Seal'};
 
+	string = string.replace(/<(.*?)>/g,'');
 	if((string.slice(0,13).match(/p\d{3}/) && string.slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){			//box contains parts
 		secretShareBtn.textContent = 'Join'
 	}else{
 		secretShareBtn.textContent = 'Split'
 	}
-	
-	if(string){ selectMainBtn.textContent = 'Copy' }else{ selectMainBtn.textContent = 'Paste' }
 }
 
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
@@ -119,7 +118,12 @@ function getType(stringIn){
 //start decrypt or verify if the item pasted in is recognized
 function pasteMain() {
     setTimeout(function(){
-		var array = getType(mainBox.innerHTML.trim()),
+		var string = mainBox.innerHTML.trim()
+		if((string.replace(/<(.*?)>/g,'').slice(0,13).match(/p\d{3}/) && string.replace(/<(.*?)>/g,'').slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){																//parts to be joined detected
+			secretshare();
+			return
+		}
+		var array = getType(string),
 			type = array[0],
 			lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
 		if(type && type.match(/[hkdsgasoprASO]/)){							//known encrypted type: decrypt
@@ -129,7 +133,7 @@ function pasteMain() {
 			verifySignature(array[1],lockBoxHTML);
 			return
 		}else if(type && type == 'c'){										//store new Lock
-			extractLock(mainBox.innerHTML.trim())
+			extractLock(string)
 		}
     }, 0)
 }
@@ -155,17 +159,17 @@ function showDecoyIn(){
 		showDecoyInCheck.src = hideImg
 	}else{
 		decoyPwdIn.type="password";
-		howDecoyInCheck.src = eyeImg
+		showDecoyInCheck.src = eyeImg
 	}
 }
 
 function showDecoyOut(){
 	if(decoyPwdOut.type=="password"){
 		decoyPwdOut.type="text";
-		howDecoyOutCheck.src = hideImg
+		showDecoyOutCheck.src = hideImg
 	}else{
 		decoyPwdOut.type="password";
-		owDecoyOutCheck.src = eyeImg
+		showDecoyOutCheck.src = eyeImg
 	}
 }
 
@@ -206,7 +210,6 @@ function resetChat(){
 function clearMain(){
 	mainBox.textContent = '';
 	mainMsg.textContent = '';
-	selectMainBtn.textContent = 'Paste'
 	charsLeft()
 }
 function clearLocks(){
@@ -242,7 +245,7 @@ function lockBtnAction(){
 	}
 }
 
-//for selecting the Main box contents and copying them to clipboard, or pasting the clipboard if there is nothing
+//for selecting the Main box contents and copying them to clipboard
 function selectMain(){
   if(mainBox.textContent.trim() != ''){
     var range, selection;
@@ -257,10 +260,8 @@ function selectMain(){
         selection.removeAllRanges();
         selection.addRange(range)
     }
-	document.execCommand('copy')
-  }else{
-	document.execCommand("paste")	;
-	selectMainBtn.textContent = 'Copy'
+	document.execCommand('copy');
+	mainMsg.textContent = "main Box copied to clipboard"
   }
 }
 
@@ -296,7 +297,7 @@ function newUser(){
 function showEmail(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Email change not allowed in Guest mode. Please restart PassLok';
-		throw('email change canceled')
+		return
 	}
 	if(myEmail) emailBox.value = myEmail;
 	shadow.style.display = 'block';
@@ -307,7 +308,7 @@ function showEmail(){
 function showName(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Name change not allowed in Guest mode. Please restart PassLok';
-		throw('name change canceled')
+		return
 	}
 	userNameBox.value = userName;
 	shadow.style.display = 'block';
@@ -318,16 +319,16 @@ function showName(){
 function changeName(){
 	if(!fullAccess){
 		namechangemsg.textContent = 'Name change not allowed in Guest mode';
-		throw('Name change canceled')
+		return
 	}
 	if(learnMode.checked){
 		var reply = confirm("The current User Name will be changed. Cancel if this is not what you want.");
-		if(!reply) throw("Name change canceled")
+		if(!reply) return
 	}
 	var oldUserName = userName,
 		userNameTemp = document.getElementById('userNameBox').value;
 	if (userNameTemp.trim() == ''){
-		throw('no name')
+		return
 	}
 	recryptDB(KeyStr,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
@@ -754,7 +755,7 @@ function image2main(){
 function lock2dir(){
 	if(learnMode.checked){
 		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
-		if(!reply) throw("General Directory canceled")
+		if(!reply) return
 	}
 	if(keyScr.style.display=='block') return;
 
@@ -790,7 +791,7 @@ function loadLockDir(){
 function main2chat(token){
 	if(isAndroid && isChrome){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
-		if(!reply) throw('chat canceled by user')
+		if(!reply) return
 	}
 	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;				//open chat iframe; remote because of the CSP
 	chatBtn.textContent = 'Back to Chat';
@@ -833,12 +834,12 @@ function email2any(){
 		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
 		if(!result){
 			emailMsg.textContent = 'Random token overwrite canceled';
-			throw ('random token overwrite canceled')
+			return
 		}
 	}
 	myEmail = email;
 	emailBox.value = '';
-	refreshKey();
+	if(!refreshKey()) return;
 	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
@@ -864,7 +865,7 @@ function name2any(){
 		changeName()
 	}else{
 		namechangemsg.textContent = 'Name change not allowed in Guest mode';
-		throw('Name change canceled')
+		return
 	}
 	closeBox();
 	optionMsg.textContent = 'The User Name has changed to: '+ userName;

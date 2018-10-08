@@ -17,18 +17,18 @@ function secretshare(){
 		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};					//if tags are missing, ignore quorum, otherwise read it from tags
 		if(n < quorum){																//not enough parts
 			mainMsg.textContent = 'According to the tags, you need ' + (quorum - n) + ' more parts in the box';
-			throw("insufficient parts")
+			return
 		}
 		for (var i=0; i < shares.length; i++) {
 			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(stripTags(shares[i])))
 		}
 		if(learnMode.checked){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");
-			if(!reply) throw("SSSS join canceled")
+			if(!reply) return
 		}
 		if(n === 1){
 			mainMsg.textContent = 'Only one part in main box';
-			throw("insufficient parts")
+			return
 		}
 try{
 		var	sechex = secrets.combine(shares),
@@ -46,18 +46,18 @@ try{
 	}else{																		//parts not detected, split instead
 		if(main == "") {
 			mainMsg.textContent = 'The box is empty';
-			throw("No key in the key box")
+			return
 		}
 		if(learnMode.checked){
 			var reply = confirm("The item in the box will be split into several partial items, which will replace the contents of the box. A popup will ask for the total number of parts, and the minimum needed to reconstruct the original item. Cancel if this is not what you want.");
-			if(!reply) throw("SSSS split canceled")
+			if(!reply) return
 		}
 		var number = partsNumber.value;
 		if(number.trim() == ""){													//stop to display the entry form if it is empty
 			partsIn.style.display = "block";
 			shadow.style.display = "block";
 			if(!isMobile) partsNumber.focus();
-			throw ("stopped for # of parts input")
+			return
 		}
 		partsIn.style.display = "none";
 		shadow.style.display = "none";

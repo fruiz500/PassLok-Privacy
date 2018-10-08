@@ -26,7 +26,7 @@ function textStego(){
 	text = text.replace(/<(.*?)>/gi,'');
 	if(text == ""){
 		mainMsg.textContent = 'No text in the box';
-		throw("no text")
+		return
 	}
 	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 setTimeout(function(){																			//the rest after a 20 ms delay
@@ -75,7 +75,7 @@ function makeWordMatrix(cover){
 	for(var i = 0; i < 8; i++){
 		if(bins[i].length == 0){
 			mainMsg.textContent = 'Please use a Cover text with more variation';
-			throw('Insufficient variety in covertext')
+			return
 		}
 	}
 	return bins
@@ -85,7 +85,7 @@ function makeWordMatrix(cover){
 function toWords(text){
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as words of varying length. Cancel if this is not what you want.");
-		if(!reply) throw("toWords canceled")
+		if(!reply) return
 	}
 	var	wordArray = makeWordMatrix(coverText),
 		out = new Array(text.length * 2);
@@ -112,7 +112,7 @@ function toWords(text){
 function fromWords(text){
 	if(learnMode.checked){
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
-		if(!reply) throw("fromWords canceled")
+		if(!reply) return
 	}
 	text = text.replace(/&nbsp;/g,'').replace(/[.,\n]/g,''); 		//remove extra spaces and punctuation
 	var	textArray = text.split(/ /),
@@ -216,7 +216,7 @@ function toBin(input){
 function toSpaces(text) {
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as formatted spacing. Cancel if this is not what you want.");
-		if(!reply) throw("toSpaces canceled")
+		if(!reply) return
 	}
 	mainBox.textContent = spacesEncoder(toBin(text))
 }
@@ -224,7 +224,7 @@ function toSpaces(text) {
 function fromSpaces(text) {
 	if(learnMode.checked){
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
-		if(!reply) throw("fromSpaces canceled")
+		if(!reply) return
 	}
 	mainBox.innerHTML = decryptSanitizer(fromBin(spacesDecoder(text)).replace(/\x00/g,'').trim());		//take out nulls, in case text was added to finish the last sentence.
 }
@@ -233,7 +233,7 @@ function fromSpaces(text) {
 function toInvisible(text) {
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be invisibly encoded (to a human) at the end of a sentence. Cancel if this is not what you want.");
-		if(!reply) throw("toInvisible canceled")
+		if(!reply) return
 	}
 	mainBox.innerHTML = 'Dear friend,' + invisibleEncoder(toBin(text)) + '<br><br>Body of the message.'
 }
@@ -241,7 +241,7 @@ function toInvisible(text) {
 function fromInvisible(text) {
 	if(learnMode.checked){
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
-		if(!reply) throw("fromInvisible canceled")
+		if(!reply) return
 	}
 	mainBox.innerHTML = decryptSanitizer(fromBin(invisibleDecoder(text)).trim())
 }
@@ -283,7 +283,7 @@ function makePhraseMatrix(cover){
 	for(var i = 0; i < 11; i++){
 		if(bins[i].length == 0){
 			mainMsg.textContent = 'Please use a Cover text with more variation.';
-			throw('Insufficient variety in covertext')
+			return
 		}
 	}
 	return bins
@@ -293,7 +293,7 @@ function makePhraseMatrix(cover){
 function toPhrases(text){
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as sentences of varying length. Cancel if this is not what you want.");
-		if(!reply) throw("toPhrases canceled")
+		if(!reply) return
 	}
 	var	phraseArray = makePhraseMatrix(coverText),
 		punct = '.,;:!?',
@@ -316,7 +316,7 @@ function toPhrases(text){
 function fromPhrases(text){
 	if(learnMode.checked){
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
-		if(!reply) throw("fromPhrases canceled");
+		if(!reply) return
 	}
 	text = text.replace(/&nbsp;/g,'').replace(/\n/g,'');
 	var	textArray = text.split(/[.,;:!?]/g).slice(0,-1),
@@ -414,7 +414,7 @@ function encodableBits(cover){
 function toLetters(text){
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be replaced with encoded text which contains the original text as formatted special characters and spaces. Cancel if this is not what you want.");
-		if(!reply) throw("toLetters canceled")
+		if(!reply) return
 	}
 	var textBin = toBin(text).join(''),				//string containing 1's and 0's
 		cover = coverText,
@@ -426,7 +426,7 @@ function toLetters(text){
 			cover += ' ' + coverText;
 			index++
 		}
-		mainMsg.textContent = 'Message encoded into letters of this text. It was repeated ' + turns + ' times. Please complete it.'
+		mainMsg.textContent = 'Message encoded into letters of this text. It was repeated ' + turns + ' times.'
 	}
 	var finalString = "",
 		bitsIndex = 0,
@@ -445,14 +445,14 @@ function toLetters(text){
 		i++
 	}
 	mainBox.textContent = finalString + '.';								//period needed because there could be spaces at the end
-	mainMsg.textContent = 'Message encoded into letters of this text. Please complete it.'
+	mainMsg.textContent = 'Message encoded into letters of this text.'
 }
 
 //gets the original text from Letters encoded text
 function fromLetters(text){
 	if(learnMode.checked){
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
-		if(!reply) throw("fromLetters canceled")
+		if(!reply) return
 	}
 	var bintemp = [],
 		finalString = "",

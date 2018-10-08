@@ -10,7 +10,7 @@
 var importImage = function(e) {
 	if(learnMode.checked){
 		var reply = confirm("An image stored in this device will replace the current image. Cancel if this is not what you want.");
-		if(!reply) throw("image import canceled")
+		if(!reply) return
 	}
 
     var reader = new FileReader();
@@ -29,7 +29,7 @@ var importImage = function(e) {
 			var lock = replaceByItem(lockArray[0]),
 				locklen = lock.length;
 			if(locklen == 43 || locklen == 50){					//Lock identified, compute shared Key
-				refreshKey();
+				if(!refreshKey()) return;
 				if (locklen == 50) lock = changeBase(lock.toLowerCase().replace(/l/g,'L'), base36, base64, true);
 				imagePwd.value = nacl.util.encodeBase64(makeShared(convertPub(nacl.util.decodeBase64(lock)),KeyDH)).replace(/=+$/,'')
 			}else{													//not a Lock, so use it directly
@@ -50,6 +50,7 @@ var importImage = function(e) {
 function updateCapacity(){
 	var	textsize = mainBox.textContent.length;
 
+	imageMsg.style.color = '';
 	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	setTimeout(function(){																				//give it 2 seconds to complete
 		if(imageMsg.textContent == 'PROCESSING') imageMsg.textContent = 'There was an error calculating the capacity, but the image is still usable'
@@ -108,7 +109,7 @@ setTimeout(function(){
 function encodePNG(){
 	if(learnMode.checked){
 		var reply = confirm("The text in the main box will be encoded into this image as a PNG, which can then be copied and sent to others. Cancel if this is not what you want.");
-		if(!reply) throw("encode image canceled")
+		if(!reply) return
 	}
 	var text = mainBox.textContent.trim();
 	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'').replace(/<(.*?)>/gi,"");			//remove end tags and dashes from Locks
@@ -116,17 +117,18 @@ function encodePNG(){
 	//bail out if this is not a PassLok string, etc.
 	if(!text){
 		imageMsg.textContent = 'There is nothing to hide';
-		throw("box empty of content")
+		return
 	}
 	if(!isBase64(text.replace(/=/g,''))){
 		imageMsg.textContent = 'The text contains illegal characters for a PassLok string';
-		throw("illegal characters in box")
+		return
 	}
 	if(previewImg.src.length < 100){											//no image loaded
 		imageMsg.textContent = 'Please load an image before clicking this button';
-		throw("no image loaded")
+		return
 	}
 	
+	imageMsg.style.color = '';
 	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 
 	var resultURI = encodePNGprocess(text);																//this is the main process, in next functions
@@ -220,13 +222,14 @@ function encodePNGprocess(text){
 function decodeImage(){
 	if(isiOS){
 		imageMsg.textContent = 'On iOS, you can do PNG hide only';
-		throw('reveal not supported on iOS')
+		return
 	}
 	if(learnMode.checked){
 		var reply = confirm("The text hidden in this image, if any, will be extracted and placed in the previous box, replacing its contents. This does not yet work on mobile devices. Cancel if this is not what you want.");
-		if(!reply) throw("decode image canceled")
+		if(!reply) return
 	}
 	
+	imageMsg.style.color = '';
 	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	
 setTimeout(function(){
@@ -303,7 +306,7 @@ var decodeJPG = function(){
 		var length = coefficients[1].length;
 		if(coefficients[2].length != length){							//there's chrome subsampling, therefore it was not made by this process
 			imageMsg.textContent = 'This image does not contain anything, or perhaps the password is wrong';		//actually, just the former
-			throw('image is chroma subsampled')
+			return
 		}
 
 		var	rawLength = 3*length*64,
@@ -353,7 +356,7 @@ var decodeJPG = function(){
 var encodeJPG = function(){
 	if(learnMode.checked){
 		var reply = confirm("The text in the main box will be encoded into this image as a JPG, which can then be copied and sent to others. Cancel if this is not what you want.");
-		if(!reply) throw("encode image canceled")
+		if(!reply) return
 	}
 	var text = mainBox.textContent.trim();
 	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'').replace(/<(.*?)>/gi,"");
@@ -361,16 +364,18 @@ var encodeJPG = function(){
 	//bail out if this is not a PassLok string, etc.
 	if(!text){
 		imageMsg.textContent = 'There is nothing to hide';
-		throw("box empty of content")
+		return
 	}
 	if(!isBase64(text.replace(/=/g,''))){
 		imageMsg.textContent = 'The text contains illegal characters for a PassLok string';
-		throw("illegal characters in box")
+		return
 	}
 	if(previewImg.src.length < 100){											//no image loaded
 		imageMsg.textContent = 'Please load an image before clicking this button';
-		throw("no image loaded")
+		return
 	}
+
+	imageMsg.style.color = '';
 	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
 	
 setTimeout(function(){																			//the rest after a 30 ms delay
@@ -598,7 +603,7 @@ function encodeToCoefficients(type,inputBin,startIndex){
 		permutation = [];
 		permutation2 = [];
 		imagePwd.value = '';
-		throw('not enough hiding capacity')
+		return
 	}
 	while( k / (Math.pow(2,k) - 1) > rate) k++;
 	k--;
@@ -707,7 +712,7 @@ function decodeFromCoefficients(type,startIndex){
 		permutation = [];
 		permutation2 = [];
 		imagePwd.value = '';
-		throw('block size larger than available data')
+		return
 	}
 	
 	var parityBlock = new Array(n),
@@ -738,7 +743,7 @@ function decodeFromCoefficients(type,startIndex){
 		allCoefficients = [];
 		permutation = [];
 		imagePwd.value = '';
-		throw('end marker not found')
+		return
 	}
 	outputBin = outputBin.slice(0,-fromEnd);
 	var blocksUsed = Math.ceil((outputBin.length + 48) / k);
