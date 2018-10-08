@@ -39,7 +39,7 @@ function charsLeft(){
 		}else if(onceMode.checked){
 			var limit = 46									//Read-once mode, 46 chars
 		}
-		if(extra2mainBtn.style.display != ''){		//don't show this if hiding or splitting
+		if(extraButtonsTop.style.display == 'none'){		//don't show this if hiding or splitting
 			if(chars <= limit){
 				mainMsg.textContent = chars + " characters out of " + limit + " used"
 			}else{
