@@ -39,7 +39,7 @@ function charsLeft(){
 		}else if(onceMode.checked){
 			var limit = 46									//Read-once mode, 46 chars
 		}
-		if(extra2mainBtn.style.display != ''){		//don't show this if hiding or splitting
+		if(extraButtonsTop.style.display == 'none'){		//don't show this if hiding or splitting
 			if(chars <= limit){
 				mainMsg.textContent = chars + " characters out of " + limit + " used"
 			}else{
@@ -82,13 +82,12 @@ function updateButtons(){
 	}
 	if(type && type == 'l'){verifyBtn.textContent = 'Unseal'}else{verifyBtn.textContent = 'Seal'};
 
+	string = string.replace(/<(.*?)>/g,'');
 	if((string.slice(0,13).match(/p\d{3}/) && string.slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){			//box contains parts
 		secretShareBtn.textContent = 'Join'
 	}else{
 		secretShareBtn.textContent = 'Split'
 	}
-	
-	if(string){ selectMainBtn.textContent = 'Copy' }else{ selectMainBtn.textContent = 'Paste' }
 }
 
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
@@ -119,7 +118,12 @@ function getType(stringIn){
 //start decrypt or verify if the item pasted in is recognized
 function pasteMain() {
     setTimeout(function(){
-		var array = getType(mainBox.innerHTML.trim()),
+		var string = mainBox.innerHTML.trim()
+		if((string.replace(/<(.*?)>/g,'').slice(0,13).match(/p\d{3}/) && string.replace(/<(.*?)>/g,'').slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){																//parts to be joined detected
+			secretshare();
+			return
+		}
+		var array = getType(string),
 			type = array[0],
 			lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
 		if(type && type.match(/[hkdsgasoprASO]/)){							//known encrypted type: decrypt
@@ -129,51 +133,65 @@ function pasteMain() {
 			verifySignature(array[1],lockBoxHTML);
 			return
 		}else if(type && type == 'c'){										//store new Lock
-			extractLock(mainBox.innerHTML.trim())
+			extractLock(string)
 		}
     }, 0)
 }
 
+//for showing.hiding password fields
+var eyeImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAASFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACrhKybAAAAF3RSTlMA5Qyz9kEFh3rd1sjDoGsfHRKwQIp+Qzv02bEAAACJSURBVCjPvVBJEoQgDMwCAfeFmfH/P51KkFKL0qN9SXdDVngRy8joHPK4XGyJbtvhohz+3G0ndHPxp0b1mojSqqyZsk+tqphFVN6S8cH+g3wQgwCrGtT3VjhB0BB26QGgN0aAGhDIZP/wUHLrUrk5g4RT83rcbxn3WJA90Y/zgs8nqY94d/b38AeFUhCT+3yIqgAAAABJRU5ErkJggg==",
+	hideImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJHRSTlMAFNTiDPTNBvnaulFBAe/osrGBZCXSwIdnLhzIqKd7XFRLSjAYduwyAAAAuklEQVQoz62QRxbDIAwFhWkhwb07PeH+Z4wQPMjCS89KegP6AjiWSbF9oVzBQNyNlKZZ/s+wwpvLyXlkp7P5umiIcYDIwB0ZLWzrTb3GSQYbMsjDl3wj0fj6TDmpK7F60nnLeDCW2h6rgioBVZgmwlwUJoo6bkC7KRQ9iQ/MzuWtXyjKKcTpmVc8mht4Nu5NV+Y/UAKItaY7byHsOeSkp48uQSahO+kiISfD+ha/nbcLwxwFuzB1hUP5AR4JF1hy2DV7AAAAAElFTkSuQmCC";
+	
 //this is for showing and hiding text in key box and other password input boxes
 function showsec(){
-	if(showKey.checked){
-		pwd.type="TEXT"
+	if(pwd.type=="password"){
+		pwd.type="text";
+		showKey.src = hideImg
 	}else{
-		pwd.type="PASSWORD"
+		pwd.type="password";
+		showKey.src = eyeImg
 	}
 }
 
 function showDecoyIn(){
-	if(showDecoyInCheck.checked){
-		decoyPwdIn.type="TEXT"
+	if(decoyPwdIn.type=="password"){
+		decoyPwdIn.type="text";
+		showDecoyInCheck.src = hideImg
 	}else{
-		decoyPwdIn.type="PASSWORD"
+		decoyPwdIn.type="password";
+		showDecoyInCheck.src = eyeImg
 	}
 }
 
 function showDecoyOut(){
-	if(showDecoyOutCheck.checked){
-		decoyPwdOut.type="TEXT"
+	if(decoyPwdOut.type=="password"){
+		decoyPwdOut.type="text";
+		showDecoyOutCheck.src = hideImg
 	}else{
-		decoyPwdOut.type="PASSWORD"
+		decoyPwdOut.type="password";
+		showDecoyOutCheck.src = eyeImg
 	}
 }
 
 function showIntro(){
-	if(showIntroKey.checked){
-		pwdIntro.type="TEXT"
+	if(pwdIntro.type=="password"){
+		pwdIntro.type="text";
+		showIntroKey.src = hideImg
 	}else{
-		pwdIntro.type="PASSWORD"
+		pwdIntro.type="password";
+		showIntroKey.src = eyeImg
 	}
 }
 
 function showNewKey(){
-	if(showNewKeyCheck.checked){
-		newKey.type="TEXT"
-		newKey2.type="TEXT"
+	if(newKey.type=="password"){
+		newKey.type="text";
+		newKey2.type="text";
+		showNewKeyCheck.src = hideImg
 	}else{
-		newKey.type="PASSWORD"
-		newKey2.type="PASSWORD"
+		newKey.type="password";
+		newKey2.type="password";
+		showNewKeyCheck.src = eyeImg
 	}
 }
 
@@ -192,7 +210,6 @@ function resetChat(){
 function clearMain(){
 	mainBox.textContent = '';
 	mainMsg.textContent = '';
-	selectMainBtn.textContent = 'Paste'
 	charsLeft()
 }
 function clearLocks(){
@@ -228,7 +245,7 @@ function lockBtnAction(){
 	}
 }
 
-//for selecting the Main box contents and copying them to clipboard, or pasting the clipboard if there is nothing
+//for selecting the Main box contents and copying them to clipboard
 function selectMain(){
   if(mainBox.textContent.trim() != ''){
     var range, selection;
@@ -243,10 +260,8 @@ function selectMain(){
         selection.removeAllRanges();
         selection.addRange(range)
     }
-	document.execCommand('copy')
-  }else{
-	document.execCommand("paste")	;
-	selectMainBtn.textContent = 'Copy'
+	document.execCommand('copy');
+	mainMsg.textContent = "main Box copied to clipboard"
   }
 }
 
@@ -259,9 +274,10 @@ function suggestIntro(){
 		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
 		output = output + ' ' + rand
 	}
-	pwdIntro.type="TEXT";
+	pwdIntro.type="text";
 	pwdIntro.value = output.trim();
-	showIntroKey.checked = true
+	showIntroKey.checked = true;
+	keyStrength(output.trim(),true)
 }
 
 var friendsLock = '';
@@ -281,7 +297,7 @@ function newUser(){
 function showEmail(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Email change not allowed in Guest mode. Please restart PassLok';
-		throw('email change canceled')
+		return
 	}
 	if(myEmail) emailBox.value = myEmail;
 	shadow.style.display = 'block';
@@ -292,7 +308,7 @@ function showEmail(){
 function showName(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Name change not allowed in Guest mode. Please restart PassLok';
-		throw('name change canceled')
+		return
 	}
 	userNameBox.value = userName;
 	shadow.style.display = 'block';
@@ -303,16 +319,16 @@ function showName(){
 function changeName(){
 	if(!fullAccess){
 		namechangemsg.textContent = 'Name change not allowed in Guest mode';
-		throw('Name change canceled')
+		return
 	}
 	if(learnMode.checked){
 		var reply = confirm("The current User Name will be changed. Cancel if this is not what you want.");
-		if(!reply) throw("Name change canceled")
+		if(!reply) return
 	}
 	var oldUserName = userName,
 		userNameTemp = document.getElementById('userNameBox').value;
 	if (userNameTemp.trim() == ''){
-		throw('no name')
+		return
 	}
 	recryptDB(KeyStr,userNameTemp);
 	localStorage[userNameTemp] = localStorage[userName];
@@ -569,7 +585,7 @@ function newKey2up(evt){
 			}
 		}else{
 			if(newkey2 == newkey){
-				keyChangeMsg.textContent = "Keys match!>"
+				keyChangeMsg.textContent = "Keys match!"
 			}else{
 				keyChangeMsg.textContent = "Keys don't match"
 			}
@@ -739,7 +755,7 @@ function image2main(){
 function lock2dir(){
 	if(learnMode.checked){
 		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
-		if(!reply) throw("General Directory canceled")
+		if(!reply) return
 	}
 	if(keyScr.style.display=='block') return;
 
@@ -775,7 +791,7 @@ function loadLockDir(){
 function main2chat(token){
 	if(isAndroid && isChrome){
 		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
-		if(!reply) throw('chat canceled by user')
+		if(!reply) return
 	}
 	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;				//open chat iframe; remote because of the CSP
 	chatBtn.textContent = 'Back to Chat';
@@ -818,12 +834,12 @@ function email2any(){
 		var result = confirm('If you go ahead, the random token associated with your user name will be overwritten, which will change your Lock. This is irreversible.');
 		if(!result){
 			emailMsg.textContent = 'Random token overwrite canceled';
-			throw ('random token overwrite canceled')
+			return
 		}
 	}
 	myEmail = email;
 	emailBox.value = '';
-	refreshKey();
+	if(!refreshKey()) return;
 	if(!KeyDir) KeyDir = wiseHash(KeyStr,userName);
 	KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
 	KeyDH = ed2curve.convertSecretKey(KeySgn);
@@ -849,7 +865,7 @@ function name2any(){
 		changeName()
 	}else{
 		namechangemsg.textContent = 'Name change not allowed in Guest mode';
-		throw('Name change canceled')
+		return
 	}
 	closeBox();
 	optionMsg.textContent = 'The User Name has changed to: '+ userName;

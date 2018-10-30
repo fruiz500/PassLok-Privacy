@@ -65,8 +65,13 @@ if(display){											//these are to display the appropriate messages
 	if(introscr3.style.display == "block") msgName = 'introMsg';
 	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
 	if(imageScr.style.display == "block") msgName = 'imageMsg';
-	document.getElementById(msgName).innerHTML = msg;				//innerHTML to preserve the line break
-	document.getElementById(msgName).style.color = colorName;
+	if(pwd){
+		document.getElementById(msgName).innerHTML = msg + "<br>" + hashili(pwd);			//innerHTML to preserve the line breaks
+		document.getElementById(msgName).style.color = colorName
+	}else{
+		document.getElementById(msgName).textContent = "Enter your Key";
+		document.getElementById(msgName).style.color = ''
+	}
 }
 	return iter
 };
@@ -135,6 +140,22 @@ function reduceVariants(string){
 	return string.toLowerCase().replace(/[óòöôõo]/g,'0').replace(/[!íìïîi]/g,'1').replace(/[z]/g,'2').replace(/[éèëêe]/g,'3').replace(/[@áàäâãa]/g,'4').replace(/[$s]/g,'5').replace(/[t]/g,'7').replace(/[b]/g,'8').replace(/[g]/g,'9').replace(/[úùüû]/g,'u');
 }
 
+//makes 'pronounceable' hash of a string, so user can be sure the password was entered correctly
+var vowel = 'aeiou',
+	consonant = 'bcdfghjklmnprstvwxyz';
+function hashili(string){
+	var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-4),			//take last 8 bytes of the SHA512		
+		code10 = ((((code[0]*256)+code[1])*256+code[2])*256+code[3]) % 100000000,		//convert to decimal
+		output = '';
+
+	for(var i = 0; i < 4; i++){
+		var remainder = code10 % 100;								//there are 5 vowels and 20 consonants; encode every 2 digits into a pair
+		output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
+		code10 = (code10 - remainder) / 100
+	}
+	return output
+}
+
 //these derive from the Key after running through scrypt stretching. BitArray format. Dir (salt=userName) is 32-byte, Sgn (salt=email, Edwards curve) is 64-byte; DH (Motgomery curve, deriving from Sgn) is 32-byte, myEmail is a string.
 var KeyStr,
 	KeyDir,
@@ -166,8 +187,9 @@ function refreshKey(){
 			keyMsg.textContent = 'Please enter your secret Key';
 			shadow.style.display = 'block'
 		}
-		throw ('secret Key needed')
+		return false
 	}
+	return true
 }
 
 //resets the Keys in memory when the timer ticks off
@@ -185,12 +207,16 @@ function resetKeys(){
 function readEmail(){
 	if(myEmail) return myEmail;
 	if(locDir['myself'] && fullAccess){
-		if(locDir['myself'][0]) return keyDecrypt(locDir['myself'][0]);
+		if(locDir['myself'][0]){
+			var decrypted = keyDecrypt(locDir['myself'][0]);
+			if(decrypted == undefined) return undefined;
+			return decrypted
+		}
 	}
 	var email = emailBox.value;
 	if (email == "" && emailScr.style.display == 'none'){
 		any2email();
-		throw ('email needed')
+		return false
 	};
 	return email.trim()
 }
@@ -231,12 +257,14 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 			if(lockdata){											//the user isn't totally new: retrieve settings
 				locDir['myself'] = JSON.parse(lockdata);
 				email = keyDecrypt(locDir['myself'][0]);
+				if(!email) return;
 				retrieveAllSync();
 				isNewUser = false;
 				setTimeout(function(){fillList();mainMsg.textContent = 'Settings synced from Chrome';}, 500);
 			}else{													//user never seen before: store settings
 				locDir['myself'] = [];
 				locDir['myself'][0] = keyEncrypt(email);			//email/token is stored, encrypted by Key+userName
+				if(!locDir['myself'][0]) return;
 				syncChromeLock('myself',locDir['myself'][0]);
 				setTimeout(function(){fillList();}, 500);
 			}
@@ -250,6 +278,7 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 	}else{															//if not, store the email
 		if(!locDir['myself']) locDir['myself'] = [];
 		locDir['myself'][0] = keyEncrypt(email);
+		if(!locDir['myself'][0]) return;
 		if(friendsLock){ 											//this will trigger if there is an invitation
 			if(friendsLock.length == 43){
 				var newEntry = JSON.parse('{"' + friendsName.value + '":["' + friendsLock + '"]}');
@@ -287,15 +316,15 @@ function acceptKey(){
 	var key = pwd.value.trim();
 	if(key == ''){
 		keyMsg.textContent = 'Please enter your Key';
-		throw("no Key")
+		return
 	}
 	if(key.length < 4){
 		keyMsg.textContent = 'This Key is too short!';
-		throw("short Key")
+		return
 	}
 	if(stripTags(key).length == 43 || stripTags(key).length == 50){
 		keyMsg.textContent = 'This is a Lock. Enter your Key here';
-		throw("Lock instead of Key")
+		return
 	}
 
 	var x = document.getElementById('nameList');
@@ -310,7 +339,7 @@ function acceptKey(){
 	}
 	if (userName == '' && fullAccess){
 		keyMsg.textContent = 'Please select a user name, or make a new one';
-		throw("no userName")
+		return
 	}
 	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
 	if(firstInit) mainMsg.innerHTML = '<span class="blink">LOADING...</span> for best speed, use at least a Medium Key';
@@ -365,7 +394,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 				if(lockdata){											//the user isn't totally new: retrieve settings
 					locDir['myself'] = JSON.parse(lockdata);
 					email = keyDecrypt(locDir['myself'][0]);
-					if(email) myEmail = email;
+					if(email){myEmail = email}else{return}
 					localStorage[userName] = JSON.stringify(locDir);
 					retrieveAllSync();
 					setTimeout(function(){mainMsg.textContent = 'Settings retrieved Chrome sync';}, 500);
@@ -373,6 +402,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 					var email = readEmail();
 					locDir['myself'] = [];
 					locDir['myself'][0] = keyEncrypt(email);
+					if(!locDir['myself'][0]) return;
 					localStorage[userName] = JSON.stringify(locDir);
 					syncChromeLock('myself',JSON.stringify(locDir['myself']));
 				}
@@ -387,6 +417,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 			KeyDH = ed2curve.convertSecretKey(KeySgn);
 			locDir['myself'] = [];
 			locDir['myself'][0] = keyEncrypt(email);
+			if(!locDir['myself'][0]) return;
 			localStorage[userName] = JSON.stringify(locDir);
 		}
 		checkboxStore();
@@ -485,7 +516,7 @@ function checkKey(key){
 	KeyDir = wiseHash(key,userName);
 	if(fullAccess){
 		var myEmailcrypt = locDir['myself'][0];
-		var email = keyDecrypt(myEmailcrypt);					//try/catch statement in keyDecrypt() triggers if KeyDir is wrong
+		var email = keyDecrypt(myEmailcrypt);
 		if(email){
 			myEmail = email
 		}else{
@@ -517,7 +548,7 @@ function showLock(){
 		if(!reply) return;
 	};
 
-	refreshKey();
+	if(!refreshKey()) return;
 	if(!locDir['myself']) locDir['myself'] = [];
 	if(!myLock){
 		myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
@@ -529,6 +560,8 @@ function showLock(){
 	mainBox.textContent = lockDisplay();
 	mainMsg.textContent = "The Lock matching your Key is in the box. Send it to people so you can communicate with encryption";
 	updateButtons();
+	showLockBtn.textContent = 'Email';
+	showLockBtnBasic.textContent = 'Email';
 	callKey = '';
 }
 
@@ -536,10 +569,12 @@ function showLock(){
 function extractLock(string){
 		var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
 		if(CGParts[0].length == 50){
-			var possibleLock = CGParts[0];
+			var possibleLock = CGParts[0],
+				possibleLock64 = changeBase(possibleLock, base36, base64, true);
 			string = string.slice(56)
 		}else if(CGParts[0].length == 43){
-			var possibleLock = CGParts[0];
+			var possibleLock = CGParts[0],
+				possibleLock64 = possibleLock;
 			string = string.slice(49)
 		}else{
 			var possibleLock = removeHTMLtags(string)
@@ -547,7 +582,7 @@ function extractLock(string){
 		if(possibleLock.length == 43 || possibleLock.length == 50){
 			var index = 0, foundIndex;
 			for(var name in locDir){
-				if(locDir[name][0] == possibleLock || possibleLock == myezLock){
+				if(locDir[name][0] == possibleLock || locDir[name][0] == possibleLock64){
 					foundIndex = index	
 				}
 				index++
@@ -583,6 +618,7 @@ function lockDisplay(){
 function storemyEmail(){
 	if(!locDir['myself']) locDir['myself'] = [];
 	locDir['myself'][0] = keyEncrypt(readEmail());
+	if(!locDir['myself'][0]) return;
 	localStorage[userName] = JSON.stringify(locDir);
 
 	if(ChromeSyncOn && chromeSyncMode.checked){
@@ -663,7 +699,7 @@ function PLdecrypt(cipherStr,nonce24,sharedKey,isCompressed,label){
 
 //encrypts a string or uint8 array with the secret Key, 9 byte nonce, padding so length for ASCII input is the same no matter what. The input can also be binary, and then it won't be padded
 function keyEncrypt(plainstr){
-	refreshKey();																		//make sure the Key is still alive
+	if(!refreshKey()) return undefined;																		//make sure the Key is still alive
 	var	nonce = nacl.randomBytes(9),
 		nonce24 = makeNonce24(nonce);
 	if(typeof plainstr == 'string'){
@@ -680,7 +716,7 @@ function keyEncrypt(plainstr){
 function keyDecrypt(cipherStr,isArray){
 	var cipher = nacl.util.decodeBase64(cipherStr.replace(/[^a-zA-Z0-9+\/]+/g,''));
 	if (cipher[0] == 144){
-		refreshKey();																	//make sure the Key is still alive
+		if(!refreshKey()) return undefined;											//make sure the Key is still alive
 		var	nonce = cipher.slice(1,10),												//ignore the marker byte
 			nonce24 = makeNonce24(nonce),
 			cipher2 = cipher.slice(10);
@@ -771,6 +807,7 @@ function replaceByItem(name){
 		var string = locDir[name][0];
 		nameBeingUnlocked = name;
 		var whole = keyDecrypt(string);
+		if(!whole) return undefined;
 		nameBeingUnlocked = '';
 		var	stripped = stripTags(whole);
 		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole}		//if it's a Lock, strip tags
@@ -844,5 +881,5 @@ function failedDecrypt(label){
 	}else if(!decoyMode.checked){
 		mainMsg.textContent = 'Decryption has failed'
 	}
-	throw('decryption failed')
+	return
 }

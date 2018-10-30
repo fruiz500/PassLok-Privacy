@@ -19,9 +19,9 @@ function applySignature(textStr){
 	keyMsg.textContent = "";
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be sealed using your secret Key, so that others can verify its origin. The resulting item WILL NOT BE LOCKED. Cancel if this is not what you want.");
-		if(!reply) throw("signature canceled")
+		if(!reply) return
 	}
-	refreshKey();
+	if(!refreshKey()) return;
 	
 	// for decoy message
 	var	padding = decoyEncrypt(75,KeyDH);
@@ -53,13 +53,13 @@ function verifySignature(textStr,LockStr){
 	keyMsg.textContent = "";
 	if (textStr == ""){																	//nothing in text box
 		mainMsg.textContent = 'Nothing to sign or verify';
-		throw("no text")
+		return
 	}
 	if(lockBox.textContent.charAt(0) == 'k') decryptItem();
 
 	if(learnMode.checked){
 		var reply = confirm("The item in the main box has been sealed with somebody's secret Key. I will now check the matching Lock, which should be selected on the local directory, and will display the unsealed message inside. Cancel if this is not what you want.");
-		if(!reply) throw("seal verification canceled")
+		if(!reply) return
 	}
 	callKey = 'sign';												//needed in case there is a decoy decryption
 
@@ -80,7 +80,7 @@ function verifySignature(textStr,LockStr){
 	if (LockStr.length == 50) LockStr = changeBase(LockStr.toLowerCase().replace(/l/g,'L'), base36, base64, true); 		//ezLok replaced by regular Lock
 	if (LockStr.length != 43){
 		mainMsg.textContent = 'Enter a valid Lock';
-		throw("invalid public key")
+		return
 	}
 
 	var Lock = nacl.util.decodeBase64(LockStr),
@@ -133,7 +133,7 @@ function padEncrypt(text){
 	
 	if(keyLengthNeed > keyTextBin.length){
 		mainMsg.textContent = "The key Text is too short";
-		throw('key text too short')
+		return
 	}
 	while(isNaN(startIndex) || startIndex < 0 || startIndex > keyTextBin.length){
 		var reply = prompt("Pad mode in use.\nPlease enter the position in the key text where we should start (0 to " + keyTextBin.length + ")",0);
@@ -255,7 +255,7 @@ function padDecrypt(cipherStr){
 	var keyText = lockBox.textContent.trim();
 	if (keyText == ''){
 		mainMsg.textContent = 'Click Enter and enter long shared Key, then try again';
-		throw("symmetric key empty");
+		return
 	}
 	try{
 		var inputBin = nacl.util.decodeBase64(cipherStr),
@@ -275,7 +275,7 @@ function padDecrypt(cipherStr){
 	}
 	if(cipherBin.length > keyTextBin.length){
 		mainMsg.textContent = "The key Text is too short";
-		throw('key text too short')
+		return
 	}
 	while(isNaN(startIndex) || startIndex < 0 || startIndex > keyTextBin.length){
 		var reply = prompt("Pad mode in use.\nPlease enter the position in the key text where we should start (0 to " + keyTextBin.length + ")",0);

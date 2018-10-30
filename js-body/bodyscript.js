@@ -86,7 +86,7 @@ function loadFileAsURL(){
 			var reply = confirm("This file is larger than 1.5MB and Chrome won't save it. Do you want to continue loading it?");
 			if(!reply){
 				mainMsg.textContent = 'File load canceled';
-				throw('file load canceled')
+				return
 			}
 		}
 		if(fileToLoad.type.slice(0,4) == "text"){

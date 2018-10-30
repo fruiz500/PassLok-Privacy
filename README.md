@@ -1,6 +1,8 @@
 PassLok Privacy
 ===============
 
+WARNING to current users: version 2.3.3 includes a change that causes its output to be incompatible with that of previous versions. We apologize for any inconvenience.
+
 PassLok is a toolkit that implements public key cryptography and steganography to supplement ANY communications program.
 
 These are the principles guiding the design of PassLok:
@@ -23,7 +25,7 @@ These are the open source libraries used in PassLok, which can be found in the j
 * SCRYPT key stretching, edited to make it synchronous. https://github.com/dchest/scrypt-async-js
 * Reed-Solomon error correction: https://github.com/louismullie/erc-js
 * lz-string compression algorithm: https://github.com/pieroxy/lz-string
-* DOMpurify XSS filter: https://github.com/cure53/DOMPurify
+* Markov chain text steganography. Edited RegEx: https://github.com/jthuraisamy/markovTextStego.js
 
 The PassLok original code is in directories js-head and js-body:
 * this only loads two word arrays: wordlist and blacklist: dictionary_en.js
@@ -51,7 +53,7 @@ Full documentation can be found at: <http://passlok.weebly.com/> including:
 License
 -------
 
-  Copyright (C) 2018 Francisco Ruiz
+  Copyright (C) 2015 Francisco Ruiz
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

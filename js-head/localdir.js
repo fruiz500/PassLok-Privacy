@@ -24,18 +24,18 @@ function pasteLock(){
 function addLock(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Save not available in Guest mode<br>Please restart PassLok';
-		throw('Lock save canceled')
+		return
 	}
 	if(learnMode.checked){
 		var reply = confirm("The item in the box will be added to the permanent directory. Cancel if this is not what you want.");
-		if(!reply) throw("locDir add canceled")
+		if(!reply) return
 	}
 	callKey = 'addlock';
 	var name = lockNameBox.value.trim(),
 		lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
 	if(removeHTMLtags(name)!=name){
 		lockMsg.textContent = 'This is not a valid name';
-		throw('name contained illegal characters')
+		return
 	}
 	var lockarray = lock.split('<br>');
 	var isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
@@ -51,7 +51,8 @@ function addLock(){
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
 		}else{
 			if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
-			var	lockcrypt = keyEncrypt(lock)
+			var	lockcrypt = keyEncrypt(lock);
+			if(!lockcrypt) return
 		}
 		if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
 			var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
@@ -86,18 +87,18 @@ function addLock(){
 function removeLock(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Delete not available in Guest mode\nPlease restart PassLok';
-		throw('Lock removal canceled')
+		return
 	}
 	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
-	if(!reply) throw("locDir remove canceled");
+	if(!reply) return;
 	var name = lockMsg.textContent;
 	if (locDir[name] == null){
 		lockMsg.textContent = 'To remove an item, its name must be displayed HERE';
-		throw('bad name')
+		return
 	}
 	if (name == 'myself'){
 		lockMsg.textContent = 'There is a button to reset your options in the Options tab';
-		throw('no delete for myself')
+		return
 	}
 	delete locDir[name];
 	localStorage[userName] = JSON.stringify(locDir);
@@ -118,12 +119,12 @@ function removeLock(){
 function resetPFS(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Reset not available in Guest mode. Please restart PassLok';
-		throw('Lock reset canceled')
+		return
 	}
 	if (lockBox.innerHTML.trim().split('<br>').filter(Boolean).length > 1){ //use button to reset current List if a List is displayed, nothing to do with normal use
 		if(learnMode.checked){
 			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
-			if(!reply) throw("List reset canceled")
+			if(!reply) return
 		}
 		currentList = '';
 		lockMsg.textContent = 'Current list reset';
@@ -132,20 +133,20 @@ function resetPFS(){
 
 //now the real stuff
 	var reply = confirm("The data needed to maintain a Read-once conversation with this person will be deleted. This is irreversible. Cancel if this is not what you want.");
-	if(!reply) throw("reset canceled");
+	if(!reply) return;
 
 	var name = lockMsg.textContent;
 	if (locDir[name] == null){
 		lockMsg.textContent = 'The item to be reset must be displayed first';
-		throw('bad name')
+		return
 	}
 	if (name == 'myself'){
 		lockMsg.textContent = 'There is a button to reset your options in the Options tab';
-		throw('no reset for myself')
+		return
 	}
 	if ((locDir[name][1] == null) && (locDir[name][2] == null)){
 		lockMsg.textContent = 'Nothing to reset';
-		throw('no Read-once data')
+		return
 	}
 	locDir[name][1] = locDir[name][2] = null;
 	locDir[name][3] = 'reset';
@@ -221,7 +222,7 @@ var currentList = '';
 function addToList(){
 	if(learnMode.checked){
 		var reply = confirm("The item displayed will be added to the current list. Cancel if this is not what you want.");
-		if(!reply) throw("add to list canceled")
+		if(!reply) return
 	}
 	var	currentItem = lockBox.innerText.trim();
 	if(lockMsg.textContent != ''){
@@ -261,10 +262,11 @@ function addToList(){
 //automatically decrypts an item stored encrypted in the locDir database. It uses the permanent Key
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
-	refreshKey();
+	if(!refreshKey()) return;
 	var	string = lockBox.textContent.trim();
-	if(string == "") throw('nothing to decrypt');
+	if(string == "") return;
 	lockBox.innerHTML = decryptSanitizer(keyDecrypt(string));
+	if(!lockBox.innerHTML) return;
 	if(callKey != 'decryptlock') callKey = ''
 }
 
@@ -272,7 +274,7 @@ function decryptItem(){
 function showLockDB(){
 	if(learnMode.checked){
 		var reply = confirm("The complete directory of Locks, shared Keys, etc. stored under the current user name will be displayed. Cancel if this is not what you want.");
-		if(!reply) throw("locDir show canceled")
+		if(!reply) return
 	}
 	if(localStorage[userName] != "{}"){
 		lockBox.innerHTML = JSON.stringify(locDir,null,4).replace(/\],/g,'<br><br>').replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/: /g,':<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
@@ -302,10 +304,11 @@ function mergeLockDB(){
 		mainstr = mainBox.textContent.trim();
 	if (lockstr == ''){
 		lockMsg.textContent = 'Nothing to merge';
-		throw('invalid merge')
+		return
 	}
 	if (lockstr.slice(0,1) == 'k') {
-		lockstr = keyDecrypt(lockstr)
+		lockstr = keyDecrypt(lockstr);
+		if(!lockstr) return
 	}
 	var lockstr2 = stripTags(lockstr),
 		mainstr2 = stripTags(mainstr),
@@ -315,7 +318,7 @@ function mergeLockDB(){
 	if(lockstr.split('<br>').length > 1){			//the real database merge implies multiline
 		if(learnMode.checked){
 			var reply = confirm("The items in the box will be merged into the permanent directory, replacing existing items of the same name. This is irreversible. Cancel if this is not what you want.");
-			if(!reply) throw("locDir merge canceled")
+			if(!reply) return
 		}
 		if(!fullAccess){
 			if(lockScr.style.display == 'block'){
@@ -323,7 +326,7 @@ function mergeLockDB(){
 			}else{
 				mainMsg.textContent = 'Settings update not available in Guest mode\nPlease restart PassLok'
 			}
-			throw('DB merge canceled')
+			return
 		}
 		var newDB = JSON.parse('{"' + lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<br> +/g,'<br>').replace(/:<br>/g,'":["').replace(/<br><br>/g,'"],"').replace(/<br>/g,'","') + '"]}');
 		newDB = realNulls(newDB);
@@ -338,8 +341,8 @@ function mergeLockDB(){
 		}
 
 		var email = keyDecrypt(locDir['myself'][0]);				//populate email and recalculate Keys and Locks
-		if(email) myEmail = email;
-		refreshKey();
+		if(email){myEmail = email}else{return}
+		if(!refreshKey()) return;
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,email)).secretKey;
 		KeyDH = ed2curve.convertSecretKey(KeySgn);
 		myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
@@ -357,7 +360,7 @@ function mergeLockDB(){
 	}else if(locklen == 43 && (mainlen == 43 || mainlen == 50)){	 //merging of a DH Key in the directory box and a DH Lock in main
 		if(learnMode.checked){
 			var reply = confirm("The Key in the directory box will be combined with the Lock in the main box, and the resulting Lock will replace both. Cancel if this is not what you want.");
-			if(!reply) throw("merge canceled")
+			if(!reply) return
 		}
 		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
 		var merged = nacl.util.encodeBase64(makeShared(nacl.util.decodeBase64(mainstr2),nacl.util.decodeBase64(lockstr2))).replace(/=+$/,'');
@@ -369,9 +372,9 @@ function mergeLockDB(){
 	}else if(locklen == 43 || locklen == 50){	                    //merging of a Lock in the directory box the user Key in order to get their shared Key
 		if(learnMode.checked){
 			var reply = confirm("The Lock in the directory box will be combined with your Key, and the resulting shared Key will replace both. Cancel if this is not what you want.");
-			if(!reply) throw("merge canceled")
+			if(!reply) return
 		}
-		refreshKey();
+		if(!refreshKey()) return;
 		if (locklen == 50) lockstr2 = changeBase(lockstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
 		var merged = nacl.util.encodeBase64(makeShared(convertPub(nacl.util.decodeBase64(lockstr2)),KeyDH)).replace(/=+$/,'');
 		lockBox.textContent = merged;
@@ -381,7 +384,7 @@ function mergeLockDB(){
 
 	}else{
 		lockMsg.textContent = 'The items to be merged must be 256-bit and in base64 (or base36 for Locks)';
-		throw('invalid DH merge')
+		return
 	}
 	suspendFindLock = false;
 	callKey = ''
@@ -401,14 +404,15 @@ function realNulls(object){
 function moveLockDB(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Move not allowed in Guest mode\nPlease restart PassLok';
-		throw('DB move canceled')
+		return
 	}
 	callKey = 'movedb';
-	refreshKey();
+	if(!refreshKey()) return;
 
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
 	var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/<br>$/,"").trim());
+	if(!datacrypt) return;
 	mainBox.textContent = 'PL24dir==' + datacrypt + '==PL24dir';
 	optionMsg.textContent = 'Database in Main tab';
 	mainMsg.textContent = 'The item in the box contains your directory. To restore it, click Decrypt';
@@ -416,7 +420,7 @@ function moveLockDB(){
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your local directory has been exported to the Main tab. If you click OK, it will now be erased from this device. This cannot be undone.");
-	if (!reply) throw("locDir erase canceled");
+	if (!reply) return;
 
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
 		if(confirm('Do you want to delete also from Chrome sync?')){
@@ -442,6 +446,7 @@ function moveMyself(){
 	showMyself();
 	if(fullAccess){
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());					//preserve formatting
+		if(!datacrypt) return;
 		mainBox.textContent = 'PL24bak==' + datacrypt+ '==PL24bak';
 		var msg = 'The item in the box contains your settings\nTo restore them, click Decrypt'
 	}else{
@@ -453,7 +458,7 @@ function moveMyself(){
 
 	//now check that the user really wants to delete the database
 	var reply = confirm("Your settings, including the email/token, have been backed up. If you click OK, they will now be erased from this device. This cannot be undone.");
-	if (!reply) throw("myself erase canceled");
+	if (!reply) return;
 	delete locDir['myself'];
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);
@@ -527,8 +532,10 @@ function recryptDB(newKey,newUserName){
 						KeyDir = oldKeyStretched;
 						nameBeingUnlocked = name;
 						content = keyDecrypt(content);
+						if(!content) return;
 						KeyDir = newKeyStretched;
 						content = keyEncrypt(content);
+						if(!content) return;
 						locDir[name][index] = content
 					}
 				}
@@ -548,6 +555,7 @@ function recryptDB(newKey,newUserName){
 	myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
 	myezLock = changeBase(myLockStr, base64, base36, true);
 	locDir['myself'][0] = keyEncrypt(email);
+	if(!locDir['myself'][0]) return;
 	localStorage[userName] = JSON.stringify(locDir);
 
 	if(ChromeSyncOn && chromeSyncMode.checked && index == 0){
@@ -559,12 +567,12 @@ function recryptDB(newKey,newUserName){
 function changeKey(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Key change not allowed in Guest mode. Please restart PassLok';
-		throw('key change canceled')
+		return
 	}
 	callKey = 'changekey';
 	if(learnMode.checked){
 		var reply = confirm("The local directory will be re-encrypted with a new Key. Cancel if this is not what you want.");
-		if(!reply) throw("locDir recrypt canceled")
+		if(!reply) return
 	}
 	var newkey = newKey.value.trim(),
 		newkey2 = newKey2.value.trim();
@@ -579,17 +587,17 @@ function changeKey(){
 				newKey2.focus()
 			}
 		}
-		throw ("stopped for new Key input")
+		return
 	}
 	if(newkey.trim() != newkey2.trim()){											//check that the two copies match before going ahead
 		keyChangeMsg.textContent = "The two Keys don't match";
-		throw ("Keys don't match")
+		return
 	}
 
 //everything OK, so do it!
 	if(!fullAccess){
 		keyChangeMsg.textContent = 'Key change not allowed in Guest mode';
-		throw('Key change canceled')
+		return
 	}
 	recryptDB(newkey,userName);
 	newKey.value = "";									//on re-execution, read the box and reset it
@@ -657,7 +665,9 @@ function fillBox(){
 			if(lockList.options[i].value.slice(0,2) == '--'){					//it's a List, so decrypt it and add the contents to the box
 				var itemcrypt = locDir[lockList.options[i].value][0];
 				isList = true;											//to return here if the Key is wrong
-				list += '<br>' + keyDecrypt(itemcrypt)
+				var nextItem = keyDecrypt(itemcrypt);
+				if(!nextItem) return;
+				list += '<br>' + nextItem
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
 				var covername = 'default';
 				newCover(defaultCoverText)
@@ -665,7 +675,9 @@ function fillBox(){
 				var covername = lockList.options[i].value;
 				var covercrypt = locDir[covername][0];
 				isList = true;
-				newCover(LZString.decompressFromBase64(keyDecrypt(covercrypt)))
+				var cover2 = keyDecrypt(covercrypt);
+				if(!cover2) return;
+				newCover(LZString.decompressFromBase64(cover2))
 			}else{
          		list += '<br>' + lockList.options[i].value
 			}

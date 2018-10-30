@@ -37,6 +37,13 @@ window.onload = function() {
 		introVideoText.style.display = 'none';
 		sendSMSBtn.style.display = 'none';
 	}
+	
+	//load field icons
+	showKey.src = eyeImg;
+	showIntroKey.src = eyeImg;
+	showNewKeyCheck.src = eyeImg;
+	showDecoyInCheck.src = eyeImg;
+	showDecoyOutCheck.src = eyeImg;
 
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
@@ -472,6 +479,8 @@ window.onload = function() {
 	lockList.style.padding = '4px';
 	lockList.style.width = '30%';
 	basicBtnsTop.style.display = 'block';
+	mainMsg.style.minHeight = '20px';
+	extraButtonsTop.style.display = 'none'
 };
 
 

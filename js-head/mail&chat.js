@@ -12,7 +12,7 @@ function sendMail() {
 		}else{
 			var reply = confirm("An invitation for others to join PassLok and containing your Lock will open in your default email. You still need to supply the recipient's address.  Cancel if this is not what you want.")
 		}
-		if(!reply) throw("email canceled")
+		if(!reply) return
 	}
 	if(!type){														//no recognized type, so make an invitation
 		var inviteText = makeInvitation();
@@ -63,7 +63,7 @@ function sendMail() {
 function makeInvitation(){
 	if(mainBox.textContent.trim() != ''){
 		var reply = confirm('Do you want the contents of the main box to be encrypted and added to an invitation email? This will encourage the recipients to try PassLok, but be aware that the encrypted contents WILL NOT BE SECURE.');
-		if (!reply) throw('invitation canceled');	
+		if (!reply) return;	
 		var text = mainBox.innerHTML.trim(),
 			nonce = nacl.randomBytes(9),
 			nonce24 = makeNonce24(nonce),
@@ -86,8 +86,8 @@ function sendSMS(){
 	if(isMobile){
 		if(learnMode.checked){
 			var reply = confirm("The default texting app will now open. You need to have copied your short encrypted message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
-			if(!reply) throw("SMS canceled")
-		};
+			if(!reply) return
+		}
 		var text = "";
     	if (window.getSelection) {
         	text = window.getSelection().toString();
@@ -98,7 +98,7 @@ function sendSMS(){
 	} else {
 		mainMsg.textContent = 'SMS function is only available on mobile devices'
 	}
-};
+}
 
 //decrypts a chat invite if found, then open chat screen, otherwise make one. If the chat screen is open, returns to it
 function Chat(){
@@ -119,12 +119,12 @@ function Chat(){
 	var listArray = lockBox.innerHTML.trim().split('<br>').filter(Boolean);
 	if(learnMode.checked){
 		var reply = confirm("A special encrypted item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
-		if(!reply) throw("chat invite canceled")
-	};
+		if(!reply) return
+	}
 
 	if(listArray.length == 0 || (listArray.length == 1 && listArray[0] == 'myself')){
 		mainMsg.textContent = 'Please select those invited to chat';
-		throw("nobody invited to chat")
+		return
 	}
 	if(longMode.checked) listArray = listArray.concat('myself');								//make sure 'myself' is on the list, unless it's not a multi-recipient message
 	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates and nulls
@@ -195,11 +195,11 @@ function openChat(){
 		var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might give away your location.");
 		if(!reply){
 			mainBox.textContent = '';
-			throw("chat start canceled")
+			return
 		}
 		if(isSafari || isIE || isiOS){
 			mainMsg.textContent = 'Sorry, but chat is not yet supported by your browser or OS';
-			throw('browser does not support webRTC')
+			return
 		}
 		main2chat(typetoken.slice(43));
 	}
