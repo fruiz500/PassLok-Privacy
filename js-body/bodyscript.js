@@ -53,7 +53,7 @@ function textheight(){
 		offsetheight = 392,
 		toolbarheight = 50;
 	if(isiPhone) offsetheight = offsetheight - 65;
-	lockBox.style.height = (fullheight - offsetheight)*0.8 + 'px';
+	lockBox.style.height = (fullheight - offsetheight)*0.9 + 'px';
 	if(niceEditor){
 		mainBox.style.height = fullheight - offsetheight - toolbarheight + 'px'
 	}else{

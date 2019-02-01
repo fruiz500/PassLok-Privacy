@@ -327,12 +327,13 @@ function Encrypt_List(listArray,text){
 			name = ''
 		}
 		if (name != ''){
-			if(locDir[name] == null) {					//not on database; see if it's a Lock, and if not add to warning list
+			var index2 = searchStringInArrayDB(name,lockNames);
+			if(index2 < 0){				//not on database; see if it's a Lock, and if not add to warning list
 				var namestr = stripTags(name);
 				if(namestr.length != 43 && namestr.length != 50){
 					if (warningList == ""){warningList = name} else {warningList += '\n' + name}
 				}
-			}else if(stripTags(locDir[name][0]).length != 43 && stripTags(locDir[name][0]).length != 50 && emailMode.checked && name != 'myself'){	//email mode: shared Keys not allowed
+			}else if(stripTags(locDir[lockNames[index2]][0]).length != 43 && stripTags(locDir[lockNames[index2]][0]).length != 50 && emailMode.checked && name.toLowerCase() != 'myself'){	//email mode: shared Keys not allowed
 				if (warningList2 == ""){warningList2 = name} else {warningList2 += '\n' + name};
 				listArray[index] = ''
 			}

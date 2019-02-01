@@ -77,7 +77,6 @@ select:focus {
 	padding: 12px;
 	text-decoration: none;
 	border: 0px;
-	margin-right: -2px;
 	color: #666666;
 	background: #e6e6e6;
 }
@@ -314,7 +313,7 @@ img.intLink {
 
 <!--previously inline formatting moved to style.css-->
 #mainMsg {
-	height: 20px;
+	min-height: 20px;
 }
 #lockList {
 	padding: 4px;
@@ -630,7 +629,7 @@ img.intLink {
 	padding: 5px;
 }
 #imageMsg {
-	height: 30px;
+	height: 40px;
 }
 
 #lockdirContent {

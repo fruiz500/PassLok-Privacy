@@ -24,7 +24,7 @@ function sendMail() {
 	}
 
 	var hashTag = encodeURIComponent(mainBox.textContent.trim()).replace(/%0A/g,'%0D%0A');		//item ready for link
-	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome and Android app stores.";
+	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores.";
 
 	if(type=="a" || type=="A"){
     	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
@@ -49,7 +49,7 @@ function sendMail() {
 	} else if (type=='c'){
 		var link = "mailto:"+ "?subject= " + "&body=This email contains my PassLok v.2.4 Lock. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText
 	} else {
-		var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.%0D%0A%0D%0A" + lockLinkText
+		var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.%0D%0A%0D%0A" + lockLinkText
 	}
 
 	if(isMobile){ 	 											//new window for PC, same window for mobile
@@ -71,7 +71,7 @@ function makeInvitation(){
 		if(emailMode.checked){
 			mainBox.innerHTML = "The gibberish below contains a message from me that has been encrypted with PassLok. To decrypt it, do this:<ol><li>Install the PassLok for Email extension by following one of these links:<br><ul><li>Chrome: &nbsp;https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh</li><li>Firefox: &nbsp;https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/</li></ul></li><li>Reload your email and get back to this message.</li><li>Click the PassLok logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.</li><li>When asked whether to accept my new Password (which you don't know), go ahead and click OK.</li></ol>If you don't use Chrome or Firefox, or don't want to install an extension, you can also open the message in PassLok Privacy, a standalone app available from https://passlok.com/app<br><pre>----------begin invitation message encrypted with PassLok--------==<br><br>" + cipherStr.match(/.{1,80}/g).join("<br>") + "<br><br>==---------end invitation message encrypted with PassLok-----------</pre>"
 		}else{
-			mainBox.innerHTML = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.<br><br>To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:<br><br>https://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv"
+			mainBox.innerHTML = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.<br><br>To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:<br><br>https://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv"
 		}
 		mainMsg.innerHTML = "Invitation created. If email doesn't load, copy what's in he box and paste it into the email program. Invitations are <span class='blink'>NOT SECURELY ENCRYPTED</span>";
 		updateButtons();

@@ -363,12 +363,8 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 		hashStripped = extractLock(hashStripped);
 		
 		if (hashStripped.length == 43 || hashStripped.length == 50){			//sender's Lock
-			var reply = prompt('Looks like you received a link containing a Lock from someone. It will be added to your directory if you write a name for it in the box.');
-			if(reply){
-				lockNameBox.value = reply;
-				lockBox.textContent = hashStripped;
-				addLock()
-			}
+			lockBox.textContent = hashStripped;
+			addLock(true)
 		}else{								//process automatically the other kinds; most will need a Lock to be selected first.
 			if(hash) mainBox.textContent = hash;
 			var type = hashStripped.charAt(0);
@@ -436,7 +432,7 @@ setTimeout(function(){									//execute after a delay so the key entry dialog c
 	}else if(callKey == 'addlock'){
 		openClose('lockScr');
 		openClose('shadow');
-		addLock()
+		addLock(false)
 	}else if(callKey == 'decryptitem'){
 		decryptItem()
 	}else if(callKey == 'decryptlock'){
@@ -591,11 +587,8 @@ function extractLock(string){
 				lockList.options[foundIndex+1].selected = true;
 				fillBox()
 			}else{																				//not found, so store after asking for a name
-				var name = prompt("Looks like you just entered someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.");
-				if (!name) return string;
 				lockBox.textContent = possibleLock;
-				lockNameBox.value = name;
-				addLock()
+				addLock(true)
 			}
 		}
 		return string
@@ -798,21 +791,24 @@ function decryptSanitizer(string){
 nameBeingUnlocked = '';
 //this function replaces an item with its value on the locDir database, decrypted if necessary, if the name exists
 function replaceByItem(name){
-	if(!locDir[name]) {							//not on database; strip it if it's a Lock
+	var fullName = '',
+		index = searchStringInArrayDB(name,lockNames);
+	if (index < 0){									//not on database; strip it if it's a Lock
 		var stripped = stripTags(name);
-		if(stripped.length == 43 || stripped.length == 50) name = stripped;
+		if(stripped.length == 43 || stripped.length == 50){fullName = stripped}else{fullName = name}
 	} else if(name == 'myself'){
-		if(myLock) name = myLockStr
+		if(myLock) fullName = myLockStr
 	} else {									//found name on DB, so get value from the database and decrypt if necessary
-		var string = locDir[name][0];
-		nameBeingUnlocked = name;
+		fullName = lockNames[index];
+		var string = locDir[fullName][0];
+		nameBeingUnlocked = fullName;
 		var whole = keyDecrypt(string);
 		if(!whole) return undefined;
 		nameBeingUnlocked = '';
 		var	stripped = stripTags(whole);
-		if(stripped.length == 43 || stripped.length == 50) {name = stripped} else {name = whole}		//if it's a Lock, strip tags
+		if(stripped.length == 43 || stripped.length == 50) {fullName = stripped} else {fullName = whole}		//if it's a Lock, strip tags
 	}
-	return name
+	return fullName
 }
 
 //changes the base of a number. inAlpha and outAlpha are strings containing the base code for the original and target bases, as in '0123456789' for decimal

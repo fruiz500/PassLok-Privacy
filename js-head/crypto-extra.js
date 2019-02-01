@@ -67,14 +67,18 @@ function verifySignature(textStr,LockStr){
 		setTimeout(function(){mainMsg.textContent = 'Please select the sealer first, then click Unseal'},50);		//the wait time may need to be longer
 		return
 	}
-	var	Lockstripped = stripTags(LockStr);
+	var	Lockstripped = stripTags(LockStr),
+		index = searchStringInArrayDB(LockStr,lockNames);
 	if (Lockstripped.length != 43 && Lockstripped.length != 50){									//not a Lock, but maybe it's a name
-		if (locDir[LockStr]){
-			var name = LockStr;
+		if(index >= 0){
+			var name = lockNames[index];
 			LockStr = replaceByItem(LockStr)
+		}else{
+			mainMsg.textContent = "Sealer not recognized";
+			return
 		}
 	}else{
-		var name = lockMsg.textContent;
+		var name = lockNames[index];
 		LockStr = Lockstripped
 	}
 	if (LockStr.length == 50) LockStr = changeBase(LockStr.toLowerCase().replace(/l/g,'L'), base36, base64, true); 		//ezLok replaced by regular Lock

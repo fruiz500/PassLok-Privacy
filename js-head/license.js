@@ -4,7 +4,7 @@
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
 
-        Copyright (C) 2018  Francisco Ruiz
+        Copyright (C) 2019  Francisco Ruiz
 
         The JavaScript code in this page is free software: you can
         redistribute it and/or modify it under the terms of the GNU

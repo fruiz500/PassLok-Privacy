@@ -21,7 +21,7 @@ function pasteLock(){
 }
 
 //get name and Lock from form and merge them with the locDir object, then store
-function addLock(){
+function addLock(fromMain){
 	if(!fullAccess){
 		lockMsg.textContent = 'Save not available in Guest mode<br>Please restart PassLok';
 		return
@@ -31,21 +31,18 @@ function addLock(){
 		if(!reply) return
 	}
 	callKey = 'addlock';
-	var name = lockNameBox.value.trim(),
-		lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
-	if(removeHTMLtags(name)!=name){
-		lockMsg.textContent = 'This is not a valid name';
-		return
-	}
-	var lockarray = lock.split('<br>');
-	var isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
-	if (lock ==''){
+	var	lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'').trim(),
+		lockarray = lock.split('<br>'),
+		isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
+		
+	if (lock == ''){																//if box is empty, put a random string there
 		if(!locDir['myself'] || BasicButtons) return;									//don't do it in Basic mode
-		var ran = true;
-		lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct
-		lockBox.textContent = lock
-	}
-	if(name !=''){
+		lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct from  a Lock
+		lockBox.textContent = lock;
+		addLockBtn.textContent = "Save";
+		return
+
+	}else{																			//if populated, encrypt if not a Lock, then prompt for a name and save
 		var locklength = stripTags(lockarray[0]).length;
 		if((locklength == 43 || locklength == 50) && lockarray.length == 1){
 			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
@@ -54,33 +51,35 @@ function addLock(){
 			var	lockcrypt = keyEncrypt(lock);
 			if(!lockcrypt) return
 		}
+		if(fromMain){
+			var name = prompt("Looks like you got someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.")
+		}else{
+			var name = prompt("What name do you want to give to this item?");
+		}
+		if(!name) return;
 		if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
-			var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
-			locDir = sortObject(mergeObjects(locDir,newEntry));
-			localStorage[userName] = JSON.stringify(locDir);
-			lockNames = Object.keys(locDir);
-			window.setTimeout(function(){											//this needs to be on a timer for iOS
-				if(ran) {
-					lockMsg.textContent = 'Random Key stored to local directory with name: ' + name
-				}else if(stripTags(lock).length == 43 || stripTags(lock).length == 50){
-					lockMsg.textContent = 'Lock saved to local directory with name: ' + name
-				}else if(isList){
-					lockMsg.textContent = 'List saved to local directory with name: ' + name
-				}else{
-					lockMsg.textContent = 'Item saved to local directory with name: ' + name
-				};
-			}, 100)
-			fillList();
+		var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
+		locDir = sortObject(mergeObjects(locDir,newEntry));
+		localStorage[userName] = JSON.stringify(locDir);
+		lockNames = Object.keys(locDir);
+		window.setTimeout(function(){											//this needs to be on a timer for iOS
+			if(stripTags(lock).length == 43 || stripTags(lock).length == 50){
+				lockMsg.textContent = 'Lock saved to local directory with name: ' + name
+			}else if(isList){
+				lockMsg.textContent = 'List saved to local directory with name: ' + name
+			}else{
+				lockMsg.textContent = 'Item saved to local directory with name: ' + name
+			};
+		}, 100)
+		fillList();
 
 			if(ChromeSyncOn && chromeSyncMode.checked){													//if Chrome sync is available, add to sync storage
 				syncChromeLock(name,JSON.stringify(locDir[name]))
 			}
 
-	}else{
-		lockMsg.textContent = 'Cannot save without a name'
+		suspendFindLock = false;
+		callKey = ''
 	}
-	suspendFindLock = false;
-	callKey = ''
 }
 
 //delete a particular key in Object locDir, then store
@@ -89,49 +88,41 @@ function removeLock(){
 		lockMsg.textContent = 'Delete not available in Guest mode\nPlease restart PassLok';
 		return
 	}
-	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
-	if(!reply) return;
-	var name = lockMsg.textContent;
-	if (locDir[name] == null){
-		lockMsg.textContent = 'To remove an item, its name must be displayed HERE';
-		return
-	}
-	if (name == 'myself'){
-		lockMsg.textContent = 'There is a button to reset your options in the Options tab';
-		return
-	}
-	delete locDir[name];
-	localStorage[userName] = JSON.stringify(locDir);
-	lockNames = Object.keys(locDir);
-	window.setTimeout(function(){										//this needs to be on a timer for iOS
-		lockMsg.textContent = name + ' deleted';
-	}, 100);
-	fillList();
-
-		if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
-			if(confirm('Item removed from local storage. Do you want to remove it also from sync storage?')) remChromeLock(name)
+	var	name = lockBox.textContent,
+		index = searchStringInArrayDB(name,lockNames);
+	if( index >= 0){
+		var fullName = lockNames[index];
+		if (fullName == 'myself'){
+			lockMsg.textContent = 'There is a button to reset your options in the Options tab';
+			return
 		}
+		var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
+		if(!reply) return;
+		delete locDir[fullName];
+		localStorage[userName] = JSON.stringify(locDir);
+		lockNames = Object.keys(locDir);
+		window.setTimeout(function(){										//this needs to be on a timer for iOS
+			lockMsg.textContent = fullName + ' deleted';
+		}, 100);
+		fillList();
 
-	suspendFindLock = false
+			if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
+				if(confirm('Item removed from local storage. Do you want to remove it also from sync storage?')) remChromeLock(fullName)
+			}
+
+		suspendFindLock = false
+	}else{
+		lockMsg.textContent = 'Nothing deleted';
+	}
 }
 
-//this is to just delete the Read-once data for a particular key (or reset the current list)
+//this is to just delete the Read-once data for a particular key
 function resetPFS(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Reset not available in Guest mode. Please restart PassLok';
 		return
 	}
-	if (lockBox.innerHTML.trim().split('<br>').filter(Boolean).length > 1){ //use button to reset current List if a List is displayed, nothing to do with normal use
-		if(learnMode.checked){
-			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
-			if(!reply) return
-		}
-		currentList = '';
-		lockMsg.textContent = 'Current list reset';
-		return
-	}
 
-//now the real stuff
 	var reply = confirm("The data needed to maintain a Read-once conversation with this person will be deleted. This is irreversible. Cancel if this is not what you want.");
 	if(!reply) return;
 
@@ -165,23 +156,14 @@ var suspendFindLock = false							//when true, user can input a name without del
 //searches for name in Locks database and returns the Lock, displays full name as well. Invoked as the user types
 function findLock(){
 	lockMsg.textContent = '';
-	var string = removeHTMLtags(lockNameBox.value.trim());
-	var stringstrip = stripTags(string);
-	if(stringstrip.length == 43 || stringstrip.length == 50){									//it's a Lock in the wrong box. Move it
-		lockBox.textContent = string;
-		lockNameBox.value = '';
-		lockMsg.textContent = 'Locks and shared Keys go in the lower box<br>You can write a name on the top box in order to save it';
-		suspendFindLock = true;
-		return
-	}
-	var index = searchStringInArrayDB(string,lockNames);
+	var string = removeHTMLtags(lockBox.textContent.trim()),
+		stringstrip = stripTags(string),
+		index = searchStringInArrayDB(string,lockNames);
 	if (index >= 0){
 		var name = lockNames[index];
-		lockMsg.textContent = name;
-		lockBox.textContent = locDir[name][0]
+		lockMsg.textContent = "Directory item found with name: " + name
 	}else{
-		lockMsg.textContent = '';
-		lockBox.textContent = ''
+		lockMsg.textContent = ''
 	}
 }
 
@@ -215,48 +197,6 @@ function decryptLock(){
 	}
 	if(lockScr.style.display == 'none') main2lock();
 	callKey = ''
-}
-
-//if a newline is entered, puts the expanded contents of the name box in the Lock box, and waits for another item
-var currentList = '';
-function addToList(){
-	if(learnMode.checked){
-		var reply = confirm("The item displayed will be added to the current list. Cancel if this is not what you want.");
-		if(!reply) return
-	}
-	var	currentItem = lockBox.innerText.trim();
-	if(lockMsg.textContent != ''){
-		var namenumber = currentItem.split('\n').length;
-
-//if the item is itself a list or there is no name, add the contents rather than the displayed name
-		if(namenumber > 1 || lockNameBox.value==''){
-			if(currentList == ''){
-				currentList = currentItem
-			}else{
-				currentList += '\n' + currentItem
-			}
-			lockMsg.textContent = namenumber + ' items added to the current list'
-		}else{
-			if(currentList == ''){
-				currentList = lockMsg.textContent
-			}else{
-				currentList += '\n' + lockMsg.textContent
-			}
-			lockMsg.textContent += ' added to the current list'
-		}
-	}else{
-		if(currentList !=''){
-			lockMsg.textContent = 'This is the (temporary) current list'
-		}else{
-			lockMsg.textContent = 'No items on the current list'
-		}
-	}
-	var listArray = currentList.replace(/\n+/g,'\n').split('\n');
-	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});	//remove duplicates
-	currentList = listArray.join('\n');
-	lockBox.innerText = currentList.trim();
-	currentList = lockBox.innerText;
-	suspendFindLock = false
 }
 
 //automatically decrypts an item stored encrypted in the locDir database. It uses the permanent Key
@@ -703,7 +643,6 @@ function fillBox(){
 	}
 	mainMsg.textContent = msg.trim().replace(/,$/,'');
 	lockMsg.textContent = '';
-	lockNameBox.value = '';
 	isList = false;
 	updateButtons();
 	callKey = ''

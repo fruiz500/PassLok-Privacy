@@ -109,13 +109,11 @@ window.onload = function() {
 
    	clearLocksBtn.addEventListener('click', clearLocks);
 
-   	addLockBtn.addEventListener('click', addLock);
+   	addLockBtn.addEventListener('click', function(){addLock(false)});
 
    	removeLockBtn.addEventListener('click', removeLock);
 
    	resetPFSBtn.addEventListener('click', resetPFS);
-
-   	addToListBtn.addEventListener('click', addToList);
 
    	showLockDBBtn.addEventListener('click', showLockDB);
 
@@ -254,6 +252,8 @@ window.onload = function() {
    	submitChatBtn.addEventListener('click', makeChat);
 
 	lockList.addEventListener('change', fillBox);
+	
+	lockList.addEventListener('click', updateButtons);
 
    	resetListBtn.addEventListener('click', resetList);
 
@@ -307,9 +307,8 @@ window.onload = function() {
 
 	newKey2.addEventListener('keyup', function(event) {newKey2up(event)}, false);
 
-	lockNameBox.addEventListener('keyup', function(event) {lockNameKeyup(event)}, false);
+	lockBox.addEventListener('keyup', function(event) {lockBoxKeyup(event)}, false);
 
-	lockBox.addEventListener('keyup', pasteLock);
 	lockBox.addEventListener('paste', pasteLock);
 
 	userNameBox.addEventListener('keyup', function(event) {nameKeyup(event)}, false);
@@ -463,7 +462,7 @@ window.onload = function() {
 	bb50.addEventListener('click', function() {openClose('b50')});
 	bb51.addEventListener('click', function() {openClose('b51')});
 	bb52.addEventListener('click', function() {openClose('b52')});
-	bb53.addEventListener('click', function() {openClose('b53')});
+//	bb53.addEventListener('click', function() {openClose('b53')});
 //	bb54.addEventListener('click', function() {openClose('b54')});
 	bb55.addEventListener('click', function() {openClose('b55')});
 	bb56.addEventListener('click', function() {openClose('b56')});

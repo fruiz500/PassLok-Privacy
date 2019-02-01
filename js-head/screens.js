@@ -93,13 +93,13 @@ function updateButtons(){
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
 function getType(stringIn){
 	var string = stringIn.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/"(.*?)\/a>/,'');
-	if(string.match('==')) string = string.split('==')[1].replace(/-/g,'');		//remove tags and dashes from Locks
-	string = string.replace(/<(.*?)>/g,'');
+	if(string.match('==')) string = string.split('==')[1];		//remove PassLok tags
+	string = string.replace(/<(.*?)>/g,'').replace(/-/g,'');		//remove HTML tags and dashes
 
 	var	type = string.charAt(0),
 		typeGC = string.charAt(56),												//PassLok for Email compatible
 		isBase64 = !string.match(/[^a-zA-Z0-9+\/]/),
-		isBase26 = !string.match(/[^A-Z]/),
+		isBase26 = !string.match(/[^A-Z ]/),								//spaces allowed
 		isNoLock = string.length != 43 && string.length != 50;
 
 	if(type.match(/[lkgdasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){
@@ -214,8 +214,8 @@ function clearMain(){
 }
 function clearLocks(){
 	lockBox.textContent='';
-	lockNameBox.value='';
 	lockMsg.textContent='';
+	addLockBtn.textContent = "Rand.";
 	suspendFindLock = false
 }
 function clearIntro(){
@@ -501,21 +501,19 @@ function cancelKeyChange(){
 	callKey = ''
 }
 
-//triggered if the user types Enter in the name box of the locks screen
-function lockNameKeyup(evt){
+//triggered if the user types Enter in the locks screen
+function lockBoxKeyup(evt){
 	evt = evt || window.event;												//IE6 compliance
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13) {												//sync from Chrome or decrypt if hit Return
+	if(lockBox.textContent.trim() == ''){
+		addLockBtn.textContent = "Rand."
+	}else{
+		addLockBtn.textContent = "Save"
+	}
+	if(key == 13) {												//sync from Chrome if hit Return
 		if(lockMsg.textContent == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn && chromeSyncMode.checked){
-				getChromeLock(lockNameBox.value);
-			}
-		}else{												//decrypt 1st time if found locally, 2nd time if synced from Chrome
-			if(!lockMsg.textContent.match('not found in Chrome sync')){
-				var firstchar = lockBox.textContent.slice(0,1);
-				if(firstchar == 'k'){
-					decryptLock()
-				}
+				getChromeLock(lockBox.textContent);
 			}
 		}
 	}else if(!suspendFindLock){											//otherwise search database
@@ -738,16 +736,19 @@ function main2lock(){
 	if(string.length > 500){							//cover text detected, so replace the currently selected one
 		newCover(string)
 	}
+	if(string == '') addLockBtn.textContent = "Rand.";
 	resetList();
 	openClose('lockScr');
-	openClose('shadow')
+	openClose('shadow');
+	focusBox()
 }
 
 //close image screen
 function image2main(){
 	if(imageScr.style.display=='block'){
 		openClose('imageScr');
-		openClose('shadow')
+		openClose('shadow');
+		focusBox()
 	}
 }
 
@@ -822,7 +823,8 @@ function key2any(){
 	keytimer = setTimeout(resetKeys, 300000);	//reset timer for 5 minutes, then delete Key
 	keytime = new Date().getTime();
 	keyScr.style.display = 'none';
-	shadow.style.display = 'none'
+	shadow.style.display = 'none';
+	focusBox()
 }
 
 //leave email screen
@@ -878,7 +880,7 @@ function focusBox(){
 		if(keyScr.style.display == 'block'){
 			pwd.focus()
 		} else if(lockScr.style.display == 'block'){
-			lockNameBox.focus()
+			lockBox.focus()
 		} else {
 			mainBox.focus()
 		}
@@ -1023,7 +1025,7 @@ function findString (str){
   return
  }
  if(!strFound){
-	 helpmsg.textContent = 'Text not found in the titles'
+	 helpmsg.textContent = 'Text not found in the titles. You may need to switch to Advanced mode'
  }else{
 	 helpmsg.textContent = 'Text highlighted below. Click again to see more results'
  }
