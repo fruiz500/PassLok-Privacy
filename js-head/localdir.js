@@ -31,23 +31,11 @@ function addLock(fromMain){
 		if(!reply) return
 	}
 	callKey = 'addlock';
-<<<<<<< HEAD
 	var	lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'').trim(),
 		lockarray = lock.split('<br>'),
 		isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
 		
 	if (lock == ''){																//if box is empty, put a random string there
-=======
-	var name = lockNameBox.value.trim(),
-		lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
-	if(removeHTMLtags(name)!=name){
-		lockMsg.textContent = 'This is not a valid name';
-		return
-	}
-	var lockarray = lock.split('<br>');
-	var isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
-	if (lock ==''){
->>>>>>> origin/master
 		if(!locDir['myself'] || BasicButtons) return;									//don't do it in Basic mode
 		lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct from  a Lock
 		lockBox.textContent = lock;
@@ -99,20 +87,6 @@ function removeLock(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Delete not available in Guest mode\nPlease restart PassLok';
 		return
-<<<<<<< HEAD
-=======
-	}
-	var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
-	if(!reply) return;
-	var name = lockMsg.textContent;
-	if (locDir[name] == null){
-		lockMsg.textContent = 'To remove an item, its name must be displayed HERE';
-		return
-	}
-	if (name == 'myself'){
-		lockMsg.textContent = 'There is a button to reset your options in the Options tab';
-		return
->>>>>>> origin/master
 	}
 	var	name = lockBox.textContent,
 		index = searchStringInArrayDB(name,lockNames);
@@ -146,18 +120,6 @@ function removeLock(){
 function resetPFS(){
 	if(!fullAccess){
 		lockMsg.textContent = 'Reset not available in Guest mode. Please restart PassLok';
-<<<<<<< HEAD
-=======
-		return
-	}
-	if (lockBox.innerHTML.trim().split('<br>').filter(Boolean).length > 1){ //use button to reset current List if a List is displayed, nothing to do with normal use
-		if(learnMode.checked){
-			var reply = confirm("The list currently being formed will be reset. Cancel if this is not what you want.");
-			if(!reply) return
-		}
-		currentList = '';
-		lockMsg.textContent = 'Current list reset';
->>>>>>> origin/master
 		return
 	}
 
@@ -237,51 +199,6 @@ function decryptLock(){
 	callKey = ''
 }
 
-<<<<<<< HEAD
-=======
-//if a newline is entered, puts the expanded contents of the name box in the Lock box, and waits for another item
-var currentList = '';
-function addToList(){
-	if(learnMode.checked){
-		var reply = confirm("The item displayed will be added to the current list. Cancel if this is not what you want.");
-		if(!reply) return
-	}
-	var	currentItem = lockBox.innerText.trim();
-	if(lockMsg.textContent != ''){
-		var namenumber = currentItem.split('\n').length;
-
-//if the item is itself a list or there is no name, add the contents rather than the displayed name
-		if(namenumber > 1 || lockNameBox.value==''){
-			if(currentList == ''){
-				currentList = currentItem
-			}else{
-				currentList += '\n' + currentItem
-			}
-			lockMsg.textContent = namenumber + ' items added to the current list'
-		}else{
-			if(currentList == ''){
-				currentList = lockMsg.textContent
-			}else{
-				currentList += '\n' + lockMsg.textContent
-			}
-			lockMsg.textContent += ' added to the current list'
-		}
-	}else{
-		if(currentList !=''){
-			lockMsg.textContent = 'This is the (temporary) current list'
-		}else{
-			lockMsg.textContent = 'No items on the current list'
-		}
-	}
-	var listArray = currentList.replace(/\n+/g,'\n').split('\n');
-	listArray = listArray.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});	//remove duplicates
-	currentList = listArray.join('\n');
-	lockBox.innerText = currentList.trim();
-	currentList = lockBox.innerText;
-	suspendFindLock = false
-}
-
->>>>>>> origin/master
 //automatically decrypts an item stored encrypted in the locDir database. It uses the permanent Key
 function decryptItem(){
 	if(callKey != 'decryptlock') callKey = 'decryptitem';
