@@ -92,26 +92,27 @@ function updateButtons(){
 
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
 function getType(stringIn){
-	var string = stringIn.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/"(.*?)\/a>/,'');
-	if(string.match('==')) string = string.split('==')[1];		//remove PassLok tags
-	string = string.replace(/<(.*?)>/g,'').replace(/-/g,'');		//remove HTML tags and dashes
+	var string = stringIn.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/"(.*?)\/a>/,''); 	//remove special chars, files and images
+	if(string.match('==')) string = string.split('==')[1];									//remove PassLok tags
+	string = string.replace(/<(.*?)>/g,'').replace(/-/g,'').replace(/\r?\n|\r/g,'');		//remove HTML tags and dashes, plus carriage returns
 
 	var	type = string.charAt(0),
+		hasLock = (string.slice(50,56) == '//////'),
 		typeGC = string.charAt(56),												//PassLok for Email compatible
-		isBase64 = !string.match(/[^a-zA-Z0-9+\/]/),
-		isBase26 = !string.match(/[^A-Z ]/),								//spaces allowed
+		isBase64 = !string.match(/[^a-zA-Z0-9\+\/]/),
+		isBase26 = !string.match(/[^A-Z ]/),										//spaces allowed, as in 5-letter codegroups 
 		isNoLock = string.length != 43 && string.length != 50;
 
-	if(type.match(/[lkgdasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){
+	if(!hasLock && type.match(/[lkgdasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){				//encrypted or signed, no Lock prepended
 		return [type, string]
-	}else if(typeGC.match(/[gasoprSO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){
+	}else if(hasLock && typeGC.match(/[gasoprSO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){				//encrypted, Lock prepended
 		return [typeGC, string]
-	}else if(!isNoLock && isBase64 && !isBase26 && string.length > 40){
-		return ['c'	, string]																//special type for a Lock
-	}else if(string && isBase26){
-		return ['h', string]																//human-computable encrypted
+	}else if(!hasLock && !isNoLock && isBase64 && !isBase26 && string.length > 40){											//special type for a Lock
+		return ['c'	, string]
+	}else if(!hasLock && string && isBase26){																					//human-computable encrypted
+		return ['h', string]
 	}else{
-		return [false, stringIn]
+		return [false, stringIn]																									//unrecognized type
 	}
 }
 
@@ -141,58 +142,80 @@ function pasteMain() {
 //for showing.hiding password fields
 var eyeImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAASFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACrhKybAAAAF3RSTlMA5Qyz9kEFh3rd1sjDoGsfHRKwQIp+Qzv02bEAAACJSURBVCjPvVBJEoQgDMwCAfeFmfH/P51KkFKL0qN9SXdDVngRy8joHPK4XGyJbtvhohz+3G0ndHPxp0b1mojSqqyZsk+tqphFVN6S8cH+g3wQgwCrGtT3VjhB0BB26QGgN0aAGhDIZP/wUHLrUrk5g4RT83rcbxn3WJA90Y/zgs8nqY94d/b38AeFUhCT+3yIqgAAAABJRU5ErkJggg==",
 	hideImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJHRSTlMAFNTiDPTNBvnaulFBAe/osrGBZCXSwIdnLhzIqKd7XFRLSjAYduwyAAAAuklEQVQoz62QRxbDIAwFhWkhwb07PeH+Z4wQPMjCS89KegP6AjiWSbF9oVzBQNyNlKZZ/s+wwpvLyXlkp7P5umiIcYDIwB0ZLWzrTb3GSQYbMsjDl3wj0fj6TDmpK7F60nnLeDCW2h6rgioBVZgmwlwUJoo6bkC7KRQ9iQ/MzuWtXyjKKcTpmVc8mht4Nu5NV+Y/UAKItaY7byHsOeSkp48uQSahO+kiISfD+ha/nbcLwxwFuzB1hUP5AR4JF1hy2DV7AAAAAElFTkSuQmCC";
-	
+
+var hashiliOn = false;			//default to not showing hashili
+
 //this is for showing and hiding text in key box and other password input boxes
 function showsec(){
 	if(pwd.type=="password"){
-		pwd.type="text";
-		showKey.src = hideImg
+		if(hashiliOn){
+			pwd.type="text";
+			showKey.src = hideImg
+		}else{hashiliOn = true}
 	}else{
 		pwd.type="password";
-		showKey.src = eyeImg
+		showKey.src = eyeImg;
+		hashiliOn = false
 	}
+	keyStrength(pwd.value.trim(),true)
 }
 
 function showDecoyIn(){
 	if(decoyPwdIn.type=="password"){
-		decoyPwdIn.type="text";
-		showDecoyInCheck.src = hideImg
+		if(hashiliOn){
+			decoyPwdIn.type="text";
+			showDecoyInCheck.src = hideImg
+		}else{hashiliOn = true}
 	}else{
 		decoyPwdIn.type="password";
-		showDecoyInCheck.src = eyeImg
+		showDecoyInCheck.src = eyeImg;
+		hashiliOn = false
 	}
+	keyStrength(decoyPwdIn.value.trim(),true)
 }
 
 function showDecoyOut(){
 	if(decoyPwdOut.type=="password"){
-		decoyPwdOut.type="text";
-		showDecoyOutCheck.src = hideImg
+		if(hashiliOn){
+			decoyPwdOut.type="text";
+			showDecoyOutCheck.src = hideImg
+		}else{hashiliOn = true}
 	}else{
 		decoyPwdOut.type="password";
-		showDecoyOutCheck.src = eyeImg
+		showDecoyOutCheck.src = eyeImg;
+		hashiliOn = false
 	}
+	keyStrength(decoyPwdOut.value.trim(),true)
 }
 
 function showIntro(){
 	if(pwdIntro.type=="password"){
-		pwdIntro.type="text";
-		showIntroKey.src = hideImg
+		if(hashiliOn){
+			pwdIntro.type="text";
+			showIntroKey.src = hideImg
+		}else{hashiliOn = true}
 	}else{
 		pwdIntro.type="password";
-		showIntroKey.src = eyeImg
+		showIntroKey.src = eyeImg;
+		hashiliOn = false
 	}
+	keyStrength(pwdIntro.value.trim(),true)
 }
 
 function showNewKey(){
 	if(newKey.type=="password"){
-		newKey.type="text";
-		newKey2.type="text";
-		showNewKeyCheck.src = hideImg
+		if(hashiliOn){
+			newKey.type="text";
+			newKey2.type="text";
+			showNewKeyCheck.src = hideImg
+		}else{hashiliOn = true}
 	}else{
 		newKey.type="password";
 		newKey2.type="password";
-		showNewKeyCheck.src = eyeImg
+		showNewKeyCheck.src = eyeImg;
+		hashiliOn = false
 	}
+	keyStrength(newKey.value.trim(),true)
 }
 
 function chat2main(){
@@ -429,7 +452,8 @@ function closeBox(){
 	emailScr.style.display = "none";
 	chatDialog.style.display = "none";
 	nameScr.style.display = "none";
-	introscr.style.display = "none"
+	introscr.style.display = "none";
+	hashiliOn = false
 }
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
@@ -605,7 +629,9 @@ function submitDecoy(){
 function decoyKeyupOut(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){submitDecoy()}
+	if(key == 13){submitDecoy()} else{
+		 return keyStrength(decoyPwdOut.value,true)
+	}
 }
 function partsKeyup(evt){
 	evt = evt || window.event;

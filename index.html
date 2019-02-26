@@ -455,7 +455,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <div id="a5" class="helpItem">
     <p>You should be able to <strong>remember your secret Key</strong> without having to write it down. PassLok does not store the Key anywhere. In fact, it deletes it from memory after five minutes of not being used.</p>
-    <p>As you type your Key, PassLok displays a color-coded message telling you how strong it is. By default, your Key will be masked, but you can reveal it by clicking the eye icon on the right. A mnemonic &quot;Hashili&quot; word based on your Key is displayed right under the strength score, to reassure you that you have typed the Key correctly, even if you cannot see it.</p>
+    <p>As you type your Key, PassLok displays a color-coded message telling you how strong it is. If you click the eye icon on the right, a mnemonic &quot;Hashili&quot; word based on your Key is displayed right under the strength score, to reassure you that you have typed the Key correctly, even if you cannot see it. Clicking the eye icon again reveals the entire Key.</p>
     <p>Your Key will be stronger if it contains <strong>caPiTals</strong> in unusual places, <strong>numb3rs</strong>, and <strong>$ymbol$</strong>. If you use common words, <strong>miespell</strong> them to make harder a "dictionary attack." Break the words up with <strong>num334bers</strong> and <strong>sy#$%mbols</strong>. Avoid anything that might be easy to guess. PassLok knows frequently used words, but hackers' dictionaries are bigger. Do not use grammatically correct sentences, even if PassLok gives a big score.</p>
     <p>PassLok <strong>compensates for weak Keys by adding spurious computations</strong> and may even appear to have crashed. If PassLok is slow, this may be because your Key strength is less than Medium.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=JbNM_cf8My0" target="_blank">https://www.youtube.com/watch?v=JbNM_cf8My0</a></p>
@@ -475,7 +475,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>If you are reading this, likely you have gained Guest access to PassLok by clicking <strong>Cancel</strong> at the Key entry screen. The good news is that you can still encrypt messages if you know the recipient's Lock or shared Key, verify signatures, and use the Locks stored in your local directory as well as all the auxiliary functions of PassLok. You can even seal items and display the matching Lock if you enter a Key when PassLok asks for it.</p>
     <p>The bad news is that  you cannot change anything stored in the local directory, and your use of it is limited to Locks. You cannot do anything that would involve your secret Key, such as decrypting messages encrypted with your Lock, or continuing a Read-once conversation in course.</p>
     <p>Well, we've got even worse news for you: we cannot help you to recover your secret Key, because PassLok never stored it or sent it out. There are no saved hints, either. If you forgot your Key, <strong>it's gone, along with all encrypted items in the local directory</strong>.</p>
-    <p>But chances are you <em>almost</em> remember it, and are off by a few characters only. As you type your Key at the entry screen, a mnemonic &quot;Hashili&quot; word derived from it appears right above it. Perhaps you can recognize the correct Hashili word when you see it, which will help you to reconstruct your Key. For your security, the Hashili word alone is not enough to reconstruct the Key.</p>
+    <p>But chances are you <em>almost</em> remember it, and are off by a few characters only. If you click the eye icon, a mnemonic &quot;Hashili&quot; word derived from it appears right above it. Perhaps you can recognize the correct Hashili word when you see it, which will help you to reconstruct your Key. For your security, the Hashili word alone is not enough to reconstruct the Key.</p>
     <div id='bb6' class="helpHeading">
       <p><em>Click here for More:</em></p>
     </div>
@@ -1589,12 +1589,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.9 (February 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.10 (February 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.9 &#169; F. Ruiz 2019
+  PassLok v2.4.10 &#169; F. Ruiz 2019
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1838,7 +1838,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--Decoy Out dialog-->
 <div id="decoyOut" class="white_content" align="center"> <br>
-  <p>Enter the Key for the Hidden message</p>
+  <span id="decoyOutMsg">Enter the Key for the Hidden message</span>
+  <br>
   <input type="password" class="cssbox" id="decoyPwdOut" name="key"/><img id='showDecoyOutCheck' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>

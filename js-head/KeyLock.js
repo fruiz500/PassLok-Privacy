@@ -46,7 +46,7 @@ if(display){
 	var seconds = time10/10000*Math.pow(2,iter-8);			//to tell the user how long it will take, in seconds
 
 	if(pwd.trim() == ''){
-		if(decoyIn.style.display == "block"){
+		if(decoyIn.style.display == "block" || decoyOut.style.display == "block"){
 			msg = 'Enter the Hidden message Key/Lock below'
 		}else{
 			msg = 'Enter your Key'
@@ -62,11 +62,16 @@ if(display){											//these are to display the appropriate messages
 	var msgName = '';
 	if(keyScr.style.display != "none") msgName = 'keyMsg';
 	if(decoyIn.style.display == "block") msgName = 'decoyMsg';
+	if(decoyOut.style.display == "block") msgName = 'decoyOutMsg';
 	if(introscr3.style.display == "block") msgName = 'introMsg';
 	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
 	if(imageScr.style.display == "block") msgName = 'imageMsg';
 	if(pwd){
-		document.getElementById(msgName).innerHTML = msg + "<br>" + hashili(pwd);			//innerHTML to preserve the line breaks
+		if(hashiliOn){
+			document.getElementById(msgName).innerHTML = msg + "<br>" + hashili(pwd)				//innerHTML to preserve the line breaks
+		}else{
+			document.getElementById(msgName).innerHTML = msg
+		}
 		document.getElementById(msgName).style.color = colorName
 	}else{
 		document.getElementById(msgName).textContent = "Enter your Key";
@@ -144,11 +149,11 @@ function reduceVariants(string){
 var vowel = 'aeiou',
 	consonant = 'bcdfghjklmnprstvwxyz';
 function hashili(string){
-	var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-4),			//take last 8 bytes of the SHA512		
-		code10 = ((((code[0]*256)+code[1])*256+code[2])*256+code[3]) % 100000000,		//convert to decimal
+	var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-2),			//take last 4 bytes of the SHA512		
+		code10 = ((code[0]*256)+code[1]) % 10000,		//convert to decimal
 		output = '';
 
-	for(var i = 0; i < 4; i++){
+	for(var i = 0; i < 2; i++){
 		var remainder = code10 % 100;								//there are 5 vowels and 20 consonants; encode every 2 digits into a pair
 		output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
 		code10 = (code10 - remainder) / 100
