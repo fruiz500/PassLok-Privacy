@@ -621,7 +621,7 @@ function shuffle(a) {
 function decoyEncrypt(length,secKey){
 	if (decoyMode.checked){
 		if(learnMode.checked){
-			var reply = confirm("You are adding a hidden message. Cancel if this is not what you want, then uncheck Hidden msg. in Options.");
+			var reply = confirm("You are adding a hidden message. Cancel if this is not what you want, then uncheck Hidden message in Options.");
 			if(!reply) return false
 		}
 		if((decoyPwdIn.value.trim() == "")||(decoyText.value.trim() == "")){ 		//stop to display the decoy entry form if there is no hidden message or key

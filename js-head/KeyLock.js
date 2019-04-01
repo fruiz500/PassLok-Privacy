@@ -1,16 +1,16 @@
 ﻿//initialize a few global variables used for GUI interaction
-var callKey = '';
-var BasicButtons = true;
-var fullAccess = true;
-var allowCancelWfullAccess = false;
+var callKey = '',
+	BasicButtons = true,
+	fullAccess = true,
+	allowCancelWfullAccess = false;
 
 //global variables used for key box expiration
-var keytimer = 0;
-var keytime = new Date().getTime();
+var keytimer = 0,
+	keytime = new Date().getTime();
 
-//Alphabets for base conversion. Used in making and reading the ezLok format and some fixes to SJCL
-var base36 = '0123456789abcdefghijkLmnopqrstuvwxyz';									//L is capital for readability
-var base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+//Alphabets for base conversion. Used in making and reading the ezLok format
+var base36 = '0123456789abcdefghijkLmnopqrstuvwxyz',									//L is capital for readability
+	base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
 function keyStrength(pwd,display) {
@@ -142,7 +142,12 @@ function entropycalc(pwd){
 
 //take into account common substitutions, ignore spaces and case
 function reduceVariants(string){
-	return string.toLowerCase().replace(/[óòöôõo]/g,'0').replace(/[!íìïîi]/g,'1').replace(/[z]/g,'2').replace(/[éèëêe]/g,'3').replace(/[@áàäâãa]/g,'4').replace(/[$s]/g,'5').replace(/[t]/g,'7').replace(/[b]/g,'8').replace(/[g]/g,'9').replace(/[úùüû]/g,'u');
+	return string.toLowerCase().replace(/[óòöôõo]/g,'0').replace(/[!íìïîi]/g,'1').replace(/[z]/g,'2').replace(/[éèëêe]/g,'3').replace(/[@áàäâãa]/g,'4').replace(/[$s]/g,'5').replace(/[t]/g,'7').replace(/[b]/g,'8').replace(/[g]/g,'9').replace(/[úùüû]/g,'u')
+}
+
+//replaces back variant characters, opposite of reduceVariants
+function replaceVariants(string){
+	return string.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g')
 }
 
 //makes 'pronounceable' hash of a string, so user can be sure the password was entered correctly
@@ -219,7 +224,7 @@ function readEmail(){
 		}
 	}
 	var email = emailBox.value;
-	if (email == "" && emailScr.style.display == 'none'){
+	if (email == "" && emailScr.style.display != 'block'){
 		any2email();
 		return false
 	};
@@ -227,7 +232,7 @@ function readEmail(){
 }
 
 var userName = '';
-//to initialize a new user
+//to initialize a new user. Executed by final button in new user wizard
 function initUser(){
 	var key = pwdIntro.value,
 		email = emailIntro.value,
@@ -316,7 +321,7 @@ function makeGreeting(isNewUser){
 	}
 }
 
-//checks that the Key is the same as before, resumes operation
+//checks that the Key is the same as before, resumes operation. Executed by OK button in key entry dialog
 function acceptKey(){
 	var key = pwd.value.trim();
 	if(key == ''){
@@ -325,10 +330,6 @@ function acceptKey(){
 	}
 	if(key.length < 4){
 		keyMsg.textContent = 'This Key is too short!';
-		return
-	}
-	if(stripTags(key).length == 43 || stripTags(key).length == 50){
-		keyMsg.textContent = 'This is a Lock. Enter your Key here';
 		return
 	}
 
@@ -351,14 +352,14 @@ function acceptKey(){
 	KeyStr = key;
 	key2any();
 
-setTimeout(function(){									//execute after a delay so the key entry dialog can go away
+setTimeout(function(){									//execute after a 30 ms delay so the key entry dialog can go away
 	if(locDir['myself']){
 		if(!fullAccess){									//OK so far, now check that the Key is good; at the same time populate email and generate stretched Keys
 			locDir['myself'][3] = 'guest mode';
 			localStorage[userName] = JSON.stringify(locDir);
 			mainMsg.textContent = 'You have limited access to functions. For full access, reload and enter the Key'
 		}
-		checkKey(key);
+		if(!checkKey(key)) return;							//check the key and bail out if fail
 		getSettings();
 
 		var hash = decodeURI(window.location.hash).slice(1),								//check for data in the URL
@@ -517,7 +518,8 @@ function checkKey(key){
 	KeyDir = wiseHash(key,userName);
 	if(fullAccess){
 		var myEmailcrypt = locDir['myself'][0];
-		var email = keyDecrypt(myEmailcrypt);
+		var email = keyDecrypt(myEmailcrypt);				//this will fail if the Key is not the last one used, displaying a message
+		if(!checkingKey) return false;
 		if(email){
 			myEmail = email
 		}else{
@@ -534,7 +536,7 @@ function checkKey(key){
 		myezLock = changeBase(myLockStr, base64, base36, true);
 	}
 	checkingKey = false;
-	return
+	return true
 }
 
 //display Lock in the lower box of the Main tab.
@@ -566,7 +568,7 @@ function showLock(){
 	callKey = '';
 }
 
-//extracts Lock at the start of an item, from an invitation or PassLok for Email
+//extracts Lock at the start of an item, from an invitation or PassLok for Email, or data in the URL
 function extractLock(string){
 		var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
 		if(CGParts[0].length == 50){
@@ -580,6 +582,14 @@ function extractLock(string){
 		}else{
 			var possibleLock = removeHTMLtags(string)
 		}
+
+		var wordsStr = possibleLock.match('==') ? possibleLock.split('==')[1].replace(/_/g,' ').trim() : possibleLock.replace(/_/g,' ').trim(),
+			words = wordsStr.split(' ');					//for word Locks in URL
+		if(words.length == 20){
+			possibleLock = changeBase(wordsStr,wordListExp,base64,true);			//convert to base64
+			if(!possibleLock) return false
+		}
+		
 		if(possibleLock.length == 43 || possibleLock.length == 50){
 			var index = 0, foundIndex;
 			for(var name in locDir){
@@ -604,10 +614,12 @@ function lockDisplay(){
 	if(ezLokMode.checked){
 		var mylocktemp = myezLock;
 		mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading
-		mylocktemp = "PL24ezLok==" + mylocktemp + "==PL24ezLok";
-	}else{
+		mylocktemp = "PL24ezLok==" + mylocktemp + "==PL24ezLok"
+	}else if(normalLockMode.checked){
 		var mylocktemp = myLockStr;
-		mylocktemp = "PL24lok==" + mylocktemp + "==PL24lok";
+		mylocktemp = "PL24lok==" + mylocktemp + "==PL24lok"
+	}else{
+		mylocktemp = "PL24wordLok==" + changeBase(myLockStr,base64,wordListExp,true) + "==PL24wordLok"
 	}
 	return mylocktemp
 }
@@ -816,41 +828,63 @@ function replaceByItem(name){
 	return fullName
 }
 
-//changes the base of a number. inAlpha and outAlpha are strings containing the base code for the original and target bases, as in '0123456789' for decimal
+//changes the base of a number. inAlpha and outAlpha are strings containing the base code for the original and target bases, as in '0123456789' for decimal. Bases can be string, words separated by spaces, or RegExp
 //adapted from http://snippetrepo.com/snippets/bignum-base-conversion, by kybernetikos
-function changeBase(number, inAlpha, outAlpha, isLock) {
-	var targetBase = outAlpha.length,
-		originalBase = inAlpha.length;
-    var result = "";
+function changeBase(numberIn, inAlpha, outAlpha, isLock) {
+	var isWordsIn = inAlpha instanceof RegExp || inAlpha.match(' '),				//detect whether it's words into string, or the opposite
+		isWordsOut = outAlpha instanceof RegExp || outAlpha.match(' ');			//could be RegExp or space-delimited
+		
+	//split alphabets into array
+	var alphaIn = isWordsIn ? (inAlpha instanceof RegExp ? inAlpha.toString().slice(1,-2).split('|') : inAlpha.trim().split(' ')) : inAlpha.split(''),
+		alphaOut = isWordsOut ? (outAlpha instanceof RegExp ? outAlpha.toString().slice(1,-2).split('|') : outAlpha.trim().split(' ')) : outAlpha.split('');
+	
+	var targetBase = alphaOut.length,
+		originalBase = alphaIn.length;
+    var result = [],
+		number = isWordsIn ? numberIn.trim().replace(/ +/g,' ').split(' ') : numberIn.split('');
+		
+	if(isWordsIn){										//convert words into dictionary variants
+		for(var i = 0; i < number.length; i++){
+			number[i] = reduceVariants(number[i])
+		}
+	}
+	
     while (number.length > 0) {
-        var remainingToConvert = "", resultDigit = 0;
+        var remainingToConvert = [], resultDigit = 0;
         for (var position = 0; position < number.length; ++position) {
-            var idx = inAlpha.indexOf(number[position]);
+            var idx = alphaIn.indexOf(number[position]);
             if (idx < 0) {
-                throw new Error('Symbol ' + number[position] + ' from the'
-                    + ' original number ' + number + ' was not found in the'
-                    + ' alphabet ' + inAlpha);
+				if(lockScr.style.display == 'block'){
+					lockMsg.textContent = "Word '" + replaceVariants(number[position]) + "' in word Lock not found in dictionary. Please check"
+				}else{
+					mainMsg.textContent = "Word '" + replaceVariants(number[position]) + "' in pasted word Lock not found in dictionary. Please check"
+				}
+					return false
             }
             var currentValue = idx + resultDigit * originalBase;
             var remainDigit = Math.floor(currentValue / targetBase);
             resultDigit = currentValue % targetBase;
             if (remainingToConvert.length || remainDigit) {
-                remainingToConvert += inAlpha[remainDigit];
+                remainingToConvert.push(alphaIn[remainDigit])
             }
         }
         number = remainingToConvert;
-        result = outAlpha[resultDigit] + result;
+        result.push(alphaOut[resultDigit])
     }
-
-	//add leading zeroes in Locks
-	if(isLock){
-		if(targetBase == 64){
-			while(result.length < 43) result = 'A'+ result
-		} else if (targetBase == 36){
-			while(result.length < 50) result = '0'+ result
+	
+	if(isLock){													//add leading zeroes in Locks
+		var lockLength = isWordsOut ? 20 : ((targetBase == 36) ? 50 : 43);
+		while(result.length < lockLength) result.push(alphaOut[0])
+	}
+	result.reverse();
+	
+	if(isWordsOut){											//convert to regular words
+		for(var i = 0; i < result.length; i++){
+			result[i] = replaceVariants(result[i])
 		}
 	}
-    return result;
+
+    return isWordsOut ? result.join(' ') : result.join('')
 }
 
 //puts an 43-character random string in the 'emailBox' boxes
@@ -865,7 +899,7 @@ function failedDecrypt(label){
 	if(checkingKey){
 		shadow.style.display = 'block';
 		keyScr.style.display = 'block';
-		keyMsg.textContent = "Please write the last Key you used. You can change the Key in Options"
+		keyMsg.textContent = "Please write the last Key you used. You can change the Key in Options";
 		checkingKey = false
 	}else if(lockBox.textContent.slice(0,1) == 'k' || isList || nameBeingUnlocked != '' || label == 'key'){
 		any2key();					//this displays the Key entry dialog

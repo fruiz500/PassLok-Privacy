@@ -295,12 +295,18 @@
       &nbsp;&nbsp;<span id="otherLabel">Other:&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <input type="checkbox" id="learnMode" title="get explanatory messages after buttons are pressed, but before functions are executed"/>
       &nbsp; Learn&nbsp;&nbsp;
-      <input type="checkbox" id="ezLokMode" title="display easy to read Lock" checked/>
+      <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
+      &nbsp; Hidden message<br><br>
+      &nbsp;&nbsp;
+      <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words" checked/>
+      &nbsp; Word Lock&nbsp;&nbsp;
+      <input type="radio" name="lockType" id="ezLokMode" title="display easy to read Lock"/>
       &nbsp; ezLok&nbsp;&nbsp;
+      <input type="radio" name="lockType" id="normalLockMode" title="display base64 Lock"/>
+      &nbsp; base64 Lock<br><br>  
+      &nbsp;&nbsp; 
       <input type="checkbox" id="fileMode" title="output is turned into files" accesskey=""/>
-      &nbsp; File output<br><br>
-      &nbsp;&nbsp;<input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
-      &nbsp; Hidden msg.&nbsp;&nbsp;
+      &nbsp; File output&nbsp;&nbsp;    
       <input type="radio" name="fileModes" id="binaryMode" title="output file is binary" checked/>
       &nbsp; Binary file&nbsp;&nbsp;
       <input type="radio" name="fileModes" id="textMode" title="output file is text" />
@@ -530,14 +536,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="a9" class="helpItem">
     <p>Click the <strong>myLock</strong> button on the <strong>Main</strong> tab. The Lock matching that Key will appear
       in the lower box, from where you can copy it or email it.</p>
-    <p>If then you click the <strong>Edit</strong> button next to the local directory box, and after that click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
+    <p>If then you click the <strong>Edit</strong> button next to the local directory box, and after that click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your ezLok or base64 Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=L00yybDzN6k" target="_blank">https://www.youtube.com/watch?v=L00yybDzN6k</a></p>
     <div id='bb9' class="helpHeading">
       <p><em>Click here for More:</em></p>
     </div>
     <div id="b9" class="helpItem">
-      <p>By default, PassLok displays the Lock in ezLok format, consisting only of lowercase letters (except L) and numbers, so it is easier to authenticate by reading aloud a portion of it. To display it in base64 format like all other PassLok items, go to the <strong>Options</strong> tab and uncheck <strong>ezLok</strong>. The General Directory can take ezLok Locks as well as base64 Locks. PassLok for Email and SeeOnce are compatible with PassLok ezLoks, but not with regular Locks. If you wrote your real email when asked about it, rather than something else, then your ezLok is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app. This precaution is not necessary for SeeOnce.</p>
-      <p>If you need to make a Lock for a different Key (for instance, in order to receive hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by  clicking Change Email on Options).</p>
+      <p>By default, PassLok displays the Lock in Word format, consisting of 20 common words, so you can easily dictate it if necessary. On the <strong>Options</strong> tab, you can change this to ezLok format, consisting of 50 lowercase letters (except L) and numbers, or to base64 format like all other PassLok items, consisting of 43 numbers, letters (capital and smallcase) and special characters / or +<strong></strong>. The General Directory can take items only in ezLok and base64 formats. PassLok for Email is compatible with all Lock formats, but SeeOnce is compatible only with ezLoks. If you wrote your real email when asked about it in the initial wizard, rather than something else, then your Lock is the same as that used in PassLok for Email, and the encrypted items made by PassLok Privacy and PassLok for Email can be decrypted in the other app. This precaution is not necessary for SeeOnce.</p>
+      <p>If you need to make a Lock for a different Key (for instance, in order to receive hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by  clicking Change Email in Options).</p>
     </div>
   </div>
   <hr>
@@ -1283,7 +1289,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <h3>Encrypt a second, undetectable message in addition to the main message (Hidden message mode) <em>(advanced)</em></h3>
     </div>
     <div id="a48" class="helpItem">
-      <p>1. On the <strong>Options</strong> tab, check the <strong>Hidden msg.</strong> checkbox.</p>
+      <p>1. On the <strong>Options</strong> tab, check the <strong>Hidden message</strong> checkbox.</p>
       <p>2. Follow the above instructions for any kind of regular encryption (not Short). A popup will ask for a hidden message and a special Key/Lock to encrypt it.</p>
       <p>3. Input the  hidden message into the top box and the special shared Key or Lock (either kind will work) in the bottom box. Then click <strong>OK</strong>. </p>
       <p>The encrypted message containing both the main text and the hidden text will appear in the main box, replacing the original text. Copy it and paste it into your communications program.</p>
@@ -1301,15 +1307,15 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <h3>Reveal the hidden text contained within a message encrypted in Hidden message mode <em>(advanced)</em></h3>
     </div>
     <div id="a49" class="helpItem">
-      <p>1. On the <strong>Options</strong> tab, check the <strong>Hidden msg.</strong> checkbox.</p>
-      <p>2. Follow the instructions for any of the regular decrypting modes. A popup will ask for a Hidden msg. Key.</p>
+      <p>1. On the <strong>Options</strong> tab, check the <strong>Hidden message</strong> checkbox.</p>
+      <p>2. Follow the instructions for any of the regular decrypting modes. A popup will ask for a Hidden message Key.</p>
       <p>3. Input the special Key, then click <strong>OK</strong>. The hidden message, if it exists, will appear above the main box.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=4WrYEdRp2Q4" target="_blank">https://www.youtube.com/watch?v=4WrYEdRp2Q4</a></p>
       <div id='bb49' class="helpHeading">
         <p><em>Click here for More:</em></p>
       </div>
       <div id="b49" class="helpItem">
-        <p>Since it is impossible to detect the presence of a hidden message, it is necessary to click the <strong>Hidden msg.</strong> checkbox in order to check for it. Likewise, there is no way to tell whether the sender used a Key or a Lock for encrypting the hidden message.</p>
+        <p>Since it is impossible to detect the presence of a hidden message, it is necessary to click the <strong>Hidden message</strong> checkbox in order to check for it. Likewise, there is no way to tell whether the sender used a Key or a Lock for encrypting the hidden message.</p>
       </div>
     </div>
     <hr>
@@ -1589,12 +1595,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.10 (February 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of version 2.4.11 (April 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.10 &#169; F. Ruiz 2019
+  PassLok v2.4.11 &#169; F. Ruiz 2019
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>

@@ -39,7 +39,7 @@ function charsLeft(){
 		}else if(onceMode.checked){
 			var limit = 46									//Read-once mode, 46 chars
 		}
-		if(extraButtonsTop.style.display == 'none'){		//don't show this if hiding or splitting
+		if(extraButtonsTop.style.display != 'block'){		//don't show this if hiding or splitting
 			if(chars <= limit){
 				mainMsg.textContent = chars + " characters out of " + limit + " used"
 			}else{
@@ -134,6 +134,8 @@ function pasteMain() {
 			verifySignature(array[1],lockBoxHTML);
 			return
 		}else if(type && type == 'c'){										//store new Lock
+			extractLock(string)
+		}else if(string.split(/[ _]/).length == 20){							//word Lock
 			extractLock(string)
 		}
     }, 0)
@@ -293,9 +295,7 @@ function suggestIntro(){
 	var output = '',
 		wordlist = wordListExp.toString().slice(1,-2).split('|')
 	for(var i = 1; i <= 5 ; i++){
-		var rand = wordlist[Math.floor(Math.random()*wordlist.length)];
-		rand = rand.replace(/0/g,'o').replace(/1/g,'i').replace(/2/g,'z').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t').replace(/8/g,'b').replace(/9/g,'g');
-		output = output + ' ' + rand
+		output += ' ' + replaceVariants(wordlist[Math.floor(Math.random()*wordlist.length)])
 	}
 	pwdIntro.type="text";
 	pwdIntro.value = output.trim();
@@ -880,7 +880,9 @@ function email2any(){
 	emailScr.style.display = 'none';
 	key2any();															//close key dialog too, if it was open
 	if(tabLinks['optionsTab'].className == 'selected'){
-		optionMsg.textContent = 'Email/token changed';
+		optionMsg.textContent = 'Email/token changed'
+	}else{
+		mainMsg.textContent = 'Email entered. You may need to re-set options'
 	}
 	fillList();
 	callKey = ''
@@ -995,7 +997,7 @@ function showTab(){
 		  optionMsg.textContent = 'Change Name, Key, etc.'
 	  }
 	  if(this.hash != '#helpTab' && !isiOS){
-			if(helpTop.style.display == 'none') helpTop.style.display = 'block'
+			if(helpTop.style.display != 'block') helpTop.style.display = 'block'
 	  }
 	  storeColors();
 

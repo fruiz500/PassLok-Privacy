@@ -181,7 +181,11 @@ window.onload = function() {
 
 	decoyMode.addEventListener('click', checkboxStore);
 
-   	ezLokMode.addEventListener('click', checkboxStore);
+	wordLockMode.addEventListener('click', checkboxStore);
+
+	ezLokMode.addEventListener('click', checkboxStore);
+
+   	normalLockMode.addEventListener('click', checkboxStore);
 
 	fileMode.addEventListener('click', checkboxStore);
 
@@ -484,9 +488,11 @@ window.onload = function() {
 
 
 //this one is for mobile only. Remove for the extension
-window.addEventListener('load', function() {
-	FastClick.attach(document.body);
-}, false);
+if(isMobile){
+	window.addEventListener('load', function() {
+		FastClick.attach(document.body);
+	}, false)
+}
 
 
 //for general directory

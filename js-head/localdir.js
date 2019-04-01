@@ -1,4 +1,4 @@
-﻿//detect if Lock pasted in Lock box, otherwise clean up
+﻿//detect if Lock pasted in Lock box and offer to save it
 function pasteLock(){
 	setTimeout(function(){
 	lockMsg.textContent = '';
@@ -10,12 +10,14 @@ function pasteLock(){
 	}else{
 		var lock = strings[strings.length-2]									//in case there is a video URL as last line
 	}
-	var lockstripped = lock.replace(/[\s-]/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];
+	var lockstripped = lock.replace(/-/g,'').split("==").sort(function (a, b) { return b.length - a.length; })[0];		//remove tags
 
 	suspendFindLock = true;															//allow writing a name without searching
-	if (lockstripped.length == 43 || lockstripped.length == 50){
+
+	if (lockstripped.replace(/\s/g,'').length == 43 || lockstripped.replace(/\s/g,'').length == 50 || lockstripped.trim().split(/[ _]/).length == 20){
 		lockMsg.textContent = 'Lock detected';
-		lockBox.textContent = lockstripped
+		lockBox.textContent = lockstripped;
+		extractLock(lockstripped)
 	}
 	},0)
 }
@@ -45,11 +47,15 @@ function addLock(fromMain){
 	}else{																			//if populated, encrypt if not a Lock, then prompt for a name and save
 		var locklength = stripTags(lockarray[0]).length;
 		if((locklength == 43 || locklength == 50) && lockarray.length == 1){
-			var lockcrypt = lock;													//store Locks unencrypted, everything else encrypted by the Key
+			var lockcrypt = lock													//store Locks unencrypted, everything else encrypted by the Key
+		}else if(lockarray[0].trim().split(/[ _]/).length == 20){				//word Lock case
+			var lockcrypt = changeBase(lock, wordListExp, base64, true);
+			if(!lockcrypt) return;
+			lockBox.textContent = lockcrypt
 		}else{
 			if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
 			var	lockcrypt = keyEncrypt(lock);
-			if(!lockcrypt) return
+			if(!lockcrypt) {lockMsg.textContent = "Storage failed"; return}
 		}
 		if(fromMain){
 			var name = prompt("Looks like you got someone's new Lock. If you give it a name in the box below, it will be saved to your local directory. If you use a name that is already in the directory, the new Lock will replace the old one.")
@@ -103,6 +109,7 @@ function removeLock(){
 		lockNames = Object.keys(locDir);
 		window.setTimeout(function(){										//this needs to be on a timer for iOS
 			lockMsg.textContent = fullName + ' deleted';
+			lockBox.innerHTML = ''
 		}, 100);
 		fillList();
 
@@ -112,7 +119,7 @@ function removeLock(){
 
 		suspendFindLock = false
 	}else{
-		lockMsg.textContent = 'Nothing deleted';
+		lockMsg.textContent = 'To delete an item, first type its name in the box until it is recognized';
 	}
 }
 
@@ -195,7 +202,7 @@ function decryptLock(){
 			lockMsg.textContent = 'Shared Key extracted'
 		}
 	}
-	if(lockScr.style.display == 'none') main2lock();
+	if(lockScr.style.display != 'block') main2lock();
 	callKey = ''
 }
 
