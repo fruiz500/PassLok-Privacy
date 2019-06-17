@@ -25,7 +25,7 @@ function pasteLock(){
 //get name and Lock from form and merge them with the locDir object, then store
 function addLock(fromMain){
 	if(!fullAccess){
-		lockMsg.textContent = 'Save not available in Guest mode<br>Please restart PassLok';
+		lockMsg.textContent = 'Save not available in Guest mode\r\nPlease restart PassLok';
 		return
 	}
 	if(learnMode.checked){
@@ -33,7 +33,7 @@ function addLock(fromMain){
 		if(!reply) return
 	}
 	callKey = 'addlock';
-	var	lock = lockBox.innerHTML.replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'').trim(),
+	var	lock = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/i,"").trim().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'').trim(),
 		lockarray = lock.split('<br>'),
 		isList = (lockarray.length > 1 && lockarray[1].slice(0,4) != 'http' && lock.length <= 500);			//identify List
 		
@@ -91,7 +91,7 @@ function addLock(fromMain){
 //delete a particular key in Object locDir, then store
 function removeLock(){
 	if(!fullAccess){
-		lockMsg.textContent = 'Delete not available in Guest mode\nPlease restart PassLok';
+		lockMsg.textContent = 'Delete not available in Guest mode\r\nPlease restart PassLok';
 		return
 	}
 	var	name = lockBox.textContent,
@@ -109,7 +109,7 @@ function removeLock(){
 		lockNames = Object.keys(locDir);
 		window.setTimeout(function(){										//this needs to be on a timer for iOS
 			lockMsg.textContent = fullName + ' deleted';
-			lockBox.innerHTML = ''
+			lockBox.textContent = ''
 		}, 100);
 		fillList();
 
@@ -134,6 +134,7 @@ function resetPFS(){
 	if(!reply) return;
 
 	var name = lockMsg.textContent;
+	name = name.slice(0,9) == 'Directory' ? name.slice(32) : name;			//take just the end of the displayed name
 	if (locDir[name] == null){
 		lockMsg.textContent = 'The item to be reset must be displayed first';
 		return
@@ -185,7 +186,7 @@ function decryptLock(){
 		nameBeingUnlocked = ''
 	}
 	if(lockBox.textContent != ''){
-		var listArray = lockBox.innerHTML.split('<br>').filter(Boolean);
+		var listArray = lockBox.innerHTML.replace(/\n/g,'<br>').split('<br>').filter(Boolean);
 		if(lockBox.textContent.length > 500){
 			lockBox.innerHTML = decryptSanitizer(LZString.decompressFromBase64(lockBox.textContent).trim());
 			newCover(lockBox.textContent.trim());							//this for loading cover text from Lock screen
@@ -224,7 +225,7 @@ function showLockDB(){
 		if(!reply) return
 	}
 	if(localStorage[userName] != "{}"){
-		lockBox.innerHTML = JSON.stringify(locDir,null,4).replace(/\],/g,'<br><br>').replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/: /g,':<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
+		lockBox.textContent = JSON.stringify(locDir,null,4).replace(/": \[\n/g,':\n').replace(/\],/g,'').replace(/[{}"\] ,]/g,'').trim()
 		lockMsg.textContent = 'These are the items stored under the current user name'
 	}else{
 		lockMsg.textContent = 'There are no stored items'
@@ -236,7 +237,7 @@ function showLockDB(){
 function showMyself(){
 	if(locDir['myself']){
 		var alphalocDir = locDir['myself'];
-		mainBox.innerHTML = 'myself:<br>' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').replace(/,\n/g,'<br>').replace(/<br> +/g,'<br>').replace(/\n/g,'').trim();
+		mainBox.textContent = 'myself:\r\n' + JSON.stringify(alphalocDir,null,4).replace(/[{}"\[\]]/g,'').trim();
 		mainMsg.textContent = 'These are your stored settings'
 	}else{
 		mainMsg.textContent = 'No settings to store'
@@ -247,7 +248,7 @@ function showMyself(){
 //reconstruct the original JSON string from the newlines and spaces as displayed by showLockDB
 function mergeLockDB(){
 	callKey = 'mergedb';
-	var	lockstr = lockBox.innerHTML.replace(/<br>$/,"").trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
+	var	lockstr = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim(),		//see if these are Locks for a possible DH merge, which is not the main function of this button
 		mainstr = mainBox.textContent.trim();
 	if (lockstr == ''){
 		lockMsg.textContent = 'Nothing to merge';
@@ -262,20 +263,20 @@ function mergeLockDB(){
 		locklen = lockstr2.length,
 		mainlen = mainstr2.length;
 
-	if(lockstr.split('<br>').length > 1){			//the real database merge implies multiline
+	if(lockstr.split('\n').length > 1){			//the real database merge implies multiline
 		if(learnMode.checked){
 			var reply = confirm("The items in the box will be merged into the permanent directory, replacing existing items of the same name. This is irreversible. Cancel if this is not what you want.");
 			if(!reply) return
 		}
 		if(!fullAccess){
 			if(lockScr.style.display == 'block'){
-				lockMsg.textContent = 'Merge not available in Guest mode<br>Please restart PassLok'
+				lockMsg.textContent = 'Merge not available in Guest mode\r\nPlease restart PassLok'
 			}else{
 				mainMsg.textContent = 'Settings update not available in Guest mode\nPlease restart PassLok'
 			}
 			return
 		}
-		var newDB = JSON.parse('{"' + lockBox.innerHTML.replace(/<br>$/,"").trim().replace(/<br> +/g,'<br>').replace(/:<br>/g,'":["').replace(/<br><br>/g,'"],"').replace(/<br>/g,'","') + '"]}');
+		var newDB = JSON.parse('{"' + lockstr.replace(/\n\n/g,'"],"').replace(/:\n/g,'":["').replace(/\n/g,'","') + '"]}');
 		newDB = realNulls(newDB);
 		locDir = sortObject(mergeObjects(locDir,newDB));
 		localStorage[userName] = JSON.stringify(locDir);
@@ -358,7 +359,7 @@ function moveLockDB(){
 
 	//first encrypt locDir, as displayed by showLockDB
 	showLockDB();
-	var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/<br>$/,"").trim());
+	var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim());
 	if(!datacrypt) return;
 	mainBox.textContent = 'PL24dir==' + datacrypt + '==PL24dir';
 	optionMsg.textContent = 'Database in Main tab';
@@ -395,9 +396,9 @@ function moveMyself(){
 		var datacrypt = keyEncrypt(mainBox.innerHTML.trim());					//preserve formatting
 		if(!datacrypt) return;
 		mainBox.textContent = 'PL24bak==' + datacrypt+ '==PL24bak';
-		var msg = 'The item in the box contains your settings\nTo restore them, click Decrypt'
+		var msg = 'The item in the box contains your settings\r\nTo restore them, click Decrypt'
 	}else{
-		var msg = 'These are your settings, possibly including your encrypted random token<br>You may want to save them in a safe place.'
+		var msg = 'These are your settings, possibly including your encrypted random token\r\nYou may want to save them in a safe place.'
 	}
 	optionMsg.textContent = 'Backed-up settings on Main tab';
 	mainMsg.textContent = msg;
@@ -410,7 +411,7 @@ function moveMyself(){
 	localStorage[userName] = JSON.stringify(locDir);
 	lockNames = Object.keys(locDir);
 	fillList();
-	mainMsg.textContent = 'Your settings, including the email/token, have been erased\n' + msg;
+	mainMsg.textContent = 'Your settings, including the email/token, have been erased\r\n' + msg;
 	optionMsg.textContent = 'Settings erased';
 
 	if(ChromeSyncOn && chromeSyncMode.checked){								//if Chrome sync is available, remove from sync storage
@@ -571,32 +572,57 @@ function fillList(){
 	if(bgColor[0]){
 		if(bgColor[0] != 'FFFFFF') {var headingColor = milder(bgColor[0],'33')}else{var headingColor = '639789'};
 	}else{var headingColor = '639789'};
+	lockList.textContent = '';
+	var fragment = document.createDocumentFragment();
 	if(extraButtonsTop.style.display == 'block'){									//steganography buttons showing
-		if(!isiPhone){
-			lockList.innerHTML = '<option value="" disabled selected>Choose one stored Cover text:</option><option value="default">default</option>'
+		var opt2 = document.createElement("option");
+		if(isiPhone){
+			opt2.value = "default";
+			opt2.textContent = "default"			
 		}else{
-			lockList.innerHTML = '<option value="default">default</option>'
+			opt2.value = "default";
+			opt2.textContent = "Choose one stored Cover text:";
+			opt2.disabled = true;
+			opt2.selected = true
 		}
+		lockList.appendChild(opt2);
+		var opt3 = document.createElement("option");
+		opt3.value = "default";
+		opt3.textContent = "default";
+		fragment.appendChild(opt3);
 		for(var name in locDir){
 			if(locDir[name][0].length > 500){										//only cover texts, which are long
-				lockList.innerHTML += '<option value="' + name + '">' + name + '</option>'
+				var opt = document.createElement("option");
+				opt.value = name;
+				opt.textContent = name;
+				fragment.appendChild(opt)
 			}
 		}
 	}else{																			//normal behavior
+		var opt2 = document.createElement("option");
 		if(isiPhone){
-			lockList.textContent = ''
-		}else if(isMobile){
-			lockList.innerHTML = '<option value="" disabled selected>Select recipients:</option>'			
+		}else if(isMobile)	{
+			opt2.disabled = true;
+			opt2.selected = true;
+			opt2.textContent = "Select recipients:";
+			fragment.appendChild(opt2)		
 		}else{
-			lockList.innerHTML = '<option value="" disabled selected>Select recipients (ctrl-click for several):</option>'
+			opt2.disabled = true;
+			opt2.selected = true;
+			opt2.textContent = "Select recipients (ctrl-click for several):";
+			fragment.appendChild(opt2)
 		}
 		for(var name in locDir){
-			if(locDir[name][0].length < 500){
-				lockList.innerHTML += '<option value="' + name + '">' + name + '</option>'
+			if(locDir[name][0] && locDir[name][0].length < 500){
+				var opt = document.createElement("option");
+				opt.value = name;
+				opt.textContent = name;
+				fragment.appendChild(opt)
 			}
 		}
 	}
 	lockList.style.color = '#' + headingColor;
+	lockList.appendChild(fragment);
 	lockList.options[0].selected = false
 }
 
@@ -614,7 +640,7 @@ function fillBox(){
 				isList = true;											//to return here if the Key is wrong
 				var nextItem = keyDecrypt(itemcrypt);
 				if(!nextItem) return;
-				list += '<br>' + nextItem
+				list += '\r\n' + nextItem
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
 				var covername = 'default';
 				newCover(defaultCoverText)
@@ -626,12 +652,12 @@ function fillBox(){
 				if(!cover2) return;
 				newCover(LZString.decompressFromBase64(cover2))
 			}else{
-         		list += '<br>' + lockList.options[i].value
+         		list += '\r\n' + lockList.options[i].value
 			}
     	}
   	}
-	list = list.replace(/<br>/i,'');										//remove the first linefeed
-	var array = list.split('<br>');
+	list = list.replace(/\r\n/i,'');										//remove the first linefeed
+	var array = list.split('\r\n');
 	if(array[0] != ''){
 		array = array.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates
 		array = array.filter(function(n){return n});													//remove nulls
@@ -639,10 +665,10 @@ function fillBox(){
 		list = '';
 		var msg = 'Encrypting for: ';
 		for(var index = 0; index < array.length; index++){
-			list += '<br>' + array[index];
+			list += '\r\n' + array[index];
 			msg += array[index] + ', '
 		}
-		lockBox.innerHTML = list.replace(/<br>/i,'').trim();				//remove first linefeed
+		lockBox.textContent = list.replace(/\r\n/i,'').trim();				//remove first linefeed
 	}else if(covername){
 		var msg = covername + ' Cover text loaded'
 	}else{
@@ -691,7 +717,12 @@ function fillNameList(){
 	list.sort(function (a, b) {											//case-insensitive sort
     	return a.toLowerCase().localeCompare(b.toLowerCase())
 	})
+	var fragment = document.createDocumentFragment();
 	for(var i = 0; i < list.length; i++){
-		nameList.innerHTML += '<option value="' + list[i] + '">' + list[i] + '</option>'
+		var opt = document.createElement("option");
+		opt.value = list[i];
+		opt.textContent = list[i];
+		fragment.appendChild(opt)
 	}
+	nameList.appendChild(fragment)
 }

@@ -21,14 +21,15 @@ function uniq(a) {
 
 //This function checks for legal (base64 after tags are removed) PassLok output and calls the currently selected encoder. Otherwise it calls the decoder
 function textStego(){
-	var text = mainBox.innerHTML.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/">(.*?)\/a>$/,'').replace(/<br>/g,'');
+	var text = mainBox.innerHTML.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/">(.*?)\/a>$/,'').replace(/<br>/g,'').replace(/[\r\n]/g,'');
 	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'');						//remove tags and dashes
 	text = text.replace(/<(.*?)>/gi,'');
 	if(text == ""){
 		mainMsg.textContent = 'No text in the box';
 		return
 	}
-	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+
+	blinkMsg(mainMsg);
 setTimeout(function(){																			//the rest after a 20 ms delay
 	if(isBase64(text)){										//pure base64 found: encode it
 		if(sentenceMode.checked){
@@ -44,11 +45,11 @@ setTimeout(function(){																			//the rest after a 20 ms delay
 		}
 	}else{												//no legal item found: try to decode
 		if(text.match('\u00ad')){						//detect soft hyphen
-				fromInvisible(text);
-				mainMsg.textContent = 'Message extracted from Invisible encoding'
+			fromInvisible(text);
+			mainMsg.textContent = 'Message extracted from Invisible encoding'
 		}else if(text.match('\u200c')){				//detect zero width non-joiner
-				fromSpaces(text);
-				mainMsg.textContent = 'Message extracted from Spaces encoding'
+			fromSpaces(text);
+			mainMsg.textContent = 'Message extracted from Spaces encoding'
 		}else if(text.match('\u2004') || text.match('\u2005') || text.match('\u2006')){		//detect special characters used in Letters encoding
 			fromLetters(text);
 			mainMsg.textContent = 'Message extracted from Letters'
@@ -235,7 +236,7 @@ function toInvisible(text) {
 		var reply = confirm("The contents of the main box will be invisibly encoded (to a human) at the end of a sentence. Cancel if this is not what you want.");
 		if(!reply) return
 	}
-	mainBox.innerHTML = 'Dear friend,' + invisibleEncoder(toBin(text)) + '<br><br>Body of the message.'
+	mainBox.textContent = 'Dear friend,' + invisibleEncoder(toBin(text)) + '\r\n\r\nBody of the message.'
 }
 
 function fromInvisible(text) {
@@ -259,7 +260,7 @@ function invisibleEncoder(bin){
 
 function invisibleDecoder(text){
 	var binStr = text.replace(/\u00ad/g,'0').replace(/\u200c/g,'1');
-	binStr = binStr.match(/[a-zA-Z,:\.][01]+[a-zA-Z]/)[0].slice(1,-1);						//remove text around the binary part
+	binStr = binStr.match(/[a-zA-Z,:\.][01]+[a-zA-Z\r\n]/)[0].slice(1,-1);						//remove text around the binary part
 	var length = binStr.length,
 		bin = new Array(length);
 	for(var i = 0; i < length; i++){

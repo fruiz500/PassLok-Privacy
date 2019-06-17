@@ -1,8 +1,8 @@
 //function that starts it all when the Seal/Unseal button is pushed
 function signVerify(){
-	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(mainMsg);
 	var array = getType(mainBox.innerHTML.trim()),
-		lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
+		lockBoxHTML = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim();
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		if(array[0] == 'l'){
 			verifySignature(array[1],lockBoxHTML)
@@ -35,16 +35,29 @@ function applySignature(textStr){
 	//main signing instruction, prefix is l
 	var sealedText = nacl.util.encodeBase64(concatUint8Arrays([150],concatUint8Arrays(padding,nacl.sign(encodedText,KeySgn)))).replace(/=+$/,'');
 
+	mainBox.textContent = '';
 	if(fileMode.checked){
 		if(textMode.checked){
-			mainBox.innerHTML = '<a download="PL24sld.txt" href="data:,' + sealedText + '"><b>PassLok 2.4 Sealed message (text file)</b></a>'
+			var fileLink = document.createElement('a');
+			fileLink.download = "PL24sld.txt";
+			fileLink.href = "data:," + sealedText;
+			fileLink.textContent = "PassLok 2.4 Sealed message (text file)"
 		}else{
-			mainBox.innerHTML = '<a download="PL24sld.plk" href="data:binary/octet-stream;base64,' + sealedText + '"><b>PassLok 2.4 Sealed message (binary file)</b></a>'
+			var fileLink = document.createElement('a');
+			fileLink.download = "PL24sld.plk";
+			fileLink.href = "data:binary/octet-stream;base64," + sealedText;
+			fileLink.textContent = "PassLok 2.4 Sealed message (binary file)"
 		}		
 	}else{
-		mainBox.innerHTML = "<pre>" + ('PL24sld==' + sealedText + '==PL24sld').match(/.{1,80}/g).join("<br>") + "</pre>"		//4-letter marker so the set is still valid base64
+		var fileLink = document.createElement('pre');
+		fileLink.textContent = ("PL24sld==" + sealedText + "==PL24sld").match(/.{1,80}/g).join("\r\n")
 	}
-	mainMsg.innerHTML = 'The text has been sealed with your secret Key. It is <span class="blink">NOT LOCKED</span>';
+	mainBox.appendChild(fileLink);
+	mainMsg.textContent = 'The text has been sealed with your secret Key. It is ';
+	var blinker = document.createElement('span');
+	blinker.className = "blink";
+	blinker.textContent = "NOT LOCKED";
+	mainMsg.appendChild(blinker);
 	callKey = ''
 };
 
@@ -147,19 +160,28 @@ function padEncrypt(text){
 	var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex),				//main encryption event
 		macBin = padMac(textBin, keyTextBin, nonce, startIndex),						//make mac
 		outStr = nacl.util.encodeBase64(concatUint8Arrays([116],concatUint8Arrays(nonce,concatUint8Arrays(macBin,cipherBin)))).replace(/=+$/,'');
-	
+
+	mainBox.textContent = '';
 	if(shortMode.checked){
-		mainBox.innerHTML = outStr
+		mainBox.textContent = outStr
 	}else{
 		if(fileMode.checked){
 			if(textMode.checked){
-				mainBox.innerHTML = '<a download="PL24msp.txt" href="data:,' + outStr + '"><b>PassLok 2.4 Pad encrypted message (text file)</b></a>'
+				var fileLink = document.createElement('a');
+				fileLink.download = "PL24msp.txt";
+				fileLink.href = "data:," + outStr;
+				fileLink.textContent = "PassLok 2.4 Pad encrypted message (text file)"
 			}else{
-				mainBox.innerHTML = '<a download="PL24msp.plk" href="data:binary/octet-stream;base64,' + outStr + '"><b>PassLok 2.4 Pad encrypted message (binary file)</b></a>'
+				var fileLink = document.createElement('a');
+				fileLink.download = "PL24msp.plk";
+				fileLink.href = "data:binary/octet-stream;base64," + outStr;
+				fileLink.textContent = "PassLok 2.4 Pad encrypted message (binary file)"
 			}
 		}else{
-			mainBox.innerHTML = "<pre>" + ("PL24msp==" + outStr + "==PL24msp").match(/.{1,80}/g).join("<br>") + "</pre>"
+			var fileLink = document.createElement('pre');
+			fileLink.textContent = ("PL24msp==" + outStr + "==PL24msp").match(/.{1,80}/g).join("\r\n")
 		}
+		mainBox.appendChild(fileLink)
 	}
 	if(clipped){
 		mainMsg.textContent = 'The message has been truncated'
@@ -482,19 +504,28 @@ function humanEncrypt(text,isEncrypt){
 		cipherText = cipherText.replace(/QQ/g,'. ').replace(/Q/g,' ').replace(/KU([AEIO])/g,'QU$1')
 	}
 
+	mainBox.textContent = '';
 	if(shortMode.checked || !isEncrypt){
-		mainBox.innerHTML = cipherText					//no tags in short mode or decrypting
+		mainBox.textContent = cipherText					//no tags in short mode or decrypting
 	}else if(isEncrypt){
 		if(fileMode.checked){
 			if(textMode.checked){
-				mainBox.innerHTML = '<a download="PL24msh.txt" href="data:,' + cipherText + '"><b>PassLok 2.4 Human encrypted message (text file)</b></a>'
+				var fileLink = document.createElement('a');
+				fileLink.download = "PL24msh.txt";
+				fileLink.href = "data:," + cipherText;
+				fileLink.textContent = "PassLok 2.4 Human encrypted message (text file)"
 			}else{
-				mainBox.innerHTML = '<a download="PL24msh.plk" href="data:binary/octet-stream;base64,' + cipherText + '"><b>PassLok 2.4 Human encrypted message (binary file)</b></a>'
+				var fileLink = document.createElement('a');
+				fileLink.download = "PL24msh.plk";
+				fileLink.href = "data:binary/octet-stream;base64," + cipherText;
+				fileLink.textContent = "PassLok 2.4 Human encrypted message (binary file)"
 			}
 		}else{
-			mainBox.innerHTML = "<pre>" + ("PL24msh==" + cipherText + "==PL24msh").match(/.{1,80}/g).join("<br>") + "</pre>"
+			var fileLink = document.createElement('pre');
+			fileLink.textContent = ("PL24msh==" + cipherText + "==PL24msh").match(/.{1,80}/g).join("\r\n")
 		}
 	}
+	mainBox.appendChild(fileLink);
 	if(isEncrypt){
 		mainMsg.textContent = 'Human encryption done. Recipients can decrypt this by hand'
 	}else{

@@ -1,4 +1,13 @@
-﻿//displays how many characters are left, in Short mode and Decoy In box
+﻿//start blinking message, for Msg elements
+function blinkMsg(element){
+	element.textContent = '';
+	var blinker = document.createElement('span');
+	blinker.className = "blink";
+	blinker.textContent = 'PROCESSING';
+	element.appendChild(blinker)
+}
+
+//displays how many characters are left, in Short mode and Decoy In box
 function charsLeft(){
 	//for decoy message box
 	if(decoyIn.style.display == 'block'){
@@ -82,8 +91,7 @@ function updateButtons(){
 	}
 	if(type && type == 'l'){verifyBtn.textContent = 'Unseal'}else{verifyBtn.textContent = 'Seal'};
 
-	string = string.replace(/<(.*?)>/g,'');
-	if((string.slice(0,13).match(/p\d{3}/) && string.slice(0,7).match('PL')) || (string.match(/PL\d{2}p\d{3}/) && string.match('.txt'))){			//box contains parts
+	if(string.match(/PL\d{2}p\d{3}/)){						//box contains parts
 		secretShareBtn.textContent = 'Join'
 	}else{
 		secretShareBtn.textContent = 'Split'
@@ -126,7 +134,7 @@ function pasteMain() {
 		}
 		var array = getType(string),
 			type = array[0],
-			lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
+			lockBoxHTML = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim();
 		if(type && type.match(/[hkdsgasoprASO]/)){							//known encrypted type: decrypt
 			unlock(type,array[1],lockBoxHTML);
 			return
@@ -149,73 +157,58 @@ var hashiliOn = false;			//default to not showing hashili
 
 //this is for showing and hiding text in key box and other password input boxes
 function showsec(){
-	if(pwd.type=="password"){
-		if(hashiliOn){
-			pwd.type="text";
-			showKey.src = hideImg
-		}else{hashiliOn = true}
+	if(pwdBox.type=="password"){
+		pwdBox.type="text";
+		showKey.src = hideImg
 	}else{
-		pwd.type="password";
-		showKey.src = eyeImg;
-		hashiliOn = false
+		pwdBox.type="password";
+		showKey.src = eyeImg
 	}
-	keyStrength(pwd.value.trim(),true)
+	keyStrength(pwdBox.value.trim(),true)
 }
 
 function showDecoyIn(){
 	if(decoyPwdIn.type=="password"){
-		if(hashiliOn){
-			decoyPwdIn.type="text";
-			showDecoyInCheck.src = hideImg
-		}else{hashiliOn = true}
+		decoyPwdIn.type="text";
+		showDecoyInCheck.src = hideImg
 	}else{
 		decoyPwdIn.type="password";
-		showDecoyInCheck.src = eyeImg;
-		hashiliOn = false
+		showDecoyInCheck.src = eyeImg
 	}
 	keyStrength(decoyPwdIn.value.trim(),true)
 }
 
 function showDecoyOut(){
 	if(decoyPwdOut.type=="password"){
-		if(hashiliOn){
-			decoyPwdOut.type="text";
-			showDecoyOutCheck.src = hideImg
-		}else{hashiliOn = true}
+		decoyPwdOut.type="text";
+		showDecoyOutCheck.src = hideImg
 	}else{
 		decoyPwdOut.type="password";
-		showDecoyOutCheck.src = eyeImg;
-		hashiliOn = false
+		showDecoyOutCheck.src = eyeImg
 	}
 	keyStrength(decoyPwdOut.value.trim(),true)
 }
 
 function showIntro(){
 	if(pwdIntro.type=="password"){
-		if(hashiliOn){
-			pwdIntro.type="text";
-			showIntroKey.src = hideImg
-		}else{hashiliOn = true}
+		pwdIntro.type="text";
+		showIntroKey.src = hideImg
 	}else{
 		pwdIntro.type="password";
-		showIntroKey.src = eyeImg;
-		hashiliOn = false
+		showIntroKey.src = eyeImg
 	}
 	keyStrength(pwdIntro.value.trim(),true)
 }
 
 function showNewKey(){
 	if(newKey.type=="password"){
-		if(hashiliOn){
-			newKey.type="text";
-			newKey2.type="text";
-			showNewKeyCheck.src = hideImg
-		}else{hashiliOn = true}
+		newKey.type="text";
+		newKey2.type="text";
+		showNewKeyCheck.src = hideImg
 	}else{
 		newKey.type="password";
 		newKey2.type="password";
-		showNewKeyCheck.src = eyeImg;
-		hashiliOn = false
+		showNewKeyCheck.src = eyeImg
 	}
 	keyStrength(newKey.value.trim(),true)
 }
@@ -257,7 +250,7 @@ function clearIntroEmail(){
 function lockBtnAction(){
 	var array = getType(mainBox.innerHTML.trim()),
 		type = array[0],
-		lockBoxHTML = lockBox.innerHTML.replace(/<br>$/,"").trim();
+		lockBoxHTML = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim();
 	if(type && type.match(/[hkdgasoprASO]/)){								//known encrypted type: decrypt
 		unlock(type,array[1],lockBoxHTML)
 	}else if(!!lockBoxHTML){												//recipients selected: encrypt and send if Email mode
@@ -452,13 +445,12 @@ function closeBox(){
 	emailScr.style.display = "none";
 	chatDialog.style.display = "none";
 	nameScr.style.display = "none";
-	introscr.style.display = "none";
-	hashiliOn = false
+	introscr.style.display = "none"
 }
 
 //Key entry is canceled, so record the limited access mode and otherwise start normally
 function cancelKey(){
-	if(firstInit) {pwd.value = ''; KeyStr = '';}
+	if(firstInit) {pwdBox.value = ''; KeyStr = '';}
 	if(!allowCancelWfullAccess){
 		fullAccess = false;
 
@@ -558,7 +550,7 @@ function pwdKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
 	if(key == 13){acceptKey()} else{
-		 return keyStrength(pwd.value,true)
+		 return keyStrength(pwdBox.value,true)
 	}
 }
 
@@ -784,9 +776,9 @@ function lock2dir(){
 		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
 		if(!reply) return
 	}
-	if(keyScr.style.display=='block') return;
+	if(keyScr.style.display == 'block') return;
 
-	if(lockdirScr.style.display=='none') loadLockDir();	
+	loadLockDir();	
 	var locklength = stripTags(removeHTMLtags(mainBox.textContent)).length;
 	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
 
@@ -831,7 +823,7 @@ function any2key(){
 	closeBox();
 	shadow.style.display = 'block';
 	keyScr.style.display = 'block';
-	if(!isMobile) pwd.focus();
+	if(!isMobile) pwdBox.focus();
 	allowCancelWfullAccess = false
 }
 
@@ -906,7 +898,7 @@ function name2any(){
 function focusBox(){
 	if (!isMobile){															//on mobile, don't focus
 		if(keyScr.style.display == 'block'){
-			pwd.focus()
+			pwdBox.focus()
 		} else if(lockScr.style.display == 'block'){
 			lockBox.focus()
 		} else {
@@ -931,6 +923,7 @@ function openHelp(theID){
 		helpItems[i].style.display = 'none'
 	}
 	document.getElementById(theID).style.display = "block";
+	if(theID.charAt(0) == 'b') document.getElementById('a' + theID.slice(1)).style.display = "block";
 	if(isMobile){									//scroll to the item
 		location.href = '#';
 		location.href = '#a' + theID;

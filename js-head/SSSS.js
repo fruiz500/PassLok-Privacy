@@ -1,6 +1,6 @@
 ﻿//function that starts it all when the Split/Join button is pushed
 function splitJoin(){
-	mainMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(mainMsg);				//Get blinking message started
 	setTimeout(function(){																			//the rest after a 20 ms delay
 		secretshare()
 	},20)					//end of timeout
@@ -8,19 +8,32 @@ function splitJoin(){
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
 function secretshare(){
-	var	main = mainBox.innerText.trim();																//innerText to preserve newlines
-	if((main.slice(0,13).match(/p\d{3}/) && main.slice(0,7).match('PL')) || (main.match(/p\d{3}/) && main.match('.txt'))){		//main box has parts: join parts
-		var shares = main.split("\n\n").filter(Boolean),												//go from newline-containing string to array
-			n = shares.length,
-			quorumarr = shares[0].slice(0,13).match(/p\d{3}/);															//quorum in tags is "p" plus 3 digits in a row, first instance
-		if(quorumarr == null)	quorumarr = shares[0].slice(-13).match(/ \d{3}/);										//maybe packaged; get quorum at end of label
-		if(quorumarr == null) {var quorum = n} else {var quorum = parseInt(quorumarr[0].slice(1,4))};					//if tags are missing, ignore quorum, otherwise read it from tags
+	var main = mainBox.innerHTML.trim(),																//innerHTML to preserve links
+		tags = main.match(/PL\d{2}p\d{3}/);
+	if(tags){																	//main box has parts: join parts
+		if(main.match('href="data:')){										//parts in links
+			var shares = main.replace(/<div>/g,'<br>').split("<br>").filter(Boolean)				//go from newline-containing string to array
+		}else{
+			var shares = mainBox.innerText.split("\n\n").filter(Boolean)							//split when double spaced
+		}
+		var	n = shares.length,
+			quorum = parseInt(tags[0].slice(-3));														//quorum in tags is "p" plus 3 digits in a row, first instance
 		if(n < quorum){																//not enough parts
 			mainMsg.textContent = 'According to the tags, you need ' + (quorum - n) + ' more parts in the box';
 			return
 		}
-		for (var i=0; i < shares.length; i++) {
-			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(stripTags(shares[i])))
+		if(n < quorum){																//not enough parts
+			mainMsg.textContent = 'According to the tags, you need ' + (quorum - n) + ' more parts in the box';
+			return
+		}
+		//extract shares from links, condition shares for combination
+		for (var i = 0; i < shares.length; i++) {
+			if(shares[i].match('href="data:')){										//share is in link
+				shares[i] = shares[i].match(/,[a-zA-Z0-9\/+]+"/)[0].slice(1,-1)
+			}else{																		//share as text, just remove tags and extra spaces
+				shares[i] = stripTags(shares[i].replace(/\s/g,''))
+			}
+			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(shares[i]))				//convert to hex
 		}
 		if(learnMode.checked){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");
@@ -90,21 +103,12 @@ function displayshare(shares,quorum){
 	var length = shares[0].length,
 		quorumStr = "00" + quorum;
 	quorumStr = quorumStr.substr(quorumStr.length-3);
+	
+	mainBox.textContent = '';
+	var fragment = document.createElement('div');
 
-	var dataItem = nacl.util.encodeBase64(hex2charArray(shares[0].slice(1,length))).replace(/=+/g, '');
-
-	if(fileMode.checked){
-		if(textMode.checked){
-			var	output = '<a download="PL24p' + quorumStr + '.txt" href="data:,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a text file</b></a>'
-		}else{
-			var	output = '<a download="PL24p' + quorumStr + '.txt" href="data:binary/octet-stream;base64,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a binary file</b></a>'
-		}
-	}else{
-		var	output = "<pre>" + ("PL24p" + quorumStr + "==" + dataItem + "==PL24p" + quorumStr).match(/.{1,80}/g).join("<br>") + "</pre>"
-	}
-
-	for (var i=1; i < shares.length; i++) {
-		dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
+	for (var i = 0; i < shares.length; i++) {
+		var dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
 		if(fileMode.checked){
 			if(textMode.checked){
 				output += "<br><br>" + '<a download="PL24p' + quorumStr + '.txt" href="data:,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a text file</b></a>'
@@ -115,7 +119,8 @@ function displayshare(shares,quorum){
 			output += "<br><br>" + "<pre>" + ("PL24p" + quorumStr + "==" + dataItem + "==PL24p" + quorumStr).match(/.{1,80}/g).join("<br>") + "</pre>"
 		}
 	};
-	mainBox.innerHTML = output
+	fragment.innerHTML = output;				//must use innerHTML because building the list of links with linefeeds in between with the appendChild method does not work in Chrome (bug?)
+	mainBox.appendChild(fragment)
 }
 
 //convert an array of 8-bit decimal codes into a hexadecimal string

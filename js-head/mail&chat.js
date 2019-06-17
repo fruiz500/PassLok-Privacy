@@ -73,14 +73,32 @@ function makeInvitation(){
 		var text = mainBox.innerHTML.trim(),
 			nonce = nacl.randomBytes(9),
 			nonce24 = makeNonce24(nonce),
-			cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,PLencrypt(text,nonce24,myLock,true)))).replace(/=+$/,'');			//this includes compression
+			cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,PLencrypt(text,nonce24,myLock,true)))).replace(/=+$/,'');			//this includes compression		
+		mainBox.textContent = '';
 		if(emailMode.checked){
-			mainBox.innerHTML = "The gibberish below contains a message from me that has been encrypted with PassLok. To decrypt it, do this:<ol><li>Install the PassLok for Email extension by following one of these links:<br><ul><li>Chrome: &nbsp;https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh</li><li>Firefox: &nbsp;https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/</li></ul></li><li>Reload your email and get back to this message.</li><li>Click the PassLok logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.</li><li>When asked whether to accept my new Password (which you don't know), go ahead and click OK.</li></ol>If you don't use Chrome or Firefox, or don't want to install an extension, you can also open the message in PassLok Privacy, a standalone app available from https://passlok.com/app<br><pre>----------begin invitation message encrypted with PassLok--------==<br><br>" + cipherStr.match(/.{1,80}/g).join("<br>") + "<br><br>==---------end invitation message encrypted with PassLok-----------</pre>"
+			var prefaceMsg = document.createElement('div');
+			prefaceMsg.textContent = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at the Chrome and Firefox web stores. There is also PassLok Privacy and PassLok for Email at the same stores, plus the standalone PassLok web app at https://passlok.com/app.\r\n\r\nTo decrypt it, install PassLok, reload this page. You will be asked to supply a Master Key, which will not be stored or sent anywhere. You must remember your secret Key, but you can change it later if you want. When asked whether to accept my new Key (which you don't know), go ahead and click OK. You can also decrypt the invitation by pasting it into your favorite version of PassLok:";
+			var initialTag = document.createElement('pre'),
+				invBody = document.createElement('pre'),
+				finalTag = document.createElement('pre');
+			initialTag.textContent = "----------begin invitation message encrypted with PassLok--------==";
+			invBody.textContent = cipherStr.match(/.{1,80}/g).join("\r\n");
+			finalTag.textContent = "==---------end invitation message encrypted with PassLok-----------";
+			mainBox.appendChild(prefaceMsg);
+			mainBox.appendChild(initialTag);
+			mainBox.appendChild(invBody);
+			mainBox.appendChild(finalTag);
 		}else{
-			mainBox.innerHTML = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.<br><br>To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:<br><br>https://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv"
+			var invBody = document.createElement('div');
+			invBody.textContent = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at the Chrome and Firefox web stores. There is also PassLok Privacy and PassLok for Email at the same stores, plus the standalone PassLok web app at https://passlok.com/app.\r\n\r\nTo decrypt it, install PassLok, reload this page. You will be asked to supply a secret Key, which will not be stored or sent anywhere. You must remember your secret Key, but you can change it later if you want. When asked whether to accept my new Key (which you don't know), go ahead and click OK. You can also decrypt the invitation by pasting it into your favorite version of PassLok:\r\n\r\nhttps://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv";
+			mainBox.appendChild(invBody)
 		}
-		mainMsg.innerHTML = "Invitation created. If email doesn't load, copy what's in he box and paste it into the email program. Invitations are <span class='blink'>NOT SECURELY ENCRYPTED</span>";
 		updateButtons();
+		mainMsg.textContent = "Invitation created and ready to put in the page. Invitations are ";
+		var blinker = document.createElement('span');
+		blinker.className = "blink";
+		blinker.textContent = "NOT SECURELY ENCRYPTED";
+		mainMsg.appendChild(blinker);
 		return cipherStr
 	}else{
 		return ''
@@ -118,11 +136,11 @@ function Chat(){
 	if(text.match('==') && text.split('==')[0].slice(-4) == 'chat'){		//there is already a chat invitation, so open it
 		var msg = text.split('==')[1],
 			type = msg.charAt(0);
-		unlock(type,msg,lockBox.innerHTML.trim());
+		unlock(type,msg,lockBox.innerHTML.replace(/\n/g,'<br>').trim());
 		return
 	}
 
-	var listArray = lockBox.innerHTML.trim().split('<br>').filter(Boolean);
+	var listArray = lockBox.innerHTML.replace(/\n/g,'<br>').trim().split('<br>').filter(Boolean);
 	if(learnMode.checked){
 		var reply = confirm("A special encrypted item will be made, inviting the selected recipients to a secure chat session. Cancel if this is not what you want.");
 		if(!reply) return
@@ -156,7 +174,7 @@ function makeChat(){
 	while(date.length < 43) date += ' ';
 	var password = nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,''),
 		chatRoom = makeChatRoom();
-	lock(lockBox.innerHTML.replace(/<br>$/,"").trim(),date + type + chatRoom + password);
+	lock(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim(),date + type + chatRoom + password);
 	if(!longMode.checked) main2chat(type + chatRoom + password);
 	setTimeout(function(){
 			if(emailMode.checked) sendMail()

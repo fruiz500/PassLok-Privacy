@@ -297,7 +297,7 @@ window.onload = function() {
 
    	chatDate.addEventListener('keyup', charsLeft);
 
-	pwd.addEventListener('keyup', function(event) {pwdKeyup(event)}, false);
+	pwdBox.addEventListener('keyup', function(event) {pwdKeyup(event)}, false);
 
    	pwdIntro.addEventListener('keyup', introKeyup);
 
@@ -349,133 +349,11 @@ window.onload = function() {
 	document.images[20].addEventListener("click", function() {formatDoc('redo')});
 
 //for the help screens
-	aa1.addEventListener('click', function() {openHelp('a1')});
-	aa2.addEventListener('click', function() {openHelp('a2')});
-	aa3.addEventListener('click', function() {openHelp('a3')});
-	aa4.addEventListener('click', function() {openHelp('a4')});
-	aa5.addEventListener('click', function() {openHelp('a5')});
-	aa6.addEventListener('click', function() {openHelp('a6')});
-	aa7.addEventListener('click', function() {openHelp('a7')});
-	aa8.addEventListener('click', function() {openHelp('a8')});
-	aa9.addEventListener('click', function() {openHelp('a9')});
-	aa10.addEventListener('click', function() {openHelp('a10')});
-	aa11.addEventListener('click', function() {openHelp('a11')});
-	aa12.addEventListener('click', function() {openHelp('a12')});
-	aa13.addEventListener('click', function() {openHelp('a13')});
-	aa14.addEventListener('click', function() {openHelp('a14')});
-	aa15.addEventListener('click', function() {openHelp('a15')});
-	aa16.addEventListener('click', function() {openHelp('a16')});
-	aa17.addEventListener('click', function() {openHelp('a17')});
-	aa18.addEventListener('click', function() {openHelp('a18')});
-	aa19.addEventListener('click', function() {openHelp('a19')});
-	aa20.addEventListener('click', function() {openHelp('a20')});
-	aa21.addEventListener('click', function() {openHelp('a21')});
-	aa22.addEventListener('click', function() {openHelp('a22')});
-	aa23.addEventListener('click', function() {openHelp('a23')});
-	aa24.addEventListener('click', function() {openHelp('a24')});
-	aa25.addEventListener('click', function() {openHelp('a25')});
-	aa26.addEventListener('click', function() {openHelp('a26')});
-	aa27.addEventListener('click', function() {openHelp('a27')});
-	aa28.addEventListener('click', function() {openHelp('a28')});
-	aa29.addEventListener('click', function() {openHelp('a29')});
-	aa30.addEventListener('click', function() {openHelp('a30')});
-	aa31.addEventListener('click', function() {openHelp('a31')});
-	aa32.addEventListener('click', function() {openHelp('a32')});
-	aa33.addEventListener('click', function() {openHelp('a33')});
-	aa34.addEventListener('click', function() {openHelp('a34')});
-	aa35.addEventListener('click', function() {openHelp('a35')});
-	aa36.addEventListener('click', function() {openHelp('a36')});
-	aa37.addEventListener('click', function() {openHelp('a37')});
-	aa38.addEventListener('click', function() {openHelp('a38')});
-	aa39.addEventListener('click', function() {openHelp('a39')});
-	aa40.addEventListener('click', function() {openHelp('a40')});
-	aa41.addEventListener('click', function() {openHelp('a41')});
-	aa42.addEventListener('click', function() {openHelp('a42')});
-	aa43.addEventListener('click', function() {openHelp('a43')});
-	aa44.addEventListener('click', function() {openHelp('a44')});
-	aa45.addEventListener('click', function() {openHelp('a45')});
-	aa46.addEventListener('click', function() {openHelp('a46')});
-	aa47.addEventListener('click', function() {openHelp('a47')});
-	aa48.addEventListener('click', function() {openHelp('a48')});
-	aa49.addEventListener('click', function() {openHelp('a49')});
-	aa50.addEventListener('click', function() {openHelp('a50')});
-	aa51.addEventListener('click', function() {openHelp('a51')});
-	aa52.addEventListener('click', function() {openHelp('a52')});
-	aa53.addEventListener('click', function() {openHelp('a53')});
-	aa54.addEventListener('click', function() {openHelp('a54')});
-	aa55.addEventListener('click', function() {openHelp('a55')});
-	aa56.addEventListener('click', function() {openHelp('a56')});
-	aa57.addEventListener('click', function() {openHelp('a57')});
-	aa58.addEventListener('click', function() {openHelp('a58')});
-	aa59.addEventListener('click', function() {openHelp('a59')});
-	aa60.addEventListener('click', function() {openHelp('a60')});
-	aa61.addEventListener('click', function() {openHelp('a61')});
-	aa62.addEventListener('click', function() {openHelp('a62')});
+	var helpHeaders = document.getElementsByClassName("helpHeading");		//add listeners to all the help headers
 
-//a few help items don't have extra material, but are ready here just in case. Uncomment as needed
-
-//	bb1.addEventListener('click', function() {openClose('b1')});
-	bb2.addEventListener('click', function() {openClose('b2')});
-//	bb3.addEventListener('click', function() {openClose('b3')});
-//	bb4.addEventListener('click', function() {openClose('b4')});
-	bb5.addEventListener('click', function() {openClose('b5')});
-	bb6.addEventListener('click', function() {openClose('b6')});
-	bb7.addEventListener('click', function() {openClose('b7')});
-	bb8.addEventListener('click', function() {openClose('b8')});
-	bb9.addEventListener('click', function() {openClose('b9')});
-	bb10.addEventListener('click', function() {openClose('b10')});
-	bb11.addEventListener('click', function() {openClose('b11')});
-	bb12.addEventListener('click', function() {openClose('b12')});
-	bb13.addEventListener('click', function() {openClose('b13')});
-	bb14.addEventListener('click', function() {openClose('b14')});
-	bb15.addEventListener('click', function() {openClose('b15')});
-//	bb16.addEventListener('click', function() {openClose('b16')});
-	bb17.addEventListener('click', function() {openClose('b17')});
-	bb18.addEventListener('click', function() {openClose('b18')});
-	bb19.addEventListener('click', function() {openClose('b19')});
-	bb20.addEventListener('click', function() {openClose('b20')});
-	bb21.addEventListener('click', function() {openClose('b21')});
-	bb22.addEventListener('click', function() {openClose('b22')});
-	bb23.addEventListener('click', function() {openClose('b23')});
-	bb24.addEventListener('click', function() {openClose('b24')});
-	bb25.addEventListener('click', function() {openClose('b25')});
-	bb26.addEventListener('click', function() {openClose('b26')});
-	bb27.addEventListener('click', function() {openClose('b27')});
-	bb28.addEventListener('click', function() {openClose('b28')});
-	bb29.addEventListener('click', function() {openClose('b29')});
-	bb30.addEventListener('click', function() {openClose('b30')});
-	bb31.addEventListener('click', function() {openClose('b31')});
-	bb32.addEventListener('click', function() {openClose('b32')});
-	bb33.addEventListener('click', function() {openClose('b33')});
-	bb34.addEventListener('click', function() {openClose('b34')});
-	bb35.addEventListener('click', function() {openClose('b35')});
-//	bb36.addEventListener('click', function() {openClose('b36')});
-	bb37.addEventListener('click', function() {openClose('b37')});
-	bb38.addEventListener('click', function() {openClose('b38')});
-	bb39.addEventListener('click', function() {openClose('b39')});
-	bb40.addEventListener('click', function() {openClose('b40')});
-	bb41.addEventListener('click', function() {openClose('b41')});
-	bb42.addEventListener('click', function() {openClose('b42')});
-//	bb43.addEventListener('click', function() {openClose('b43')});
-	bb44.addEventListener('click', function() {openClose('b44')});
-	bb45.addEventListener('click', function() {openClose('b45')});
-	bb46.addEventListener('click', function() {openClose('b46')});
-	bb47.addEventListener('click', function() {openClose('b47')});
-	bb48.addEventListener('click', function() {openClose('b48')});
-	bb49.addEventListener('click', function() {openClose('b49')});
-	bb50.addEventListener('click', function() {openClose('b50')});
-	bb51.addEventListener('click', function() {openClose('b51')});
-	bb52.addEventListener('click', function() {openClose('b52')});
-//	bb53.addEventListener('click', function() {openClose('b53')});
-//	bb54.addEventListener('click', function() {openClose('b54')});
-	bb55.addEventListener('click', function() {openClose('b55')});
-	bb56.addEventListener('click', function() {openClose('b56')});
-	bb57.addEventListener('click', function() {openClose('b57')});
-	bb58.addEventListener('click', function() {openClose('b58')});
-	bb59.addEventListener('click', function() {openClose('b59')});
-//	bb60.addEventListener('click', function() {openClose('b60')});
-//	bb61.addEventListener('click', function() {openClose('b61')});
-//	bb62.addEventListener('click', function() {openClose('b62')});
+	for (var i = 0; i < helpHeaders.length; i++) {
+		helpHeaders[i].addEventListener('click', function(){openHelp(this.id.slice(1))});
+	}
 
 //fixes after inline styles were moved to css file
 
@@ -507,7 +385,7 @@ function receiveMessage(evt){
   	}
 }
 
-if(!localStorage){newUser();}else if(localStorage.length==0){newUser();};
+if(!localStorage){newUser();}else if(localStorage.length == 0){newUser();};
 
 fillNameList();
 

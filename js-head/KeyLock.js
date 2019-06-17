@@ -28,7 +28,7 @@ if(display){
 		var colorName = 'red'
 	}else if(entropy < 60){
 		var msg = 'Medium';
-		var colorName = 'orange'
+		var colorName = 'darkorange'
 	}else if(entropy < 90){
 		var msg = 'Good!';
 		var colorName = 'green'
@@ -53,9 +53,9 @@ if(display){
 		}
 	}else{
 		if(BasicButtons){
-			msg = 'Key strength: ' + msg + '<br>Up to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
+			msg = 'Key strength: ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
 		}else{
-			msg = 'Key entropy: ' + Math.round(entropy*100)/100 + ' bits. ' + msg + '<br>Up to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
+			msg = 'Key entropy: ' + Math.round(entropy*100)/100 + ' bits. ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
 		}
 	}
 if(display){											//these are to display the appropriate messages
@@ -67,11 +67,8 @@ if(display){											//these are to display the appropriate messages
 	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
 	if(imageScr.style.display == "block") msgName = 'imageMsg';
 	if(pwd){
-		if(hashiliOn){
-			document.getElementById(msgName).innerHTML = msg + "<br>" + hashili(pwd)				//innerHTML to preserve the line breaks
-		}else{
-			document.getElementById(msgName).innerHTML = msg
-		}
+		document.getElementById(msgName).textContent = msg;
+		hashili(msgName,pwd);
 		document.getElementById(msgName).style.color = colorName
 	}else{
 		document.getElementById(msgName).textContent = "Enter your Key";
@@ -152,18 +149,28 @@ function replaceVariants(string){
 
 //makes 'pronounceable' hash of a string, so user can be sure the password was entered correctly
 var vowel = 'aeiou',
-	consonant = 'bcdfghjklmnprstvwxyz';
-function hashili(string){
-	var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-2),			//take last 4 bytes of the SHA512		
-		code10 = ((code[0]*256)+code[1]) % 10000,		//convert to decimal
-		output = '';
+	consonant = 'bcdfghjklmnprstvwxyz',
+	hashiliTimer;
+function hashili(msgID,string){
+	var element = document.getElementById(msgID);
+	clearTimeout(hashiliTimer);
+	hashiliTimer = setTimeout(function(){
+		if(!string.trim()){
+			element.innerText += ''
+		}else{
+			var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-2),			//take last 4 bytes of the SHA512		
+				code10 = ((code[0]*256)+code[1]) % 10000,		//convert to decimal
+				output = '';
 
-	for(var i = 0; i < 2; i++){
-		var remainder = code10 % 100;								//there are 5 vowels and 20 consonants; encode every 2 digits into a pair
-		output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
-		code10 = (code10 - remainder) / 100
-	}
-	return output
+			for(var i = 0; i < 2; i++){
+				var remainder = code10 % 100;								//there are 5 vowels and 20 consonants; encode every 2 digits into a pair
+				output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
+				code10 = (code10 - remainder) / 100
+			}
+//	return output
+			element.innerText += '\n' + output
+		}
+	}, 1000);						//one second delay to display hashili
 }
 
 //these derive from the Key after running through scrypt stretching. BitArray format. Dir (salt=userName) is 32-byte, Sgn (salt=email, Edwards curve) is 64-byte; DH (Motgomery curve, deriving from Sgn) is 32-byte, myEmail is a string.
@@ -192,7 +199,7 @@ function refreshKey(){
 	if (!KeyStr){
 		any2key();
 		if(callKey == 'initkey'){
-			keyMsg.innerHTML = '<strong>Welcome to PassLok Privacy</strong><br>Please enter your secret Key'
+			keyMsg.textContent = 'Welcome to PassLok Privacy\r\nPlease enter your secret Key'
 		}else{
 			keyMsg.textContent = 'Please enter your secret Key';
 			shadow.style.display = 'block'
@@ -209,7 +216,7 @@ function resetKeys(){
 	KeySgn = '';
 	KeyDH = '';
 	myEmail = '';
-	pwd.value = '';
+	pwdBox.value = '';
 	imagePwd.value = ''
 }
 
@@ -253,7 +260,14 @@ function initUser(){
 		localStorage[userName] = JSON.stringify(locDir)
 	}
 	locDir = JSON.parse(localStorage[userName]);
-	mainMsg.innerHTML = '<span class="blink">LOADING...</span> for best speed, use at least a Medium Key';
+	mainMsg.textContent = '';
+	var blinker = document.createElement('span'),
+		msgText = document.createElement('span');
+	blinker.className = "blink";
+	blinker.textContent = "LOADING...";
+	msgText.textContent = " for best speed, use at least a Medium Key";
+	mainMsg.appendChild(blinker);
+	mainMsg.appendChild(msgText);
 	key2any();
 
 setTimeout(function(){									//do the rest after a short while to give time for the key screen to show
@@ -315,7 +329,9 @@ function makeGreeting(isNewUser){
 	if(isNewUser){
 		var greeting = "<div>Congratulations! You have decrypted your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can encrypt messages and files that only you can decrypt:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks or shared Keys by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can encrypt items that they will be able to decrypt. If someone invited you, that person should be there already.</div><div><br></div><div>Try encrypting this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Encrypt</b></div></div><div><br></div><div>You won't be able to decrypt this back if you select someone else's name before you click <b>Encrypt</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
 		Encrypt_List(['myself'],greeting);
-		mainBox.innerHTML = "<div>Welcome to PassLok!</div><div><br></div><div>Your Lock is:</div><div><br></div><div>" + Lock + "<br></div><div><br></div><div>You want to give this Lock to your friends so they can encrypt messages that only you can decrypt. You will need <i>their</i> Locks in order to encrypt messages for them. You can display it any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>Encrypted messages look like the gibberish below this line. Go ahead and decrypt it by clicking the <b>Decrypt</b> button.</div><div><br></div>" + mainBox.innerHTML;
+		var welcomeMsg = document.createElement('div');
+		welcomeMsg.textContent = "Welcome to PassLok!\r\n\r\nYour Lock is:\r\n\r\n" + Lock + "\r\n\r\nYou want to give this Lock to your friends so they can encrypt messages that only you can decrypt. You will need *their* Locks in order to encrypt messages for them. You can display it any time by clicking myLock with the main box empty.\r\n\r\nEncrypted messages look like the gibberish below this line. Go ahead and decrypt it by clicking the Decrypt button.\r\n\r\n";
+		mainBox.insertBefore(welcomeMsg,mainBox.firstChild);
 		mainMsg.textContent = "PassLok Privacy";
 		updateButtons();
 	}
@@ -323,7 +339,7 @@ function makeGreeting(isNewUser){
 
 //checks that the Key is the same as before, resumes operation. Executed by OK button in key entry dialog
 function acceptKey(){
-	var key = pwd.value.trim();
+	var key = pwdBox.value.trim();
 	if(key == ''){
 		keyMsg.textContent = 'Please enter your Key';
 		return
@@ -348,7 +364,16 @@ function acceptKey(){
 		return
 	}
 	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
-	if(firstInit) mainMsg.innerHTML = '<span class="blink">LOADING...</span> for best speed, use at least a Medium Key';
+	if(firstInit){
+		mainMsg.textContent = '';
+		var blinker = document.createElement('span'),
+			msgText = document.createElement('span');
+		blinker.className = "blink";
+		blinker.textContent = "LOADING...";
+		msgText.textContent = " for best speed, use at least a Medium Key";
+		mainMsg.appendChild(blinker);
+		mainMsg.appendChild(msgText);
+	}
 	KeyStr = key;
 	key2any();
 
@@ -424,7 +449,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
 		}
 		checkboxStore();
 	}
-	pwd.value = '';																		//all done, so empty the box
+	pwdBox.value = '';																		//all done, so empty the box
 	
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
 		mainMsg.textContent = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the Edit button'
@@ -698,7 +723,7 @@ function PLdecrypt(cipherStr,nonce24,sharedKey,isCompressed,label){
 		var cipher = cipherStr
 	}
 	var	plain = nacl.secretbox.open(cipher,nonce24,sharedKey);					//decryption instruction
-	if(!plain) failedDecrypt(label);
+	if(!plain){failedDecrypt(label);return false};
 
 	if(!isCompressed || plain.join().match(",61,34,100,97,116,97,58,")){		//this is '="data:' after encoding
 		return nacl.util.encodeUTF8(plain)
@@ -732,10 +757,12 @@ function keyDecrypt(cipherStr,isArray){
 			cipher2 = cipher.slice(10);
 		if(isArray){
 			var plain = nacl.secretbox.open(cipher2,nonce24,KeyDir);
-			if(!plain) failedDecrypt('key');
+			if(!plain){failedDecrypt('key');return};
 			return plain
 		}else{
-			return decodeURI(PLdecrypt(cipher2,nonce24,KeyDir,false,'key').trim())
+			var plain = PLdecrypt(cipher2,nonce24,KeyDir,false,'key');
+			if(!plain){failedDecrypt('key');return};
+			return decodeURI(plain.trim())
 		}
 	}else{
 		return cipherStr

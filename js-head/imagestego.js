@@ -24,7 +24,7 @@ var importImage = function(e) {
     reader.readAsDataURL(e.target.files[0]);
 	previewImg.onload = function(){
 		//see if the password box can be pre-populated because there is only one recipient
-		var lockArray = lockBox.innerHTML.replace(/<br>$/,'').replace(/<div>/g,'<br>').replace(/<\/div>/g,'').replace(/myself/,'').split('<br>').filter(Boolean);
+		var lockArray = lockBox.innerHTML.replace(/\r\n/g,'<br>').replace(/<br>$/,'').replace(/<div>/g,'<br>').replace(/<\/div>/g,'').replace(/myself/,'').split('<br>').filter(Boolean);
 		if(lockArray.length == 1){
 			var lock = replaceByItem(lockArray[0]),
 				locklen = lock.length;
@@ -51,7 +51,7 @@ function updateCapacity(){
 	var	textsize = mainBox.textContent.length;
 
 	imageMsg.style.color = '';
-	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(imageMsg);
 	setTimeout(function(){																				//give it 2 seconds to complete
 		if(imageMsg.textContent == 'PROCESSING') imageMsg.textContent = 'There was an error calculating the capacity, but the image is still usable'
 	},2000)
@@ -112,7 +112,7 @@ function encodePNG(){
 		if(!reply) return
 	}
 	var text = mainBox.textContent.trim();
-	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'').replace(/<(.*?)>/gi,"");			//remove end tags and dashes from Locks
+	if(text.match('==')) text = text.split('==')[1].replace(/[-\s]/g,'').replace(/<(.*?)>/gi,"");			//remove end tags, spaces, newlines, and dashes from Locks
 
 	//bail out if this is not a PassLok string, etc.
 	if(!text){
@@ -129,7 +129,7 @@ function encodePNG(){
 	}
 	
 	imageMsg.style.color = '';
-	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(imageMsg);
 
 	var resultURI = encodePNGprocess(text);																//this is the main process, in next functions
 
@@ -230,7 +230,7 @@ function decodeImage(){
 	}
 	
 	imageMsg.style.color = '';
-	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(imageMsg);
 	
 setTimeout(function(){
 	if(previewImg.src.slice(11,15) == 'png;'){							//two cases: png and jpeg
@@ -359,7 +359,7 @@ var encodeJPG = function(){
 		if(!reply) return
 	}
 	var text = mainBox.textContent.trim();
-	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'').replace(/<(.*?)>/gi,"");
+	if(text.match('==')) text = text.split('==')[1].replace(/[-\s]/g,'').replace(/<(.*?)>/gi,"");
 
 	//bail out if this is not a PassLok string, etc.
 	if(!text){
@@ -376,7 +376,7 @@ var encodeJPG = function(){
 	}
 
 	imageMsg.style.color = '';
-	imageMsg.innerHTML = '<span class="blink">PROCESSING</span>';				//Get blinking message started
+	blinkMsg(imageMsg);
 	
 setTimeout(function(){																			//the rest after a 30 ms delay
 	if(previewImg.src.slice(11,15).match(/gif;|png;/)) transparent2white();		//first remove transparency
@@ -397,7 +397,7 @@ setTimeout(function(){																			//the rest after a 30 ms delay
  */
 var modifyCoefficients = function(coefficients) {
 	var text = mainBox.textContent.trim();
-	if(text.match('==')) text = text.split('==')[1].replace(/-/g,'').replace(/<(.*?)>/gi,"");
+	if(text.match('==')) text = text.split('==')[1].replace(/[-\s]/g,'').replace(/<(.*?)>/gi,"");
 	var msgBin = toBin(text).concat(imgEOF);			//also replace special characters with base64 and add 48-bit end marker
 		
 	var length = coefficients[0].length,
