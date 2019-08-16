@@ -161,10 +161,10 @@ function padEncrypt(text){
 		macBin = padMac(textBin, keyTextBin, nonce, startIndex),						//make mac
 		outStr = nacl.util.encodeBase64(concatUint8Arrays([116],concatUint8Arrays(nonce,concatUint8Arrays(macBin,cipherBin)))).replace(/=+$/,'');
 
-	mainBox.textContent = '';
 	if(shortMode.checked){
 		mainBox.textContent = outStr
 	}else{
+		mainBox.textContent = '';
 		if(fileMode.checked){
 			if(textMode.checked){
 				var fileLink = document.createElement('a');
@@ -504,10 +504,10 @@ function humanEncrypt(text,isEncrypt){
 		cipherText = cipherText.replace(/QQ/g,'. ').replace(/Q/g,' ').replace(/KU([AEIO])/g,'QU$1')
 	}
 
-	mainBox.textContent = '';
 	if(shortMode.checked || !isEncrypt){
 		mainBox.textContent = cipherText					//no tags in short mode or decrypting
 	}else if(isEncrypt){
+		mainBox.textContent = '';
 		if(fileMode.checked){
 			if(textMode.checked){
 				var fileLink = document.createElement('a');
@@ -524,8 +524,8 @@ function humanEncrypt(text,isEncrypt){
 			var fileLink = document.createElement('pre');
 			fileLink.textContent = ("PL24msh==" + cipherText + "==PL24msh").match(/.{1,80}/g).join("\r\n")
 		}
+		mainBox.appendChild(fileLink)
 	}
-	mainBox.appendChild(fileLink);
 	if(isEncrypt){
 		mainMsg.textContent = 'Human encryption done. Recipients can decrypt this by hand'
 	}else{

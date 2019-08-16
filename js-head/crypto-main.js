@@ -123,6 +123,7 @@ function Encrypt_Single(lockBoxItem,text){
 
 		var outString = nacl.util.encodeBase64(concatUint8Arrays([176],concatUint8Arrays(nonce,cipher))).replace(/=+$/,'');			//1st character is s
 		if(compatMode.checked){
+			mainBox.textContent = '';
 			if(fileMode.checked){
 				if(textMode.checked){
 					var fileLink = document.createElement('a');
@@ -166,6 +167,7 @@ function Encrypt_Single(lockBoxItem,text){
 
 		var outString = nacl.util.encodeBase64(concatUint8Arrays([104],concatUint8Arrays(nonce,concatUint8Arrays(pubdum,cipher)))).replace(/=+$/,'');			//1st character is a
 		if(compatMode.checked){
+			mainBox.textContent = '';
 			if(fileMode.checked){
 				if(textMode.checked){
 					var fileLink = document.createElement('a');
@@ -289,6 +291,7 @@ function Encrypt_Single(lockBoxItem,text){
 		}
 
 		if(compatMode.checked){				//prepend ezLock in compatibility mode
+			mainBox.textContent = '';
 			if(fileMode.checked){
 				if(textMode.checked){
 					var fileLink = document.createElement('a');
@@ -839,7 +842,7 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 			var prefaceMsg = document.createElement('div'),
 				epilogueMsg = document.createElement('div');
 			prefaceMsg.textContent = "This is my message to you:\r\n----------\r\n";
-			epilogueMsg.textContent = "----------\r\nPassLok is now ready to encrypt your reply so that only I can decrypt it.\r\n\r\nTo do this, click *Clear*, type your message, select my name in the directory, and then click *Encrypt*. Optionally, you can select a different encryption mode at the bottom of the screen before you click the button. Then you can copy and paste it into your favorite communications program or click *Send to Page* to send it with your default email.\r\n\r\nIf this is a computer, you can use rich formatting if you click the *Rich* button.";
+			epilogueMsg.textContent = "----------\r\nPassLok is now ready to encrypt your reply so that only I can decrypt it.\r\n\r\nTo do this, click *Clear*, type your message, select my name in the directory, and then click *Encrypt*. Optionally, you can select a different encryption mode at the bottom of the screen before you click the button. Then you can copy and paste it into your favorite communications program or click *Email* to send it with your default email.\r\n\r\nIf this is a computer, you can use rich formatting if you click the *Rich* button.";
 			mainBox.insertBefore(prefaceMsg,mainBox.firstChild);
 			mainBox.appendChild(epilogueMsg)
 		}

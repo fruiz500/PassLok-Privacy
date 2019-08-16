@@ -157,8 +157,8 @@ function loadImage(){
 			return
 		}
 		var image = document.createElement("img");
-			image.src = safeHTML(URLFromFileLoaded).replace(/=+$/,'');
-			mainBox.appendChild(image)
+		image.src = safeHTML(URLFromFileLoaded).replace(/=+$/,'');
+		mainBox.appendChild(image)
 	};
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");

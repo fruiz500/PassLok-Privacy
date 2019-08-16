@@ -94,7 +94,7 @@ function makeInvitation(){
 			mainBox.appendChild(invBody)
 		}
 		updateButtons();
-		mainMsg.textContent = "Invitation created and ready to put in the page. Invitations are ";
+		mainMsg.textContent = "Invitation created. Invitations are ";
 		var blinker = document.createElement('span');
 		blinker.className = "blink";
 		blinker.textContent = "NOT SECURELY ENCRYPTED";

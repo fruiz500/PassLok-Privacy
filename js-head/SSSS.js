@@ -12,7 +12,7 @@ function secretshare(){
 		tags = main.match(/PL\d{2}p\d{3}/);
 	if(tags){																	//main box has parts: join parts
 		if(main.match('href="data:')){										//parts in links
-			var shares = main.replace(/<div>/g,'<br>').split("<br>").filter(Boolean)				//go from newline-containing string to array
+			var shares = main.replace(/<div>/g,'<br>').replace(/<\div>/g,"").replace(/<b>/g,"").split("<br>").filter(Boolean)				//go from newline-containing string to array
 		}else{
 			var shares = mainBox.innerText.split("\n\n").filter(Boolean)							//split when double spaced
 		}
@@ -101,7 +101,8 @@ try{
 
 function displayshare(shares,quorum){
 	var length = shares[0].length,
-		quorumStr = "00" + quorum;
+		quorumStr = "00" + quorum,
+		output = "";
 	quorumStr = quorumStr.substr(quorumStr.length-3);
 	
 	mainBox.textContent = '';
@@ -109,14 +110,15 @@ function displayshare(shares,quorum){
 
 	for (var i = 0; i < shares.length; i++) {
 		var dataItem = nacl.util.encodeBase64(hex2charArray(shares[i].slice(1,length))).replace(/=+/g, '');
+		if(i > 0) output += "<br><br>";
 		if(fileMode.checked){
 			if(textMode.checked){
-				output += "<br><br>" + '<a download="PL24p' + quorumStr + '.txt" href="data:,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a text file</b></a>'
+				output +=  '<a download="PL24p' + quorumStr + '.txt" href="data:,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a text file</b></a>'
 			}else{
-				output += "<br><br>" + '<a download="PL24p' + quorumStr + '.txt" href="data:binary/octet-stream;base64,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a binary file</b></a>'
+				output += '<a download="PL24p' + quorumStr + '.txt" href="data:binary/octet-stream;base64,' + dataItem + '"><b>PassLok 2.4 Part out of ' + quorumStr + ' as a binary file</b></a>'
 			}
 		}else{
-			output += "<br><br>" + "<pre>" + ("PL24p" + quorumStr + "==" + dataItem + "==PL24p" + quorumStr).match(/.{1,80}/g).join("<br>") + "</pre>"
+			output += "<pre>" + ("PL24p" + quorumStr + "==" + dataItem + "==PL24p" + quorumStr).match(/.{1,80}/g).join("<br>") + "</pre>"
 		}
 	};
 	fragment.innerHTML = output;				//must use innerHTML because building the list of links with linefeeds in between with the appendChild method does not work in Chrome (bug?)
