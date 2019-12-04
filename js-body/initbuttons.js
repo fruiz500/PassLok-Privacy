@@ -39,11 +39,11 @@ window.onload = function() {
 	}
 	
 	//load field icons
-	showKey.src = eyeImg;
-	showIntroKey.src = eyeImg;
-	showNewKeyCheck.src = eyeImg;
-	showDecoyInCheck.src = eyeImg;
-	showDecoyOutCheck.src = eyeImg;
+	pwdIntroIcon.src = eyeImg;
+	pwdIcon.src = eyeImg;
+	newKeyIcon.src = eyeImg;
+	decoyInIcon.src = eyeImg;
+	decoyOutIcon.src = eyeImg;
 
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
@@ -69,7 +69,7 @@ window.onload = function() {
 
     decodeImgBtn.addEventListener('click', decodeImage);
 
-	imagePwd.addEventListener('keyup', imageKeyup);
+	imageIcon.addEventListener('click',function(){showPwd('image')});
 
 	showLockBtn.addEventListener('click', showLock);
 
@@ -121,7 +121,7 @@ window.onload = function() {
 
    	moveLockDBBtn.addEventListener('click', moveLockDB);
 
-   	acceptKeyBtn.addEventListener('click', acceptKey);
+   	acceptKeyBtn.addEventListener('click', acceptpwd);
 
    	cancelKeyBtn.addEventListener('click', cancelKey);
 
@@ -129,7 +129,7 @@ window.onload = function() {
 
    	changeNameBtn.addEventListener('click', showName);
 
-   	changeKeyBtn.addEventListener('click', changeKey);
+   	changeKeyBtn.addEventListener('click', acceptnewKey);
 
    	changeEmailBtn.addEventListener('click', showEmail);
 
@@ -205,7 +205,7 @@ window.onload = function() {
 
 	spaceMode.addEventListener('click', checkboxStore);
 
-   	showKey.addEventListener('click', showsec);
+	pwdIcon.addEventListener('click',function(){showPwd('pwd')});
 
    	introRandomBtn.addEventListener('click', randomToken);
 
@@ -221,7 +221,7 @@ window.onload = function() {
 
    	cancelNameBtn.addEventListener('click', cancelName);
 
-   	showIntroKey.addEventListener('click', showIntro);
+   	pwdIntroIcon.addEventListener('click', function(){showPwd('pwdIntro')});
 
    	clearIntroBtn.addEventListener('click', clearIntro);
 
@@ -229,15 +229,15 @@ window.onload = function() {
 
    	showlockIntroBtn.addEventListener('click', initUser);
 
-   	showDecoyInCheck.addEventListener('click', showDecoyIn);
+   	decoyInIcon.addEventListener('click', function(){showPwd('decoyIn')});
 
-   	submitDecoyBtn.addEventListener('click', submitDecoy);
+   	submitDecoyBtn.addEventListener('click', acceptdecoyIn);
 
    	cancelDecoyBtn.addEventListener('click', cancelDecoy);
 
-   	showDecoyOutCheck.addEventListener('click', showDecoyOut);
+   	decoyOutIcon.addEventListener('click', function(){showPwd('decoyOut')});
 
-   	submitDecoy2Btn.addEventListener('click', submitDecoy);
+   	submitDecoy2Btn.addEventListener('click', acceptdecoyIn);
 
    	cancelDecoy2Btn.addEventListener('click', cancelDecoy);
 
@@ -256,7 +256,7 @@ window.onload = function() {
    	submitChatBtn.addEventListener('click', makeChat);
 
 	lockList.addEventListener('change', fillBox);
-	
+
 	lockList.addEventListener('click', updateButtons);
 
    	resetListBtn.addEventListener('click', resetList);
@@ -267,11 +267,11 @@ window.onload = function() {
 
    	newUserBtn.addEventListener('click', newUser);
 
-   	submitKeyChangeBtn.addEventListener('click', changeKey);
+   	submitKeyChangeBtn.addEventListener('click', acceptnewKey);
 
    	cancelKeyChangeBtn.addEventListener('click', cancelKeyChange);
 
-   	showNewKeyCheck.addEventListener('click', showNewKey);
+	newKeyIcon.addEventListener('click',function(){showPwd('newKey')});
 
 	gotointro2.addEventListener('click', go2intro2);
 
@@ -297,19 +297,19 @@ window.onload = function() {
 
    	chatDate.addEventListener('keyup', charsLeft);
 
-	pwdBox.addEventListener('keyup', function(event) {pwdKeyup(event)}, false);
+	pwdBox.addEventListener('keyup',function(event){boxKeyup('pwd',event)});
 
-   	pwdIntro.addEventListener('keyup', introKeyup);
+	pwdIntroBox.addEventListener('keyup',function(event){boxKeyup('pwdIntro',event)});
 
-	decoyPwdIn.addEventListener('keyup', function(event) {decoyKeyup(event)}, false);
+	decoyInBox.addEventListener('keyup', function(event){boxKeyup('decoyIn',event)});
 
-	decoyPwdOut.addEventListener('keyup', function(event) {decoyKeyupOut(event)}, false);
+	decoyOutBox.addEventListener('keyup', function(event){boxKeyup('decoyOut',event)});
 
 	partsIn.addEventListener('keyup', function(event) {partsKeyup(event)}, false);
 
-	newKey.addEventListener('keyup', newKeyup);
+	newKeyBox.addEventListener('keyup', function(event){boxKeyup('newKey',event)});
 
-	newKey2.addEventListener('keyup', function(event) {newKey2up(event)}, false);
+	newKey2Box.addEventListener('keyup', function(event) {newKey2up(event)}, false);
 
 	lockBox.addEventListener('keyup', function(event) {lockBoxKeyup(event)}, false);
 
@@ -318,6 +318,8 @@ window.onload = function() {
 	userNameBox.addEventListener('keyup', function(event) {nameKeyup(event)}, false);
 
 	emailBox.addEventListener('keyup', function(event) {emailKeyup(event)}, false);
+
+	imageBox.addEventListener('keyup', function(event){boxKeyup('image',event)});
 
 //for the rich text editor boxes and buttons
 	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
@@ -356,7 +358,6 @@ window.onload = function() {
 	}
 
 //fixes after inline styles were moved to css file
-
 	lockList.style.padding = '4px';
 	lockList.style.width = '30%';
 	basicBtnsTop.style.display = 'block';
@@ -364,14 +365,12 @@ window.onload = function() {
 	extraButtonsTop.style.display = 'none'
 };
 
-
 //this one is for mobile only. Remove for the extension
 if(isMobile){
 	window.addEventListener('load', function() {
 		FastClick.attach(document.body);
 	}, false)
 }
-
 
 //for general directory
 window.addEventListener('message', receiveMessage, false);
@@ -391,6 +390,7 @@ fillNameList();
 
 initTabs();																	//initialize tabs
 
-var time10 = hashTime10();													//get milliseconds for 10 wiseHash at iter = 10
+//var time10 = hashTime10();													//get milliseconds for 10 wiseHash at iter = 10
+var time10 = 200									//valid for core2 duo. Should be smaller for more recent machines
 
 //end of body script.

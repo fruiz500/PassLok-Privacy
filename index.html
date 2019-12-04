@@ -299,10 +299,10 @@
       <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
       &nbsp; Hidden message<br><br>
       &nbsp;&nbsp;
-      <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words" checked/>
-      &nbsp; Word Lock&nbsp;&nbsp;
-      <input type="radio" name="lockType" id="ezLokMode" title="display easy to read Lock"/>
+      <input type="radio" name="lockType" id="ezLokMode" title="display easy to read Lock" checked/>
       &nbsp; ezLok&nbsp;&nbsp;
+      <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words"/>
+      &nbsp; Word Lock&nbsp;&nbsp;
       <input type="radio" name="lockType" id="normalLockMode" title="display base64 Lock"/>
       &nbsp; base64 Lock<br><br>  
       &nbsp;&nbsp; 
@@ -410,7 +410,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <li>Several users (or several identities) can coexist on the same device.</li>
     </ul>
     <p>PassLok is <strong>still in experimental phase</strong> since there has not been enough time for security experts to uncover possible flaws. Bear this in mind before entrusting critical secrets to it.</p>
-    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://passlok.com/seeonce" target="_blank">https://passlok.com/seeonce</a>. <strong>SeeOnce</strong> implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. Even easier is <strong>URSA</strong>, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <strong>PassLok for Email</strong>, an extension for <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/" target="_blank">Firefox</a> that integrates with popular email clients (currently Gmail, Yahoo, and Outlook). All of these apps are fully compatible with PassLok, although they are not compatible with each other.</p>
+    <p>If you find PassLok too difficult, you may want to try SeeOnce instead, from <a href="https://passlok.com/seeonce" target="_blank">https://passlok.com/seeonce</a>. <strong>SeeOnce</strong> implements the Read-once mode of PassLok plus one type of text hiding, but you never have to worry about maintaining a directory of Locks. Even easier is <strong>URSA</strong>, available at <a href="https://passlok.com/ursa" target="_blank">https://passlok.com/ursa</a>, which includes only the shared Key mode of PassLok. Finally, there's <strong>PassLok for Email</strong>, an extension for <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email/" target="_blank">Firefox</a> that integrates with popular email services (currently Gmail, Yahoo, and Outlook), and <strong>PassLok Universal</strong>, very similar to PassLok for Email, but not restricted to any email service; these are its links for <a href="https://chrome.google.com/webstore/detail/passlok-universal/lbmlbnfgnbfppkfijbbpnecpglockled" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-universal/" target="_blank">Firefox</a>. All of these apps are fully compatible with PassLok, although they may not be compatible with each other.</p>
+    <p>And if you don't, you may want to try the <strong>PassLok Privacy</strong> extension for <a href="https://chrome.google.com/webstore/detail/passlok-privacy/epcchpdljafmfegifkigklfcmkphfmbh" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/passlok-privacy/" target="_blank">Firefox</a>, which is almost identical to this standalone app, except that it syncs seamlessly between computers and is impervious to other extensions that might be running on the browser. Finally, the whole PassLok Privacy is part of the <strong>FusionKey</strong> extension for <a href="https://chrome.google.com/webstore/detail/fusionkey/legnppmlegkibpinfjodjbejohblaaam" target="_blank">Chrome</a> and <a href="https://addons.mozilla.org/en-US/firefox/addon/fusionkey/" target="_blank">Firefox</a>, which integrates with any email service (not just the Big Three) and also includes the <strong>SynthPass</strong> password manager.</p>
   </div>
   <hr>
   <div id="aa2" class="helpHeading">
@@ -1596,12 +1597,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.13 (August 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.14 (December 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.13 &#169; F. Ruiz 2019
+  PassLok v2.4.14 &#169; F. Ruiz 2019
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1655,7 +1656,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--Key dialog-->
 <div id="keyScr" class="white_content" align="center"> <br>
-  <div id="keyMsg" class="message"><span id="javascriptOff">JAVASCRIPT OFF, PASSLOK CANNOT RUN</span></div>
+  <div id="pwdMsg" class="message"><span id="javascriptOff">JAVASCRIPT OFF, PASSLOK CANNOT RUN</span></div>
   <br>
   <br>
   <select class="cssbox" id='nameList' size='4' title="select your user name">
@@ -1664,7 +1665,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <button class="cssbutton" id="newUserBtn" value="new user" title="set up a new user">New User</button>
   <br>
   <br>
-  <input type="password" class="cssbox" autocomplete="off" id="pwdBox" name="text" placeholder="Enter your secret Key here." align="center"><img id='showKey' class="field-icon" src="" title="click this to see/hide the Password">
+  <input type="password" class="cssbox" autocomplete="off" id="pwdBox" name="text" placeholder="Enter your secret Key here." align="center"><img id='pwdIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
   <button class="cssbutton" id="cancelKeyBtn" value="cancel" title="close Key dialog">Cancel</button>
@@ -1727,9 +1728,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 3 of 5<br>
     <p>Now enter your secret Key in the box below. You will <strong>never give this Key to anyone</strong>. Make sure to use $ymbol$, numb3rs, caPiTals, unusual words and mespelingss. You should be able to remember it, because it won't get stored.</p>
     <p>The Suggest button will get you started with five words, which you can modify at will.</p>
-    <div align="center"> <span id="introMsg" class="message">This is where the Key score will appear</span><br>
+    <div align="center"> <span id="pwdIntroMsg" class="message">This is where the Key score will appear</span><br>
       <br>
-      <input type="password" class="cssbox" autocomplete="off" id="pwdIntro" name="text" placeholder="Enter your secret Key here" align="center"><img id='showIntroKey' class="field-icon" src="" title="click this to see/hide the Password">
+      <input type="password" class="cssbox" autocomplete="off" id="pwdIntroBox" name="text" placeholder="Enter your secret Key here" align="center"><img id='pwdIntroIcon' class="field-icon" src="" title="click this to see/hide the Password">
       <br>
       <br>
       <button class="cssbutton" id="suggestIntroBtn" value="Suggest" title="suggest a Key made of five common words">Suggest</button>
@@ -1798,13 +1799,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Key change dialog-->
 <div id="keyChange" class="white_content" align="center"> <br>
   <br>
-  <div id="keyChangeMsg" class="message"></div>
+  <div id="newKeyMsg" class="message"></div>
   <br>
   <br>
-  <input type="password" id="newKey" class="cssbox" name="newkey" placeholder="Enter the new Key here."/><img id='showNewKeyCheck' class="field-icon" src="" title="click this to see/hide the Password">
+  <input type="password" id="newKeyBox" class="cssbox" name="newkey" placeholder="Enter the new Key here."/><img id='newKeyIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
-  <input type="password" id="newKey2" class="cssbox" name="newkey2" placeholder="Enter the new Key again."/>
+  <input type="password" id="newKey2Box" class="cssbox" name="newkey2" placeholder="Enter the new Key again."/>
   <br>
   <br>
   <button class="cssbutton" id="cancelKeyChangeBtn" value="Cancel" title="do not change the Key">Cancel</button>
@@ -1832,13 +1833,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--Decoy In dialog-->
 <div id="decoyIn" class="white_content" align="center"> <br>
-  <span id="decoyMsg" class="message">Enter the Hidden Message</span>
+  <span id="decoyInMsg" class="message">Enter the Hidden Message</span>
   <br>
   <br>
   <textarea id="decoyText" class="cssbox" name="text" rows="3"></textarea>
   <p>Enter the Key/Lock<p>
   <br>
-  <input type="password" class="cssbox" id="decoyPwdIn" name="key"/><img id='showDecoyInCheck' class="field-icon" src="" title="click this to see/hide the Password">
+  <input type="password" class="cssbox" id="decoyInBox" name="key"/><img id='decoyInIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
   <button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not encrypt">Cancel</button>
@@ -1850,7 +1851,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="decoyOut" class="white_content" align="center"> <br>
   <span id="decoyOutMsg" class="message">Enter the Key for the Hidden message</span><br>
   <br>
-  <input type="password" class="cssbox" id="decoyPwdOut" name="key"/><img id='showDecoyOutCheck' class="field-icon" src="" title="click this to see/hide the Password">
+  <input type="password" class="cssbox" id="decoyOutBox" name="key"/><img id='decoyOutIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
   <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop decrypt">Cancel</button>
@@ -1912,7 +1913,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <button class="cssbutton" id="decodeImgBtn" value="Reveal" title="extract hidden content and put it in main box">Reveal</button>
   <br>
   <br>
-  <input type="text" class="cssbox" id="imagePwd" title="use a password for better undetectability" placeholder="optional Password"/>
+  <input type="text" class="cssbox" id="imageBox" title="use a password for better undetectability" placeholder="optional Password"/><img id='imageIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
   <div id="imageMsg" class="message"></div>

@@ -16,7 +16,7 @@ function signVerify(){
 //adds Schnorr signature to the contents of the main box
 function applySignature(textStr){
 	callKey = 'sign';
-	keyMsg.textContent = "";
+	pwdMsg.textContent = "";
 	if(learnMode.checked){
 		var reply = confirm("The contents of the main box will be sealed using your secret Key, so that others can verify its origin. The resulting item WILL NOT BE LOCKED. Cancel if this is not what you want.");
 		if(!reply) return
@@ -63,12 +63,12 @@ function applySignature(textStr){
 
 //verifies the Schnorr signature of the plaintext, calls applySignature as appropriate.
 function verifySignature(textStr,LockStr){
-	keyMsg.textContent = "";
+	pwdMsg.textContent = "";
 	if (textStr == ""){																	//nothing in text box
 		mainMsg.textContent = 'Nothing to sign or verify';
 		return
 	}
-	if(lockBox.textContent.charAt(0) == 'k') decryptItem();
+	if(lockBox.textContent.trim().charAt(0) == 'k') decryptItem();
 
 	if(learnMode.checked){
 		var reply = confirm("The item in the main box has been sealed with somebody's secret Key. I will now check the matching Lock, which should be selected on the local directory, and will display the unsealed message inside. Cancel if this is not what you want.");
@@ -100,9 +100,11 @@ function verifySignature(textStr,LockStr){
 		return
 	}
 
-	var Lock = nacl.util.decodeBase64(LockStr),
-		sealedArray = nacl.util.decodeBase64(textStr),
-		padding = sealedArray.slice(1,101);
+	var Lock = nacl.util.decodeBase64(LockStr);
+	if(!Lock) return false;
+	var	sealedArray = nacl.util.decodeBase64(textStr);
+	if(!sealedArray) return false;
+	var	padding = sealedArray.slice(1,101);
 		
 	if(decoyMode.checked) decoyDecrypt(padding,convertPub(Lock));			//extract decoy message, uses DH version of the signing Lock
 
@@ -127,7 +129,7 @@ function verifySignature(textStr,LockStr){
 var entropyPerChar = 1.58;			//expected entropy of the key text in bits per character, from Shannon, as corrected by Guerrero; for true random UTF8 text this value is 8
 //function for encrypting with long key
 function padEncrypt(text){
-	var keyText = lockBox.textContent.trim(),
+	var keyText = lockBox.textContent.replace(/\n/g,' ').trim(),		//turn linefeeds into spaces for compatibility with PassLok for Email
 		keyTextBin = nacl.util.decodeUTF8(keyText),
 		clipped = false;
 
@@ -177,6 +179,9 @@ function padEncrypt(text){
 				fileLink.href = "data:binary/octet-stream;base64," + outStr;
 				fileLink.textContent = "PassLok 2.4 Pad encrypted message (binary file)"
 			}
+		}else if(emailMode.checked){
+			var fileLink = document.createElement('pre');
+			fileLink.textContent = "----------begin Pad mode message encrypted with PassLok--------==\r\n\r\n" + outString.match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Pad mode message encrypted with PassLok-----------"
 		}else{
 			var fileLink = document.createElement('pre');
 			fileLink.textContent = ("PL24msp==" + outStr + "==PL24msp").match(/.{1,80}/g).join("\r\n")
@@ -188,6 +193,10 @@ function padEncrypt(text){
 	}else{
 		mainMsg.textContent = 'Encryption successful. Click Email or copy and send.'
 	}
+	
+	if(emailMode.checked) sendMail();
+	
+	callKey = ''
 }
 
 //This is the core of pad encryption. Takes binary inputs and returns binary output. Same code for encrypt and decrypt
@@ -278,14 +287,15 @@ function padMac(textBin, keyTextBin, nonce, startIndex){						//startIndex is th
 //for decrypting with long key
 function padDecrypt(cipherStr){
 	mainMsg.textContent = "";
-	var keyText = lockBox.textContent.trim();
+	var keyText = lockBox.textContent.replace(/\n/g,' ').trim();
 	if (keyText == ''){
 		mainMsg.textContent = 'Click Enter and enter long shared Key, then try again';
 		return
 	}
 	try{
-		var inputBin = nacl.util.decodeBase64(cipherStr),
-			keyTextBin = nacl.util.decodeUTF8(keyText);
+		var inputBin = nacl.util.decodeBase64(cipherStr);
+		if(!inputBin) return false;
+		var	keyTextBin = nacl.util.decodeUTF8(keyText);
 		if(cipherStr.length == 160){									//short mode message
 			var	nonce = inputBin.slice(1,10),
 				macBin = inputBin.slice(10,26),
@@ -342,6 +352,8 @@ function padDecrypt(cipherStr){
 	}else{
 		mainMsg.textContent = "Decryption has failed"
 	}
+	
+	callKey = ''
 }
 
 //Finally, Human encryption mode
@@ -426,7 +438,7 @@ function humanEncrypt(text,isEncrypt){
 	}
 	text = text.replace(/[^A-Z]/g,'');																				//only base26 anyway
 
-	var rawKeys = lockBox.textContent.split('~');
+	var rawKeys = lockBox.textContent.trim().split('~');
 	for(var i = 0; i < 3; i++) rawKeys[i] = rawKeys[i].toUpperCase().removeDiacritics().replace(/[^A-Z]/g,'');	//remove accents, spaces, and all punctuation
 
 	var	base26B1arrays = makeAlphabet(compressKey(rawKeys[0],25)),
@@ -520,6 +532,9 @@ function humanEncrypt(text,isEncrypt){
 				fileLink.href = "data:binary/octet-stream;base64," + cipherText;
 				fileLink.textContent = "PassLok 2.4 Human encrypted message (binary file)"
 			}
+		}else if(emailMode.checked){
+			var fileLink = document.createElement('pre');
+			fileLink.textContent = "----------begin Human mode message encrypted with PassLok--------==\r\n\r\n" + outString.match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Human mode message encrypted with PassLok-----------"
 		}else{
 			var fileLink = document.createElement('pre');
 			fileLink.textContent = ("PL24msh==" + cipherText + "==PL24msh").match(/.{1,80}/g).join("\r\n")
@@ -531,6 +546,10 @@ function humanEncrypt(text,isEncrypt){
 	}else{
 		mainMsg.textContent = 'Human decryption done. Numbers turned into characters. Commas lost. Other punctuation rendered as periods'
 	}
+	
+	if(emailMode.checked && isEncrypt) sendMail();
+	
+	callKey = ''
 }
 
 //alternative to Math.random based on nacl.randomBytes. Used to generate floating point numbers between 0 and 1. Uses 8 bytes as space, which is enough for double precision

@@ -972,7 +972,11 @@ nacl.util.decodeBase64 = function(s) {
   if (typeof atob === 'undefined') {
     return new Uint8Array(Array.prototype.slice.call(new Buffer(s, 'base64'), 0));
   } else {
+	  try{															//added for PassLok because atob may fail
     var i, d = atob(s), b = new Uint8Array(d.length);
+	  }catch(error){
+		  return false
+	  }
     for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
     return b;
   }

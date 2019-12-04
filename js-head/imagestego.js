@@ -31,18 +31,20 @@ var importImage = function(e) {
 			if(locklen == 43 || locklen == 50){					//Lock identified, compute shared Key
 				if(!refreshKey()) return;
 				if (locklen == 50) lock = changeBase(lock.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-				imagePwd.value = nacl.util.encodeBase64(makeShared(convertPub(nacl.util.decodeBase64(lock)),KeyDH)).replace(/=+$/,'')
+				var lockBin = nacl.util.decodeBase64(lock);
+				if(!lockBin) return false;
+				imageBox.value = nacl.util.encodeBase64(makeShared(convertPub(lockBin),KeyDH)).replace(/=+$/,'')
 			}else{													//not a Lock, so use it directly
-				imagePwd.value = lock
+				imageBox.value = lock
 			}
 		}else{
-			imagePwd.value = ''
+			imageBox.value = ''
 		}
 		
 		updateCapacity();
 		openClose('imageScr');
 		openClose('shadow');
-		imagePwd.focus()
+		imageBox.focus()
 	}
 };
 
@@ -172,7 +174,7 @@ function encodePNGprocess(text){
 	
 	//now turn the base64 text into a binary array
 	var msgBin = toBin(text).concat(imgEOF),							//also replace special characters with base64 and add 48-bit end marker
-		pwdArray = imagePwd.value.trim().replace(/\n/g,' ').split('|'),
+		pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
 		seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
 	if(pwdArray.length == 3){
 		var pwd2 = pwdArray[1].trim(), 
@@ -212,7 +214,7 @@ function encodePNGprocess(text){
 	permutation = [];				//reset global variables
 	permutation2 = [];
 	allCoefficients = [];
-	imagePwd.value = '';
+	imageBox.value = '';
 
 	shadowCtx.putImageData(imageData, 0, 0);								//put in canvas so the dataURL can be produced
 	return shadowCanvas.toDataURL()
@@ -268,7 +270,7 @@ function decodePNG(){
 	}
 	allCoefficients = allCoefficients.slice(0,k);
 
-	var pwdArray = imagePwd.value.trim().replace(/\n/g,' ').split('|'),
+	var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
 		seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
 	if(pwdArray.length == 2) var pwd2 = pwdArray[1].trim();										//for when there is a second message
 
@@ -288,7 +290,7 @@ function decodePNG(){
 	var text = fromBin(result[0]);
 	mainBox.innerHTML = decryptSanitizer(text.trim());
 	image2main();
-	imagePwd.value = '';
+	imageBox.value = '';
 	updateButtons();
 	if(advancedMode.checked) main2extra();
 	if(result2){
@@ -321,7 +323,7 @@ var decodeJPG = function(){
 		}	
 		allCoefficients = removeZeros(rawCoefficients);							//get rid of zeros
 
-		var pwdArray = imagePwd.value.trim().replace(/\n/g,' ').split('|'),
+		var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
 			seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
 		if(pwdArray.length == 2) var pwd2 = pwdArray[1].trim();						//for when there is a second message
 
@@ -341,7 +343,7 @@ var decodeJPG = function(){
 		permutation = [];
 		permutation2 = [];
 		allCoefficients = [];
-		imagePwd.value = '';
+		imageBox.value = '';
 		updateButtons();
 		if(advancedMode.checked) main2extra();
 		if(result2){
@@ -413,7 +415,7 @@ var modifyCoefficients = function(coefficients) {
 	}
 	allCoefficients = removeZeros(rawCoefficients);							//remove zeros and store in global variable
 
-	var pwdArray = imagePwd.value.trim().replace(/\n/g,' ').split('|'),
+	var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
 		seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
 	if(pwdArray.length == 3){
 		var pwd2 = pwdArray[1].trim(), 
@@ -455,7 +457,7 @@ var modifyCoefficients = function(coefficients) {
 	permutation = [];
 	permutation2 = [];
 	allCoefficients = [];
-	imagePwd.value = ''
+	imageBox.value = ''
 }
 
 //calculates a random-walk permutation, as seeded by "seed" and shuffles the global array "allCoefficients" accordingly. "permutation" is also global
@@ -602,7 +604,7 @@ function encodeToCoefficients(type,inputBin,startIndex){
 		allCoefficients = [];
 		permutation = [];
 		permutation2 = [];
-		imagePwd.value = '';
+		imageBox.value = '';
 		return
 	}
 	while( k / (Math.pow(2,k) - 1) > rate) k++;
@@ -711,7 +713,7 @@ function decodeFromCoefficients(type,startIndex){
 		allCoefficients = [];
 		permutation = [];
 		permutation2 = [];
-		imagePwd.value = '';
+		imageBox.value = '';
 		return
 	}
 	
@@ -742,7 +744,7 @@ function decodeFromCoefficients(type,startIndex){
 		imageMsg.textContent = 'The image does not contain anything, or perhaps the password is wrong';
 		allCoefficients = [];
 		permutation = [];
-		imagePwd.value = '';
+		imageBox.value = '';
 		return
 	}
 	outputBin = outputBin.slice(0,-fromEnd);

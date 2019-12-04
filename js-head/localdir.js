@@ -94,7 +94,7 @@ function removeLock(){
 		lockMsg.textContent = 'Delete not available in Guest mode\r\nPlease restart PassLok';
 		return
 	}
-	var	name = lockBox.textContent,
+	var	name = lockBox.textContent.trim(),
 		index = searchStringInArrayDB(name,lockNames);
 	if( index >= 0){
 		var fullName = lockNames[index];
@@ -185,7 +185,7 @@ function decryptLock(){
 		decryptItem();
 		nameBeingUnlocked = ''
 	}
-	if(lockBox.textContent != ''){
+	if(lockBox.textContent.trim()){
 		var listArray = lockBox.innerHTML.replace(/\n/g,'<br>').split('<br>').filter(Boolean);
 		if(lockBox.textContent.length > 500){
 			lockBox.innerHTML = decryptSanitizer(LZString.decompressFromBase64(lockBox.textContent).trim());
@@ -195,9 +195,9 @@ function decryptLock(){
 			lockMsg.textContent = 'List extracted'
 		} else if(stripTags(lockBox.textContent).length == 43 || stripTags(lockBox.textContent).length == 50){
 			lockMsg.textContent = 'Lock extracted'
-		} else if(lockBox.textContent.length == 42){
+		} else if(lockBox.textContent.trim().length == 42){
 			lockMsg.textContent = 'Random Key extracted'
-		} else if(lockMsg.textContent == 'myself'){
+		} else if(lockMsg.textContent.trim() == 'myself'){
 			lockMsg.textContent = 'Email/token extracted'
 		} else {
 			lockMsg.textContent = 'Shared Key extracted'
@@ -311,7 +311,10 @@ function mergeLockDB(){
 			if(!reply) return
 		}
 		if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-		var merged = nacl.util.encodeBase64(makeShared(nacl.util.decodeBase64(mainstr2),nacl.util.decodeBase64(lockstr2))).replace(/=+$/,'');
+		var mainBin2 = nacl.util.decodeBase64(mainstr2),
+			lockBin2 = nacl.util.decodeBase64(lockstr2);
+		if(!mainBin2 || !lockBin2) return false;
+		var merged = nacl.util.encodeBase64(makeShared(mainBin2,lockBin2)).replace(/=+$/,'');
 		mainBox.textContent = merged;
 		lockBox.textContent = merged;
 		lockMsg.textContent = 'Key merged with Lock, in main box';
@@ -324,9 +327,11 @@ function mergeLockDB(){
 		}
 		if(!refreshKey()) return;
 		if (locklen == 50) lockstr2 = changeBase(lockstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-		var merged = nacl.util.encodeBase64(makeShared(convertPub(nacl.util.decodeBase64(lockstr2)),KeyDH)).replace(/=+$/,'');
+		var lockBin2 = nacl.util.decodeBase64(lockstr2);
+		if(!lockBin2) return false;
+		var merged = nacl.util.encodeBase64(makeShared(convertPub(lockBin2),KeyDH)).replace(/=+$/,'');
 		lockBox.textContent = merged;
-		imagePwd.value = merged;										//for image hiding
+		imageBox.value = merged;										//for image hiding
 		lockMsg.textContent = 'The Lock has been merged with your Key and turned into this shared Key. Also copied as image Password';
 		return
 
@@ -512,7 +517,7 @@ function recryptDB(newKey,newUserName){
 }
 
 //reads old and new Key from boxes and calls recryptDB so locDir is re-encrypted with the new Key
-function changeKey(){
+function acceptnewKey(){
 	if(!fullAccess){
 		optionMsg.textContent = 'Key change not allowed in Guest mode. Please restart PassLok';
 		return
@@ -522,34 +527,34 @@ function changeKey(){
 		var reply = confirm("The local directory will be re-encrypted with a new Key. Cancel if this is not what you want.");
 		if(!reply) return
 	}
-	var newkey = newKey.value.trim(),
-		newkey2 = newKey2.value.trim();
+	var newkey = newKeyBox.value.trim(),
+		newkey2 = newKey2Box.value.trim();
 	if (newkey.trim() == "" || newkey2.trim() == ""){								//stop to display the entry form if new Key is empty
 		keyChange.style.display = "block";
 		shadow.style.display = "block";
-		keyChangeMsg.textContent = 'Enter the new Key in both boxes';
+		newKeyMsg.textContent = 'Enter the new Key in both boxes';
 		if(!isMobile){
 			if(newkey.trim() == ""){
-				newKey.focus()
+				newKeyBox.focus()
 			}else{
-				newKey2.focus()
+				newKey2Box.focus()
 			}
 		}
 		return
 	}
 	if(newkey.trim() != newkey2.trim()){											//check that the two copies match before going ahead
-		keyChangeMsg.textContent = "The two Keys don't match";
+		newKeyMsg.textContent = "The two Keys don't match";
 		return
 	}
 
 //everything OK, so do it!
 	if(!fullAccess){
-		keyChangeMsg.textContent = 'Key change not allowed in Guest mode';
+		newKeyMsg.textContent = 'Key change not allowed in Guest mode';
 		return
 	}
 	recryptDB(newkey,userName);
-	newKey.value = "";									//on re-execution, read the box and reset it
-	newKey2.value = "";
+	newKeyBox.value = "";									//on re-execution, read the box and reset it
+	newKey2Box.value = "";
 	keyChange.style.display = 'none';
 	shadow.style.display = 'none';
 	KeyStr = newkey;									//refill Key box, too
@@ -688,7 +693,7 @@ function resetList(){
     	lockList.options[i].selected = false
   	}
 	setTimeout(function(){
-		var l = lockBox.textContent.length;
+		var l = lockBox.textContent.trim().length;
 		if(l == 0){
 			mainMsg.textContent = 'Nobody selected'
 		}else if(l > 500){

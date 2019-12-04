@@ -33,7 +33,9 @@ function secretshare(){
 			}else{																		//share as text, just remove tags and extra spaces
 				shares[i] = stripTags(shares[i].replace(/\s/g,''))
 			}
-			shares[i] = "8" + charArray2hex(nacl.util.decodeBase64(shares[i]))				//convert to hex
+			var shareBin = nacl.util.decodeBase64(shares[i]);
+			if(!shareBin) return false;
+			shares[i] = "8" + charArray2hex(shareBin)				//convert to hex
 		}
 		if(learnMode.checked){
 			var reply = confirm("The parts in the main box will be joined to retrieve the original item, which will be placed in this box. Please make sure that there are enough parts. Cancel if this is not what you want.");

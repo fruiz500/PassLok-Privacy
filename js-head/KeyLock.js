@@ -13,70 +13,49 @@ var base36 = '0123456789abcdefghijkLmnopqrstuvwxyz',									//L is capital for 
 	base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
-function keyStrength(pwd,display) {
-	var entropy = entropycalc(pwd);
-	
-if(display){
+function keyStrength(string,location) {
+	var entropy = entropycalc(string),
+		msg,colorName;
+
 	if(entropy == 0){
-		var msg = 'This is a known bad Key!';
-		var colorName = 'magenta'
+		msg = 'This is a known bad Password!';
+		colorName = 'magenta'
 	}else if(entropy < 20){
-		var msg = 'Terrible!';
-		var colorName = 'magenta'
+		msg = 'Terrible!';
+		colorName = 'magenta'
 	}else if(entropy < 40){
-		var msg = 'Weak!';
-		var colorName = 'red'
+		msg = 'Weak!';
+		colorName = 'red'
 	}else if(entropy < 60){
-		var msg = 'Medium';
-		var colorName = 'darkorange'
+		msg = 'Medium';
+		colorName = 'darkorange'
 	}else if(entropy < 90){
-		var msg = 'Good!';
-		var colorName = 'green'
+		msg = 'Good!';
+		colorName = 'green'
 	}else if(entropy < 120){
-		var msg = 'Great!';
-		var colorName = 'blue'
+		msg = 'Great!';
+		colorName = 'blue'
 	}else{
-		var msg = 'Overkill  !';
-		var colorName = 'cyan'
+		msg = 'Overkill  !!';
+		colorName = 'cyan'
 	}
-}
 
 	var iter = Math.max(1,Math.min(20,Math.ceil(24 - entropy/5)));			//set the scrypt iteration exponent based on entropy: 1 for entropy >= 120, 20(max) for entropy <= 20
 
 	var seconds = time10/10000*Math.pow(2,iter-8);			//to tell the user how long it will take, in seconds
-
-	if(pwd.trim() == ''){
-		if(decoyIn.style.display == "block" || decoyOut.style.display == "block"){
-			msg = 'Enter the Hidden message Key/Lock below'
-		}else{
-			msg = 'Enter your Key'
-		}
+	if(BasicButtons){
+		var msg = 'Key strength: ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
 	}else{
-		if(BasicButtons){
-			msg = 'Key strength: ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
-		}else{
-			msg = 'Key entropy: ' + Math.round(entropy*100)/100 + ' bits. ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
-		}
+		var msg = 'Key entropy: ' + Math.round(entropy*100)/100 + ' bits. ' + msg + '\r\nUp to ' + Math.max(0.01,seconds.toPrecision(3)) + ' sec. to process'
 	}
-if(display){											//these are to display the appropriate messages
-	var msgName = '';
-	if(keyScr.style.display != "none") msgName = 'keyMsg';
-	if(decoyIn.style.display == "block") msgName = 'decoyMsg';
-	if(decoyOut.style.display == "block") msgName = 'decoyOutMsg';
-	if(introscr3.style.display == "block") msgName = 'introMsg';
-	if(keyChange.style.display == "block") msgName = 'keyChangeMsg';
-	if(imageScr.style.display == "block") msgName = 'imageMsg';
-	if(pwd){
+	if(location){
+		var msgName = location + 'Msg';
 		document.getElementById(msgName).textContent = msg;
-		hashili(msgName,pwd);
+		hashili(msgName,string);
 		document.getElementById(msgName).style.color = colorName
-	}else{
-		document.getElementById(msgName).textContent = "Enter your Key";
-		document.getElementById(msgName).style.color = ''
 	}
-}
 	return iter
-};
+}
 
 //takes a string and calculates its entropy in bits, taking into account the kinds of characters used and parts that may be in the general wordlist (reduced credit) or the blacklist (no credit)
 function entropycalc(pwd){
@@ -151,6 +130,7 @@ function replaceVariants(string){
 var vowel = 'aeiou',
 	consonant = 'bcdfghjklmnprstvwxyz',
 	hashiliTimer;
+
 function hashili(msgID,string){
 	var element = document.getElementById(msgID);
 	clearTimeout(hashiliTimer);
@@ -167,7 +147,6 @@ function hashili(msgID,string){
 				output += consonant[Math.floor(remainder / 5)] + vowel[remainder % 5];
 				code10 = (code10 - remainder) / 100
 			}
-//	return output
 			element.innerText += '\n' + output
 		}
 	}, 1000);						//one second delay to display hashili
@@ -199,9 +178,9 @@ function refreshKey(){
 	if (!KeyStr){
 		any2key();
 		if(callKey == 'initkey'){
-			keyMsg.textContent = 'Welcome to PassLok Privacy\r\nPlease enter your secret Key'
+			pwdMsg.textContent = 'Welcome to PassLok Privacy\r\nPlease enter your secret Key'
 		}else{
-			keyMsg.textContent = 'Please enter your secret Key';
+			pwdMsg.textContent = 'Please enter your secret Key';
 			shadow.style.display = 'block'
 		}
 		return false
@@ -217,7 +196,7 @@ function resetKeys(){
 	KeyDH = '';
 	myEmail = '';
 	pwdBox.value = '';
-	imagePwd.value = ''
+	imageBox.value = ''
 }
 
 //reads email from the box. This is used as a salt to make the Lock
@@ -239,9 +218,10 @@ function readEmail(){
 }
 
 var userName = '';
+
 //to initialize a new user. Executed by final button in new user wizard
 function initUser(){
-	var key = pwdIntro.value,
+	var key = pwdIntroBox.value,
 		email = emailIntro.value,
 		isNewUser = true;
 	userName = nameIntro.value;
@@ -251,7 +231,7 @@ function initUser(){
 		intromsg2.textContent = 'The User Name or the Key box is empty. Please go back and ensure both are filled.';
 		return
 	}
-	pwdIntro.value = '';
+	pwdIntroBox.value = '';
 	emailIntro.value = '';
 	openClose('introscr5');
 
@@ -338,14 +318,14 @@ function makeGreeting(isNewUser){
 }
 
 //checks that the Key is the same as before, resumes operation. Executed by OK button in key entry dialog
-function acceptKey(){
+function acceptpwd(){
 	var key = pwdBox.value.trim();
 	if(key == ''){
-		keyMsg.textContent = 'Please enter your Key';
+		pwdMsg.textContent = 'Please enter your Key';
 		return
 	}
 	if(key.length < 4){
-		keyMsg.textContent = 'This Key is too short!';
+		pwdMsg.textContent = 'This Key is too short!';
 		return
 	}
 
@@ -360,7 +340,7 @@ function acceptKey(){
   		}
 	}
 	if (userName == '' && fullAccess){
-		keyMsg.textContent = 'Please select a user name, or make a new one';
+		pwdMsg.textContent = 'Please select a user name, or make a new one';
 		return
 	}
 	if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
@@ -477,7 +457,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
 	} else if(callKey == 'fillbox'){
 		fillBox()
 	} else if(callKey == 'changekey'){
-		changeKey()
+		acceptnewKey()
 	} else if(callKey == 'changename'){
 		name2any()
 	} else if(callKey == 'changeemail'){
@@ -538,6 +518,7 @@ function getSettings(){
 
 //try decrypting the email/token in 'myself' to see if the Key is the same as the last one used. Then populate email box and generate stretched keys and Lock
 var checkingKey = false;
+
 function checkKey(key){
 	checkingKey = true;
 	KeyDir = wiseHash(key,userName);
@@ -718,7 +699,8 @@ function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
 //decrypt string (or uint8 array) with a shared Key. Var 'label' is to display messages
 function PLdecrypt(cipherStr,nonce24,sharedKey,isCompressed,label){
 	if(typeof cipherStr == 'string'){
-		var cipher = nacl.util.decodeBase64(cipherStr)
+		var cipher = nacl.util.decodeBase64(cipherStr);
+		if(!cipher) return false
 	}else{
 		var cipher = cipherStr
 	}
@@ -750,6 +732,7 @@ function keyEncrypt(plainstr){
 //decrypts a string encrypted with the secret Key, 9 byte nonce. Returns original if not encrypted. If isArray set, return uint8 array
 function keyDecrypt(cipherStr,isArray){
 	var cipher = nacl.util.decodeBase64(cipherStr.replace(/[^a-zA-Z0-9+\/]+/g,''));
+	if(!cipher) return false;
 	if (cipher[0] == 144){
 		if(!refreshKey()) return undefined;											//make sure the Key is still alive
 		var	nonce = cipher.slice(1,10),												//ignore the marker byte
@@ -832,7 +815,8 @@ function decryptSanitizer(string){
 	return result
 }
 
-nameBeingUnlocked = '';
+var nameBeingUnlocked = '';
+
 //this function replaces an item with its value on the locDir database, decrypted if necessary, if the name exists
 function replaceByItem(name){
 	var fullName = '',
@@ -926,15 +910,15 @@ function failedDecrypt(label){
 	if(checkingKey){
 		shadow.style.display = 'block';
 		keyScr.style.display = 'block';
-		keyMsg.textContent = "Please write the last Key you used. You can change the Key in Options";
+		pwdMsg.textContent = "Please write the last Key you used. You can change the Key in Options";
 		checkingKey = false
-	}else if(lockBox.textContent.slice(0,1) == 'k' || isList || nameBeingUnlocked != '' || label == 'key'){
+	}else if(lockBox.textContent.trim().slice(0,1) == 'k' || isList || nameBeingUnlocked != '' || label == 'key'){
 		any2key();					//this displays the Key entry dialog
-		keyMsg.textContent = "This Key won't decrypt the item " + nameBeingUnlocked;
+		pwdMsg.textContent = "This Key won't decrypt the item " + nameBeingUnlocked;
 		allowCancelWfullAccess = true
 	}else if(keyChange.style.display == 'block'){
 		keyChange.style.display = 'none';
-		keyMsg.textContent = "The Old Key is wrong"
+		pwdMsg.textContent = "The Old Key is wrong"
 	
 	}else if(label == 'decoy'){
 		mainMsg.textContent = 'No hidden message was found'

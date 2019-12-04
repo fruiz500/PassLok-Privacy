@@ -260,7 +260,7 @@ function invisibleEncoder(bin){
 
 function invisibleDecoder(text){
 	var binStr = text.replace(/\u00ad/g,'0').replace(/\u200c/g,'1');
-	binStr = binStr.match(/[a-zA-Z,:\.][01]+[a-zA-Z\r\n]/)[0].slice(1,-1);						//remove text around the binary part
+	binStr = binStr.match(/[01]+/)[0];									//keep binary part
 	var length = binStr.length,
 		bin = new Array(length);
 	for(var i = 0; i < length; i++){

@@ -21,30 +21,38 @@ function sendMail() {
 	if(!type && words.length != 20){														//no recognized type, so make an invitation
 		var inviteText = makeInvitation();
 		if(emailMode.checked){
-			var lockLinkText = "The gibberish below contains a message from me that has been encrypted with PassLok for Email. To decrypt it, do this:%0D%0A%0D%0A1. Install the PassLok for Email extension by following by following one of these links: %0D%0AChrome: https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh%0D%0AFirefox: https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email%0D%0A%0D%0A2. Reload your email and get back to this message.%0D%0A%0D%0A3. Click the PassLok logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.%0D%0A%0D%0A4. When asked whether to accept my new Password (which you don't know), go ahead and click OK.%0D%0A%0D%0AIf you don't use Chrome or Firefox, or don't want to install an extension, you can also open the message in PassLok Privacy, a standalone app available from https://passlok.com/app%0D%0A%0D%0A----------begin invitation message encrypted with PassLok--------==%0D%0A" + encodeURIComponent(inviteText.match(/.{1,80}/g).join("\n")).replace(/%0A/g,'%0D%0A') + "%0D%0A==---------end invitation message encrypted with PassLok-----------"
+			var lockLinkText = "The gibberish below contains a message from me that has been encrypted with PassLok for Email. To decrypt it, do this:%0D%0A%0D%0A1. Install the PassLok for Email extension by following by following one of these links: %0D%0AChrome: https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh%0D%0AFirefox: https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email%0D%0A%0D%0A2. Reload your email and get back to this message.%0D%0A%0D%0A3. Click the PassLok logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.%0D%0A%0D%0A4. When asked whether to accept my new Password (which you don't know), go ahead and click OK.%0D%0A%0D%0AIf you don't use Chrome or Firefox, or don't want to install an extension, you can also open the message in PassLok Privacy, a standalone app available from https://passlok.com/app%0D%0A%0D%0A----------begin invitation message encrypted with PassLok--------==%0D%0A" + encodeURIComponent(inviteText.match(/.{1,80}/g).join("\n")) + "%0D%0A==---------end invitation message encrypted with PassLok-----------"
 		}else{
 			var lockLinkText = "To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#PL24inv==" + encodeURIComponent(inviteText) + '==PL24inv'
 		}
 	}
 
-	var hashTag = encodeURIComponent(mainBox.textContent.trim().replace(/ /g,'_')).replace(/%0A/g,'%0D%0A');		//item ready for link
+	var hashTag = encodeURIComponent(mainBox.textContent.trim().replace(/ /g,'_'));		//item ready for link
 	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores.";
 
 	if(words.length == 20){												//20 words, so most likely a word Lock
 		var link = "mailto:"+ "?subject= " + "&body=This email contains my PassLok v.2.4 Lock as a list of words. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText
 	}else if(type=="a" || type=="A"){
-    	var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
-	} else if (type=="g"){
-		var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText
+		if(emailMode.checked){
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
+		}else{
+    		var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
+		}
+	} else if (type=="g" || type=="d" || type=="h"){
+		if(emailMode.checked){
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
+		}else{
+			var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText
+		}
 	} else if (type=="s" || type=="S"){
 		if(emailMode.checked){
-			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim()).replace(/%0A/g,'%0D%0A')
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key and my Lock.%0D%0A%0D%0A" + linkText
 		}
 	} else if (type && type.match(/[oprO]/)){
 		if(emailMode.checked){
-			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim()).replace(/%0A/g,'%0D%0A')
+			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
 		}

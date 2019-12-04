@@ -14,9 +14,9 @@ function charsLeft(){
 		var chars = encodeURI(decoyText.value).replace(/%20/g,' ').length,
 			limit = 75;	
 		if(chars <= limit){
-			decoyMsg.textContent = chars + " characters out of " + limit + " used"
+			decoyInMsg.textContent = chars + " characters out of " + limit + " used"
 		}else{
-			decoyMsg.textContent = 'Maximum length exceeded. The message will be truncated'
+			decoyInMsg.textContent = 'Maximum length exceeded. The message will be truncated'
 		}
 		return
 	}
@@ -102,7 +102,7 @@ function updateButtons(){
 function getType(stringIn){
 	var string = stringIn.replace(/&[^;]+;/g,'').replace(/<a(.*?).(plk|txt)" href="data:(.*?),/,'').replace(/"(.*?)\/a>/,''); 	//remove special chars, files and images
 	if(string.match('==')) string = string.split('==')[1];									//remove PassLok tags
-	string = string.replace(/<(.*?)>/g,'').replace(/-/g,'').replace(/\r?\n|\r/g,'');		//remove HTML tags and dashes, plus carriage returns
+	string = string.replace(/<(.*?)>/g,'').replace(/-/g,'').replace(/\r?\n|\r/g,'').trim();		//remove HTML tags and dashes, plus carriage returns
 
 	var	type = string.charAt(0),
 		hasLock = (string.slice(50,56) == '//////'),
@@ -153,64 +153,18 @@ function pasteMain() {
 var eyeImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAASFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACrhKybAAAAF3RSTlMA5Qyz9kEFh3rd1sjDoGsfHRKwQIp+Qzv02bEAAACJSURBVCjPvVBJEoQgDMwCAfeFmfH/P51KkFKL0qN9SXdDVngRy8joHPK4XGyJbtvhohz+3G0ndHPxp0b1mojSqqyZsk+tqphFVN6S8cH+g3wQgwCrGtT3VjhB0BB26QGgN0aAGhDIZP/wUHLrUrk5g4RT83rcbxn3WJA90Y/zgs8nqY94d/b38AeFUhCT+3yIqgAAAABJRU5ErkJggg==",
 	hideImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAb1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABt6r1GAAAAJHRSTlMAFNTiDPTNBvnaulFBAe/osrGBZCXSwIdnLhzIqKd7XFRLSjAYduwyAAAAuklEQVQoz62QRxbDIAwFhWkhwb07PeH+Z4wQPMjCS89KegP6AjiWSbF9oVzBQNyNlKZZ/s+wwpvLyXlkp7P5umiIcYDIwB0ZLWzrTb3GSQYbMsjDl3wj0fj6TDmpK7F60nnLeDCW2h6rgioBVZgmwlwUJoo6bkC7KRQ9iQ/MzuWtXyjKKcTpmVc8mht4Nu5NV+Y/UAKItaY7byHsOeSkp48uQSahO+kiISfD+ha/nbcLwxwFuzB1hUP5AR4JF1hy2DV7AAAAAElFTkSuQmCC";
 
-var hashiliOn = false;			//default to not showing hashili
-
-//this is for showing and hiding text in key box and other password input boxes
-function showsec(){
-	if(pwdBox.type=="password"){
-		pwdBox.type="text";
-		showKey.src = hideImg
+//this is for showing and hiding text in password input boxes
+function showPwd(name){
+	var pwdIn = document.getElementById(name + 'Box'),
+		icon = document.getElementById(name + 'Icon');
+	if(pwdIn.type=="password"){
+		pwdIn.type="text";
+		icon.src = hideImg
 	}else{
-		pwdBox.type="password";
-		showKey.src = eyeImg
+		pwdIn.type="password";
+		icon.src = eyeImg
 	}
-	keyStrength(pwdBox.value.trim(),true)
-}
-
-function showDecoyIn(){
-	if(decoyPwdIn.type=="password"){
-		decoyPwdIn.type="text";
-		showDecoyInCheck.src = hideImg
-	}else{
-		decoyPwdIn.type="password";
-		showDecoyInCheck.src = eyeImg
-	}
-	keyStrength(decoyPwdIn.value.trim(),true)
-}
-
-function showDecoyOut(){
-	if(decoyPwdOut.type=="password"){
-		decoyPwdOut.type="text";
-		showDecoyOutCheck.src = hideImg
-	}else{
-		decoyPwdOut.type="password";
-		showDecoyOutCheck.src = eyeImg
-	}
-	keyStrength(decoyPwdOut.value.trim(),true)
-}
-
-function showIntro(){
-	if(pwdIntro.type=="password"){
-		pwdIntro.type="text";
-		showIntroKey.src = hideImg
-	}else{
-		pwdIntro.type="password";
-		showIntroKey.src = eyeImg
-	}
-	keyStrength(pwdIntro.value.trim(),true)
-}
-
-function showNewKey(){
-	if(newKey.type=="password"){
-		newKey.type="text";
-		newKey2.type="text";
-		showNewKeyCheck.src = hideImg
-	}else{
-		newKey.type="password";
-		newKey2.type="password";
-		showNewKeyCheck.src = eyeImg
-	}
-	keyStrength(newKey.value.trim(),true)
+	keyStrength(pwdIn.value.trim(),name)
 }
 
 function chat2main(){
@@ -237,10 +191,10 @@ function clearLocks(){
 	suspendFindLock = false
 }
 function clearIntro(){
-	pwdIntro.value = '';
-	introMsg.textContent = '';
+	pwdIntroBox.value = '';
+	pwdIntroMsg.textContent = '';
 	KeyStr = '';
-	keyMsg.textContent = ''
+	pwdMsg.textContent = ''
 }
 function clearIntroEmail(){
 	emailIntro.value = ''
@@ -257,9 +211,9 @@ function lockBtnAction(){
 		lock(lockBoxHTML,array[1]);
 		setTimeout(function(){
 			if(emailMode.checked) sendMail()
-		},50)
+		},500)
 	}else{
-		sendMail()															//no recipients: invite
+		makeInvitation()													//no recipients: invite
 	}
 }
 
@@ -290,13 +244,14 @@ function suggestIntro(){
 	for(var i = 1; i <= 5 ; i++){
 		output += ' ' + replaceVariants(wordlist[Math.floor(Math.random()*wordlist.length)])
 	}
-	pwdIntro.type="text";
-	pwdIntro.value = output.trim();
-	showIntroKey.checked = true;
+	pwdIntroBox.type="text";
+	pwdIntroBox.value = output.trim();
+	pwdIntroIcon.src = hideImg;
 	keyStrength(output.trim(),true)
 }
 
 var friendsLock = '';
+
 //makes a new user account
 function newUser(){
 	var referrer = decodeURI(window.location.hash).slice(1).split('&');
@@ -495,8 +450,8 @@ function cancelEmail(){
 	callKey = ''
 }
 function cancelDecoy(){
-	decoyPwdIn.value = '';
-	decoyPwdOut.value = '';
+	decoyInBox.value = '';
+	decoyOutBox.value = '';
 	closeBox();
 	mainMsg.textContent = 'Hidden message canceled'
 }
@@ -510,11 +465,22 @@ function cancelChat(){
 	mainMsg.textContent = 'Chat canceled'
 }
 function cancelKeyChange(){
-	newKey.value = '';
+	newKeyBox.value = '';
 	closeBox();
 	mainMsg.textContent = 'Key change canceled';
 	if(keyScr.style.display == 'block') keyScr.style.display = 'none';
 	callKey = ''
+}
+
+//generic function to evaluate key strength and execute on Enter. Possible names are: pwd, oldPwd, decoyIn, decoyOut, imageBox
+function boxKeyup(name,evt){
+	evt = evt || window.event;
+	var key = evt.keyCode || evt.which || evt.keyChar;
+	if(key == 13){
+		window['accept' + name]()
+	}else{
+		return keyStrength(document.getElementById(name + 'Box').value, name)
+	}
 }
 
 //triggered if the user types Enter in the locks screen
@@ -529,7 +495,7 @@ function lockBoxKeyup(evt){
 	if(key == 13) {												//sync from Chrome if hit Return
 		if(lockMsg.textContent == ''){				//found nothing, so try to get it from Chrome sync
 			if(ChromeSyncOn && chromeSyncMode.checked){
-				getChromeLock(lockBox.textContent);
+				getChromeLock(lockBox.textContent.trim());
 			}
 		}
 	}else if(!suspendFindLock){											//otherwise search database
@@ -542,73 +508,34 @@ function lockBoxKeyup(evt){
 	}
 }
 
-//displays Keys strength and resets Key timer
-function pwdKeyup(evt){
-	clearTimeout(keytimer);
-	keytimer = setTimeout(resetKeys, 300000);
-	keytime = new Date().getTime();
-	evt = evt || window.event;
-	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){acceptKey()} else{
-		 return keyStrength(pwdBox.value,true)
-	}
-}
-
-//Key strength display on intro screen
-function introKeyup(){
-	return keyStrength(pwdIntro.value,true)
-}
-
-//Key strength display on image hide screen
-function imageKeyup(){
-	return keyStrength(imagePwd.value,true)
-}
-
-//same but for decoy In screen
-function decoyKeyup(evt){
-	evt = evt || window.event;
-	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){submitDecoyIn()} else{
-		 return keyStrength(decoyPwdIn.value,true)
-	}
-}
-
-//same for key Change screen
-function newKeyup(evt){
-	evt = evt || window.event;
-	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){changeKey()} else{
-		 return keyStrength(newKey.value,true)
-	}
-}
-
 //this one looks at the second box and announces a match
 function newKey2up(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){changeKey()}else{
-		var	newkey = newKey.value,
-			newkey2 = newKey2.value,
+	if(key == 13){acceptnewKey()}else{
+		var	newkey = newKeyBox.value,
+			newkey2 = newKey2Box.value,
 			length = newkey.length,
 			length2 = newkey2.length;
 		if(length != length2){
 			if(newkey2 == newkey.slice(0,length2)){
-				keyChangeMsg.textContent = 'Keys match so far. ' + (length - length2) + ' characters to go'
+				newKeyMsg.textContent = 'Keys match so far. ' + (length - length2) + ' characters to go'
 			}else{
-				keyChangeMsg.textContent = "Keys don't match"
+				newKeyMsg.textContent = "Keys don't match"
 			}
 		}else{
 			if(newkey2 == newkey){
-				keyChangeMsg.textContent = "Keys match!"
+				newKeyMsg.textContent = "Keys match!"
 			}else{
-				keyChangeMsg.textContent = "Keys don't match"
+				newKeyMsg.textContent = "Keys don't match"
 			}
 		}
 	}
 }
 
 //activated when the user clicks OK on a decoy screen
-function submitDecoy(){
+//function submitDecoy(){
+function acceptdecoyIn(){
 	closeBox();
 	if(callKey == 'sign'){
 		signVerify()
@@ -616,15 +543,15 @@ function submitDecoy(){
 		lockBtnAction()
 	}
 }
-
-//Enter has the same effect as clicking OK in decoy and parts box
-function decoyKeyupOut(evt){
-	evt = evt || window.event;
-	var key = evt.keyCode || evt.which || evt.keyChar;
-	if(key == 13){submitDecoy()} else{
-		 return keyStrength(decoyPwdOut.value,true)
-	}
+function acceptdecoyOut(){
+	acceptdecoyIn()
 }
+function acceptpwdIntro(){	//needed because the event listener is created automatically
+}
+function acceptimage(){
+	imageMsg = 'Please click one of the buttons'
+}
+
 function partsKeyup(evt){
 	evt = evt || window.event;
 	var key = evt.keyCode || evt.which || evt.keyChar;
@@ -670,7 +597,6 @@ function mode2adv(){
 	advancedMode.checked = true;
 	emailMode.checked = false;	
 	anonMode.style.display = '';
-	anonLabel.style.display = '';
 	anonMode.checked = true;
 	signedMode.checked = false;
 	onceMode.checked = false;
@@ -696,7 +622,6 @@ function mode2basic(){
 	resetAdvModes();
 	decoyMode.checked = false;	
 	anonMode.style.display = '';
-	anonLabel.style.display = '';
 	anonMode.checked = true;
 	signedMode.checked = false;
 	onceMode.checked = false;
@@ -723,8 +648,6 @@ function mode2email(){
 	ezLokMode.checked = true;
 	resetAdvModes();
 	letterMode.checked = true;
-	anonMode.style.display = 'none';
-	anonLabel.style.display = 'none';
 	anonMode.checked = false;
 	signedMode.checked = true;
 	onceMode.checked = false;
@@ -739,7 +662,7 @@ function resetAdvModes(){
 	shortMode.checked = false;
 	compatMode.checked = false;
 	letterMode.checked = true;
-	wordMode.checkec = false;
+	wordMode.checked = false;
 	spaceMode.checked = false;
 	sentenceMode.checked = false
 }
@@ -1059,6 +982,7 @@ function formatDoc(sCmd, sValue){
 }
 
 var niceEditor = false;
+
 //function to toggle rich text editing on mainBox
 function toggleRichText(){
 	if(niceEditor){

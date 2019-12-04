@@ -36,14 +36,14 @@ function showGreeting(){
 	var msgStart = "Welcome to PassLok Privacy\r\n",
 		msgEnd = "\r\nSelect your user name and enter your Key. Then click OK";
 	if(protocol == 'file:'){
-		keyMsg.textContent = msgStart + 'running from a saved file' + msgEnd
+		pwdMsg.textContent = msgStart + 'running from a saved file' + msgEnd
 	}else if(protocol == 'https:'){
-		keyMsg.textContent = msgStart + 'downloaded from a secure server' + msgEnd
+		pwdMsg.textContent = msgStart + 'downloaded from a secure server' + msgEnd
 	}else if(protocol == 'chrome-extension:' || protocol == 'moz-extension:'){
-		keyMsg.textContent = msgStart + 'running as a Chrome or Firefox addon' + msgEnd
+		pwdMsg.textContent = msgStart + 'running as a Chrome or Firefox addon' + msgEnd
 	}else{
 		mainTab.style.backgroundColor = '#ffd0ff';
-		keyMsg.textContent = msgStart + 'WARNING: running from an insecure source!' + msgEnd
+		pwdMsg.textContent = msgStart + 'WARNING: running from an insecure source!' + msgEnd
 	}
 }
 

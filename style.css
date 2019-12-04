@@ -108,6 +108,7 @@ select:focus {
 }
 .message {
 	white-space: pre-line;
+	height: 40px;
 }
 .field-icon {
   margin-left: -30px;
@@ -491,7 +492,7 @@ img.intLink {
 #keyScr {
 	display: block;
 }
-#keyMsg {
+#pwdMsg {
 	height: 40px;
 }
 #javascriptOff {
@@ -539,7 +540,7 @@ img.intLink {
 #nameIntro {
 	width: 90%;
 }
-#introMsg {
+#pwdIntroMsg {
 	color: green;
 }
 #introscr3 {
@@ -549,7 +550,7 @@ img.intLink {
 	width: 98%;
 	max-width: 500px;
 }
-#pwdIntro {
+#pwdIntroBox {
 	width: 90%;
 }
 #introscr4 {
@@ -585,13 +586,13 @@ img.intLink {
 #userNameBox {
 	width: 95%;
 }
-#keyChangeMsg {
+#newKeyMsg {
 	height: 30px;
 }
-#newKey {
+#newKeyBox {
 	width: 95%;
 }
-#newKey2 {
+#newKey2Box {
 	width: 95%;
 }
 #emailScr {
@@ -604,10 +605,10 @@ img.intLink {
 #decoyText {
 	width: 95%;
 }
-#decoyPwdIn {
+#decoyInBox {
 	width: 95%;
 }
-#decoyPwdOut {
+#decoyOutBox {
 	width: 95%;
 }
 
@@ -628,7 +629,7 @@ img.intLink {
 #image2mainBtn {
 	float: left;
 }
-#imagePwd {
+#imageBox {
 	width: 25%;
 	padding: 5px;
 }
