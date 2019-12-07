@@ -263,7 +263,7 @@ function mergeLockDB(){
 		locklen = lockstr2.length,
 		mainlen = mainstr2.length;
 
-	if(lockstr.split('\n').length > 1){			//the real database merge implies multiline
+	if(lockstr.split('<br>').length > 1){			//the real database merge implies multiline
 		if(learnMode.checked){
 			var reply = confirm("The items in the box will be merged into the permanent directory, replacing existing items of the same name. This is irreversible. Cancel if this is not what you want.");
 			if(!reply) return
@@ -276,7 +276,7 @@ function mergeLockDB(){
 			}
 			return
 		}
-		var newDB = JSON.parse('{"' + lockstr.replace(/\n\n/g,'"],"').replace(/:\n/g,'":["').replace(/\n/g,'","') + '"]}');
+		var newDB = JSON.parse('{"' + lockstr.replace(/<br><br>/g,'"],"').replace(/:<br>/g,'":["').replace(/<br>/g,'","') + '"]}');
 		newDB = realNulls(newDB);
 		locDir = sortObject(mergeObjects(locDir,newDB));
 		localStorage[userName] = JSON.stringify(locDir);
