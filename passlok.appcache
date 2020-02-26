@@ -1,5 +1,5 @@
 CACHE MANIFEST 
-# last edited for v2.4.13
+# last edited for v2.4.15
 passlok-touch-icon.png
 favicon.ico
 js-head/license.js
@@ -15,6 +15,7 @@ js-opensrc/jsstegencoder-1.0.js
 js-opensrc/jsstegdecoder-1.0.js
 js-opensrc/jssteg-1.0.js
 js-opensrc/jscolor.js
+js-opensrc/nacl-util.js
 js-head/dictionary_en.js
 js-head/KeyLock.js
 js-head/crypto.js

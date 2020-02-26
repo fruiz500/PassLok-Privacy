@@ -24,19 +24,19 @@
 <!--Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG. https://github.com/amper5and/secrets.js-->
 <script src="js-opensrc/secrets.js"></script>
 
-<!--Tweet NaCl crypto library by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
+<!--Tweet NaCl crypto library 1.0.1 by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
 <script src="js-opensrc/nacl.js"></script>
 
-<!--ed2curve-js conversion of curve coordinates by Dmitry Chestnykh. https://github.com/dchest/ed2curve-js-->
+<!--ed2curve-js conversion of curve coordinates 0.2.1 by Dmitry Chestnykh. https://github.com/dchest/ed2curve-js-->
 <script src="js-opensrc/ed2curve.js"></script>
 
-<!--scrypt-async-js KDF by Dmitry Chestnykh. https://github.com/dchest/scrypt-async-js-->
+<!--scrypt-async-js KDF 2.0.1 by Dmitry Chestnykh. https://github.com/dchest/scrypt-async-js-->
 <script src="js-opensrc/scrypt-async.js"></script>
 
-<!--lz-string compression algorithm. https://github.com/pieroxy/lz-string-->
+<!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
 <script src="js-opensrc/lz-string.js"></script>
 
-<!--dompurify, used to sanitize decrypted material before putting in DOM. https://github.com/cure53/DOMPurify-->
+<!--dompurify, used to sanitize decrypted material before putting in DOM v2.0.7. https://github.com/cure53/DOMPurify-->
 <script src="js-opensrc/purify.js"></script>
 
 <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
@@ -56,6 +56,9 @@
 
 <!--FastClick, used only in mobile devices. https://github.com/ftlabs/fastclick-->
 <script src="js-opensrc/fastclick.js"></script>
+
+<!--this used to be in TweetNaCl, but they dropped it-->
+<script src="js-opensrc/nacl-util.js"></script>
 
 <!--ORIGINAL PASSLOK CODE-->
 
@@ -1597,12 +1600,12 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.14 (December 2019) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.15 (February 2020) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.14 &#169; F. Ruiz 2019
+  PassLok v2.4.15 &#169; F. Ruiz 2020
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>

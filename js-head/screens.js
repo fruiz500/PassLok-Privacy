@@ -55,7 +55,10 @@ function charsLeft(){
 				mainMsg.textContent = 'Maximum length exceeded. The message will be truncated'
 			}
 		}
-	}else{updateButtons()}								//display button labels according to item nature
+	}else{
+		mainMsg.textContent = '';					//to clear previous errors while typing
+		updateButtons()							//display button labels according to item nature
+	}
 }
 
 //changes button labels according to context
@@ -202,7 +205,12 @@ function clearIntroEmail(){
 
 //encrypts, decrypts, or sends invite depending on main box content
 function lockBtnAction(){
-	var array = getType(mainBox.innerHTML.trim()),
+	var text = mainBox.innerHTML.trim();
+	if(!text){
+		mainMsg.textContent = "There's nothing to process";
+		return
+	}
+	var array = getType(text),
 		type = array[0],
 		lockBoxHTML = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim();
 	if(type && type.match(/[hkdgasoprASO]/)){								//known encrypted type: decrypt
