@@ -288,13 +288,13 @@ function decodePNG(){
 	permutation2 = [];
 	allCoefficients = [];
 	var text = fromBin(result[0]);
-	mainBox.innerHTML = decryptSanitizer(text.trim());
+	mainBox.innerHTML = safeHTML(text.trim());
 	image2main();
 	imageBox.value = '';
 	updateButtons();
 	if(advancedMode.checked) main2extra();
 	if(result2){
-		mainMsg.textContent = 'Hidden message: ' + decryptSanitizer(LZString.decompressFromBase64(fromBin(result2[0])))
+		mainMsg.textContent = 'Hidden message: ' + safeHTML(LZString.decompressFromBase64(fromBin(result2[0])))
 	}else{
 		mainMsg.textContent = 'This is what was hidden in the image'
 	}
@@ -338,7 +338,7 @@ var decodeJPG = function(){
 		}
 		
 		var text = fromBin(result[0]);
-		mainBox.innerHTML = decryptSanitizer(text.trim());
+		mainBox.innerHTML = safeHTML(text.trim());
 		image2main();
 		permutation = [];
 		permutation2 = [];
@@ -347,7 +347,7 @@ var decodeJPG = function(){
 		updateButtons();
 		if(advancedMode.checked) main2extra();
 		if(result2){
-			mainMsg.textContent = 'Hidden message: ' + decryptSanitizer(LZString.decompressFromBase64(fromBin(result2[0])))
+			mainMsg.textContent = 'Hidden message: ' + safeHTML(LZString.decompressFromBase64(fromBin(result2[0])))
 		}else{
 			mainMsg.textContent = 'This is what was hidden in the image'
 		}

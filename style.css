@@ -85,6 +85,10 @@ select:focus {
 	cursor: pointer;
 	background: #c4c4c4;
 }
+.narrow {
+	padding-left: 9px;
+	padding-right: 9px;
+}
 .cssbox {
 	-webkit-border-radius: 15px;
 	-moz-border-radius: 15px;
@@ -113,7 +117,8 @@ select:focus {
 .field-icon {
   margin-left: -30px;
   height: 18px;
-  z-index: 2;
+  z-index: 1003;
+  position: relative;
 }
 .helpHeading {
 	cursor: pointer;
@@ -122,7 +127,17 @@ select:focus {
 .helpHeading:hover {
 	background-color: #eeeeee;
 }
-.helpItem {
+.helpHeading2 {
+	cursor: pointer;
+	padding: 1px;
+}
+.helpText {
+//	display: none;
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease-out;
+}
+.helpText2 {
 	display: none;
 }
 .intLink {

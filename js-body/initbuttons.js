@@ -2,13 +2,17 @@
 window.onload = function() {
 
 	if(isMobile){
-		niceEditBtn.style.display = 'none';			//no rich text editing on mobile
-		mainFile.style.display = 'none';
-		selectMainBtn.style.display = 'none';
 		imgSpacer.style.display = 'none';
-	} else {
-		previewImg.style.width = "80%";					//smaller image on PCs
-		sendSMSBtn.style.display = 'none';
+		mainSpacer.style.display = 'none';
+		partSpacer1.style.display = 'none';
+		partSpacer2.style.display = 'none';
+		decoyInSpacer1.style.display = 'none';
+		decoyInSpacer2.style.display = 'none';
+		decoyOutSpacer.style.display = 'none';
+		var bottomButtons = mainbuttonsbot.children;
+		for(var i = 0; i < bottomButtons.length; i++) bottomButtons[i].classList.add("narrow")
+	}else{
+		previewImg.style.width = "80%"					//smaller image on PCs
 	}
 	if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
 		helpTopMobile.style.display = 'none';
@@ -44,6 +48,7 @@ window.onload = function() {
 	newKeyIcon.src = eyeImg;
 	decoyInIcon.src = eyeImg;
 	decoyOutIcon.src = eyeImg;
+	imageIcon.src = eyeImg;
 
   //event listeners for buttons etc.
 	window.addEventListener('resize',textheight);
@@ -354,7 +359,13 @@ window.onload = function() {
 	var helpHeaders = document.getElementsByClassName("helpHeading");		//add listeners to all the help headers
 
 	for (var i = 0; i < helpHeaders.length; i++) {
-		helpHeaders[i].addEventListener('click', function(){openHelp(this.id.slice(1))});
+		helpHeaders[i].addEventListener('click', openHelp);
+	}
+	
+	var helpHeaders2 = document.getElementsByClassName("helpHeading2");		//2nd level help
+	
+	for (var i = 0; i < helpHeaders2.length; i++) {
+		helpHeaders2[i].addEventListener('click', openHelp2);
 	}
 
 //fixes after inline styles were moved to css file
@@ -364,13 +375,6 @@ window.onload = function() {
 	mainMsg.style.minHeight = '20px';
 	extraButtonsTop.style.display = 'none'
 };
-
-//this one is for mobile only. Remove for the extension
-if(isMobile){
-	window.addEventListener('load', function() {
-		FastClick.attach(document.body);
-	}, false)
-}
 
 //for general directory
 window.addEventListener('message', receiveMessage, false);

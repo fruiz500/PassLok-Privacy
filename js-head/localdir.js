@@ -188,7 +188,7 @@ function decryptLock(){
 	if(lockBox.textContent.trim()){
 		var listArray = lockBox.innerHTML.replace(/\n/g,'<br>').split('<br>').filter(Boolean);
 		if(lockBox.textContent.length > 500){
-			lockBox.innerHTML = decryptSanitizer(LZString.decompressFromBase64(lockBox.textContent).trim());
+			lockBox.innerHTML = safeHTML(LZString.decompressFromBase64(lockBox.textContent).trim());
 			newCover(lockBox.textContent.trim());							//this for loading cover text from Lock screen
 			lockMsg.textContent = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
@@ -213,7 +213,7 @@ function decryptItem(){
 	if(!refreshKey()) return;
 	var	string = lockBox.textContent.trim();
 	if(string == "") return;
-	lockBox.innerHTML = decryptSanitizer(keyDecrypt(string));
+	lockBox.innerHTML = safeHTML(keyDecrypt(string));
 	if(!lockBox.innerHTML) return;
 	if(callKey != 'decryptlock') callKey = ''
 }

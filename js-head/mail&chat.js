@@ -1,10 +1,5 @@
 ﻿//formats results depending on tags present and sends to default email
 function sendMail() {
-	if(isiOS && isFile){
-		mainMsg.textContent = 'Email function not available on iOS native app';
-		return
-	}
-		
 	var type = getType(mainBox.innerHTML.trim())[0],
 		words = mainBox.textContent;							//for word Locks
 	if(words.match('==')) words = words.split('==')[1];
@@ -17,16 +12,10 @@ function sendMail() {
 		}
 		if(!reply) return
 	}
-	
-	if(!type && words.length != 20){														//no recognized type, so make an invitation
-		var inviteText = makeInvitation();
-		if(emailMode.checked){
-			var lockLinkText = "The gibberish below contains a message from me that has been encrypted with PassLok for Email. To decrypt it, do this:%0D%0A%0D%0A1. Install the PassLok for Email extension by following by following one of these links: %0D%0AChrome: https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh%0D%0AFirefox: https://addons.mozilla.org/en-US/firefox/addon/passlok-for-email%0D%0A%0D%0A2. Reload your email and get back to this message.%0D%0A%0D%0A3. Click the PassLok logo above (orange key). You will be asked to supply a Password, which will not be stored or sent anywhere. You must remember the Password, but you can change it later if you want.%0D%0A%0D%0A4. When asked whether to accept my new Password (which you don't know), go ahead and click OK.%0D%0A%0D%0AIf you don't use Chrome or Firefox, or don't want to install an extension, you can also open the message in PassLok Privacy, a standalone app available from https://passlok.com/app%0D%0A%0D%0A----------begin invitation message encrypted with PassLok--------==%0D%0A" + encodeURIComponent(inviteText.match(/.{1,80}/g).join("\n")) + "%0D%0A==---------end invitation message encrypted with PassLok-----------"
-		}else{
-			var lockLinkText = "To decrypt it, click the link. The app will open in a new tab, and then you may be asked for some information in order to set you up. Nothing will be sent out of your device. You can also copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#PL24inv==" + encodeURIComponent(inviteText) + '==PL24inv'
-		}
-	}
 
+  if(mainBox.textContent.match("The gibberish link below contains a message from me that has been encrypted with PassLok")){			//invitation message
+	var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=" + encodeURIComponent(mainBox.textContent.trim()) + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores."
+  }else{
 	var hashTag = encodeURIComponent(mainBox.textContent.trim().replace(/ /g,'_'));		//item ready for link
 	var linkText = "Click the link below if you wish to process this automatically using the web app (the app will open in a new tab and ask you for your Key), or simply copy it and paste it into your favorite version of PassLok:%0D%0A%0D%0Ahttps://passlok.com/app#" + hashTag + "%0D%0A%0D%0AYou can get PassLok from https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores.";
 
@@ -38,37 +27,39 @@ function sendMail() {
 		}else{
     		var link = "mailto:"+ "?subject= " + "&body=Anonymous message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
 		}
-	} else if (type=="g" || type=="d" || type=="h"){
+	}else if (type=="g" || type=="d" || type=="h"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with shared Key.%0D%0A%0D%0A" + linkText
 		}
-	} else if (type=="s" || type=="S"){
+	}else if (type=="s" || type=="S"){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Signed message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key and my Lock.%0D%0A%0D%0A" + linkText
 		}
-	} else if (type && type.match(/[oprO]/)){
+	}else if (type && type.match(/[oprO]/)){
 		if(emailMode.checked){
 			var link = "mailto:"+ "?subject= " + "&body=" + encodeURIComponent(mainBox.textContent.trim())
 		}else{
 			var link = "mailto:"+ "?subject= " + "&body=Read-once message encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with your secret Key.%0D%0A%0D%0A" + linkText
 		}
-	} else if (type=="k"){
+	}else if (type=="k"){
 		var link = "mailto:"+ "?subject=My PassLok database" + "&body=Database encrypted with PassLok v.2.4 %0D%0A%0D%0ADecrypt with my secret Key.%0D%0A%0D%0A" + linkText
-	} else if (type=="l"){
+	}else if (type=="l"){
 		var link = "mailto:"+ "?subject= " + "&body=Text sealed with PassLok v.2.4. It is not encrypted. Extract it and verify my authorship using my Lock.%0D%0A%0D%0A" + linkText;
-	} else if (type=='c'){
+	}else if (type=='c'){
 		var link = "mailto:"+ "?subject= " + "&body=This email contains my PassLok v.2.4 Lock. Use it to encrypt text or files for me to decrypt, or to verify my seal.%0D%0A%0D%0A" + linkText
-	} else {
-		var link = "mailto:"+ "?subject=Invitation to PassLok" + "&body=The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at https://passlok.com/app and other sources, plus the Chrome, Firefox, and Android app stores. There is also PassLok for Email at the Chrome and Firefox stores.%0D%0A%0D%0A" + lockLinkText
 	}
-
+  }
 	if(isMobile){ 	 											//new window for PC, same window for mobile
-		window.open(link,"_parent")
-	} else {
+		if(isChrome && isAndroid){
+			mainMsg.textContent = "Android Chrome does not allow communication with the email app"
+		}else{	
+			window.open(link,"_parent")
+		}
+	}else{
 		window.open(link,"_blank")
 	}
 }
@@ -83,23 +74,23 @@ function makeInvitation(){
 			nonce24 = makeNonce24(nonce),
 			cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,PLencrypt(text,nonce24,myLock,true)))).replace(/=+$/,'');			//this includes compression		
 		mainBox.textContent = '';
-		if(emailMode.checked){
+		
 			var prefaceMsg = document.createElement('div');
-			prefaceMsg.textContent = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at the Chrome and Firefox web stores. There is also PassLok Privacy and PassLok for Email at the same stores, plus the standalone PassLok web app at https://passlok.com/app.\r\n\r\nTo decrypt it, install PassLok, reload this page. You will be asked to supply a Master Key, which will not be stored or sent anywhere. You must remember your secret Key, but you can change it later if you want. When asked whether to accept my new Key (which you don't know), go ahead and click OK. You can also decrypt the invitation by pasting it into your favorite version of PassLok:";
+			prefaceMsg.textContent = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at the Chrome and Firefox web stores. There is also PassLok Privacy, PassLok for Email, and PassLok Universal at the same stores, plus the standalone PassLok web app at https://passlok.com/app.\r\n\r\nTo decrypt it, install PassLok, reload this page. You will be asked to supply a Master Key, which will not be stored or sent anywhere. You must remember your secret Key, but you can change it later if you want. When asked whether to accept my new Key (which you don't know), go ahead and click OK. You can also decrypt the invitation by pasting it into your favorite version of PassLok:";
+		if(emailMode.checked){
 			var initialTag = document.createElement('pre'),
 				invBody = document.createElement('pre'),
 				finalTag = document.createElement('pre');
-			initialTag.textContent = "----------begin invitation message encrypted with PassLok--------==";
+			initialTag.textContent = "\r\n\r\n----------begin invitation message encrypted with PassLok--------==\r\n\r\n";
 			invBody.textContent = cipherStr.match(/.{1,80}/g).join("\r\n");
-			finalTag.textContent = "==---------end invitation message encrypted with PassLok-----------";
+			finalTag.textContent = "\r\n\r\n==---------end invitation message encrypted with PassLok-----------";
 			mainBox.appendChild(prefaceMsg);
 			mainBox.appendChild(initialTag);
 			mainBox.appendChild(invBody);
 			mainBox.appendChild(finalTag);
 		}else{
-			var invBody = document.createElement('div');
-			invBody.textContent = "The gibberish link below contains a message from me that has been encrypted with PassLok, a free app that you can get at the Chrome and Firefox web stores. There is also PassLok Privacy and PassLok for Email at the same stores, plus the standalone PassLok web app at https://passlok.com/app.\r\n\r\nTo decrypt it, install PassLok, reload this page. You will be asked to supply a secret Key, which will not be stored or sent anywhere. You must remember your secret Key, but you can change it later if you want. When asked whether to accept my new Key (which you don't know), go ahead and click OK. You can also decrypt the invitation by pasting it into your favorite version of PassLok:\r\n\r\nhttps://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv";
-			mainBox.appendChild(invBody)
+			prefaceMsg.textContent = prefaceMsg.textContent + "\r\n\r\nhttps://passlok.com/app#PL24inv==" + cipherStr + "==PL24inv";
+			mainBox.appendChild(prefaceMsg)
 		}
 		updateButtons();
 		mainMsg.textContent = "Invitation created. Invitations are ";
@@ -107,10 +98,20 @@ function makeInvitation(){
 		blinker.className = "blink";
 		blinker.textContent = "NOT SECURELY ENCRYPTED";
 		mainMsg.appendChild(blinker);
-		return cipherStr
+		if(emailMode.checked) sendMail()
 	}else{
-		return ''
+		mainMsg.textContent = "Write something not confidential to add to the invitation, then click Invite again"
 	}
+}
+
+//calls texting app
+function sendSMS(){
+	if(learnMode.checked){
+		var reply = confirm("The default texting app will now open. You need to have copied your short encrypted message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
+		if(!reply) return
+	}
+	selectMain();
+	window.open("SMS:","_parent")
 }
 
 //calls texting app (works on mobile only)

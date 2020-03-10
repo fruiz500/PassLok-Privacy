@@ -53,7 +53,7 @@ try{
 		}else{
 			var secret = LZString.decompressFromUint8Array(secBin)
 		}
-		mainBox.innerHTML = decryptSanitizer(secret);									//disable non-whitelisted tags and attributes
+		mainBox.innerHTML = safeHTML(secret);									//disable non-whitelisted tags and attributes
 		mainMsg.textContent = 'Join successful'
 }catch(err){
 	mainMsg.textContent = 'There was an error'									//the encodeUTF8 is the likely culprit

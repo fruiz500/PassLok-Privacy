@@ -847,21 +847,28 @@ function openClose(theID) {
 	}
 }
 
-//as above, but closes everything else in help
-function openHelp(theID){
-	var helpItems = document.getElementsByClassName('helpItem');
-	for(var i=0; i < helpItems.length; i++){
-		helpItems[i].style.display = 'none'
+//for opening one item at a time in the Help screen, with animation
+function openHelp(){
+	var helpItems = document.getElementsByClassName('helpHeading');
+	for(var i = 0; i < helpItems.length; i++){					//hide all help texts
+		var panel = helpItems[i].nextElementSibling;
+		panel.style.maxHeight = null;
 	}
-	document.getElementById(theID).style.display = "block";
-	if(theID.charAt(0) == 'b') document.getElementById('a' + theID.slice(1)).style.display = "block";
-	if(isMobile){									//scroll to the item
-		location.href = '#';
-		location.href = '#a' + theID;
-		if(!isiOS){
-			if(helpTop.style.display == 'block') helpTop.style.display = 'none'
-		}
+	helpItems = document.getElementsByClassName('helpHeading2');
+	for(var i = 0; i < helpItems.length; i++){					//hide also secondary texts
+		var panel = helpItems[i].nextElementSibling;
+		panel.style.maxHeight = null;
 	}
+	var panel = this.nextElementSibling;							//except for the one clicked
+	panel.style.maxHeight = panel.scrollHeight + "px"	     
+}
+
+//for secondary help items
+function openHelp2(){
+	var panel = this.nextElementSibling,
+		parent = this.parentElement;
+	panel.style.maxHeight = panel.scrollHeight + "px";
+	setTimeout(function(){parent.style.maxHeight = parent.scrollHeight + "px"},301)
 }
 
 <!--variables and functions for making tabs, by Matt Doyle 2009-->
