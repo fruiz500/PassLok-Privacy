@@ -114,32 +114,8 @@ function sendSMS(){
 	window.open("SMS:","_parent")
 }
 
-//calls texting app (works on mobile only)
-function sendSMS(){
-	if(isMobile){
-		if(learnMode.checked){
-			var reply = confirm("The default texting app will now open. You need to have copied your short encrypted message to the clipboard before doing this, if you want to send one. This only works on smartphones. Cancel if this is not what you want.");
-			if(!reply) return
-		}
-		var text = "";
-    	if (window.getSelection) {
-        	text = window.getSelection().toString();
-    	} else if (document.selection && document.selection.type != "Control") {
-        	text = document.selection.createRange().text
-    	}
-		window.open("SMS:","_parent")							//open SMS on mobile
-	} else {
-		mainMsg.textContent = 'SMS function is only available on mobile devices'
-	}
-}
-
-//decrypts a chat invite if found, then open chat screen, otherwise make one. If the chat screen is open, returns to it
+//decrypts a chat invite if found, then opens chat screen, otherwise makes one
 function Chat(){
-	if(document.getElementById('chatFrame').src.match('#')){			//chat already open, so open that screen
-		chatScr.style.display = 'block';
-		return
-	}
-
 	var text = mainBox.innerHTML.trim();
 
 	if(text.match('==') && text.split('==')[0].slice(-4) == 'chat'){		//there is already a chat invitation, so open it
@@ -171,64 +147,71 @@ function Chat(){
 //continues making a chat invite after the user has chosen the chat type
 function makeChat(){
 	closeBox();
-	if(dataChat.checked){
+	if(dataChat.checked){					//A to C for Muaz Khan's WebRTC chat, D for Jitsi
 		var type = 'A'
 	}else if (audioChat.checked){
 		var type = 'B'
-	}else{
+	}else if (videoChat.checked){
 		var type = 'C'
+	}else{
+		var type = 'D'
 	}
 	var date = chatDate.value.slice(0,43);						//can't do encodeURI here because this will be decrypted by decryptList, which doesn't expect it
 	if(date.trim() == '') date = 'noDate';
 	while(date.length < 43) date += ' ';
 	var password = nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,''),
 		chatRoom = makeChatRoom();
-	lock(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim(),date + type + chatRoom + password);
-	if(!longMode.checked) main2chat(type + chatRoom + password);
+	lock(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim(),date + type + chatRoom + '?' + password);	//date msg + info to be sent to chat page
 	setTimeout(function(){
 			if(emailMode.checked) sendMail()
 	},50)
 }
 
-//makes a mostly anonymous chatRoom name from words on the blacklist
+//makes a mostly anonymous chatRoom name from four words in the wordlist
 function makeChatRoom(){
-	var blacklist = blackListExp.toString().slice(1,-2).split('|'),
-		name = replaceVariants(blacklist[randomBlackIndex()]);
-		//75% chance to add a second word
-	if(Math.floor(Math.random()*4)) name = name + ' ' + replaceVariants(blacklist[randomBlackIndex()]);
-	while(name.length < 20) name += ' ';
+	var wordlist = wordListExp.toString().slice(1,-2).split('|'),
+		name = '';
+	for(var i = 0; i < 4; i++){
+		name += capitalizeFirstLetter(replaceVariants(wordlist[randomIndex()]))
+	}
 	return name
 }
 
-//returns a random index for blacklist, excluding disallowed indices
-function randomBlackIndex(){
-	var index = 1;
-	while(index == 1 || index == 2){						//excluded indices
-		index = Math.floor(Math.random()*blackLength)
-	}
-	return index
+//capitalizes first letter, the better to blend into Jitsi
+function capitalizeFirstLetter(str) {
+  return str[0].toUpperCase() + str.slice(1);
 }
 
-//detects if there is a chat invitation in the main box, and opens the Chat window
+//returns a random index for wordlist
+function randomIndex(){
+	return Math.floor(Math.random()*wordLength)
+}
+
+//detects if there is a chat link in the main box, and opens the Chat window
 function openChat(){
 	var typetoken = mainBox.textContent.trim();
-	if (typetoken.length == 107 && !typetoken.slice(-43).match(' ')){			//chat invite detected, so open chat
+	if (typetoken.slice(-44,-43) == '?' && !typetoken.slice(43).match(/[^A-Za-z0-9+\/?]/)){			//chat data detected, so open chat
 		mainBox.textContent = '';
-		var date = typetoken.slice(0,43).trim();									//the first 43 characters are for the date and time etc.
+		var date = typetoken.slice(0,43).trim(),									//the first 43 characters are for the date and time etc.
+			chatToken = decodeURI(typetoken.slice(43));
 		if(date != 'noDate'){
 			var msgStart = "This chat invitation says:\n\n " + date + " \n\n"
 		}else{
 			var msgStart = ""
 		}
-		var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might give away your location.");
+		var reply = confirm(msgStart + "If you go ahead, the chat session will open now.\nWARNING: this involves going online, which might give away your location. If you cancel, a link for the chat will be made.");
 		if(!reply){
+			var chatLink = document.createElement('a');
+			chatLink.href = 'https://passlok.com/chat2/index.html#' + chatToken;
+			chatLink.textContent = 'Right-click to open the chat';
 			mainBox.textContent = '';
+			mainBox.appendChild(chatLink);
 			return
 		}
 		if(isSafari || isIE || isiOS){
 			mainMsg.textContent = 'Sorry, but chat is not yet supported by your browser or OS';
 			return
 		}
-		main2chat(typetoken.slice(43));
+		main2chat(chatToken)
 	}
 }

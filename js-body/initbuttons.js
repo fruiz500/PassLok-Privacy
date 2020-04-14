@@ -252,10 +252,6 @@ window.onload = function() {
 
 	closeLockdirBtn.addEventListener('click', lock2dir);
 
-   	closeChatBtn.addEventListener('click', chat2main);
-
-   	resetChatBtn.addEventListener('click', resetChat);
-
    	cancelChatBtn.addEventListener('click', closeBox);
 
    	submitChatBtn.addEventListener('click', makeChat);
@@ -341,7 +337,7 @@ window.onload = function() {
 	document.images[5].addEventListener("click", function() {formatDoc('superscript')});
 	document.images[6].addEventListener("click", function() {formatDoc('justifyleft')});
 	document.images[7].addEventListener("click", function() {formatDoc('justifycenter')});
-	document.images[8].addEventListener("click", function() {ormatDoc('justifyright')});
+	document.images[8].addEventListener("click", function() {formatDoc('justifyright')});
 	document.images[9].addEventListener("click", function() {formatDoc('justifyfull')});
 	document.images[10].addEventListener("click", function() {formatDoc('insertorderedlist')});
 	document.images[11].addEventListener("click", function() {formatDoc('insertunorderedlist')});

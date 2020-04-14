@@ -423,7 +423,7 @@ function Encrypt_List(listArray,text){
 		nonce = nacl.randomBytes(15),
 		nonce24 = makeNonce24(nonce),
 		nonceStr = nacl.util.encodeBase64(nonce),
-		isChatInvite = text.length == 107 && !text.slice(-43).match(' ');			//detect chat invitation, for final display
+		isChatInvite = text.slice(-44,-43) == '?' && !text.slice(43).match(/[^A-Za-z0-9+\/?]/);			//detect chat invitation, for final display
 	if (anonMode.checked) {
 		if(learnMode.checked){
 			var reply = confirm("The contents of the main box will be anonymously encrypted with the Locks of the recipients listed, so that all of them can read it with their respective Keys, and the result will replace the main box. Cancel if this is not what you want.");
