@@ -1,8 +1,8 @@
 ﻿<!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>PassLok privacy</title>
+<title>PassLok Privacy</title>
 <meta name="Keywords" content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
 <meta name="Description" content="PassLok privacy">
 <meta name="author" content="F. Ruiz">
@@ -36,6 +36,9 @@
 <!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
 <script src="js-opensrc/lz-string.js"></script>
 
+<!--DOMPurify, used to sanitize decrypted material before putting in DOM v2.0.11. https://github.com/cure53/DOMPurify-->
+<script src="js-opensrc/purify.js"></script>
+
 <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
 <script src="js-opensrc/jsstegencoder-1.0.js"></script>
 
@@ -60,7 +63,7 @@
 <script src="js-head/dictionary_en.js"></script>
 
 <!--Key and Lock functions-->
-<script src="js-head/KeyLock.js"></script>
+<script src="js-head/keylock.js"></script>
 
 <!--cryptographic functions, main part-->
 <script src="js-head/crypto-main.js"></script>
@@ -110,10 +113,8 @@
 
     <!--message area and local directory box, plus buttons-->
     <div id="mainMsg" class="message">Welcome to PassLok</div>
-    <div id="mainSpacer">
     <br>
     <br>
-    </div>
     <select class="cssbox" id='lockList' size='4' multiple title="Hold Ctrl or cmd to select several items">
     	<option value="" disabled selected>Select recipients (ctrl-click for several):</option>
     </select>
@@ -228,7 +229,7 @@
 <input type="file" id="mainFile"/>
 </div>
   </div>
-  <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";" placeholder="Write or paste your message here. To encrypt or decrypt, select the correspondents in the top box, then click the button. Add more correspondents by pasting their Locks in this box. On a computer, you can use nice formatting and add images and files if you click Rich."></div>
+  <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";" placeholder="Write or paste your message here. You can use nice formatting and add images and files if you click Rich. To encrypt or decrypt, select the correspondents in the top box, then click the button. Add more correspondents by pasting their Locks in this box."></div>
   <div align="center">
     <!--buttons below the main box-->
     <div id="mainbuttonsbot">
@@ -303,14 +304,14 @@
       <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words"/>
       &nbsp; Word Lock&nbsp;&nbsp;
       <input type="radio" name="lockType" id="normalLockMode" title="display base64 Lock"/>
-      &nbsp; base64<br><br>  
+      &nbsp; base64 Lock<br><br>  
       &nbsp;&nbsp; 
       <input type="checkbox" id="fileMode" title="output is turned into files" accesskey=""/>
       &nbsp; File output&nbsp;&nbsp;    
       <input type="radio" name="fileModes" id="binaryMode" title="output file is binary" checked/>
-      &nbsp; Binary&nbsp;&nbsp;
+      &nbsp; Binary file&nbsp;&nbsp;
       <input type="radio" name="fileModes" id="textMode" title="output file is text" />
-      &nbsp; Text
+      &nbsp; Text file
       <div id='specialEncryptModes'>
       <br>
       &nbsp;&nbsp;
@@ -362,9 +363,10 @@
 <br>
 <div id="helpTop">
 <br>
-<span id='helpmsg' class="message">For instructions on how to do things, click on each title.</span>
+<span id='helpmsg'>For instructions on how to do things, click on each title.</span>
 <br>
 
+<!--search box, as an iframe-->
 <!--search box, as an iframe-->
 <iframe id="srchform2"
 src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:void();&quot; onSubmit=if(this.t1.value!=&quot;&quot;)parent.findString(this.t1.value);return(false); ><input type=text id=t1 name=t1 placeholder=Text&nbsp;to&nbsp;find size=20><input type=submit name=b1 value=Search&nbsp;titles></form></body></html>'"
@@ -1595,17 +1597,18 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.17 (April 2020) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.18 (May 2020) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.17 &#169; F. Ruiz 2020
+  PassLok v2.4.18 &#169; F. Ruiz 2020
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
     <li> tweetNaCl JavaScript implementation by D. Chestnykh and D. Mandiri 2015</li>
     <li> general directory by W. Huang 2014</li>
+    <li> DOMPurify XSS sanitizer by cure53 2020</li>
     <li> Shamir secret sharing by A. Stetsyuk 2013</li>
     <li> image steganography based on F5 by Andreas Westfeld 2001</li>
     <li> jpeg image hiding libraries js-steg by Owen Campbell-Moore et al. 2014</li>
@@ -1642,8 +1645,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 --><button class="cssbutton" id="removeLockBtn" value="Delete" title="delete the item whose name is displayed">Del.</button><!--
 --><button class="cssbutton" id="resetPFSBtn" value="Reset" title="reset Read-once data for the item whose name is displayed">Reset</button>
   </div>
-  <div align="left" contenteditable="true" class="cssbox" id="lockBox" name="text" rows="10" placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item."></div>
+  <div align="left" contenteditable="true" class="cssbox" id="lockBox" name="text" rows="9" placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item."></div>
   <div align="center" id="lockBtnsBottom">
+    <!--<button class="cssbutton" id="addToListBtn" value="List" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button>-->
     <button class="cssbutton" id="showLockDBBtn" value="All" title="show the entire local directory">All</button><!--
 --><button class="cssbutton" id="mergeLockDBBtn" value="Merge" title="merge into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
 --><label for="lockFile" title="open dialog to select file to load"><span class="cssbutton">Load file</span></label><input type="file" id="lockFile"title="open dialog to select file to load"/>
@@ -1764,7 +1768,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <button class="cssbutton" id="backtointro4" value="back" title="back to step 4">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 5 of 5<br>
     <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's Main screen, along with some further instructions. You want to send that Lock to your friends so they can send you encrypted messages. You can do this any time by clicking the Email button or just by clicking the checkbox below.</p>
-    <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more features, go to the Options tab and check the Advanced checkbox. There is also Email mode, which makes this app fully compatible with <em>PassLok for Email</em> and <em>PassLok Universal</em>.</p>
+    <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more features, go to the Options tab and check the Advanced checkbox. There is also Email mode, which makes this app fully compatible with <em>PassLok for Email</em>.</p>
     <p>You may not see this screen again, but comprehensive help is always available on the Help tab.</p>
   </div>
   <div align="center">
@@ -1830,11 +1834,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Decoy In dialog-->
 <div id="decoyIn" class="white_content" align="center"> <br>
   <span id="decoyInMsg" class="message">Enter the Hidden Message</span>
-  <div id="decoyInSpacer1"><br></div>
+  <br>
   <br>
   <textarea id="decoyText" class="cssbox" name="text" rows="3"></textarea>
   <p>Enter the Key/Lock<p>
-  <div id="decoyInSpacer2"><br></div>
+  <br>
   <input type="password" class="cssbox" id="decoyInBox" name="key"/><img id='decoyInIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
@@ -1845,8 +1849,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 
 <!--Decoy Out dialog-->
 <div id="decoyOut" class="white_content" align="center"> <br>
-  <span id="decoyOutMsg" class="message">Enter the Key for the Hidden message</span>
-  <div id="decoyOutSpacer"><br></div>
+  <span id="decoyOutMsg" class="message">Enter the Key for the Hidden message</span><br>
   <br>
   <input type="password" class="cssbox" id="decoyOutBox" name="key"/><img id='decoyOutIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
@@ -1860,17 +1863,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Parts for SSSS dialog-->
 <div id="partsIn" class="white_content" align="center"> <br>
   <p>Enter the total number of parts (between 2 and 255)</p>
-  <div id="partSpacer1">
   <br>
   <br>
-  </div>
   <input type="text" class="cssbox" id="partsNumber" name="text" rows="1"/>
   <br>
   <p>And the number of parts needed to retrieve the item</p>
-  <div id="partSpacer2">
   <br>
   <br>
-  </div>
   <input type="text" class="cssbox" id="partsQuorum" name="text" rows="1"/>
   <br>
   <br>
@@ -1883,10 +1882,10 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="chatDialog" class="white_content" align="center"> <br>
   <br>
   <br>
-  <span id="chatmsg" class="message">Choose the type of chat, then optionally write in the box a message plus date and time</span><br>
+  <span id="chatmsg" class="message">Choose the type of chat, then optionally write in the box a message including the date and time</span><br>
   <br>
-  &nbsp;<input type="radio" name="chatmodes" id="dataChat"  title="chat with text messages and file exchange" checked/>
-  &nbsp; Text&nbsp;&nbsp;
+  <input type="radio" name="chatmodes" id="dataChat"  title="chat with text messages and file exchange" checked/>
+  &nbsp; Text and files&nbsp;&nbsp;
   <input type="radio" name="chatmodes" id="audioChat" title="like Text chat, plus audio"/>
   &nbsp; Audio&nbsp;&nbsp;
   <input type="radio" name="chatmodes" id="videoChat" title="like audio chat, plus video"/>

@@ -733,7 +733,7 @@ function main2chat(token){
 		if(!reply) return
 	}
 	if(token){
-		window.open("https://passlok.com/chat2/index.html#" + token);
+		chrome.tabs.create({url: "chat.html#" + token});					//use local page so it's isolated from other extensions
 		mainMsg.textContent = 'Chat session open in a separate tab'
 	}
 }

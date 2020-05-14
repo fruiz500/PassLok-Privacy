@@ -123,7 +123,7 @@ function fromWords(text){
 			index2 = textArray[i+1].trim().length % 8;
 		out[i/2] = base64[index1 * 8 + index2]
 	}
-	mainBox.innerHTML = safeHTML(out.join('').trim())				//disable non-whitelisted tags and attributes
+	mainBox.textContent = out.join('').trim()
 }
 
 //This is to generate random periods, commans and newlines, per the percentage brackets below, plus spaces when appropriate
@@ -227,7 +227,7 @@ function fromSpaces(text) {
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
 		if(!reply) return
 	}
-	mainBox.innerHTML = safeHTML(fromBin(spacesDecoder(text)).replace(/\x00/g,'').trim());		//take out nulls, in case text was added to finish the last sentence.
+	mainBox.textContent = fromBin(spacesDecoder(text)).replace(/\x00/g,'').trim();		//take out nulls, in case text was added to finish the last sentence.
 }
 
 //the following functions are to hide text between two letters, as a binary string made of invisible characters.
@@ -244,7 +244,7 @@ function fromInvisible(text) {
 		var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
 		if(!reply) return
 	}
-	mainBox.innerHTML = safeHTML(fromBin(invisibleDecoder(text)).trim())
+	mainBox.textContent = fromBin(invisibleDecoder(text)).trim()
 }
 
 function invisibleEncoder(bin){
@@ -330,7 +330,7 @@ function fromPhrases(text){
 			index6 = punct.indexOf(punctArray[i]);
 		outArray[i] = base64[index6 * 11 + index11]
 	}
-	mainBox.innerHTML = safeHTML(outArray.join('').trim())
+	mainBox.textContent = outArray.join('').trim()
 }
 
 //Letters encoding is based on code at: http://www.irongeek.com/i.php?page=security/unicode-steganography-homoglyph-encoder, by Adrian Crenshaw, 2013
@@ -456,7 +456,6 @@ function fromLetters(text){
 		if(!reply) return
 	}
 	var bintemp = [],
-		finalString = "",
 		tempchar = "";
 	for (var i = 0; i < text.length; i++){
 		if (charMappings[text[i]] === undefined ){
@@ -468,8 +467,7 @@ function fromLetters(text){
 	var binStr = bintemp.join(''),
 		bin = new Array(binStr.length);
 	for(var i = 0; i < binStr.length; i++) bin[i] = parseInt(binStr.charAt(i));
-	finalString = fromBin(bin.slice(0,bin.length-(bin.length % 6)));
-	mainBox.innerHTML = safeHTML(finalString)
+	mainBox.textContent = fromBin(bin.slice(0,bin.length-(bin.length % 6)))
 }
 
 //this one is to display the cover text or change it as requested
