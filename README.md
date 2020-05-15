@@ -16,32 +16,39 @@ PassLok was started as URSA, also by F. Ruiz, and developed privately up to vers
 
 These are the open source libraries used in PassLok, which can be found in the js-opensrc directory:
 * Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
-* For hiding data in images: https://github.com/petereigenschink/steganography.js
-* FastClick, used only in mobile devices: https://github.com/ftlabs/fastclick
+* For hiding data in images (not used anymore): https://github.com/petereigenschink/steganography.js
+* FastClick, used only in mobile devices (not used anymore): https://github.com/ftlabs/fastclick
 * Tweet NaCl in JavaScript: https://github.com/dchest/tweetnacl-js
 * ed2curve-js conversion of curve coordinates: https://github.com/dchest/ed2curve-js
 * SCRYPT key stretching, edited to make it synchronous. https://github.com/dchest/scrypt-async-js
-* Reed-Solomon error correction: https://github.com/louismullie/erc-js
+* Reed-Solomon error correction (not used anymore): https://github.com/louismullie/erc-js
 * lz-string compression algorithm: https://github.com/pieroxy/lz-string
-* Markov chain text steganography. Edited RegEx: https://github.com/jthuraisamy/markovTextStego.js
+* Markov chain text steganography. Edited RegEx (not used anymore): https://github.com/jthuraisamy/markovTextStego.js
+* DOMPurify, used to sanitize decrypted material before putting in DOM: https://github.com/cure53/DOMPurify
+* jpeg image steganography by Owen Campbell-Moore and others: https://github.com/owencm/js-steg
+* Isaac seedable PRNG by Yves-Marie Rinquin: https://github.com/rubycon/isaac.js/blob/master/isaac.js
+* Color picker by Jan Odvarko. Edited so images are included, and to make it smaller: https://github.com/odvarko/JSColor
 
 The PassLok original code is in directories js-head and js-body:
 * this only loads two word arrays: wordlist and blacklist: dictionary_en.js
-* Key and Lock functions: KeyLock.js
-* cryptographic functions: crypto.js
-* extra functions for mail, etc.: extra.js
-* error correction functions: errorCorrection.js
+* Key and Lock functions: keylock.js
+* main cryptographic functions: crypto-main.js
+* additional crypto modes and signatures: crypto-extra.js
+* extra functions for mail, chat, etc.: mail&chat.js
+* error correction functions (removed): errorCorrection.js
 * Shamir Secret Sharing Scheme: SSSS.js
-* text and image steganograghy: stego.js
+* text steganograghy: textstego.js
+* image steganography: imagestego.js
 * local Directory functions: localdir.js
-* functions for switching screens, etc.: switching.js
-* special functions that work only with Chrome apps and extensions: Chromestuff.js
+* functions for switching screens, etc.: screens.js
+* color scheme selection: colors.js
+* special functions that work only with Chrome/Firefox apps and extensions: Chromestuff.js
 * window reformatting, special functions: bodyscript.js
 * initialization, button connections: initbuttons.js
 
 Two components run inside iframes and are served from different sources. They are not included here because we use Phonegap so generate automatically some versions from this repo, and they should not contain that code. Those components are:
 * PassLok General Directory: https://github.com/fruiz500/PassLok-GenDir
-* PassLok Chat: https://github.com/fruiz500/PassLok-Chat
+* PassLok Chat: https://github.com/fruiz500/PassLok-Chat-2
 
 Full documentation can be found at: <http://passlok.weebly.com/> including:
 * user manual: http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf
@@ -51,7 +58,7 @@ Full documentation can be found at: <http://passlok.weebly.com/> including:
 License
 -------
 
-  Copyright (C) 2015 Francisco Ruiz
+  Copyright (C) 2020 Francisco Ruiz
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
