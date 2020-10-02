@@ -170,17 +170,6 @@ function showPwd(name){
 	keyStrength(pwdIn.value.trim(),name)
 }
 
-function chat2main(){
-	chatScr.style.display = 'none'
-}
-
-function resetChat(){
-	var frame = document.getElementById('chatFrame'),
-		src = frame.src;
-	frame.src = '';
-	setTimeout(function(){frame.src = src;}, 10)
-}
-
 //for clearing different boxes
 function clearMain(){
 	mainBox.textContent = '';
@@ -737,16 +726,12 @@ function loadLockDir(){
 	if(document.getElementById('lockdirFrame').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirFrame').src = 'https://www.passlok.com/lockdir'
 }
 
-//loads the chat frame
+//opens a chat page
 function main2chat(token){
-	if(isAndroid && isChrome){
-		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
-		if(!reply) return
+	if(token){
+		window.open("https://passlok.com/chat/chat.html#" + token);
+		mainMsg.textContent = 'Chat session open in a separate tab'
 	}
-	document.getElementById('chatFrame').src = 'https://www.passlok.com/chat/index.html#' + token;				//open chat iframe; remote because of the CSP
-	chatBtn.textContent = 'Back to Chat';
-	chatBtn.style.color = 'orange';
-	chatScr.style.display = 'block'
 }
 
 //called when the Key box is empty

@@ -768,37 +768,16 @@ function removeHTMLtags(string){
 //this one escapes dangerous characters, preserving non-breaking spaces
 function escapeHTML(str){
 	escapeHTML.replacements = { "&": "&amp;", '"': "&quot;", "'": "&#039;", "<": "&lt;", ">": "&gt;" };
-	str = str.replace(/&nbsp;/gi,'non-breaking-space')
+	str = str.replace(/&nbsp;/gi,'non-breaking-space');
 	str = str.replace(/[&"'<>]/g, function (m){
 		return escapeHTML.replacements[m];
 	});
 	return str.replace(/non-breaking-space/g,'&nbsp;')
 }
 
-//mess up all tags except those whitelisted: formatting, images, and links containing a web reference or a file
-function safeHTML(string){
-	//first mess up attributes with values not properly enclosed within quotes, because Chrome likes to complete those; extra replaces needed to preserve encrypted material
-	string = string.replace(/==/g,'double-equal').replace(/<(.*?)=[^"'](.*?)>/g,'').replace(/double-equal/g,'==');
-	//now escape every dangerous character; we'll recover tags and attributes on the whitelist later on
-	string = escapeHTML(string);
-	//make regular expressions containing whitelisted tags, attributes, and origins; sometimes two versions to account for single quotes
-	var allowedTags = '(b|i|strong|em|u|strike|sub|sup|blockquote|ul|ol|li|pre|div|span|a|h1|h2|h3|h4|h5|h6|p|pre|table|tbody|tr|td|img|br|wbr|hr|font)',
-		tagReg = new RegExp('&lt;(\/?)' + allowedTags + '(.*?)&gt;','gi'),
-		allowedAttribs = '(download|style|src|target|name|id|class|color|size|cellpadding|tabindex|type|start|align)',
-		attribReg1 = new RegExp(allowedAttribs + '=\&quot;(.*?)\&quot;','gi'),
-		attribReg2 = new RegExp(allowedAttribs + '=\&#039;(.*?)\&#039;','gi'),
-		allowedOrigins = '(http:\/\/|https:\/\/|mailto:\/\/|#)',
-		origReg1 = new RegExp('href=\&quot;' + allowedOrigins + '(.*?)\&quot;','gi'),
-		origReg2 = new RegExp('href=\&#039;' + allowedOrigins + '(.*?)\&#039;','gi');
-	//recover allowed tags
-	string = string.replace(tagReg,'<$1$2$3>');
-	//recover allowed attributes
-	string = string.replace(attribReg1,'$1="$2"').replace(attribReg2,"$1='$2'");
-	//recover file-containing links
-	string = string.replace(/href=\&quot;data:(.*?),(.*?)\&quot;/gi,'href="data:$1,$2"').replace(/href=\&#039;data:(.*?),(.*?)\&#039;/gi,"href='data:$1,$2'");
-	//recover web links and local anchors
-	string = string.replace(origReg1,'href="$1$2"').replace(origReg2,"href='$1$2'");
-	return string
+//remove XSS vectors using DOMPurify
+function decryptSanitizer(string){
+	return DOMPurify.sanitize(string, {ADD_DATA_URI_TAGS: ['a']})
 }
 
 var nameBeingUnlocked = '';

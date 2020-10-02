@@ -113,9 +113,9 @@ function verifySignature(textStr,LockStr){
 
 	if(result){
 		if(result.join().match(",61,34,100,97,116,97,58,")){
-			mainBox.innerHTML = safeHTML(nacl.util.encodeUTF8(result))
+			mainBox.innerHTML = decryptSanitizer(nacl.util.encodeUTF8(result))
 		}else{
-			mainBox.innerHTML = safeHTML(LZString.decompressFromUint8Array(result))									//decompress and filter
+			mainBox.innerHTML = decryptSanitizer(LZString.decompressFromUint8Array(result))									//decompress and filter
 		}
 		setTimeout(function(){if(!decoyMode.checked) mainMsg.textContent = 'Seal ownership is VERIFIED for: ' + name},500)				//apply a delay so this appears last
 	}else{
@@ -343,7 +343,7 @@ function padDecrypt(cipherStr){
 		}
 
 		if(macChecks){																//check authentication and display result if passed
-			mainBox.innerHTML = safeHTML(plain);
+			mainBox.innerHTML = decryptSanitizer(plain);
 			mainMsg.textContent = 'Decryption successful';
 		}else{
 			mainMsg.textContent = 'Message authentication has failed';

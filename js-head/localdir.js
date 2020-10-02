@@ -188,7 +188,7 @@ function decryptLock(){
 	if(lockBox.textContent.trim()){
 		var listArray = lockBox.innerHTML.replace(/\n/g,'<br>').split('<br>').filter(Boolean);
 		if(lockBox.textContent.length > 500){
-			lockBox.innerHTML = safeHTML(LZString.decompressFromBase64(lockBox.textContent).trim());
+			lockBox.innerHTML = decryptSanitizer(LZString.decompressFromBase64(lockBox.textContent).trim());
 			newCover(lockBox.textContent.trim());							//this for loading cover text from Lock screen
 			lockMsg.textContent = 'New Cover text extracted and ready to use'
 		} else if(listArray.length > 1 && listArray[1].slice(0,4) != 'http'){
@@ -213,7 +213,7 @@ function decryptItem(){
 	if(!refreshKey()) return;
 	var	string = lockBox.textContent.trim();
 	if(string == "") return;
-	lockBox.innerHTML = safeHTML(keyDecrypt(string));
+	lockBox.innerHTML = decryptSanitizer(keyDecrypt(string));
 	if(!lockBox.innerHTML) return;
 	if(callKey != 'decryptlock') callKey = ''
 }
@@ -711,7 +711,7 @@ function fillNameList(){
 	nameList.style.color = '#639789';
 	var list = [];
 	for(var name in localStorage){
-			//this if is because of a bug in Firefox
+			//this if is because of a bug in all major browsers
 		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem'){
 			//and this, because of a bug in Safari
 			if(!name.match('com.apple.WebInspector') && name != 'locDir'){
