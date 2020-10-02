@@ -728,12 +728,8 @@ function loadLockDir(){
 
 //opens a chat page
 function main2chat(token){
-	if(isAndroid && isChrome){
-		var reply = confirm('On Android, the chat function works from a browser page, but not yet from the app. Please cancel if you are running PassLok as a native app.');
-		if(!reply) return
-	}
 	if(token){
-		chrome.tabs.create({url: "chat.html#" + token});					//use local page so it's isolated from other extensions
+		window.open("https://passlok.com/chat/chat.html#" + token);
 		mainMsg.textContent = 'Chat session open in a separate tab'
 	}
 }
