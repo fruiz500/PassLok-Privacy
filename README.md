@@ -16,32 +16,31 @@ PassLok was started as URSA, also by F. Ruiz, and developed privately up to vers
 
 These are the open source libraries used in PassLok, which can be found in the js-opensrc directory:
 * Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG: https://github.com/amper5and/secrets.js
-* For hiding data in images: https://github.com/petereigenschink/steganography.js
-* FastClick, used only in mobile devices: https://github.com/ftlabs/fastclick
+* DOMpurify XSS filter: https://github.com/cure53/DOMPurify
 * Tweet NaCl in JavaScript: https://github.com/dchest/tweetnacl-js
 * ed2curve-js conversion of curve coordinates: https://github.com/dchest/ed2curve-js
 * SCRYPT key stretching, edited to make it synchronous. https://github.com/dchest/scrypt-async-js
-* Reed-Solomon error correction: https://github.com/louismullie/erc-js
 * lz-string compression algorithm: https://github.com/pieroxy/lz-string
-* Markov chain text steganography. Edited RegEx: https://github.com/jthuraisamy/markovTextStego.js
+* jpeg image steganography: https://github.com/owencm/js-steg
+* color picker by Jan Odvarko. Edited so images are included, and to make it smaller: https://github.com/odvarko/JSColor
 
 The PassLok original code is in directories js-head and js-body:
 * this only loads two word arrays: wordlist and blacklist: dictionary_en.js
-* Key and Lock functions: KeyLock.js
-* cryptographic functions: crypto.js
-* extra functions for mail, etc.: extra.js
-* error correction functions: errorCorrection.js
+* Key and Lock functions: keylock.js
+* cryptographic functions: crypto-main.js
+* signatures and other crypto: crypto-extra.js
+* extra functions for mail, etc.: mail&chat.js
 * Shamir Secret Sharing Scheme: SSSS.js
-* text and image steganograghy: stego.js
+* text steganograghy: textstego.js
+* image steganography: imagestego.js
 * local Directory functions: localdir.js
-* functions for switching screens, etc.: switching.js
+* functions for switching screens, etc.: screens.js
 * special functions that work only with Chrome apps and extensions: Chromestuff.js
 * window reformatting, special functions: bodyscript.js
 * initialization, button connections: initbuttons.js
 
-Two components run inside iframes and are served from different sources. They are not included here because we use Phonegap so generate automatically some versions from this repo, and they should not contain that code. Those components are:
+One component run inside and iframes and is served from a different source. It is not included here because we use Phonegap so generate automatically some versions from this repo, and it should not contain that code. Those components are:
 * PassLok General Directory: https://github.com/fruiz500/PassLok-GenDir
-* PassLok Chat: https://github.com/fruiz500/PassLok-Chat
 
 Full documentation can be found at: <http://passlok.weebly.com/> including:
 * user manual: http://passlok.weebly.com/uploads/2/4/1/8/24187628/passlok_manual.pdf
