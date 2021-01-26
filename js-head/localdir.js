@@ -645,7 +645,7 @@ function fillBox(){
 				isList = true;											//to return here if the Key is wrong
 				var nextItem = keyDecrypt(itemcrypt);
 				if(!nextItem) return;
-				list += '\r\n' + nextItem
+				list += '<br>' + nextItem
 			}else if(lockList.options[i].value == 'default'){					//default cover selected
 				var covername = 'default';
 				newCover(defaultCoverText)
@@ -657,12 +657,12 @@ function fillBox(){
 				if(!cover2) return;
 				newCover(LZString.decompressFromBase64(cover2))
 			}else{
-         		list += '\r\n' + lockList.options[i].value
+         		list += '<br>' + lockList.options[i].value
 			}
     	}
   	}
-	list = list.replace(/\r\n/i,'');										//remove the first linefeed
-	var array = list.split('\r\n');
+	list = list.replace(/<br>/i,'');										//remove the first linefeed
+	var array = list.split('<br>');
 	if(array[0] != ''){
 		array = array.filter(function(elem, pos, self) {return self.indexOf(elem) == pos;});  			//remove duplicates
 		array = array.filter(function(n){return n});													//remove nulls
@@ -670,10 +670,10 @@ function fillBox(){
 		list = '';
 		var msg = 'Encrypting for: ';
 		for(var index = 0; index < array.length; index++){
-			list += '\r\n' + array[index];
+			list += '<br>' + array[index];
 			msg += array[index] + ', '
 		}
-		lockBox.textContent = list.replace(/\r\n/i,'').trim();				//remove first linefeed
+		lockBox.innerHTML = list.replace(/<br>/i,'').trim();				//remove first linefeed
 	}else if(covername){
 		var msg = covername + ' Cover text loaded'
 	}else{
