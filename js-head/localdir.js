@@ -712,7 +712,7 @@ function fillNameList(){
 	var list = [];
 	for(var name in localStorage){
 			//this if is because of a bug in all major browsers
-		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem'){
+		if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem' && name != 'randid'){
 			//and this, because of a bug in Safari
 			if(!name.match('com.apple.WebInspector') && name != 'locDir'){
 				list = list.concat(removeHTMLtags(name))
