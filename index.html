@@ -24,7 +24,7 @@
 <!--Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG. https://github.com/amper5and/secrets.js-->
 <script src="js-opensrc/secrets.js"></script>
 
-<!--Tweet NaCl crypto library 1.0.1 by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
+<!--Tweet NaCl crypto library 1.0.3 by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
 <script src="js-opensrc/nacl.js"></script>
 
 <!--ed2curve-js conversion of curve coordinates 0.2.1 by Dmitry Chestnykh. https://github.com/dchest/ed2curve-js-->
@@ -36,7 +36,7 @@
 <!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
 <script src="js-opensrc/lz-string.js"></script>
 
-<!--DOMPurify, used to sanitize decrypted material before putting in DOM v2.1.1. https://github.com/cure53/DOMPurify-->
+<!--DOMPurify, used to sanitize decrypted material before putting in DOM v2.3.6. https://github.com/cure53/DOMPurify-->
 <script src="js-opensrc/purify.js"></script>
 
 <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
@@ -56,6 +56,9 @@
 
 <!--this used to be in TweetNaCl, but they dropped it-->
 <script src="js-opensrc/nacl-util.js"></script>
+
+<!--QRcode.js by David Shim. https://github.com/davidshimjs/qrcodejs-->
+<script src="js-opensrc/qrcode.js"></script>
 
 <!--ORIGINAL PASSLOK CODE-->
 
@@ -227,6 +230,7 @@
 <img class="intLink" title="Load a file" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAATlBMVEUAAAAAAAD19fVcXFwbGxsTExP8/PzT09NxcXFaWlo4ODg1NTUEBAT5+fnw8PDr6+vU1NTIyMi+vr6Xl5dsbGxnZ2dXV1dISEghISEMDAw0f0rSAAAAAXRSTlMAQObYZgAAAFBJREFUGNO9yEkOgCAQBMBmUxDc9/9/VJ2EjgkHb9axcJuceqQRtMq4aAdWkDr6xtW5jJRFx2MBu23fdS7eG6Vz0U8VytrKmhMnVoDQlOfbBQLIAl4FF2fyAAAAAElFTkSuQmCC" />
 </label>
 <input type="file" id="mainFile"/>
+<img class="intLink" title="Download files" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAdVBMVEUAAAAfHx9GRkYAAAAPDw9aWlr+/v739/fHx8dpaWkEBAT7+/v29vby8vLu7u7Z2dm1tbWysrKtra2qqqqMjIxWVlZJSUk1NTUUFBQJCQnz8/Pq6uri4uLMzMzKysq+vr69vb2NjY16enpvb29hYWE9PT0rKytDpsqlAAAAAXRSTlMAQObYZgAAAHdJREFUGNO1zscOgCAMgGG0iIp77z3e/xEV05CoJJ78D9B86aHkO6bUuXBUnFWuig1q/sTs5PclyR7YpZ+vD+4rrSg3mJ7rFgWA9EZhcPmlbuyh1mCLr0vEO0CI7HPB2AgRTh43mORYMstBk3HaEqxZdFlmkZ87AICHBL2TAUCPAAAAAElFTkSuQmCC" />
 </div>
   </div>
   <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";" placeholder="Write or paste your message here. You can use nice formatting and add images and files if you click Rich. To encrypt or decrypt, select the correspondents in the top box, then click the button. Add more correspondents by pasting their Locks in this box."></div>
@@ -363,10 +367,9 @@
 <br>
 <div id="helpTop">
 <br>
-<span id='helpmsg'>For instructions on how to do things, click on each title.</span>
+<span id='helpmsg' class="message">For instructions on how to do things, click on each title.</span>
 <br>
 
-<!--search box, as an iframe-->
 <!--search box, as an iframe-->
 <iframe id="srchform2"
 src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:void();&quot; onSubmit=if(this.t1.value!=&quot;&quot;)parent.findString(this.t1.value);return(false); ><input type=text id=t1 name=t1 placeholder=Text&nbsp;to&nbsp;find size=20><input type=submit name=b1 value=Search&nbsp;titles></form></body></html>'"
@@ -421,17 +424,16 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div class="helpText">
     <p>Before you can communicate with others using PassLok, they must have obtained the app, come up with a secret Key (which they won't tell you), generated a Lock from it, and sent it back to you.</p>
     <p>You can tell others about PassLok any way you want, but PassLok can help you to start your network with a single keystroke, this way:</p>
-    <p>1. Type a message in the main box. Don't write anything sensitive, since <strong>invitation messages are not secure</strong>.</p>
-    <p>2. Click the <strong>Invite</strong> button.</p>
-    <p>3. After confirmation, a new page should open in your default email, containing a link to PassLok that includes your personal Lock plus your encrypted message and a short set of instructions. Edit it as needed, then write the recipients' email addresses and send it.</p>
+    <p>1. Optionally, type a message in the main box. Don't write anything sensitive, since <strong>invitation messages are not secure</strong>.</p>
+    <p>2. Click the <strong>Invite</strong> button. If nothing was written, a QR code will appear containing your Lock and a link to the app at passlok.com. You may want to stand by in order to guide people who scan the code through their initial set-up. Tap it to hide it.</p>
+    <p>3. If something was written, you will be asked to confirm, and then a new page should open in your default email, containing a link to PassLok that includes your personal Lock plus your encrypted message and a short set of instructions. Edit it as needed, then write the recipients' email addresses and send it.</p>
     <p>This is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=0wTJWyd9s64" target="_blank">https://www.youtube.com/watch?v=0wTJWyd9s64</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>The invitation link loads the web version of PassLok, but pasting it into any other version of PassLok, or opening the email in PassLok for Email, PassLok Universal, FusionKey, or SeeOnce works just as well. Invitations made in those apps can also be opened in PassLok Privacy.</p>
-      <p>People who did not get your email will still be able to obtain your Lock if you post it in the General Directory. To do this, click the <strong>myLock</strong> button if your Lock is not already displayed, then the small <strong>Edit</strong> button near the top, and then the large <strong>General Directory</strong> button (you may need to do this twice). A new page will open where you only need to supply your email address, click <strong>Post</strong>, and reply to a confirmation email.</p>
-      <p>Those who get PassLok from your email invitation will have your Lock automatically stored in their directories, so they can encrypt items for you right away.</p>
+      <p>The QR code and the invitation link load the web version of PassLok, but pasting the message into any other version of PassLok, or opening the email in PassLok for Email, PassLok Universal, FusionKey, or SeeOnce works just as well. Invitations made in those apps can also be opened in PassLok Privacy.</p>
+      <p>Those who get PassLok from your QR code or email invitation will have your Lock automatically stored in their directories, so they can encrypt items for you right away.</p>
     </div>
   </div>
   <hr>
@@ -539,13 +541,13 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div class="helpText">
     <p>Click the <strong>myLock</strong> button on the <strong>Main</strong> tab. The Lock matching that Key will appear
       in the lower box, from where you can copy it or email it.</p>
-    <p>If then you click the <strong>Edit</strong> button next to the local directory box, and after that click the button labeled <strong>General Directory</strong>, PassLok's General Directory website will open, with its lower box filled with the Lock you just made. To post your ezLok or base64 Lock so others can find it, just write your email in the upper box and click the <strong>Post</strong> button.</p>
+    <p>Alternatively, you can click the <strong>Invite</strong> button with nothing displayed in the main box, and then a Lock-containing QR code will appear that others can scan with mobile devices. Tap it to make it go away.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=L00yybDzN6k" target="_blank">https://www.youtube.com/watch?v=L00yybDzN6k</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>By default, PassLok displays the Lock in ezLok format, consisting of 50 lowercase letters (except L) and numbers, so you can easily dictate it if necessary. On the <strong>Options</strong> tab, you can change this to Word format, consisting of 20 common words, or to base64 format like all other PassLok items, consisting of 43 numbers, letters (capital and smallcase) and special characters / or +<strong></strong>. The General Directory can take items only in ezLok and base64 formats. PassLok for Email, PassLok Universal, and FusionKey are compatible with all Lock formats, but SeeOnce is compatible only with ezLoks. If you wrote your real email when asked about it in the initial wizard, rather than something else, then your Lock is the same as that used in those apps, and the encrypted items made by any flavor of PassLok can be decrypted in the other apps. This precaution is not necessary for SeeOnce.</p>
+      <p>By default, PassLok displays the Lock in ezLok format, consisting of 50 lowercase letters (except L) and numbers, so you can easily dictate it if necessary. On the <strong>Options</strong> tab, you can change this to Word format, consisting of 20 common words, or to base64 format like all other PassLok items, consisting of 43 numbers, letters (capital and smallcase) and special characters / or +<strong></strong>. PassLok for Email, PassLok Universal, and FusionKey are compatible with all Lock formats, but SeeOnce is compatible only with ezLoks. If you wrote your real email when asked about it in the initial wizard, rather than something else, then your Lock is the same as that used in those apps, and the encrypted items made by any flavor of PassLok can be decrypted in the other apps. This precaution is not necessary for SeeOnce.</p>
       <p>If you need to make a Lock for a different Key (for instance, in order to receive hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by  clicking Change Email in Options).</p>
     </div>
   </div>
@@ -724,7 +726,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Load files to be encrypted, sealed, or split</h3>
   </div>
   <div class="helpText">
-    <p>1. The button to load files is the rightmost one on the formatting toolbar, which is displayed by clicking the <strong>Rich</strong> button. It looks like this: <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAATlBMVEUAAAAAAAD19fVcXFwbGxsTExP8/PzT09NxcXFaWlo4ODg1NTUEBAT5+fnw8PDr6+vU1NTIyMi+vr6Xl5dsbGxnZ2dXV1dISEghISEMDAw0f0rSAAAAAXRSTlMAQObYZgAAAFBJREFUGNO9yEkOgCAQBMBmUxDc9/9/VJ2EjgkHb9axcJuceqQRtMq4aAdWkDr6xtW5jJRFx2MBu23fdS7eG6Vz0U8VytrKmhMnVoDQlOfbBQLIAl4FF2fyAAAAAElFTkSuQmCC" /></p>
+    <p>1. The button to load files is near the right end of the formatting toolbar, which is displayed by clicking the <strong>Rich</strong> button. It looks like this: <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAATlBMVEUAAAAAAAD19fVcXFwbGxsTExP8/PzT09NxcXFaWlo4ODg1NTUEBAT5+fnw8PDr6+vU1NTIyMi+vr6Xl5dsbGxnZ2dXV1dISEghISEMDAw0f0rSAAAAAXRSTlMAQObYZgAAAFBJREFUGNO9yEkOgCAQBMBmUxDc9/9/VJ2EjgkHb9axcJuceqQRtMq4aAdWkDr6xtW5jJRFx2MBu23fdS7eG6Vz0U8VytrKmhMnVoDQlOfbBQLIAl4FF2fyAAAAAElFTkSuQmCC" /></p>
     <p>2. When you click it, a dialog will appear so you can navigate to the file. If all goes well, the file loads into the box as a link. You will see only its name, but the whole file is actually in there.</p>
     <p>Now you can encrypt it, seal it, or split it just like a text-based message. You can also add more files if you want. The process to retrieve the original files is explained in the help item below.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=tPeUv6BRTrg" target="_blank">https://www.youtube.com/watch?v=tPeUv6BRTrg</a></p>
@@ -743,13 +745,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   </div>
   <div class="helpText">
     <p>1. Make sure the file appears as a link on the Main box.</p>
-    <p>2. Right-click on it and select the <strong>Save link as</strong> option. The file will be saved at the location you select.</p>
-    <p>If there are several file links, repeat the process for each one. This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=tPeUv6BRTrg" target="_blank">https://www.youtube.com/watch?v=tPeUv6BRTrg</a></p>
+    <p>2. A button below the Main box will be labeled <strong>Save</strong>. Click it to download all the files in the Main box. You can also use the rightmost button on the toolbar.</p>
+    <p>3. For small enough files, you can also right-click on its link and select the <strong>Save link as</strong> option. The file will be saved at the location you select.</p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=tPeUv6BRTrg" target="_blank">https://www.youtube.com/watch?v=tPeUv6BRTrg</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>Chrome will not display the <strong>Save link as</strong> option if the file is larger than 1.5MB. Use Firefox or Safari in this case. Be aware that mobile devices (especially on iOS) place severe restrictions on what files can be saved, and where.</p>
+      <p>Chrome does not display the <strong>Save link as</strong> option if the file is larger than 1.5MB. Be aware that mobile devices (especially on iOS) place severe restrictions on what files can be saved, and where.</p>
     </div>
   </div>
     <hr>
@@ -757,14 +760,14 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <h3>File output</h3>
     </div>
     <div class="helpText">
-      <p>If you select <strong>File output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting, the result of the operation appears as a file (several, in the case of splitting), which you can then save anywhere by right-clicking on the file labels. Doing this will speed up things considerably if you are encrypting, sealing, or splitting something large (especially in Chrome).</p>
+      <p>If you select <strong>File output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting, the result of the operation appears as a file (several, in the case of splitting), which you can then save anywhere with the Save button. Doing this will speed up things considerably if you are encrypting, sealing, or splitting something large.</p>
       <p>The file can be either binary with extension .plk (default), or text with extension .txt. This can be selected on the <strong>Options</strong> tab.</p>
       <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Sm4f6FIOShI" target="_blank">https://www.youtube.com/watch?v=Sm4f6FIOShI</a></p>
      <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-     <p>An output item loaded as a file can be decrypted, unsealed, or joined just like an item loaded as text. It can also be sent by email as an attachment, which is handy when the item is large. Firefox and Safari have no problems with file size, but Chrome won't save the output file if it is larger than 1.5MB. Feel free to change the file name or extension to something else, but to decrypt, unseal, or join files made this way, you must make sure the extension is .plk or .txt before you load them or PassLok may fail to recognize them as its own output. Be aware that mobile devices (especially on iOS) often make it difficult to work with files.</p>
+     <p>An output item loaded as a file can be decrypted, unsealed, or joined just like an item loaded as text. It can also be sent by email as an attachment, which is handy when the item is large. Feel free to change the file name or extension to something else, but to decrypt, unseal, or join files made this way, you must make sure the extension is .plk or .txt before you load them or PassLok may fail to recognize them as its own output. Be aware that mobile devices (especially on iOS) often make it difficult to work with files.</p>
     </div>
     </div>
   <hr>
@@ -775,8 +778,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>1. Select the other participants in the chat on the list at the top of the <strong>Main</strong> tab. You are added automatically.</p>
     <p>2. Click the <strong>Chat</strong> button, which is below the box. A dialog will appear asking you whether this chat is going to involve text and files only, or also will involve audio, or  video, or be hosted by Jitsi, an open-source videoconference service. There is also a text box where you can optionally type something that will be shown to the users (such as the date and time for the chat) before they join the chat.</p>
     <p>3. Supply the required information and click <strong>OK</strong>. If the main box did not contain a chat invitation, a new one is generated and placed there. You can now email it with the <strong>Email</strong> button, or send it out by any other means.</p>
-    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): </p>
-    <p><a href="https://www.youtube.com/watch?v=XytUN0T_2zQ">https://www.youtube.com/watch?v=XytUN0T_2zQ</a></p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=XytUN0T_2zQ">https://www.youtube.com/watch?v=XytUN0T_2zQ</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
@@ -799,8 +801,9 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>Connections between participants are direct in all chat types except Jitsi, but a signaling server is used at the start so the participants can find one another, and then it is contacted no more. PassLok will remind you that this may lead to your being tracked. The connection will stay alive until all the participants leave. If things get out of hand, you can always reset your session by reloading the chat page. At that point you'll have the chance to change the kind of chat if you so desire.</p>
+      <p> Connections between participants are direct in all chat types except Jitsi, but a signaling server is used at the start so the participants can find one another, and then it is contacted no more. PassLok will remind you that this may lead to your being tracked. The connection will stay alive until all the participants leave. If things get out of hand, you can always reset your session by reloading the chat page. At that point you'll have the chance to change the kind of chat if you so desire.</p>
       <p>Browsers are not equal as far as support for chat: Firefox and Chrome are the best, followed by the Android browser, Maxthon, and then Opera (with problems). Internet Explorer, Tor, Safari, and anything on iOS don't yet support joining a chat, though you can make a chat invitation from them.</p>
+      <p>PassLok can open chat invitations made in SeeOnce and URSA.</p>
     </div>
   </div>
   <hr>
@@ -1003,8 +1006,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p>What to do with the video: </p>
     <ul>
       <li> Upload the video to the Web.</li>
-      <li> Post the video URL in the General Directory on the line immediately below your Lock.</li>
-      <li>For more instructions on this, go to “How to add an authentication video” under the General Directory help. </li>
     </ul>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=zkcqEz3UjnM" target="_blank">https://www.youtube.com/watch?v=zkcqEz3UjnM</a></p>
     <div class="helpHeading2">
@@ -1013,27 +1014,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <div class="helpText">
       <p>It is highly recommended that you make a video whenever you change your secret Key, so that others can be assured that the matching Lock really belongs to you. When you post your Lock so that people can use it to encrypt messages for you, write the address of the video on the line immediately below the Lock, to facilitate the verifying process. Video URLs don't affect the function of Locks, so it is okay to handle the Lock and its video address as a unit. Obviously, you wouldn't do this for a shared Key, only for a Lock.</p>
       <p>Your PassLok ezLok is also used in PassLok for Email and PassLok Universal, so one video will suffice for all apps. The other apps display your ezLok at the beginning of any item you encrypt, separated from the encrypted message by a group of slashes.</p>
-    </div>
-  </div>
-  <hr>
-  <div class="helpHeading">
-    <h3>Use the General Directory</h3>
-  </div>
-  <div class="helpText">
-    <p> The General Directory is a Web page, hosted by PassLok.com,  that can store Locks and their authentication videos, as associated with email addresses.</p>
-    <p> To get to the General Directory: Click the <strong>Edit</strong> button next to the directory box, Then click the <strong>General Directory</strong> button.</p>
-    <ul>
-      <li>If you are showing your Lock on the <strong>Main</strong> tab, it gets copied to the General Directory, ready for you to write your email address and click <strong>Post</strong>. </li>
-      <li>Once you have found a Lock on the general directory, it gets copied automatically to the directory Edit dialog, so you only need to give it a name after you click <strong>Save</strong></li>
-    </ul>
-    <p> The General Directory has its own Help page, which is structured like this one. </p>
-    <p>This and more  is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=QQQ2df2vPgs" target="_blank">https://www.youtube.com/watch?v=QQQ2df2vPgs</a></p>
-    <div class="helpHeading2">
-      <p><em>Click here for More:</em></p>
-    </div>
-    <div class="helpText">
-      <p>PassLok does not guarantee the authenticity of the Locks posted on its General Directory. Email confirmation is required to post or update Locks, but this is not completely secure. Since users are encouraged to add authenticating videos and the General Directory has a button to play them, you should watch the video attached to a Lock before you use it.</p>
-      <p>The General Directory is meant as a convenience, not as a replacement for your local directory. The General Directory is not available when you are offline (the local one is). You cannot post anything but Locks on the General Directory. Be aware that opening the General Directory involves contacting a server, which may lead to being tracked.</p>
     </div>
   </div>
   <hr>
@@ -1516,6 +1496,11 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <p><a href="http://passlok.weebly.com/get-passlok.html" target="_blank">http://passlok.weebly.com/get-passlok.html</a></p>
     <p>&nbsp;</p>
     <p><strong>Previous versions </strong>(SHA256 for each)<strong>:</strong></p>
+    <p><strong>2.4.20</strong> (155f-b7f2-1067-a69b-5bd6-22d1-6d8a-9f71-84f5-e7bc-59bb-0e56-b053-6c11-6167-340d)</p>
+    <p><a href="https://passlok.com/archive/passlok24.html" target="_blank">PassLok.com</a></p>
+    <p><a href="https://www.autistici.org/passlok/archive/passlok24.html" target="_blank">Autistici</a></p>
+    <p><a href="https://passlok.site44.com/archive/passlok24.html" target="_blank">Site44</a></p>
+    <p><a href="https://www.youtube.com/watch?v=x3eq1QJt4-k" target="_blank">Author reading the SHA256</a></p>
     <p><strong>2.3.5</strong> (b0a7-b564-26c1-1bd5-4f23-0829-63be-5a52-20c3-915c-96c3-8d85-7d43-b32f-5fdb-e5df)</p>
     <p><a href="https://passlok.com/archive/passlok23.html" target="_blank">PassLok.com</a></p>
     <p><a href="https://www.autistici.org/passlok/archive/passlok23.html" target="_blank">Autistici</a></p>
@@ -1586,29 +1571,28 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <h3>Privacy Policy and Warrant Canary</h3>
   </div>
   <div class="helpText">
-    <p><strong>Data we collect:</strong> We do collect Locks, plus optional authenticating videos, and email addresses from people who freely upload them to the General Directory. This is meant for your convenience, since other people must have your Lock in order to encrypt items for you to decrypt. Locks are by their very nature not secret. Uploads are never automatic, but must be done manually by the user.</p>
-    <p><strong>How we use this data:</strong> Locks in the General Directory are indexed by email and can be retrieved by anyone, even outside of PassLok. We make no other use of the Locks, videos, and emails collected in the General Directory, with one exception: every six months, an email is sent to the stored address, asking for confirmation to keep the Lock in the Directory; if no positive action is taken after two of these emails are sent, everything connected to that email address is deleted from the Directory. This is fully automated and involves no human intervention.</p>
-    <p><strong>What data we share:</strong> Only Locks stored in the General Directory and their associated videos, if present, to anyone who searches for them by using the associated email, for as long as those Locks are active (expiration is six months). A special routine is set up to prevent anyone from collecting all or a large portion of the General Directory. Neither is it possible for a third party to retrieve a list of the stored email addresses.</p>
+    <p><strong>Data we collect:</strong> Nothing. No cookies or anything of that sort. We don't even have the means to know who has downloaded the app.</p>
+    <p><strong>How we use this data:</strong> Nothingness brings us closer to Nirvana. It's quite a liberation.</p>
+    <p><strong>What data we share:</strong> Everything we have from you, that is, absolutely nothing. This way we don't need expensive servers and our bills are small, plus we cannot compromise your precious data. Here's wishing that so many other providers would do likewise.</p>
     <p>Concerning truly private data:</p>
     <p><strong>1. We cannot give your secret Key to anyone</strong> (not even yourself) because we don't have it. Your Key is never stored or transmitted, and by default gets deleted from memory  after five minutes of not being used.</p>
-    <p><strong>2. We cannot give your private data to anyone</strong> because PassLok does not send anything out of your device. When you download the app from its server, you get only the code, without any cookies, plugins, or anything of that sort. We do store Locks that have been freely posted on our General Directory by their owners, as explained above, but those are public by nature.</p>
-    <p><strong>3. We cannot eavesdrop on your chat sessions, or enable anyone to do so.</strong> Establishing a chat session does involve contacting a signaling server (Firebase) and giving it your IP address and a disposable chatroom name so that others can contact you; the signaling server never sees the content of your chat, which is between participants only. The PassLok server doesn't even see the connection data.</p>
+    <p><strong>2. We cannot give your private data to anyone</strong> because PassLok does not send anything out of your device. When you download the app from its server, you get only the code, without any cookies, plugins, or anything of that sort.</p>
+    <p><strong>3. We cannot eavesdrop on your chat sessions, or enable anyone to do so.</strong> Establishing a chat session does involve contacting a signaling server and giving it your IP address and a disposable chatroom name so that others can contact you; the signaling server never sees the content of your chat, which is between participants only. The PassLok web server doesn't even see the connection data.</p>
     <p><strong>4. We will never weaken the cryptography methods contained within PassLok at the request of a third party, private or public.</strong> This also means no backdoors will ever be added. We would rather shut down PassLok than be forced to do this, which would betray the very essence of our efforts. If we learn that counterfeit versions of PassLok are circulating, whether placed by hackers or government agencies, we will make the fact known to users.</p>
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.4.19 (October 2020) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5 (April 2022) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.4.19 &#169; F. Ruiz 2020
+  PassLok v2.5 &#169; F. Ruiz 2022
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
     <li> tweetNaCl JavaScript implementation by D. Chestnykh and D. Mandiri 2015</li>
-    <li> general directory by W. Huang 2014</li>
-    <li> DOMPurify XSS sanitizer by cure53 2020</li>
+    <li> DOMPurify XSS sanitizer by cure53 2022</li>
     <li> Shamir secret sharing by A. Stetsyuk 2013</li>
     <li> image steganography based on F5 by Andreas Westfeld 2001</li>
     <li> jpeg image hiding libraries js-steg by Owen Campbell-Moore et al. 2014</li>
@@ -1620,6 +1604,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
     <li> Jitsi chat by jitsi.org 2020</li>
     <li> Letters encoding based on Advanced Unicode Stego by Adrian Crenshaw 2013</li>
     <li> color picker: jscolor by Jan Odvarko, 2014</li>
+    <li> QRcode library by David Shim, 2015</li>
     <li> testing, help items, interface ideas by the IIT PassLok team 2014-17</li>
   </ul>
   <address>
@@ -1631,7 +1616,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="lockScr" class="white_content" align="center">
   <div id="locktop" align="center">
     <button class="cssbutton" id="lock2mainBtn" value="< Back" title="return to main screen (alt-E)" accesskey="">&#9668; Done</button>
-    <button class="cssbutton" id="lock2dirBtn" value="Directory" title="open a screen containing the general PassLok directory (alt-G). WARNING: this involves going online, which might leak metadata" accesskey="g">&#9658; General Directory</button>
     <br>
     <br>
     <br>
@@ -1645,9 +1629,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 --><button class="cssbutton" id="removeLockBtn" value="Delete" title="delete the item whose name is displayed">Del.</button><!--
 --><button class="cssbutton" id="resetPFSBtn" value="Reset" title="reset Read-once data for the item whose name is displayed">Reset</button>
   </div>
-  <div align="left" contenteditable="true" class="cssbox" id="lockBox" name="text" rows="9" placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item."></div>
+  <div align="left" contenteditable="true" class="cssbox" id="lockBox" name="text" rows="10" placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item."></div>
   <div align="center" id="lockBtnsBottom">
-    <!--<button class="cssbutton" id="addToListBtn" value="List" title="if lower box is empty display the current List, otherwise add box contents to the current List">List</button>-->
     <button class="cssbutton" id="showLockDBBtn" value="All" title="show the entire local directory">All</button><!--
 --><button class="cssbutton" id="mergeLockDBBtn" value="Merge" title="merge into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
 --><label for="lockFile" title="open dialog to select file to load"><span class="cssbutton">Load file</span></label><input type="file" id="lockFile"title="open dialog to select file to load"/>
@@ -1685,14 +1668,6 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <div id="introscr" class="block_page" align="center">
   <h2 id="introWelcome">Welcome to PassLok</h2>
   <div id="intro1" align="left">
-    <div id="referrerMsg" class="message">
-      <p>Looks like you received an invitation to use PassLok from someone whose user name is in the box below. If you wish to use a different name for this person, you can change it.</p>
-      <div align="center">
-        <input type="text" class="cssbox" autocomplete="off" id="friendsName" placeholder="Enter your friend's name here. It will be remembered." align="center">
-        <br>
-        <br>
-      </div>
-    </div>
     <p>In the following screens, you will be asked to provide a user name for yourself, plus a secret Key, and a piece of public data such as your email. You can go offline if you like; nothing will leave this device. Your Key will not be stored.</p>
     <p>This is needed to keep a permanent directory of your friends’ Locks and shared Keys, all securely encrypted. If you prefer not to store anything, click <strong>Exit</strong>.</p>
     <div id='introVideoText'>
@@ -1747,7 +1722,7 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
   <div id="intro4" align="left">
     <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 4 of 5<br>
-    <p>You will get better security if you also provide some public piece of data about yourself, such as your email address. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
+    <p>You will get better security if you also provide some public piece of data about yourself, such as your email address. This is case sensitive. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
     <p>If you want your encrypted output to be compatible with that of <em>PassLok for Email</em>, you must write your email address here.</p>
     <div align="center">
       <input type="text" class="cssbox" id="emailIntro" name="text" placeholder="Optionally, enter your email or some other not secret personal info here" align="center">
@@ -1926,13 +1901,8 @@ src="javascript:'<html><body style=margin:0px; ><form action=&quot;javascript:vo
 <!--Shadow backdrop-->
 <div id="shadow" class="black_overlay"> </div>
 
-<!--General Directory screen, just an iframe for https://www.passlok.com/lockdir-->
-<div id="lockdirScr" class="block_page" align="center">
-  <div id="lockdirContent">
-    <button class="cssbutton" id="closeLockdirBtn" value="< Back" title="returns to Locks screen">&#9668; Back to PassLok</button>
-    <iframe seamless id="lockdirFrame" src="" border=0 frameborder=0> </iframe>
-  </div>
-</div>
+<!--QRcode, which goes away when touched-->    
+<div id="qrcodeImg" class="white_content" align="center"></div>
 
 <!--Body script: window reformatting, special functions--> 
 <script src="js-body/bodyscript.js"></script> 

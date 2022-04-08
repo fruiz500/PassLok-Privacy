@@ -17,11 +17,11 @@ window.onload = function() {
 	if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
 		helpTopMobile.style.display = 'none';
 		helpTop.style.display = 'block';
-		helpSpace.style.display = 'block';
+		helpSpace.style.display = 'block'
 	}
 	if(isAndroid){										//resize shift buttons on Android
 		extra2mainBtn.style.padding = '11px';
-		main2extraBtn.style.padding = '11px';
+		main2extraBtn.style.padding = '11px'
 	}
 	if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
 	if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
@@ -31,15 +31,11 @@ window.onload = function() {
 		greenLabel.textContent = 'Grn';
 		customLabel.textContent = 'Cust';
 		backgroundLabel.textContent = 'Bg.';
-		sentencesLabel.textContent = 'Sent.';
+		sentencesLabel.textContent = 'Sentence';
 		lockScr.style.top = "5%";
 		lockScr.style.left = "5%";
 		lockScr.style.width = "90%";
-		lockScr.style.height = "90%";
-	}
-	if(isiOS && isFile){								//don't display things that don't work on iOS app
-		introVideoText.style.display = 'none';
-		sendSMSBtn.style.display = 'none';
+		lockScr.style.height = "90%"
 	}
 	
 	//load field icons
@@ -109,8 +105,6 @@ window.onload = function() {
 	stegoBtnEmail.addEventListener('click', textStego);
 
    	image2mainBtn.addEventListener('click', image2main);
-
-   	lock2dirBtn.addEventListener('click', lock2dir);
 
    	clearLocksBtn.addEventListener('click', clearLocks);
 
@@ -250,8 +244,6 @@ window.onload = function() {
 
    	cancelPartsBtn.addEventListener('click', cancelPartsIn);
 
-	closeLockdirBtn.addEventListener('click', lock2dir);
-
    	cancelChatBtn.addEventListener('click', closeBox);
 
    	submitChatBtn.addEventListener('click', makeChat);
@@ -321,6 +313,8 @@ window.onload = function() {
 	emailBox.addEventListener('keyup', function(event) {emailKeyup(event)}, false);
 
 	imageBox.addEventListener('keyup', function(event){boxKeyup('image',event)});
+	
+	qrcodeImg.addEventListener('click', function(){qrcodeImg.style.display = 'none';mainMsg.textContent = 'QR code canceled'});
 
 //for the rich text editor boxes and buttons
 	formatBlock.addEventListener("change", function() {formatDoc('formatBlock',this[this.selectedIndex].value);this.selectedIndex=0;});
@@ -350,6 +344,7 @@ window.onload = function() {
 	document.images[18].addEventListener("click", function() {formatDoc('removeFormat')});
 	document.images[19].addEventListener("click", function() {formatDoc('undo')});
 	document.images[20].addEventListener("click", function() {formatDoc('redo')});
+	document.images[23].addEventListener("click", saveFiles);
 
 //for the help screens
 	var helpHeaders = document.getElementsByClassName("helpHeading");		//add listeners to all the help headers
@@ -372,19 +367,18 @@ window.onload = function() {
 	extraButtonsTop.style.display = 'none'
 };
 
-//for general directory
-window.addEventListener('message', receiveMessage, false);
-
-//gets Lock from the general directory iframe and puts it in Lock screen
-function receiveMessage(evt){
-  	if (evt.origin === 'https://www.passlok.com'){
-    	lockBox.textContent = evt.data;
-		suspendFindLock = true;
-		lockMsg.textContent='Give a name to this Lock and save it. Otherwise Clear.'
-  	}
+//fix for iOS Safari upon startup
+if(isMobile){
+	if(window.location.hash.match('#a') && window.location.hash.length < 10) window.location.hash = ''
 }
 
-if(!localStorage){newUser();}else if(localStorage.length == 0){newUser();};
+if(!localStorage){newUser();}else if(localStorage.length == 0){newUser();}else if(localStorage.length == 1 && localStorage['randid']){newUser();};
+
+//initialize QRcode
+var qrcode = new QRCode(document.getElementById("qrcodeImg"), {
+	width : 290,
+	height : 290
+});
 
 fillNameList();
 

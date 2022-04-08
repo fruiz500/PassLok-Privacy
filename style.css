@@ -481,9 +481,6 @@ img.intLink {
 #lock2mainBtn {
 	float: left;
 }
-#lock2dirBtn {
-	float: right;
-}
 #lockMsg {
 	height: 25px;
 }
@@ -653,10 +650,7 @@ img.intLink {
 	margin-left: auto;
 	margin-right: auto;
 }
-#closeLockdirBtn {
-	float: left;
-}
-#lockdirFrame {
-	width: 100%;
-	height: 900px
+
+#qrcodeImg {
+	top: 100px;
 }

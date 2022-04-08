@@ -99,6 +99,7 @@ function updateButtons(){
 	}else{
 		secretShareBtn.textContent = 'Split'
 	}
+	if(string.includes('href="data:')){sendSMSBtn.textContent = "Save"}else{sendSMSBtn.textContent = "SMS"}
 }
 
 //gets recognized type of string, if any, otherwise returns false. Also returns cleaned-up string
@@ -135,7 +136,7 @@ function pasteMain() {
 			secretshare();
 			return
 		}
-		var array = getType(string),
+		var array = getType(string.replace(/<(.*?)>/g,'')),
 			type = array[0],
 			lockBoxHTML = lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim();
 		if(type && type.match(/[hkdsgasoprASO]/)){							//known encrypted type: decrypt
@@ -196,7 +197,7 @@ function clearIntroEmail(){
 function lockBtnAction(){
 	var text = mainBox.innerHTML.trim();
 	if(!text){
-		mainMsg.textContent = "There's nothing to process";
+		makeQRcode();		//includes Lock
 		return
 	}
 	var array = getType(text),
@@ -247,16 +248,8 @@ function suggestIntro(){
 	keyStrength(output.trim(),true)
 }
 
-var friendsLock = '';
-
 //makes a new user account
 function newUser(){
-	var referrer = decodeURI(window.location.hash).slice(1).split('&');
-	if(referrer.length > 1){
-		friendsName.value = referrer[0].replace(/_/g,' ');
-		friendsLock = referrer[1];
-		referrerMsg.style.display = "block"
-	}
 	introscr.style.display = "block";
 	BasicButtons = true
 }
@@ -267,6 +260,7 @@ function showEmail(){
 		optionMsg.textContent = 'Email change not allowed in Guest mode. Please restart PassLok';
 		return
 	}
+	if(isMobile) window.scrollTo(0, 0);
 	if(myEmail) emailBox.value = myEmail;
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block'
@@ -278,6 +272,7 @@ function showName(){
 		optionMsg.textContent = 'Name change not allowed in Guest mode. Please restart PassLok';
 		return
 	}
+	if(isMobile) window.scrollTo(0, 0);
 	userNameBox.value = userName;
 	shadow.style.display = 'block';
 	nameScr.style.display = 'block'
@@ -427,7 +422,7 @@ function cancelKey(){
 			}
 		}
 		if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){		//new user, so display a fuller message
-			mainMsg.textContent = 'To encrypt a message for someone, you must first enter the recipient’s Lock or shared Key by clicking the Edit button'
+			mainMsg.textContent = 'To encrypt you must first enter the recipient’s Lock or shared Key via Edit button'
 		}else{
 			setTimeout(function(){mainMsg.textContent = 'You are in Guest mode. For full access, reload and enter your Key'},30)
 		}
@@ -666,6 +661,7 @@ function resetAdvModes(){
 
 //opens local directory for input if something seems to be missing
 function main2lock(){
+	if(isMobile) window.scrollTo(0, 0);
 	if(tabLinks['mainTab'].className == '') return;
 	if(Object.keys(locDir).length == 1 || Object.keys(locDir).length == 0){				//new user, so display a fuller message
 		lockMsg.textContent = 'Please enter a Lock or shared Key in the lower box. To store it, write a name in the top box and click Save'
@@ -690,42 +686,6 @@ function image2main(){
 	}
 }
 
-//go to general directory frame
-function lock2dir(){
-	if(learnMode.checked){
-		var reply = confirm("The General Directory will open so you can find or post a Lock.\nWARNING: this involves going online, which might leak metadata. Cancel if this is not what you want.");
-		if(!reply) return
-	}
-	if(keyScr.style.display == 'block') return;
-
-	loadLockDir();	
-	var locklength = stripTags(removeHTMLtags(mainBox.textContent)).length;
-	if ((locklength == 43 || locklength == 50) && lockdirScr.style.display != "block"){
-
-//if populated, send Lock to General Directory
-		var frame = document.getElementById('lockdirFrame');
-		frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');			//no formatting
-		frame.onload = function() {
-	    	frame.contentWindow.postMessage(removeHTMLtags(mainBox.innerHTML.replace(/\&nbsp;/g,'')), 'https://www.passlok.com');		//so that the Lock directory gets the Lock, too
-		}
-		lockdirScr.style.display = "block";
-		return
-	}
-	openClose('lockdirScr');
-	focusBox()
-}
-
-//return from general directory frame
-function dir2any(){
-	openClose('lockdirScr');
-	focusBox()
-}
-
-//to load general Lock directory only once
-function loadLockDir(){
-	if(document.getElementById('lockdirFrame').src != 'https://www.passlok.com/lockdir') document.getElementById('lockdirFrame').src = 'https://www.passlok.com/lockdir'
-}
-
 //opens a chat page
 function main2chat(token){
 	if(token){
@@ -739,12 +699,17 @@ function any2key(){
 	closeBox();
 	shadow.style.display = 'block';
 	keyScr.style.display = 'block';
-	if(!isMobile) pwdBox.focus();
+	if(!isMobile){
+		pwdBox.focus()
+	}else{
+		window.scrollTo(0, 0)
+	}
 	allowCancelWfullAccess = false
 }
 
 //called when the email box is empty
 function any2email(){
+	if(isMobile) window.scrollTo(0, 0);
 	shadow.style.display = 'block';
 	emailScr.style.display = 'block';
 	emailMsg.textContent = 'Please enter your new email or similar item, or a new random token';

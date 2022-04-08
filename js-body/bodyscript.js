@@ -158,3 +158,14 @@ function loadImage(){
 
 	fileReader.readAsDataURL(fileToLoad, "UTF-8");
 }
+
+//operates when the Save button is clicked
+function saveFiles(){
+	mainBox.contentEditable = 'false';
+	var files = mainBox.querySelectorAll('a'),
+		length = files.length;				//since files will be loaded as links in the main box
+	for(var i = 0; i < length; i++){		//download all files
+		if(files[i].href.includes('data:')) files[i].click()
+	}
+	mainBox.contentEditable = 'true'
+}

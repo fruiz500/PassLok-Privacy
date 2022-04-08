@@ -283,12 +283,6 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 		if(!locDir['myself']) locDir['myself'] = [];
 		locDir['myself'][0] = keyEncrypt(email);
 		if(!locDir['myself'][0]) return;
-		if(friendsLock){ 											//this will trigger if there is an invitation
-			if(friendsLock.length == 43){
-				var newEntry = JSON.parse('{"' + friendsName.value + '":["' + friendsLock + '"]}');
-				locDir = sortObject(mergeObjects(locDir,newEntry))
-			}
-		}
 		localStorage[userName] = JSON.stringify(locDir);
 		lockNames = Object.keys(locDir);
 		KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
@@ -367,15 +361,19 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
 		if(!checkKey(key)) return;							//check the key and bail out if fail
 		getSettings();
 
-		var hash = decodeURI(window.location.hash).slice(1),								//check for data in the URL
-			hashStripped = hash.match('==(.*)==') || [' ',' '];
-		hashStripped = hashStripped[1];
-		
-		hashStripped = extractLock(hashStripped);
+		var hash = decodeURI(window.location.hash).slice(1);								//check for data in the URL
+		if(hash.length == 43 || hash.length == 50){										//as from a QR code
+			var hashStripped = hash
+		}else{														//as from an invitation, etc.
+			var hashStripped = hash.match('==(.*)==') || [' ',' '];
+			hashStripped = hashStripped[1];
+			hashStripped = extractLock(hashStripped)
+		}
 		
 		if (hashStripped.length == 43 || hashStripped.length == 50){			//sender's Lock
 			lockBox.textContent = hashStripped;
-			addLock(true)
+			addLock(true);
+			
 		}else{								//process automatically the other kinds; most will need a Lock to be selected first.
 			if(hash) mainBox.textContent = hash;
 			var type = hashStripped.charAt(0);
@@ -567,7 +565,7 @@ function showLock(){
 
 	//done calculating, now display it
 	mainBox.textContent = lockDisplay();
-	mainMsg.textContent = "The Lock matching your Key is in the box. Send it to people so you can communicate with encryption";
+	mainMsg.textContent = "The Lock matching your Key is in the box. Send it to people to communicate";
 	updateButtons();
 	showLockBtn.textContent = 'Email';
 	showLockBtnBasic.textContent = 'Email';
@@ -740,11 +738,11 @@ function keyDecrypt(cipherStr,isArray){
 			cipher2 = cipher.slice(10);
 		if(isArray){
 			var plain = nacl.secretbox.open(cipher2,nonce24,KeyDir);
-			if(!plain){failedDecrypt('key');return};
+			if(!plain) return;
 			return plain
 		}else{
 			var plain = PLdecrypt(cipher2,nonce24,KeyDir,false,'key');
-			if(!plain){failedDecrypt('key');return};
+			if(!plain) return;
 			return decodeURI(plain.trim())
 		}
 	}else{
@@ -768,7 +766,7 @@ function removeHTMLtags(string){
 //this one escapes dangerous characters, preserving non-breaking spaces
 function escapeHTML(str){
 	escapeHTML.replacements = { "&": "&amp;", '"': "&quot;", "'": "&#039;", "<": "&lt;", ">": "&gt;" };
-	str = str.replace(/&nbsp;/gi,'non-breaking-space');
+	str = str.replace(/&nbsp;/gi,'non-breaking-space')
 	str = str.replace(/[&"'<>]/g, function (m){
 		return escapeHTML.replacements[m];
 	});
@@ -872,6 +870,8 @@ function randomToken(){
 
 //takes appropriate UI action if decryption fails
 function failedDecrypt(label){
+	pwdMsg.style.color = '';
+	mainMsg.style.color = '';
 	if(checkingKey){
 		shadow.style.display = 'block';
 		keyScr.style.display = 'block';
@@ -884,7 +884,6 @@ function failedDecrypt(label){
 	}else if(keyChange.style.display == 'block'){
 		keyChange.style.display = 'none';
 		pwdMsg.textContent = "The Old Key is wrong"
-	
 	}else if(label == 'decoy'){
 		mainMsg.textContent = 'No hidden message was found'
 	}else if(label == 'read-once' && !decoyMode.checked){
