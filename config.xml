@@ -9,16 +9,16 @@
     <name>PassLok</name>
 
     <description>
-        High strength accessible cryptography. 
+        High strength accessible cryptography.
     </description>
 
     <author href="https://passlok.com" email="passlokprivacy@gmail.com">
-        Francisco Ruiz 
+        Francisco Ruiz
     </author>
-    
+
 <preference name='phonegap-version' value='cli-9.0.0' />
 
-<!--Don't ask for any permissions other than file access-->	
+<!--Don't ask for any permissions other than file access-->
 <preference name="permissions" value="none"/>
 <feature name="http://api.phonegap.com/1.0/file"/>
 
@@ -48,7 +48,7 @@
     <gap:splash src="phonegap/screen/ios/screen-iphone-portrait-568h-2x.png" gap:platform="ios"     width="640" height="1136" />
     <gap:splash src="phonegap/screen/ios/screen-ipad-portrait.png"           gap:platform="ios"     width="768" height="1024" />
     <gap:splash src="phonegap/screen/ios/screen-ipad-landscape.png"          gap:platform="ios"     width="1024" height="768" />
-	<gap:splash src="phonegap/screen/ios/screen-ipad-portrait-2x.png"        gap:platform="ios"     width="1536" height="2048" />
+    <gap:splash src="phonegap/screen/ios/screen-ipad-portrait-2x.png"        gap:platform="ios"     width="1536" height="2048" />
     <gap:splash src="phonegap/screen/ios/screen-ipad-landscape-2x.png"       gap:platform="ios"     width="2048" height="1536" />
 
 </widget>

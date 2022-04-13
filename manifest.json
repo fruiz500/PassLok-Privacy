@@ -2,7 +2,7 @@
  "name": "PassLok Privacy",
  "short_name": "PassLok",
  "description": "High security asymmetric encryption for text, files and chat. You keep the Key secret and give out the matching Lock",
- "version": "2.5",
+ "version": "2.5.1",
  "manifest_version": 2,
  "icons": {
  "16": "passlok-icon16inv.png",
@@ -18,7 +18,7 @@
   },
  "browser_action": {
    "default_icon": {
-	   		"16": "passlok-icon16inv.png",
+               "16": "passlok-icon16inv.png",
            "48": "passlok-icon48inv.png"
    },
    "default_title": "PassLok Privacy"

@@ -1,5 +1,5 @@
 ﻿        /*
-		@source: https://passlok.com/app/index.html
+        @source: https://passlok.com/app/index.html
 
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
