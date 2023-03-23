@@ -16,11 +16,6 @@ window.onload = function() {
     }else{
         previewImg.style.width = "80%"					//smaller image on PCs
     }
-    if(!isMobile || isChrome){						//search box in Help tab. Works on Android Chrome, but won't detect right
-        helpTopMobile.style.display = 'none';
-        helpTop.style.display = 'block';
-        helpSpace.style.display = 'block'
-    }
     if(isAndroid){										//resize shift buttons on Android
         extra2mainBtn.style.padding = '11px';
         main2extraBtn.style.padding = '11px'

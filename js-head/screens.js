@@ -821,7 +821,7 @@ function openHelp2(){
     setTimeout(function(){parent.style.maxHeight = parent.scrollHeight + "px"},301)
 }
 
-<!--variables and functions for making tabs, by Matt Doyle 2009-->
+//variables and functions for making tabs, by Matt Doyle 2009
 var tabLinks = new Array(),
     contentDivs = new Array();
 
@@ -876,9 +876,6 @@ function showTab(){
       if(this.hash != '#optionsTab'){
           customColors.style.display = 'none';
           optionMsg.textContent = 'Change Name, Key, etc.'
-      }
-      if(this.hash != '#helpTab' && !isiOS){
-            if(helpTop.style.display != 'block') helpTop.style.display = 'block'
       }
       storeColors();
 

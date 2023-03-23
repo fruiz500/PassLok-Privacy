@@ -1,32 +1,34 @@
 {
  "name": "PassLok Privacy",
  "short_name": "PassLok",
- "description": "High security asymmetric encryption for text, files and chat. You keep the Key secret and give out the matching Lock",
- "version": "2.5.1",
- "manifest_version": 2,
+ "description": "High security asymmetric encryption and steganography for text, files and chat.",
+ "version": "2.5.3",
+ "manifest_version": 3,
  "icons": {
- "16": "passlok-icon16inv.png",
+ "16": "passlok-icon48.png",
  "48": "passlok-icon48.png",
- "128": "passlok-icon128inv.png"
+ "128": "passlok-icon128.png"
  },
- "content_security_policy": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://*.passlok.com https://passlok.com",
+ "content_security_policy": {
+  "extension_pages": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; style-src 'self' 'unsafe-inline'"
+ },
  "permissions": [
-         "storage"
+    "storage"
  ],
   "background": {
     "scripts": ["background.js"]
   },
- "browser_action": {
+ "action": {
    "default_icon": {
-               "16": "passlok-icon16inv.png",
-           "48": "passlok-icon48inv.png"
+	   		"16": "passlok-icon48.png",
+        "48": "passlok-icon48.png"
    },
    "default_title": "PassLok Privacy"
  },
 
- "applications": {
-      "gecko": {
-        "id": "privacy@passlok.com"
-      }
+ "browser_specific_settings": {
+  	"gecko": {
+    	"id": "privacy@passlok.com"
+  	}
   }
 }

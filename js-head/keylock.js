@@ -299,7 +299,9 @@ setTimeout(function(){									//do the rest after a short while to give time fo
 
 //makes a special encrypted greeting for a new user
 function makeGreeting(isNewUser){
-    var Lock = lockDisplay().split('==')[1];
+    var Lock = lockDisplay();
+    if(!Lock) return;
+    Lock = Lock.split('==')[1];
     if(isNewUser){
         var greeting = "<div>Congratulations! You have decrypted your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can encrypt messages and files that only you can decrypt:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks or shared Keys by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can encrypt items that they will be able to decrypt. If someone invited you, that person should be there already.</div><div><br></div><div>Try encrypting this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Encrypt</b></div></div><div><br></div><div>You won't be able to decrypt this back if you select someone else's name before you click <b>Encrypt</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
         Encrypt_List(['myself'],greeting);
@@ -615,6 +617,7 @@ function extractLock(string){
 
 //just to display the Lock. Gets called above and in one more place
 function lockDisplay(){
+    if(!myezLock) return;
     if(ezLokMode.checked){
         var mylocktemp = myezLock;
         mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading

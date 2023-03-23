@@ -54,6 +54,16 @@ select:focus {
     z-index: 1002;
     overflow: auto;
     background-color: white;
+    text-align: center;
+    margin: auto;
+}
+.centered {
+    text-align: center;
+    margin: auto;
+}
+.left {
+    text-align: left;
+    margin: auto;
 }
 .block_page {
     display: none;
@@ -97,7 +107,6 @@ select:focus {
     padding: 15px;
     text-decoration: none;
     width: 100%;
-    -webkit-appearance: none;
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -222,6 +231,7 @@ input[type=checkbox] {
     -moz-transform: scale(1.7); /* FF */
     -webkit-transform: scale(1.7); /* Safari and Chrome */
     -o-transform: scale(1.7); /* Opera */
+    transform: scale(1.7);
     padding: 0px;
     cursor: pointer;
     border: 1px solid #dedede;
@@ -232,6 +242,7 @@ input[type=radio] {
     -moz-transform: scale(1.7); /* FF */
     -webkit-transform: scale(1.7); /* Safari and Chrome */
     -o-transform: scale(1.7); /* Opera */
+    transform: scale(1.7);
     padding: 0px;
     cursor: pointer;
     border: 1px solid #dedede;
@@ -286,8 +297,10 @@ div.tabContent.hide {
 select {
     -webkit-appearance: button;
     -moz-appearance: button;
+    appearance: button;
     -webkit-user-select: none;
     -moz-user-select: none;
+    user-select: none;
     font-size: medium;
     width: 30%;
     margin: 0;
@@ -454,20 +467,6 @@ img.intLink {
     display: none;
 }
 
-#helpTop {
-    position: fixed;
-    background-color: inherit;
-    width: 100%;
-    top: 41px;
-    display: none;
-}
-#helpSpace {
-    background-color: inherit;
-    display: none;
-}
-#helpTopMobile {
-    display: block;
-}
 #advancedHelp {
     display: none;
 }
