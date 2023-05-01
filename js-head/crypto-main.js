@@ -347,6 +347,7 @@ function Encrypt_Single(lockBoxItem,text){
     if(qrMode.checked){
         try{
             qrcode.makeCode('passlok.com/app#' + mainBox.textContent);
+            qrcodeImg.lastChild.style.margin = "auto";                  //center QR code
             qrcodeImg.style.display = 'block'
         }catch(err){
             mainMsg.textContent = 'Error making QR code; maybe too long?\r\nEncrypted in Compatible mode'
@@ -570,7 +571,7 @@ function Encrypt_List(listArray,text){
                     if(Lock){
                         var idTag = nacl.secretbox(Lock,nonce24,idKey).slice(0,8)
                     }else{
-                        var idTag = PLencrypt(LockStr,nonce24,idKey).slice(0,8)
+                        var idTag = PLencrypt(LockStr,nonce24,idKey,false).slice(0,8)
                     }
 
                     if(turnstring != 'lock'){															//if out of turn don't change the dummy Key, this includes reset
@@ -615,18 +616,19 @@ function Encrypt_List(listArray,text){
 
     //finish off by adding the encrypted message and tags and encoding to base64
     var outString = nacl.util.encodeBase64(concatUint8Arrays(outArray,cipher)).replace(/=+$/,'');
+    if(includeMode.checked && !emailMode.checked) outString = myezLock + '//////' + outString;
 
     mainBox.textContent = '';
     if(anonMode.checked){
         if(fileMode.checked){
             if(textMode.checked){
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24msa.txt";
+                fileLink.download = "PL25msa.txt";
                 fileLink.href = "data:," + outString;
                 fileLink.textContent = "PassLok 2.4 Anonymous message (text file)"
             }else{
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24msa.plk";
+                fileLink.download = "PL25msa.plk";
                 fileLink.href = "data:binary/octet-stream;base64," + outString;
                 fileLink.textContent = "PassLok 2.4 Anonymous message (binary file)"
             }
@@ -635,18 +637,18 @@ function Encrypt_List(listArray,text){
             fileLink.textContent = "----------begin Anonymous message encrypted with PassLok--------==\r\n\r\n" + outString.match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Anonymous message encrypted with PassLok-----------"
         }else{
             var fileLink = document.createElement('pre');
-            fileLink.textContent = ("PL24msa==" + outString + "==PL24msa").match(/.{1,80}/g).join("\r\n")
+            fileLink.textContent = ("PL25msa==" + outString + "==PL25msa").match(/.{1,80}/g).join("\r\n")
         }
     }else if(onceMode.checked){
         if(fileMode.checked){
             if(textMode.checked){
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24mso.txt";
+                fileLink.download = "PL25mso.txt";
                 fileLink.href = "data:," + outString;
                 fileLink.textContent = "PassLok 2.4 Read-once message (text file)"
             }else{
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24mso.plk";
+                fileLink.download = "PL25mso.plk";
                 fileLink.href = "data:binary/octet-stream;base64," + outString;
                 fileLink.textContent = "PassLok 2.4 Read-once message (binary file)"
             }
@@ -655,18 +657,18 @@ function Encrypt_List(listArray,text){
             fileLink.textContent = "----------begin Read-once message encrypted with PassLok--------==\r\n\r\n" + (myezLock + '//////' + outString).match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Read-once message encrypted with PassLok-----------"
         }else{
             var fileLink = document.createElement('pre');
-            fileLink.textContent = ("PL24mso==" + outString + "==PL24mso").match(/.{1,80}/g).join("\r\n")
+            fileLink.textContent = ("PL25mso==" + outString + "==PL25mso").match(/.{1,80}/g).join("\r\n")
         }
     }else{
         if(fileMode.checked){
             if(textMode.checked){
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24mss.txt";
+                fileLink.download = "PL25mss.txt";
                 fileLink.href = "data:," + outString;
                 fileLink.textContent = "PassLok 2.4 Signed message (text file)"
             }else{
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24mss.plk";
+                fileLink.download = "PL25mss.plk";
                 fileLink.href = "data:binary/octet-stream;base64," + outString;
                 fileLink.textContent = "PassLok 2.4 Signed message (binary file)"
             }
@@ -675,19 +677,19 @@ function Encrypt_List(listArray,text){
             fileLink.textContent = "----------begin Signed message encrypted with PassLok--------==\r\n\r\n" + (myezLock + '//////' + outString).match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Signed message encrypted with PassLok-----------"
         }else{
             var fileLink = document.createElement('pre');
-            fileLink.textContent = ("PL24mss==" + outString + "==PL24mss").match(/.{1,80}/g).join("\r\n")
+            fileLink.textContent = ("PL25mss==" + outString + "==PL25mss").match(/.{1,80}/g).join("\r\n")
         }
     }
     if(isChatInvite){
         if(fileMode.checked){
             if(textMode.checked){
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24chat.txt";
+                fileLink.download = "PL25chat.txt";
                 fileLink.href = "data:," + outString;
                 fileLink.textContent = "PassLok 2.4 Chat invitation (text file)"
             }else{
                 var fileLink = document.createElement('a');
-                fileLink.download = "PL24chat.plk";
+                fileLink.download = "PL25chat.plk";
                 fileLink.href = "data:binary/octet-stream;base64," + outString;
                 fileLink.textContent = "PassLok 2.4 Chat invitation (binary file)"
             }
@@ -696,7 +698,7 @@ function Encrypt_List(listArray,text){
             fileLink.textContent = "----------begin Chat invitation encrypted with PassLok--------==\r\n\r\n" + (myezLock + '//////' + outString).match(/.{1,80}/g).join("\r\n") + "\r\n\r\n==---------end Chat invitation encrypted with PassLok-----------"
         }else{
             var fileLink = document.createElement('pre');
-            fileLink.textContent = ("PL24chat==" + outString + "==PL24chat").match(/.{1,80}/g).join("\r\n")
+            fileLink.textContent = ("PL25chat==" + outString + "==PL25chat").match(/.{1,80}/g).join("\r\n")
         }
     }
     mainBox.appendChild(fileLink);
@@ -704,7 +706,7 @@ function Encrypt_List(listArray,text){
     if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
     mainMsg.textContent = 'Encryption successful. Copy it now.'
     if (pfsMessage) mainMsg.textContent = "Delayed forward secrecy for at least one recipient";
-    if (resetMessage) mainMsg.textContent = "No forward secrecy for at least one recipient, who will be warned of the fact";
+    if (resetMessage) mainMsg.textContent = "No forward secrecy for at least one recipient, who will be warned";
 
     if(emailMode.checked) sendMail();
 
@@ -755,7 +757,7 @@ function decoyEncrypt(length,secKey){
 
         while(text.length < length) text = text + ' ';											//add spaces to make the number of characters required
         if(text.length > length) text = text.slice(0,length);									//truncate if needed
-        var cipher = concatUint8Arrays(nonce,PLencrypt(text,nonce24,sharedKey))
+        var cipher = concatUint8Arrays(nonce,PLencrypt(text,nonce24,sharedKey,false))
     }else{
         var cipher = nacl.randomBytes(length + 25)												//no decoy mode so padding is random; add 25 to account for mac and nonce
     }
@@ -797,7 +799,7 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
     if(type == 'h')	{																		//special human encrypted mode
         lockBox.textContent = replaceByItem(lockBoxItem);
         if(lockBox.textContent.split('~').length != 3){
-            mainMsg.textContent = 'Please supply a correct Key for human decryption: three strings separated by tildes';
+            mainMsg.textContent = 'Please supply a Key like this: three strings separated by tildes';
             return
         }
         humanEncrypt(cipherStr,false);													//when set to false the process decrypts
@@ -956,7 +958,7 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
             return
         }
         if(name == 'myself'){
-            mainMsg.textContent = 'You cannot make a Read-once message to yourself. It must be from someone else';
+            mainMsg.textContent = 'You cannot make a Read-once message to yourself';
             return
         }
         if(!locDir[name]) name = lockBoxItem;						//if the name is not displayed, try with the content of the Lock box
@@ -1146,7 +1148,7 @@ function Decrypt_List(type,cipherStr){
         var stuffForId = nacl.util.decodeUTF8(LockStr)
     }
     if(type == 'O' && name == 'myself'){
-        mainMsg.textContent = 'You cannot make a Read-once message to yourself. It must be from someone else';
+        mainMsg.textContent = 'You cannot make a Read-once message to yourself';
         return
     }
     if(type == 'S'){											//signed mode first
@@ -1234,7 +1236,7 @@ function Decrypt_List(type,cipherStr){
     if(Lock || (LockStr == '' && type == 'A')){
         var idTag = nacl.secretbox(stuffForId,nonce24,idKey).slice(0,8)
     }else{
-        var idTag = PLencrypt(LockStr,nonce24,idKey).slice(0,8)
+        var idTag = PLencrypt(LockStr,nonce24,idKey,false).slice(0,8)
     }
 
     //look for the id tag and return the bytes that follows it

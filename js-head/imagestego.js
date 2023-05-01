@@ -17,6 +17,7 @@ var importImage = function(e) {
 
     reader.onload = function(event) {
         // set the preview
+        previewImg.style.margin = 'auto';
         previewImg.style.display = 'block';
         previewImg.src = event.target.result
     }

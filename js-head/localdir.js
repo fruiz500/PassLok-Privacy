@@ -62,7 +62,7 @@ function addLock(fromMain){
         }else{
             var name = prompt("What name do you want to give to this item?");
         }
-        if(!name) return;
+        if(!name){callKey = '';lockBox.textContent = '';return};
         if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
         var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
         locDir = sortObject(mergeObjects(locDir,newEntry));
@@ -78,6 +78,7 @@ function addLock(fromMain){
             };
         }, 100)
         fillList();
+        lockBox.textContent = '';
 
             if(ChromeSyncOn && chromeSyncMode.checked){													//if Chrome sync is available, add to sync storage
                 syncChromeLock(name,JSON.stringify(locDir[name]))
@@ -366,7 +367,7 @@ function moveLockDB(){
     showLockDB();
     var datacrypt = keyEncrypt(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/\r/g,'').replace(/<br>$/,"").trim());
     if(!datacrypt) return;
-    mainBox.textContent = 'PL24dir==' + datacrypt + '==PL24dir';
+    mainBox.textContent = 'PL25dir==' + datacrypt + '==PL25dir';
     optionMsg.textContent = 'Database in Main tab';
     mainMsg.textContent = 'The item in the box contains your directory. To restore it, click Decrypt';
     setTimeout(function(){updateButtons()},50);
@@ -400,7 +401,7 @@ function moveMyself(){
     if(fullAccess){
         var datacrypt = keyEncrypt(mainBox.innerHTML.trim());					//preserve formatting
         if(!datacrypt) return;
-        mainBox.textContent = 'PL24bak==' + datacrypt+ '==PL24bak';
+        mainBox.textContent = 'PL25bak==' + datacrypt+ '==PL25bak';
         var msg = 'The item in the box contains your settings\r\nTo restore them, click Decrypt'
     }else{
         var msg = 'These are your settings, possibly including your encrypted random token\r\nYou may want to save them in a safe place.'
@@ -537,7 +538,8 @@ function acceptnewKey(){
             if(newkey.trim() == ""){
                 newKeyBox.focus()
             }else{
-                newKey2Box.focus()
+                newKey2Box.focus();
+                window.scrollTo(0, 0)
             }
         }
         return
@@ -711,13 +713,14 @@ function fillNameList(){
     nameList.style.color = '#639789';
     var list = [];
     for(var name in localStorage){
-            //this if is because of a bug in all major browsers
-        if(name != 'clear' && name != 'getItem' && name != 'key' && name!= 'length' && name != 'removeItem' && name != 'setItem' && name != 'randid'){
-            //and this, because of a bug in Safari
-            if(!name.match('com.apple.WebInspector') && name != 'locDir'){
-                list = list.concat(removeHTMLtags(name))
-            }
+        if(name == 'clear' || name == 'getItem' || name == 'key'|| name == 'length' || name == 'removeItem' || name == 'setItem' || name == 'randid'){
+          localStorage.removeItem(name)
+        }else if(!localStorage[name].includes('myself')){        //key must have a 'myself' key to be valid
+          localStorage.removeItem(name)
+        }else{
+          list = list.concat(removeHTMLtags(name))
         }
+
     }
     list.sort(function (a, b) {											//case-insensitive sort
         return a.toLowerCase().localeCompare(b.toLowerCase())

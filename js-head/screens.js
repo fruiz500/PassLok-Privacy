@@ -117,7 +117,7 @@ function getType(stringIn){
 
     if(!hasLock && type.match(/[lkgdasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){				//encrypted or signed, no Lock prepended
         return [type, string]
-    }else if(hasLock && typeGC.match(/[gasoprSO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){				//encrypted, Lock prepended
+    }else if(hasLock && typeGC.match(/[gasoprASO]/) && isBase64 && !isBase26 && isNoLock && string.length > 40){				//encrypted, Lock prepended
         return [typeGC, string]
     }else if(!hasLock && !isNoLock && isBase64 && !isBase26 && string.length > 40){											//special type for a Lock
         return ['c'	, string]
@@ -295,7 +295,7 @@ function changeName(){
     }
     recryptDB(KeyStr,userNameTemp);
     localStorage[userNameTemp] = localStorage[userName];
-    delete localStorage[userName];
+    localStorage.removeItem(userName);
     userName = userNameTemp;
 
     if(ChromeSyncOn && chromeSyncMode.checked){

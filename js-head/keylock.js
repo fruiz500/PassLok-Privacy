@@ -293,6 +293,21 @@ setTimeout(function(){									//do the rest after a short while to give time fo
     if(ChromeSyncOn) syncCheck.style.display = 'block';
     getSettings();
     if(inviteBox.checked) sendMail();
+
+    //if from a QR code or invitation, get the Lock from the URL and add it to the directory
+    var hash = decodeURI(window.location.hash).slice(1);								//check for data in the URL
+    if(hash.length == 43){										//as from a QR code
+        var hashStripped = hash
+    }else{														//as from an invitation, etc.
+        var hashStripped = hash.match('==(.*)==') || [' ',' '];
+        hashStripped = hashStripped[1];
+        hashStripped = extractLock(hashStripped)
+    }
+    if (hashStripped.length == 43 || hashStripped.length == 50){			//sender's Lock
+        lockBox.textContent = hashStripped;
+        addLock(true)
+    }
+
     setTimeout(function(){ makeGreeting(isNewUser)}, 30);									//fill Main box with a special greeting
 },30);
 }
@@ -576,43 +591,43 @@ function showLock(){
 
 //extracts Lock at the start of an item, from an invitation or PassLok for Email, or data in the URL
 function extractLock(string){
-        var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
-        if(CGParts[0].length == 50){
-            var possibleLock = CGParts[0],
-                possibleLock64 = changeBase(possibleLock, base36, base64, true);
-            string = string.slice(56)
-        }else if(CGParts[0].length == 43){
-            var possibleLock = CGParts[0],
-                possibleLock64 = possibleLock;
-            string = string.slice(49)
-        }else{
-            var possibleLock = removeHTMLtags(string)
-        }
+    var CGParts = stripTags(removeHTMLtags(string)).replace(/-/g,'').split('//////');				//if PassLok for Email or SeeOnce item, extract ezLock, filter anyway
+    if(CGParts[0].length == 50){
+        var possibleLock = CGParts[0],
+            possibleLock64 = changeBase(possibleLock, base36, base64, true);
+        string = string.slice(56)
+    }else if(CGParts[0].length == 43){
+        var possibleLock = CGParts[0],
+            possibleLock64 = possibleLock;
+        string = string.slice(49)
+    }else{
+        var possibleLock = removeHTMLtags(string)
+    }
 
-        var wordsStr = possibleLock.match('==') ? possibleLock.split('==')[1].replace(/_/g,' ').trim() : possibleLock.replace(/_/g,' ').trim(),
-            words = wordsStr.split(' ');					//for word Locks in URL
-        if(words.length == 20){
-            possibleLock = changeBase(wordsStr,wordListExp,base64,true);			//convert to base64
-            if(!possibleLock) return false
-        }
+    var wordsStr = possibleLock.match('==') ? possibleLock.split('==')[1].replace(/_/g,' ').trim() : possibleLock.replace(/_/g,' ').trim(),
+        words = wordsStr.split(' ');					//for word Locks in URL
+    if(words.length == 20){
+        possibleLock = changeBase(wordsStr,wordListExp,base64,true);			//convert to base64
+        if(!possibleLock) return false
+    }
 
-        if(possibleLock.length == 43 || possibleLock.length == 50){
-            var index = 0, foundIndex;
-            for(var name in locDir){
-                if(locDir[name][0] == possibleLock || locDir[name][0] == possibleLock64){
-                    foundIndex = index
-                }
-                index++
+    if(possibleLock.length == 43 || possibleLock.length == 50){
+        var index = 0, foundIndex;
+        for(var name in locDir){
+            if(locDir[name][0] == possibleLock || locDir[name][0] == possibleLock64){
+                foundIndex = index
             }
-            if(foundIndex != null){															//found it, so select this user
-                lockList.options[foundIndex+1].selected = true;
-                fillBox()
-            }else{																				//not found, so store after asking for a name
-                lockBox.textContent = possibleLock;
-                addLock(true)
-            }
+            index++
         }
-        return string
+        if(foundIndex != null){															//found it, so select this user
+            lockList.options[foundIndex+1].selected = true;
+            fillBox()
+        }else{																				//not found, so store after asking for a name
+            lockBox.textContent = possibleLock;
+            addLock(true)
+        }
+    }
+    return string
 }
 
 //just to display the Lock. Gets called above and in one more place
@@ -621,12 +636,12 @@ function lockDisplay(){
     if(ezLokMode.checked){
         var mylocktemp = myezLock;
         mylocktemp = mylocktemp.match(/.{1,5}/g).join("-");					//split into groups of five, for easy reading
-        mylocktemp = "PL24ezLok==" + mylocktemp + "==PL24ezLok"
+        mylocktemp = "PL25ezLok==" + mylocktemp + "==PL25ezLok"
     }else if(normalLockMode.checked){
         var mylocktemp = myLockStr;
-        mylocktemp = "PL24lok==" + mylocktemp + "==PL24lok"
+        mylocktemp = "PL25lok==" + mylocktemp + "==PL25lok"
     }else{
-        mylocktemp = "PL24wordLok==" + changeBase(myLockStr,base64,wordListExp,true) + "==PL24wordLok"
+        mylocktemp = "PL25wordLok==" + changeBase(myLockStr,base64,wordListExp,true) + "==PL25wordLok"
     }
     return mylocktemp
 }

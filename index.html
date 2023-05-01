@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>PassLok Privacy</title>
@@ -56,7 +56,7 @@
 
 <!--this used to be in TweetNaCl, but they dropped it-->
 <script src="js-opensrc/nacl-util.js"></script>
-	
+
 <!--QRcode.js by David Shim. https://github.com/davidshimjs/qrcodejs-->
 <script src="js-opensrc/qrcode.js"></script>
 
@@ -316,8 +316,8 @@
       &nbsp; Binary&nbsp;&nbsp;
       <input type="radio" name="fileModes" id="textMode" title="output file is text" />
       &nbsp; Text
+      <br><br>
       <div id='specialEncryptModes'>
-      <br>
       &nbsp;&nbsp;
       <input type="radio" name="lenghtModes" id="longMode" title="encrypted message can be as long as it needs to be" checked/>
       &nbsp; Normal&nbsp;&nbsp;
@@ -328,10 +328,15 @@
       <br><br>&nbsp;&nbsp;
       <input type="radio" name="lenghtModes" id="qrMode" title="encrypted message as QR code" />
       &nbsp; QR code
-      </div>
       <div id="syncCheck"> <br>&nbsp;&nbsp;
-      <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
-      &nbsp;Chrome sync </div>
+        <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked/>
+        &nbsp;Chrome sync </div>
+      <br><br>
+      </div>
+      &nbsp;&nbsp;
+      <input type="checkbox" id="includeMode" title="include my Lock" accesskey=""/>
+      &nbsp; Include my Lock
+      
       <div id="basicHideModes">
       <hr>
       &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
@@ -363,15 +368,15 @@
     <button class="cssbutton" id="backupSettingsBtn" value="Backup" title="backup and optionally reset options, including the email/token">Options only</button><!--
     --><button class="cssbutton" id="moveLockDBBtn" value="Move" title="archive entire local directory, then delete it">Whole Directory</button>
   </div>
-</div>	
-	
+</div>
+
 <!--Help tab-->
 <div class="tabContent" id="helpTab">
-  <br>
-  <br>
-  <br>
-  <span id='helpmsg' class="message">For instructions on how to do things, click on each title.</span>
-  <br>
+<br>
+<br>
+<br>
+<span id='helpmsg' class="message">For instructions on how to do things, click on each title.</span>
+<br>
   <!--the help items begin here-->
   <hr>
   <div class="helpHeading">
@@ -553,7 +558,8 @@
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>This mode is called Anonymous not because it provides any protection against tracking over a network, but because the identity of the sender cannot be deduced from the encrypted message. This message can be decrypted only by someone having the Key matching one of the Locks selected. Alternatively, you can write the Locks' names, one per line, in the dialog that appears whn you click the Edit button. Or you can select a List, as described in an item below, in order to encrypt for all the recipients in the List. It is okay if the tags up to the "==" signs on the Lock are missing, or carriage returns have been added (such as for a video URL).</p>
+      <p>This mode is called Anonymous not because it provides any protection against tracking over a network, but because the identity of the sender cannot be deduced from the encrypted message. This message can be decrypted only by someone having the Key matching one of the Locks selected. Alternatively, you can write the Locks' names, one per line, in the dialog that appears whn you click the Edit button. Or you can select a List, as described in an item below, in order to encrypt for all the recipients in the List. It is okay if the tags up to the "==" signs on the Lock are missing, or carriage returns have been added (such as for a video URL). If you have checked <strong>Include my Lock</strong> in the Options tab before encryption, your Lock will be prepended to the encrypted message.</p>
+      <p>Messages encrypted in this mode can be decrypted by PassLok for Email and PassLok Universal, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
   <hr>
@@ -596,7 +602,7 @@
     </div>
     <div class="helpText">
       <p> This mode is called Signed not because a digital signature is involved, but because the message can be decrypted only by
-        someone having the Key matching one of the Locks selected, and your Lock. This way, the recipient can be sure of who encrypted the message. Alternatively, you can also write the names, one per line, in the dialog that appears when you click the Edit button. You can also encrypt for all the recipients in a List by selecting a List name. It is okay to strip the tags up to the "==" signs, but not recommended.  It is also okay to split the encrypted message with line returns. This message can be decrypted only by someone having the Key matching the Lock used to encrypt it. Additionally, they must have your Lock in order to verify that it comes from you.</p>
+        someone having the Key matching one of the Locks selected, and your Lock. This way, the recipient can be sure of who encrypted the message. Alternatively, you can also write the names, one per line, in the dialog that appears when you click the Edit button. You can also encrypt for all the recipients in a List by selecting a List name. It is okay to strip the tags up to the "==" signs, but not recommended.  It is also okay to split the encrypted message with line returns. This message can be decrypted only by someone having the Key matching the Lock used to encrypt it. Additionally, they must have your Lock in order to verify that it comes from you. If you have checked <strong>Include my Lock</strong> in the Options tab before encryption, your Lock will be prepended to the encrypted message.</p>
       <p>Messages encrypted in this mode can be decrypted by PassLok for Email and PassLok Universal, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
@@ -638,8 +644,8 @@
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the box (you may have to type the name in the box for this to happen), then encrypt the message normally. The first message after a reset does not have forward secrecy, so be careful with this one. To encrypt for all recipients in a List, select the List in the top box of the Main screen. It is okay to strip the Lock tags up to the "==" signs, but not recommended.  It is also okay to split the encrypted message with line returns.</p>
-      <p>Messages encrypted in this mode can be read in SeeOnce if Compatibility mode is checked in Options.</p>
+      <p>This message can be decrypted only by someone having the Key matching one of the Locks selected, and your Lock, and then typically only once. In order to restart a Read-once conversation that has gone out of sync, clear the old data for that recipient by clicking the <strong>Reset</strong> button in the directory <strong>Edit</strong> dialog  after the recipient's name is displayed above the box (you may have to type the name in the box for this to happen), then encrypt the message normally. The first message after a reset does not have forward secrecy, so be careful with this one. To encrypt for all recipients in a List, select the List in the top box of the Main screen. It is okay to strip the Lock tags up to the "==" signs, but not recommended.  It is also okay to split the encrypted message with line returns. If you have checked <strong>Include my Lock</strong> in the Options tab before encryption, your Lock will be prepended to the encrypted message.</p>
+      <p>Messages encrypted in this mode can be read in SeeOnce if Compatibility mode is checked in Options. They can also be decrypted by PassLok for Email and PassLok Universal, if the Email mode checkbox is checked in Options before the message is encrypted.</p>
     </div>
   </div>
   <hr>
@@ -809,7 +815,7 @@
     </div>
     <div class="helpText">
       <p>This message can be decrypted only by someone having the same shared Key. It does not matter whether Anonymous or Signed mode is selected,  since they use shared Keys identically. It is okay to strip the tags up to the "==" signs, but not recommended. It is also okay to split the encrypted message with line returns. The tags will depend on the encryption mode selected. There is no special tag to indicate that a shared Key was used instead of a Lock.</p>
-      <p>Messages encrypted with a shared Key can be decrypted in PassLok for Email, PassLok Universal, and FusionKey as well. They can be decrypted in URSA if Short or Compatible mode are chosen in Options prior to encryption.</p>
+      <p>Messages encrypted with a shared Key can be decrypted in PassLok for Email, PassLok Universal, and FusionKey as well. They can be decrypted in URSA if Short or Compatible mode are chosen in Options prior to encryption. If you have checked <strong>Include my Lock</strong> in the Options tab before encryption, your Lock will be prepended to the encrypted message.</p>
     </div>
   </div>
   <hr>
@@ -1582,12 +1588,12 @@
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5.3 (March 2023) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5.4 (May 2023) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.5.3 &#169; F. Ruiz 2023
+  PassLok v2.5.4 &#169; F. Ruiz 2023
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1904,10 +1910,10 @@
 <!--QRcode, which goes away when touched-->
 <div id="qrcodeImg" class="white_content"></div>
 
-<!--Body script: window reformatting, special functions--> 
-<script src="js-body/bodyscript.js"></script> 
+<!--Body script: window reformatting, special functions-->
+<script src="js-body/bodyscript.js"></script>
 
-<!--initialization, button connections--> 
+<!--initialization, button connections-->
 <script src="js-body/initbuttons.js"></script>
 </body>
 </html>

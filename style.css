@@ -57,14 +57,6 @@ select:focus {
     text-align: center;
     margin: auto;
 }
-.centered {
-    text-align: center;
-    margin: auto;
-}
-.left {
-    text-align: left;
-    margin: auto;
-}
 .block_page {
     display: none;
     position: absolute;
@@ -77,6 +69,18 @@ select:focus {
     z-index: 1002;
     overflow: auto;
     background-color: white;
+}
+.centered {
+  text-align: center;
+  margin: auto;
+}
+.left {
+  text-align: left;
+  margin: auto;
+}
+.borderless {
+  border: 0;
+	margin: 0;
 }
 .cssbutton {
     -webkit-border-radius: 10px;
@@ -527,12 +531,6 @@ img.intLink {
 #intro1 {
     width: 98%;
     max-width: 500px;
-}
-#referrerMsg {
-    display: none;
-}
-#friendsName {
-    width: 90%;
 }
 #skipIntroBtn {
     float: right;
