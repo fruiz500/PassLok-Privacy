@@ -108,7 +108,8 @@ function makeInvitation(){
 function makeQRcode(){
     if(!refreshKey()) return;
     qrcode.makeCode('passlok.com/app#' + myLockStr);
-    mainMsg.textContent = "This QR code contains your Lock. Tap it to hide"
+    mainMsg.textContent = "This QR code contains your Lock. Tap it to hide";
+    qrcodeImg.lastChild.style.margin = "auto";            //center QR code
     qrcodeImg.style.display = 'block'
 }
 
