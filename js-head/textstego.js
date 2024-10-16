@@ -275,7 +275,7 @@ function invisibleDecoder(text){
 
 //makes phrase matrix for a given cover text, where sentences are catalogued by length mod 11
 function makePhraseMatrix(cover){
-    var phraseArray = cover.replace(/["…“”‘’„‚«»‹›¿¡]+/g,'').slice(0,-1).split(/[.,;:?!] /),
+    var phraseArray = cover.replace(/["…“”‘’„‚«»‹›¿¡\_\*\^\(\)]+/g,'').slice(0,-1).split(/[.,;:?!][ \-\—]/),
         bins = [[],[],[],[],[],[],[],[],[],[],[]];
     for(var i = 0; i < phraseArray.length; i++){
         var lengthMod12 = phraseArray[i].length % 11;
@@ -319,8 +319,8 @@ function fromPhrases(text){
         var reply = confirm("The encoded text in the main box will be replaced with the original text from which it came. Cancel if this is not what you want.");
         if(!reply) return
     }
-    text = text.replace(/&nbsp;/g,'').replace(/\n/g,'');
-    var	textArray = text.split(/[.,;:!?]/g).slice(0,-1),
+    text = text.replace(/&nbsp;/g,'').replace(/\n/g,'').trim() + ' ';
+    var	textArray = text.split(/[.,;:!?] /g).slice(0,-1),
         punctArray = text.match(/[.,;:!?]/g),
         punct = ".,;:!?",
         outArray = new Array(textArray.length);

@@ -1,10 +1,10 @@
 //this code is closely related to that available at https://github.com/fruiz500/passlok-stego
 
 //clean up some junk possibly left by JPG hiding functions
-    delete localStorage['action'];
-    delete localStorage['container'];
-    delete localStorage['method'];
-    delete localStorage['wikisafe'];
+localStorage.removeItem('action');
+localStorage.removeItem('container');
+localStorage.removeItem('method');
+localStorage.removeItem('wikisafe');
 
 // load image for hiding text and open dialog
 var importImage = function(e) {

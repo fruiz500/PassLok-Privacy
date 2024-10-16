@@ -432,22 +432,31 @@ function humanEncrypt(text,isEncrypt){
 
     //text preparation. If encrypting, convert Qs into Ks and then spaces into Qs. Punctuation other than commas into QQ
     if(isEncrypt){
-        text = text.replace(/[0-9]/g,function(match){return base26.charAt(match);}).trim();						//replace numbers with letters
-        text = text.toUpperCase().removeDiacritics();																//remove accents and make upper case
-        text = text.replace(/Q/g,'K').replace(/[.;:!?{}_()\[\]…—–―\-\s\n]/g,'Q').replace(/Q+$/,'')				//turn Q into K, spaces and punctuation into Q
+        text = text.replace(/[0-9]/g,function(match){return base26.charAt(match);}).trim();			//replace numbers with letters
+        text = text.toUpperCase().removeDiacritics();							//remove accents and make upper case
+        text = text.replace(/Q/g,'K').replace(/[.;:!?{}_()\[\]…—–―\-\s\n]/g,'Q').replace(/Q+$/,'')		//turn Q into K, spaces and punctuation into Q
+        text = text.replace(/[^A-Z]/g,'');
+
+        var cutIndex = Math.floor(Math.random() * text.length);
+        text = text.slice(cutIndex) + 'POLYCRYPT' + text.slice(0,cutIndex)         //cut and reversal
+    }else{
+        text = text.replace(/[^A-Z]/g,'')									//only base26 anyway
     }
-    text = text.replace(/[^A-Z]/g,'');																				//only base26 anyway
 
     var rawKeys = lockBox.textContent.trim().split('~');
-    for(var i = 0; i < 3; i++) rawKeys[i] = rawKeys[i].toUpperCase().removeDiacritics().replace(/[^A-Z]/g,'');	//remove accents, spaces, and all punctuation
+    for(var i = 0; i < 4; i++) rawKeys[i] = rawKeys[i].toUpperCase().removeDiacritics().replace(/[^A-Z]/g,'');	//remove accents, spaces, and all punctuation
+    var inputNum = isNaN(rawKeys[4]) ? 2: Math.max(2,Math.floor(Math.abs(rawKeys[4])));    //last entry may be a number, minimum accepted is 2
+    var globalSign = Math.pow(-1,inputNum);			//1 or -1
 
     var	base26B1arrays = makeAlphabet(compressKey(rawKeys[0],25)),
         base26B2arrays = makeAlphabet(compressKey(rawKeys[1],25)),
+        base26B3arrays = makeAlphabet(compressKey(rawKeys[2],25)),
         base26BArray1 = base26B1arrays[0],
         base26BArray2 = base26B2arrays[0],
+        base26BArray3 = base26B3arrays[0],
         base26Binverse1 = base26B1arrays[1],
         base26Binverse2 = base26B2arrays[1],
-        seed = rawKeys[2] ? rawKeys[2] : rawKeys[0];			//if seed is empty, use key 1
+        seed = rawKeys[3];
 
     var seedLength = seed.length;
     seedArray = new Array(seedLength);				//this is actually the seed mask
@@ -455,7 +464,7 @@ function humanEncrypt(text,isEncrypt){
         seedArray[i] = base26.indexOf(seed.charAt(i))
     }
 
-    var isGoodSeed = false,							//so it calculates at least once. No iteration when decrypting
+    var isGoodSeed = false,						//so it calculates at least once. No iteration when decrypting
         extendedText = text;							//initialize for decryption
   while(!isGoodSeed){
     var	rndSeedArray = new Array(seedLength);
@@ -481,7 +490,7 @@ function humanEncrypt(text,isEncrypt){
 
     //if decrypting, extract the random seed
     if(!isEncrypt){
-        for(var i = 0; i < seedLength; i++) rndSeedArray[i] = base26BArray2[(26 - base26Binverse1[textArray[i]] + seedArray[i]) % 26]
+        for(var i = 0; i < seedLength; i++) rndSeedArray[i] = base26BArray1[(26 - base26Binverse2[textArray[i]] + seedArray[i]) % 26]
     }
 
     //main calculation. First make the keystream
@@ -489,8 +498,16 @@ function humanEncrypt(text,isEncrypt){
     for(var i = 0; i < seedLength; i++){
         stream[i] = rndSeedArray[i]
     }
-    for(var i = seedLength; i < length; i++){
-        stream[i] = base26BArray1[(26 - base26Binverse2[stream[i-seedLength]] + stream[i-seedLength+1]) % 26]
+
+    //rest of the keystream
+	for(var i = seedLength; i < length; i++){
+        var sign = 1;
+        var partSum = 26*Math.floor(inputNum/2) - globalSign * base26Binverse1[stream[i-seedLength]];	//first term from top
+        for(j = 1; j < inputNum; j++){
+            partSum += stream[i-seedLength + j] * globalSign * sign;				//rest of terms, changing sign
+            sign = - sign
+        }
+        stream[i] = base26BArray3[partSum % 26]
     }
 
     //now test that the cipherstream obtained has sufficient quality, otherwise make another guess for the seed and repeat the process
@@ -508,11 +525,19 @@ function humanEncrypt(text,isEncrypt){
     stream = seedArray.concat(stream.slice(seedLength));											//replace random seed with original seed before the final operation
 
     //now combine the plaintext (ciphertext) and the keystream using the Tabula Prava, and convert back to letters
-    for(var i = 0; i < length; i++) cipherArray[i] = isEncrypt ? base26.charAt(base26BArray1[(26 - base26Binverse2[textArray[i]] + stream[i]) % 26]) : base26.charAt(base26BArray2[(26 - base26Binverse1[textArray[i]] + stream[i]) % 26]);
+    for(var i = 0; i < length; i++){
+        if(isEncrypt){
+            cipherArray[i] = base26.charAt(base26BArray2[(26 - base26Binverse1[textArray[i]] + stream[i]) % 26])
+        }else{
+            cipherArray[i] = base26.charAt(base26BArray1[(26 - base26Binverse2[textArray[i]] + stream[i]) % 26])
+        }
+    }
     var cipherText = cipherArray.join('');
 
     if(!isEncrypt){
         cipherText = cipherText.slice(seedLength);										//remove dummy seed when decrypting
+        var cutIndex = cipherText.indexOf("POLYCRYPT");                         //undo cut
+		if(cutIndex != -1) cipherText = cipherText.slice(cutIndex + 9) + cipherText.slice(0, cutIndex);
         cipherText = cipherText.replace(/QQ/g,'. ').replace(/Q/g,' ').replace(/KU([AEIO])/g,'QU$1')
     }
 
@@ -546,8 +571,6 @@ function humanEncrypt(text,isEncrypt){
     }else{
         mainMsg.textContent = 'Human decryption done. Numbers turned into characters. Commas lost. Other punctuation rendered as periods'
     }
-
-    if(emailMode.checked && isEncrypt) sendMail();
 
     callKey = ''
 }

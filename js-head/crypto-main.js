@@ -37,7 +37,7 @@ function Encrypt_Single(lockBoxItem,text){
         LockStr = replaceByItem(lockBoxNoVideo),				//if it's the name of a stored item, use the decrypted item instead, if not and it isn't a Lock, there will be a warning. This function removes tags and non-base64 chars from true Locks only
         name = lockBoxNoVideo;
 
-    if(LockStr.split('~').length == 3){																//key is three strings separated by tildes: human-computable encryption
+    if(LockStr.split('~').length == 4 || LockStr.split('~').length == 5){				//key is four strings separated by tildes, plus maybe a number: human-computable encryption
         lockBox.textContent = LockStr;
         humanEncrypt(text,true);
         return
@@ -285,7 +285,7 @@ function Encrypt_Single(lockBoxItem,text){
             if(!locDir[name][0]) return
         }
         if(turnstring != 'reset') locDir[name][3] = 'unlock';
-        if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
+        if(fullAccess) localStorage[filePrefix + userName] = JSON.stringify(locDir);
 
         if(ChromeSyncOn && chromeSyncMode.checked){									//if Chrome sync is available, change in sync storage
             syncChromeLock(name,JSON.stringify(locDir[name]))
@@ -703,7 +703,7 @@ function Encrypt_List(listArray,text){
     }
     mainBox.appendChild(fileLink);
 
-    if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
+    if(fullAccess) localStorage[filePrefix + userName] = JSON.stringify(locDir);
     mainMsg.textContent = 'Encryption successful. Copy it now.'
     if (pfsMessage) mainMsg.textContent = "Delayed forward secrecy for at least one recipient";
     if (resetMessage) mainMsg.textContent = "No forward secrecy for at least one recipient, who will be warned";
@@ -798,8 +798,8 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
 
     if(type == 'h')	{																		//special human encrypted mode
         lockBox.textContent = replaceByItem(lockBoxItem);
-        if(lockBox.textContent.split('~').length != 3){
-            mainMsg.textContent = 'Please supply a Key like this: three strings separated by tildes';
+        if(lockBox.textContent.split('~').length != 4 && lockBox.textContent.split('~').length != 5){
+            mainMsg.textContent = 'Please supply a Key like this: four strings plus optional integer, separated by tildes';
             return
         }
         humanEncrypt(cipherStr,false);													//when set to false the process decrypts
@@ -1062,7 +1062,7 @@ function Decrypt_Single(type,cipherStr,lockBoxHTML){
         locDir[name][2] = keyEncrypt(newLock);										//store the new ephemeral Lock
         if(!locDir[name][2]) return;
         locDir[name][3] = 'lock';
-        if(fullAccess) localStorage[userName] = JSON.stringify(locDir);
+        if(fullAccess) localStorage[filePrefix + userName] = JSON.stringify(locDir);
 
         if(ChromeSyncOn && chromeSyncMode.checked){									//if Chrome sync is available, change in sync storage
             syncChromeLock(name,JSON.stringify(locDir[name]))
@@ -1323,7 +1323,7 @@ function Decrypt_List(type,cipherStr){
     var plainstr = PLdecrypt(cipher,nonce24,msgKey,true);
     mainBox.innerHTML = decryptSanitizer(plainstr);											//non-whitelisted tags and attributes disabled
 
-    if(fullAccess) localStorage[userName] = JSON.stringify(locDir);				//everything OK, so store
+    if(fullAccess) localStorage[filePrefix + userName] = JSON.stringify(locDir);				//everything OK, so store
     if (!decoyMode.checked){
         if(typeByte){
             if(typeByte[0] == 172){

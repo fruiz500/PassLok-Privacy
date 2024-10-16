@@ -12,6 +12,9 @@ var keytimer = 0,
 var base36 = '0123456789abcdefghijkLmnopqrstuvwxyz',									//L is capital for readability
     base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+//for naming localStorage keys correctly if running from file
+var filePrefix = (window.location.origin == 'file://') ? 'PassLok-' : '';              //add prefix if running from file
+
 //function to test key strength and come up with appropriate key stretching. Based on WiseHash
 function keyStrength(string,location) {
     var entropy = entropycalc(string),
@@ -235,11 +238,11 @@ function initUser(){
     emailIntro.value = '';
     openClose('introscr5');
 
-    if(!localStorage[userName]){
+    if(!localStorage[filePrefix + userName]){
         locDir = {};
-        localStorage[userName] = JSON.stringify(locDir)
+        localStorage[filePrefix + userName] = JSON.stringify(locDir)
     }
-    locDir = JSON.parse(localStorage[userName]);
+    locDir = JSON.parse(localStorage[filePrefix + userName]);
     mainMsg.textContent = '';
     var blinker = document.createElement('span'),
         msgText = document.createElement('span');
@@ -273,7 +276,7 @@ setTimeout(function(){									//do the rest after a short while to give time fo
                 setTimeout(function(){fillList();}, 500);
             }
             if(email) myEmail = email;
-            localStorage[userName] = JSON.stringify(locDir);
+            localStorage[filePrefix + userName] = JSON.stringify(locDir);
             lockNames = Object.keys(locDir);
             KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;		//make the Edwards curve secret key first
             KeyDH = ed2curve.convertSecretKey(KeySgn);								//and then the Montgomery curve key
@@ -283,7 +286,7 @@ setTimeout(function(){									//do the rest after a short while to give time fo
         if(!locDir['myself']) locDir['myself'] = [];
         locDir['myself'][0] = keyEncrypt(email);
         if(!locDir['myself'][0]) return;
-        localStorage[userName] = JSON.stringify(locDir);
+        localStorage[filePrefix + userName] = JSON.stringify(locDir);
         lockNames = Object.keys(locDir);
         KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(key,email)).secretKey;
         KeyDH = ed2curve.convertSecretKey(KeySgn);
@@ -292,7 +295,6 @@ setTimeout(function(){									//do the rest after a short while to give time fo
     }
     if(ChromeSyncOn) syncCheck.style.display = 'block';
     getSettings();
-    if(inviteBox.checked) sendMail();
 
     //if from a QR code or invitation, get the Lock from the URL and add it to the directory
     var hash = decodeURI(window.location.hash).slice(1);								//check for data in the URL
@@ -321,7 +323,7 @@ function makeGreeting(isNewUser){
         var greeting = "<div>Congratulations! You have decrypted your first message.</div><div><br></div><div>Remember, this is your Lock, which you should give to other people so they can encrypt messages and files that only you can decrypt:</div><div><br></div>" + Lock + "<div><div><br></div><div>You can display it at any time by clicking <b>myLock</b> with the main box empty.</div><div><br></div><div>It is already entered into the local directory (top box), under name 'myself'. When you add your friends' Locks or shared Keys by pasting them into the main box or clicking the <b>Edit</b> button, they will appear in the directory so you can encrypt items that they will be able to decrypt. If someone invited you, that person should be there already.</div><div><br></div><div>Try encrypting this back: click on <b>myself</b> in the directory in order to select your Lock, and then click <b>Encrypt</b></div></div><div><br></div><div>You won't be able to decrypt this back if you select someone else's name before you click <b>Encrypt</b>, but that person will.</div><div><br></div><div><a href='https://passlok.com/learn'>Right-click and open this link</a> to reload PassLok along with a series of tutorials.</div>";
         Encrypt_List(['myself'],greeting);
         var welcomeMsg = document.createElement('div');
-        welcomeMsg.textContent = "Welcome to PassLok!\r\n\r\nYour Lock is:\r\n\r\n" + Lock + "\r\n\r\nYou want to give this Lock to your friends so they can encrypt messages that only you can decrypt. You will need *their* Locks in order to encrypt messages for them. You can display it any time by clicking myLock with the main box empty.\r\n\r\nEncrypted messages look like the gibberish below this line. Go ahead and decrypt it by clicking the Decrypt button.\r\n\r\n";
+        welcomeMsg.innerHTML = "<p>Welcome to PassLok!</p><p>Your Lock is:</p>" + Lock + "<p>You want to give this Lock to your friends so they can encrypt messages that only you can decrypt. You will need <b>their</b> Locks in order to encrypt messages for them. You can display it any time by clicking <b>myLock</b> with the main box empty.</p><p>Encrypted messages look like the gibberish below this line. Go ahead and decrypt it by clicking the <b>Decrypt</b> button.</p>";
         mainBox.insertBefore(welcomeMsg,mainBox.firstChild);
         mainMsg.textContent = "PassLok Privacy";
         updateButtons();
@@ -354,7 +356,7 @@ function acceptpwd(){
         pwdMsg.textContent = 'Please select a user name, or make a new one';
         return
     }
-    if(Object.keys(locDir).length == 0 && localStorage[userName]) locDir = JSON.parse(localStorage[userName]);
+    if(Object.keys(locDir).length == 0 && localStorage[filePrefix + userName]) locDir = JSON.parse(localStorage[filePrefix + userName]);
     if(firstInit){
         mainMsg.textContent = '';
         var blinker = document.createElement('span'),
@@ -372,7 +374,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
     if(locDir['myself']){
         if(!fullAccess){									//OK so far, now check that the Key is good; at the same time populate email and generate stretched Keys
             locDir['myself'][3] = 'guest mode';
-            localStorage[userName] = JSON.stringify(locDir);
+            localStorage[filePrefix + userName] = JSON.stringify(locDir);
             mainMsg.textContent = 'You have limited access to functions. For full access, reload and enter the Key'
         }
         if(!checkKey(key)) return;							//check the key and bail out if fail
@@ -417,7 +419,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
                     locDir['myself'] = JSON.parse(lockdata);
                     email = keyDecrypt(locDir['myself'][0]);
                     if(email){myEmail = email}else{return}
-                    localStorage[userName] = JSON.stringify(locDir);
+                    localStorage['PassLok-' + userName] = JSON.stringify(locDir);
                     retrieveAllSync();
                     setTimeout(function(){mainMsg.textContent = 'Settings retrieved Chrome sync';}, 500);
                 }else{													//user missing in sync: store settings
@@ -425,7 +427,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
                     locDir['myself'] = [];
                     locDir['myself'][0] = keyEncrypt(email);
                     if(!locDir['myself'][0]) return;
-                    localStorage[userName] = JSON.stringify(locDir);
+                    localStorage['PassLok-' + userName] = JSON.stringify(locDir);
                     syncChromeLock('myself',JSON.stringify(locDir['myself']));
                 }
                 lockNames = Object.keys(locDir);
@@ -440,7 +442,7 @@ setTimeout(function(){									//execute after a 30 ms delay so the key entry di
             locDir['myself'] = [];
             locDir['myself'][0] = keyEncrypt(email);
             if(!locDir['myself'][0]) return;
-            localStorage[userName] = JSON.stringify(locDir);
+            localStorage[filePrefix + userName] = JSON.stringify(locDir);
         }
         checkboxStore();
     }
@@ -496,8 +498,8 @@ var locDir = {},
 
 //function to initialize locDir and interface for the user
 function getSettings(){
-    if(userName in localStorage){
-        if(Object.keys(locDir).length == 0) locDir = JSON.parse(localStorage[userName]);	//database in Object form. Global variable
+    if(localStorage[filePrefix + userName]){
+        if(Object.keys(locDir).length == 0) locDir = JSON.parse(localStorage[filePrefix + userName]);	//database in Object form. Global variable
         lockNames = Object.keys(locDir);												//array for finding Lock names. Global variable
         if(locDir['myself']){															//initialize permanent settings
             if(!firstInit) return;														//skip the rest if it's not the first time
@@ -516,7 +518,7 @@ function getSettings(){
                     }
                 }, 500);
                 locDir['myself'][3] = 'full access';
-                localStorage[userName] = JSON.stringify(locDir);
+                localStorage[filePrefix + userName] = JSON.stringify(locDir);
             }
             code2checkbox();										//set checkboxes
 
@@ -651,7 +653,7 @@ function storemyEmail(){
     if(!locDir['myself']) locDir['myself'] = [];
     locDir['myself'][0] = keyEncrypt(readEmail());
     if(!locDir['myself'][0]) return;
-    localStorage[userName] = JSON.stringify(locDir);
+    localStorage[filePrefix + userName] = JSON.stringify(locDir);
 
     if(ChromeSyncOn && chromeSyncMode.checked){
         syncChromeLock('myself',JSON.stringify(locDir['myself']))

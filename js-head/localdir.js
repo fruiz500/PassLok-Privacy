@@ -66,7 +66,7 @@ function addLock(fromMain){
         if(isList) name = '--' + name + '--';										//dashes bracket name for Lists
         var newEntry = JSON.parse('{"' + name + '":["' + lockcrypt + '"]}');
         locDir = sortObject(mergeObjects(locDir,newEntry));
-        localStorage[userName] = JSON.stringify(locDir);
+        localStorage[filePrefix + userName] = JSON.stringify(locDir);
         lockNames = Object.keys(locDir);
         window.setTimeout(function(){											//this needs to be on a timer for iOS
             if(stripTags(lock).length == 43 || stripTags(lock).length == 50){
@@ -106,7 +106,7 @@ function removeLock(){
         var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
         if(!reply) return;
         delete locDir[fullName];
-        localStorage[userName] = JSON.stringify(locDir);
+        localStorage[filePrefix + userName] = JSON.stringify(locDir);
         lockNames = Object.keys(locDir);
         window.setTimeout(function(){										//this needs to be on a timer for iOS
             lockMsg.textContent = fullName + ' deleted';
@@ -150,7 +150,7 @@ function resetPFS(){
     }
     locDir[name][1] = locDir[name][2] = null;
     locDir[name][3] = 'reset';
-    localStorage[userName] = JSON.stringify(locDir);
+    localStorage[filePrefix + userName] = JSON.stringify(locDir);
 
         if(ChromeSyncOn && chromeSyncMode.checked){							//if Chrome sync is available, change in sync storage
             syncChromeLock(name,JSON.stringify(locDir[name]))
@@ -167,7 +167,7 @@ function findLock(){
     lockMsg.textContent = '';
     var string = removeHTMLtags(lockBox.textContent.trim()),
         stringstrip = stripTags(string),
-        index = searchStringInArrayDB(string,lockNames);
+        index = searchStringInArrayDB(stringstrip,lockNames);
     if (index >= 0){
         var name = lockNames[index];
         lockMsg.textContent = "Directory item found with name: " + name
@@ -225,7 +225,7 @@ function showLockDB(){
         var reply = confirm("The complete directory of Locks, shared Keys, etc. stored under the current user name will be displayed. Cancel if this is not what you want.");
         if(!reply) return
     }
-    if(localStorage[userName] != "{}"){
+    if(localStorage[filePrefix + userName] != "{}"){
         lockBox.textContent = JSON.stringify(locDir,null,4).replace(/": \[\n/g,':\n').replace(/\],/g,'').replace(/[{}"\] ,]/g,'').trim()
         lockMsg.textContent = 'These are the items stored under the current user name'
     }else{
@@ -280,7 +280,7 @@ function mergeLockDB(){
         var newDB = JSON.parse('{"' + lockstr.replace(/<br><br>/g,'"],"').replace(/:<br>/g,'":["').replace(/<br>/g,'","') + '"]}');
         newDB = realNulls(newDB);
         locDir = sortObject(mergeObjects(locDir,newDB));
-        localStorage[userName] = JSON.stringify(locDir);
+        localStorage[filePrefix + userName] = JSON.stringify(locDir);
         lockNames = Object.keys(locDir);
 
         if(ChromeSyncOn && chromeSyncMode.checked){
@@ -384,7 +384,7 @@ function moveLockDB(){
     }
 
     locDir = {};
-    delete localStorage[userName];
+    localStorage.removeItem(filePrefix + userName);
     lockNames = [];
     optionMsg.textContent = 'Stored items erased';
     fillList();
@@ -414,7 +414,7 @@ function moveMyself(){
     var reply = confirm("Your settings, including the email/token, have been backed up. If you click OK, they will now be erased from this device. This cannot be undone.");
     if (!reply) return;
     delete locDir['myself'];
-    localStorage[userName] = JSON.stringify(locDir);
+    localStorage[filePrefix + userName] = JSON.stringify(locDir);
     lockNames = Object.keys(locDir);
     fillList();
     mainMsg.textContent = 'Your settings, including the email/token, have been erased\r\n' + msg;
@@ -510,7 +510,7 @@ function recryptDB(newKey,newUserName){
     myezLock = changeBase(myLockStr, base64, base36, true);
     locDir['myself'][0] = keyEncrypt(email);
     if(!locDir['myself'][0]) return;
-    localStorage[userName] = JSON.stringify(locDir);
+    localStorage[filePrefix + userName] = JSON.stringify(locDir);
 
     if(ChromeSyncOn && chromeSyncMode.checked && index == 0){
         syncChromeLock(name,JSON.stringify(locDir['myself']))
@@ -620,7 +620,7 @@ function fillList(){
             fragment.appendChild(opt2)
         }
         for(var name in locDir){
-            if(locDir[name][0] && locDir[name][0].length < 500){
+            if(locDir[name][0]){
                 var opt = document.createElement("option");
                 opt.value = name;
                 opt.textContent = name;
@@ -677,14 +677,17 @@ function fillBox(){
         }
         lockBox.innerHTML = list.replace(/<br>/i,'').trim();				//remove first linefeed
     }else if(covername){
-        var msg = covername + ' Cover text loaded'
+        if(extraButtonsTop.style.display == 'block'){
+            var msg = covername + ' Cover text loaded'
+        }else{
+            var msg = 'Key for Pad mode loaded'
+        }
     }else{
         var msg = ''
     }
     mainMsg.textContent = msg.trim().replace(/,$/,'');
     lockMsg.textContent = '';
     isList = false;
-    updateButtons();
     callKey = ''
 }
 
@@ -698,7 +701,7 @@ function resetList(){
         var l = lockBox.textContent.trim().length;
         if(l == 0){
             mainMsg.textContent = 'Nobody selected'
-        }else if(l > 500){
+        }else if(l > 500 && lockBox.textContent.includes(' ')){
             mainMsg.textContent = 'Click Edit to see the Cover text'
         }else{
             mainMsg.textContent = 'Click Edit to see loaded Keys'
@@ -718,7 +721,11 @@ function fillNameList(){
         }else if(!localStorage[name].includes('myself')){        //key must have a 'myself' key to be valid
           localStorage.removeItem(name)
         }else{
-          list = list.concat(removeHTMLtags(name))
+            if(filePrefix != ''){
+                if(name.includes(filePrefix)) list = list.concat(removeHTMLtags(name.slice(filePrefix.length)))       //remove the PassLok- prefix, if any
+            }else{
+                list = list.concat(removeHTMLtags(name))
+            }
         }
 
     }

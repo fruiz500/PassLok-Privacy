@@ -217,10 +217,7 @@ function updateBtnColor(isPicker){
     while(btnTextSheet.cssRules.length){
         removeCSSRule(btnTextSheet,".cssbutton")
     }
-    addCSSRule(btnTextSheet, ".cssbutton", "color:#" + milder(fgColor[2],'28'));
-    decryptBtn.style.color = '#' + fgColor[2];
-    decryptBtnBasic.style.color = '#' + fgColor[2];
-    decryptBtnEmail.style.color = '#' + fgColor[2];
+    addCSSRule(btnTextSheet, ".cssbutton", "color:#" + fgColor[2]);
 }
 
 //and for boxes (index 3)

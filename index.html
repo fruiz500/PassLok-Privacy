@@ -36,7 +36,7 @@
 <!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
 <script src="js-opensrc/lz-string.js"></script>
 
-<!--DOMPurify, used to sanitize decrypted material before putting in DOM v3.0.1. https://github.com/cure53/DOMPurify-->
+<!--DOMPurify, used to sanitize decrypted material before putting in DOM v3.1.7. https://github.com/cure53/DOMPurify-->
 <script src="js-opensrc/purify.js"></script>
 
 <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
@@ -48,13 +48,13 @@
 <!--jssteg-1.0.js-->
 <script src="js-opensrc/jssteg-1.0.js"></script>
 
-<!--isaac seedable PRNG by Yves-Marie Rinquin. https://github.com/rubycon/isaac.js/blob/master/isaac.js-->
+<!--isaac seedable PRNG by Yves-Marie Rinquin. https://github.com/rubycon/isaac.js-->
 <script src="js-opensrc/isaac.js"></script>
 
 <!--color picker by Jan Odvarko. Edited so images are included, and to make it smaller. https://github.com/odvarko/JSColor-->
 <script src="js-opensrc/jscolor.js"></script>
 
-<!--this used to be in TweetNaCl, but they dropped it-->
+<!--this used to be in TweetNaCl, but they dropped it. https://github.com/dchest/tweetnacl-util-js-->
 <script src="js-opensrc/nacl-util.js"></script>
 
 <!--QRcode.js by David Shim. https://github.com/davidshimjs/qrcodejs-->
@@ -88,9 +88,6 @@
 
 <!--local Directory functions-->
 <script src="js-head/localdir.js"></script>
-
-<!--functions for switching screens, etc.-->
-<script src="js-head/screens.js"></script>
 
 <!--for changing screen colors-->
 <script src="js-head/colors.js"></script>
@@ -859,7 +856,7 @@
     <div class="helpText">
       <p>Pad mode is <em>theoretically impossible to break</em>, even by brute force. Use it when you need utmost security. The text material can be taken from a digital book, for instance. You may transmit in plaintext the page number and starting position, so long as the text source is kept secret.</p>
       <p>It is okay to split the encrypted message with line returns or to eliminate the tags at either end. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>Messages encrypted this way can also be decrypted in URSA.</p>
+      <p>Messages encrypted this way can also be decrypted in KyberLock and URSA.</p>
     </div>
   </div>
   <hr>
@@ -880,7 +877,7 @@
       <p>It is okay if the message is broken up by
         carriage returns or is
         missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>URSA messages encrypted this way can also be decrypted in PassLok.</p>
+      <p>KyberLock and URSA messages encrypted this way can also be decrypted in PassLok.</p>
     </div>
   </div>
   <hr>
@@ -888,19 +885,19 @@
     <h3>Encrypt in Human mode, so it can be decrypted by hand</h3>
   </div>
   <div class="helpText">
-      <p>1. If the three-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
+    <p>1. If the four- or five-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
     <ul>
-      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by tildes </em>&quot;~&quot;. Then click <strong>Done</strong>.    </li>
+      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>four text strings separated by tildes </em>"~", optionally followed by another tilde and a (low) integer number. Then click <strong>Done</strong>.</li>
     </ul>
-    <p>2. Write the message in the lower box of the <strong>Main</strong> tab. This mode understands only Latin characters, and removes any accents and diacritic marks. </p>
-    <p>3. Click the <strong>Encrypt</strong> button.    </p>
+    <p>2. Write the message in the lower box of the <strong>Main</strong> tab. This mode understands only Latin characters, and removes any accents and diacritic marks.</p>
+    <p>3. Click the <strong>Encrypt</strong> button.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=npROBlHjxmc" target="_blank">https://www.youtube.com/watch?v=npROBlHjxmc</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
       <p>This mode engages automatically if the Key consists of three strings separated by tildes. If you have a single string, write two tildes after it in order to use this mode. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab or on the <strong>Options</strong> tab.</p>
-      <p>The method is described in detail in this page, which can also encrypt and decrypt messages: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. URSA can also encrypt and decrypt in this mode. Even though encryption and decryption can be performed without a computer, security against computer-based cryptanalysis is comparable to that of computer-based ciphers.</p>
+      <p>The method is described in detail in this page, which can also encrypt and decrypt messages: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. KyberLock and URSA can also encrypt and decrypt in this mode. Even though encryption and decryption can be performed without a computer, security against computer-based cryptanalysis is comparable to that of computer-based ciphers.</p>
     </div>
   </div>
   <hr>
@@ -908,19 +905,19 @@
     <h3>Decrypt a message encrypted in Human mode (tags are PL**msh)</h3>
   </div>
   <div class="helpText">
-    <p>1. If the three-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
-    <ul>
-      <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>three strings separated by tildes </em>&quot;~&quot;. Then click <strong>Done</strong>.</li>
-    </ul>
-    <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
-    <p>3. Click the <strong>Decrypt</strong> button if decrypting does not start automatically. Unlike in other modes, you won't get a message telling you whether or not the decryption has been successful.</p>
+    <p>1. If the four- or five-part Key shared with the recipient has been previously stored in the local directory, simply select its name in the top box of the <strong>Main</strong> tab.</p>
+        <ul>
+          <li>If not, click the <strong>Edit</strong> button next to the directory box and type the Human mode Key, which consists of <em>four text strings separated by tildes </em>"~", plus an optional (low) integer number. Then click <strong>Done</strong>.</li>
+        </ul>
+        <p>2. Paste the encrypted message in the lower box of the <strong>Main</strong> tab.</p>
+        <p>3. Click the <strong>Decrypt</strong> button if decrypting does not start automatically. Unlike in other modes, you won't get a message telling you whether or not the decryption has been successful.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=npROBlHjxmc" target="_blank">https://www.youtube.com/watch?v=npROBlHjxmc</a></p>
     <div class="helpHeading2">
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
       <p>It is okay if the message is broken up by carriage returns or is missing its tags. It doesn't matter which encryption mode is selected at the botton of the <strong>Main</strong> tab.</p>
-      <p>If you want to learn how to encrypt or decrypt in this mode, using simply paper and pencil, look at the instructions in this page, which also does encryption and decryption: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. URSA can also encrypt and decrypt in this mode.</p>
+      <p>If you want to learn how to encrypt or decrypt in this mode, using simply paper and pencil, look at the instructions in this page, which also does encryption and decryption: <a href="https://passlok.com/human" target="_blank">https://passlok.com/human</a>. KyberLock and URSA can also encrypt and decrypt in this mode.</p>
     </div>
   </div>
   <hr>
@@ -1588,12 +1585,12 @@
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5.4 (May 2023) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5.5 (October 2024) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.5.4 &#169; F. Ruiz 2023
+  PassLok v2.5.5 &#169; F. Ruiz 2024
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1748,14 +1745,11 @@
   <div id="intro5" class="left">
     <button class="cssbutton" id="backtointro4" value="back" title="back to step 4">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 5 of 5<br>
-    <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's Main screen, along with some further instructions. You want to send that Lock to your friends so they can send you encrypted messages. You can do this any time by clicking the Email button or just by clicking the checkbox below.</p>
+    <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's Main screen, along with some further instructions. You want to send that Lock to your friends so they can send you encrypted messages. You can do this any time by clicking the Email button.</p>
     <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more features, go to the Options tab and check the Advanced checkbox. There is also Email mode, which makes this app fully compatible with <em>PassLok for Email</em>.</p>
     <p>You may not see this screen again, but comprehensive help is always available on the Help tab.</p>
   </div>
   <div class="centered">
-    <input type="checkbox" id="inviteBox" />
-    &nbsp; Email my Lock&nbsp;&nbsp;<br>
-    <br>
     <button class="cssbutton centered" id="showlockIntroBtn" value="Make Lock" title="make matching Lock and open Main tab">Finish</button>
     <br>
     <br>
@@ -1897,7 +1891,7 @@
   <button class="cssbutton" id="decodeImgBtn" value="Reveal" title="extract hidden content and put it in main box">Reveal</button>
   <br>
   <br>
-  <input type="text" class="cssbox" id="imageBox" title="use a password for better undetectability" placeholder="optional Password"/><img id='imageIcon' class="field-icon" src="" title="click this to see/hide the Password">
+  <input type="password" class="cssbox" id="imageBox" title="use a password for better undetectability" placeholder="optional Password"/><img id='imageIcon' class="field-icon" src="" title="click this to see/hide the Password">
   <br>
   <br>
   <div id="imageMsg" class="message"></div>
@@ -1909,6 +1903,9 @@
 
 <!--QRcode, which goes away when touched-->
 <div id="qrcodeImg" class="white_content"></div>
+
+<!--functions for switching screens, etc.-->
+<script src="js-body/screens.js"></script>
 
 <!--Body script: window reformatting, special functions-->
 <script src="js-body/bodyscript.js"></script>
