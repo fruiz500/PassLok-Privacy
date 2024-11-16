@@ -33,7 +33,7 @@ function applySignature(textStr){
     }
 
     //main signing instruction, prefix is l
-    var sealedText = nacl.util.encodeBase64(concatUint8Arrays([150],concatUint8Arrays(padding,nacl.sign(encodedText,KeySgn)))).replace(/=+$/,'');
+    var sealedText = nacl.util.encodeBase64(concatUi8([[150],padding,nacl.sign(encodedText,KeySgn)])).replace(/=+$/,'');
 
     mainBox.textContent = '';
     if(fileMode.checked){
@@ -115,7 +115,9 @@ function verifySignature(textStr,LockStr){
         if(result.join().match(",61,34,100,97,116,97,58,")){
             mainBox.innerHTML = decryptSanitizer(nacl.util.encodeUTF8(result))
         }else{
-            mainBox.innerHTML = decryptSanitizer(LZString.decompressFromUint8Array(result))									//decompress and filter
+            mainBox.innerHTML = decryptSanitizer(LZString.decompressFromUint8Array(result));			//decompress and filter
+            var mainTxt = mainBox.textContent;
+            if(mainTxt.length == 43 || mainTxt.length == 50) extractLock(mainTxt)                       //it's a Lock, so offer to save it
         }
         setTimeout(function(){if(!decoyMode.checked) mainMsg.textContent = 'Seal ownership is VERIFIED for: ' + name},500)				//apply a delay so this appears last
     }else{
@@ -161,7 +163,7 @@ function padEncrypt(text){
 
     var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex),				//main encryption event
         macBin = padMac(textBin, keyTextBin, nonce, startIndex),						//make mac
-        outStr = nacl.util.encodeBase64(concatUint8Arrays([116],concatUint8Arrays(nonce,concatUint8Arrays(macBin,cipherBin)))).replace(/=+$/,'');
+        outStr = nacl.util.encodeBase64(concatUi8([[116],nonce,macBin,cipherBin])).replace(/=+$/,'');
 
     if(shortMode.checked){
         mainBox.textContent = outStr

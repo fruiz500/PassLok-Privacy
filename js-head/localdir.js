@@ -52,6 +52,13 @@ function addLock(fromMain){
             var lockcrypt = changeBase(lock, wordListExp, base64, true);
             if(!lockcrypt) return;
             lockBox.textContent = lockcrypt
+        }else if(addLockBtn.textContent == "Export" && lockName){                       //previously found: sign and put in Main box
+            mainBox.textContent = locDir[lockName][0];
+            signVerify();
+            lockMsg.textContent = mainMsg.textContent = 'Sealed Lock in Main box. Copy and send';
+            lockBox.textContent = '';
+            lockName = '';
+            return
         }else{
             if (lock.length > 500) lock = LZString.compressToBase64(lock).replace(/=/g,'');			//cover texts are compressed
             var	lockcrypt = keyEncrypt(lock);
@@ -89,10 +96,10 @@ function addLock(fromMain){
     }
 }
 
-//delete a particular key in Object locDir, then store
-function removeLock(){
+//rename or delete a particular key in Object locDir, then store
+function renameLock(){
     if(!fullAccess){
-        lockMsg.textContent = 'Delete not available in Guest mode\r\nPlease restart PassLok';
+        lockMsg.textContent = 'Rename not available in Guest mode\r\nPlease restart PassLok';
         return
     }
     var	name = lockBox.textContent.trim(),
@@ -103,22 +110,37 @@ function removeLock(){
             lockMsg.textContent = 'There is a button to reset your options in the Options tab';
             return
         }
-        var reply = confirm("The item displayed in the box will be removed from the permanent directory. This is irreversible. Cancel if this is not what you want.");
-        if(!reply) return;
-        delete locDir[fullName];
-        localStorage[filePrefix + userName] = JSON.stringify(locDir);
-        lockNames = Object.keys(locDir);
-        window.setTimeout(function(){										//this needs to be on a timer for iOS
-            lockMsg.textContent = fullName + ' deleted';
-            lockBox.textContent = ''
-        }, 100);
-        fillList();
-
-            if(ChromeSyncOn && chromeSyncMode.checked){						//if Chrome sync is available, remove from sync storage
-                if(confirm('Item removed from local storage. Do you want to remove it also from sync storage?')) remChromeLock(fullName)
+        var reply = prompt("Please provide a new name for the item displayed in the box. It will be irreversibly deleted if you keep 'Delete' selected",'Delete');
+        if(reply && reply != fullName){
+            if(reply.toLowerCase() != 'delete'){
+                locDir[reply] = locDir[fullName] 
             }
+            delete locDir[fullName];
+            locDir = sortObject(locDir);                                        //alphabetical order
+            localStorage[filePrefix + userName] = JSON.stringify(locDir);
+            lockNames = Object.keys(locDir);
+            window.setTimeout(function(){										//this needs to be on a timer for iOS
+                if(reply.toLowerCase() != 'delete'){
+                    lockMsg.textContent = fullName + ' renamed to ' + reply
+                }else{
+                    lockMsg.textContent = fullName + ' deleted'
+                }
+                lockBox.textContent = '';
+                addLockBtn.textContent = "Rand."
+            }, 100);
+            fillList();
 
-        suspendFindLock = false
+                if(ChromeSyncOn && chromeSyncMode.checked){		//if Chrome sync is available, change in sync storage
+                    if(confirm('Item changed in local storage. Do you want to change it also in sync storage?')){
+                        if(reply) syncChromeLock(reply,JSON.stringify(locDir[reply]));
+                        remChromeLock(fullName)
+                    } 
+                }
+
+            suspendFindLock = false
+        }else{
+            lockMsg.textContent = 'Rename canceled'
+        }
     }else{
         lockMsg.textContent = 'To delete an item, first type its name in the box until it is recognized';
     }
@@ -161,7 +183,7 @@ function resetPFS(){
 }
 
 var suspendFindLock = false							//when true, user can input a name without deleting the Lock box
-
+var lockName = '';                                  //for exporting Locks
 //searches for name in Locks database and returns the Lock, displays full name as well. Invoked as the user types
 function findLock(){
     lockMsg.textContent = '';
@@ -169,10 +191,16 @@ function findLock(){
         stringstrip = stripTags(string),
         index = searchStringInArrayDB(stringstrip,lockNames);
     if (index >= 0){
-        var name = lockNames[index];
-        lockMsg.textContent = "Directory item found with name: " + name
+        lockName = lockNames[index];
+        if(locDir[lockName][0].length == 43 || locDir[lockName][0].length == 50){
+            lockMsg.textContent = "Directory item found with name: " + lockName;
+            addLockBtn.textContent = "Export"
+        }else{
+            lockMsg.textContent = "Directory item found with name: " + lockName
+        }
     }else{
-        lockMsg.textContent = ''
+        lockMsg.textContent = '';
+        lockName = ''
     }
 }
 
@@ -597,6 +625,7 @@ function fillList(){
         opt3.value = "default";
         opt3.textContent = "default";
         fragment.appendChild(opt3);
+        locDir = sortObject(locDir);
         for(var name in locDir){
             if(locDir[name][0].length > 500){										//only cover texts, which are long
                 var opt = document.createElement("option");
@@ -619,6 +648,7 @@ function fillList(){
             opt2.textContent = "Select recipients (ctrl-click for several):";
             fragment.appendChild(opt2)
         }
+        locDir = sortObject(locDir);
         for(var name in locDir){
             if(locDir[name][0]){
                 var opt = document.createElement("option");
@@ -685,6 +715,7 @@ function fillBox(){
     }else{
         var msg = ''
     }
+    mainMsg.style.color = '';
     mainMsg.textContent = msg.trim().replace(/,$/,'');
     lockMsg.textContent = '';
     isList = false;
@@ -699,6 +730,7 @@ function resetList(){
       }
     setTimeout(function(){
         var l = lockBox.textContent.trim().length;
+        mainMsg.style.color = '';
         if(l == 0){
             mainMsg.textContent = 'Nobody selected'
         }else if(l > 500 && lockBox.textContent.includes(' ')){

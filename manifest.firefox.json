@@ -1,34 +1,34 @@
 {
- "name": "PassLok Privacy",
- "short_name": "PassLok",
- "description": "High security asymmetric encryption and steganography for text, files and chat.",
- "version": "2.5.4",
- "manifest_version": 3,
- "icons": {
- "16": "passlok-icon48.png",
- "48": "passlok-icon48.png",
- "128": "passlok-icon128.png"
- },
- "content_security_policy": {
-  "extension_pages": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; style-src 'self' 'unsafe-inline'"
- },
- "permissions": [
-    "storage"
- ],
-  "background": {
-    "scripts": ["background.js"]
+  "name": "PassLok Privacy",
+  "short_name": "PassLok",
+  "description": "High security asymmetric encryption and steganography for text, files and chat.",
+  "version": "2.6",
+  "manifest_version": 3,
+  "icons": {
+    "16": "passlok-icon48.png",
+    "48": "passlok-icon48.png",
+    "128": "passlok-icon128.png"
   },
- "action": {
-   "default_icon": {
-	   		"16": "passlok-icon48.png",
-        "48": "passlok-icon48.png"
+  "content_security_policy": {
+   "extension_pages": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; style-src 'self' 'unsafe-inline'"
+  },
+  "permissions": [
+     "storage"
+  ],
+   "background": {
+     "scripts": ["background.js"]
    },
-   "default_title": "PassLok Privacy"
- },
+  "action": {
+    "default_icon": {
+          "16": "passlok-icon48.png",
+         "48": "passlok-icon48.png"
+    },
+    "default_title": "PassLok Privacy"
+  },
 
- "browser_specific_settings": {
-  	"gecko": {
-    	"id": "privacy@passlok.com"
-  	}
+  "browser_specific_settings": {
+      "gecko": {
+        "id": "privacy@passlok.com"
+      }
   }
 }

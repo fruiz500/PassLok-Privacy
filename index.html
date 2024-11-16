@@ -2,9 +2,9 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="passlok.appcache">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>PassLok Privacy</title>
-<meta name="Keywords" content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
-<meta name="Description" content="PassLok privacy">
+<title>PassLok</title>
+<meta name="Keywords" content="passlok, privacy, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
+<meta name="Description" content="PassLok">
 <meta name="author" content="F. Ruiz">
 <meta name="robots" content="index">
 <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
@@ -113,13 +113,23 @@
 
     <!--message area and local directory box, plus buttons-->
     <div id="mainMsg" class="message">Welcome to PassLok</div>
-    <br>
-    <br>
-    <select class="cssbox" id='lockList' size='4' multiple title="Hold Ctrl or cmd to select several items">
+    <table class="centered" id="recipientsTbl">
+      <tr>
+        <td width="70%">
+    <select class="cssbox" id='lockList' size='5' multiple title="Hold Ctrl or cmd to select several items">
         <option value="" disabled selected>Select recipients (ctrl-click for several):</option>
     </select>
-    <button class="cssbutton" id="resetListBtn" value="resetList" title="reset selection (alt-0)" accesskey="0">Deselect</button>
-    <button class="cssbutton" id="main2lockBtn" value="editLocks" title="add or edit items in the local directory (alt-E)" accesskey="e">Edit</button>
+    </td>
+    <td>
+      <span class="hide" id="dropBtns">
+      <p><button class="smallbutton" id="makeKeyBtn" title="Make or update a Folder Key for selected users">New Folder Key</button></p>
+		<label for="folderMode" class="smallbutton" title="in Folder mode all files use the same key; you start by loading an encrypted Folder key"><input type="checkbox" id="folderMode">&nbsp;Folder mode</label></span>
+    <p>
+    <button class="smallbutton" id="resetListBtn" value="resetList" title="reset selection (alt-0)" accesskey="0">Deselect</button>
+    <button class="smallbutton" id="main2lockBtn" value="editLocks" title="add or edit items in the local directory (alt-E)" accesskey="e">Edit</button></p>
+    </td>
+    </tr>
+    </table>
     <br>
     <br>
 
@@ -230,6 +240,12 @@
 <img class="intLink" title="Download files" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAdVBMVEUAAAAfHx9GRkYAAAAPDw9aWlr+/v739/fHx8dpaWkEBAT7+/v29vby8vLu7u7Z2dm1tbWysrKtra2qqqqMjIxWVlZJSUk1NTUUFBQJCQnz8/Pq6uri4uLMzMzKysq+vr69vb2NjY16enpvb29hYWE9PT0rKytDpsqlAAAAAXRSTlMAQObYZgAAAHdJREFUGNO1zscOgCAMgGG0iIp77z3e/xEV05CoJJ78D9B86aHkO6bUuXBUnFWuig1q/sTs5PclyR7YpZ+vD+4rrSg3mJ7rFgWA9EZhcPmlbuyh1mCLr0vEO0CI7HPB2AgRTh43mORYMstBk3HaEqxZdFlmkZ87AICHBL2TAUCPAAAAAElFTkSuQmCC" />
 </div>
   </div>
+
+  <input type="file" id="fileIn" class="hide" multiple></input>
+  <label for="fileIn" id="fileLbl" class="dropTarget hide" title="drop a File or a Folder key here">
+    <img id="fileImg" class="smallImg" src="">
+  </label>
+
   <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";" placeholder="Write or paste your message here. You can use nice formatting and add images and files if you click Rich. To encrypt or decrypt, select the correspondents in the top box, then click the button. Add more correspondents by pasting their Locks in this box."></div>
   <div class="centered">
     <!--buttons below the main box-->
@@ -239,7 +255,7 @@
 --><button class="cssbutton" id="clearMainBtn" value="Clear" title="clear the text in the box">Clear</button><!--
 --><button class="cssbutton" id="chatBtn" value="Chat" title="make a chat invitation or open it (alt-C)" accesskey="c">Chat</button><!--
 --><button class="cssbutton" id="sendSMSBtn" value="SMS" title="mobile: open the default Texting app">SMS</button>
-    </div>
+    <br>
     <br>
     <input type="radio" name="lockmodes" id="anonMode"  title="anonymous encryption mode; recipient's Lock needed (alt-N)" accesskey="n" checked/>
     <span id="anonLabel">&nbsp;Anonymous&nbsp;&nbsp;</span>
@@ -247,6 +263,7 @@
     &nbsp; Signed &nbsp;&nbsp;
     <input type="radio" name="lockmodes" id="onceMode" title="Read-once encryption mode; messages become unreadable after being read once (alt-1)" accesskey="1"/>
     &nbsp; Read-once </div>
+  </div>
 </div>
 
 <!--Options tab-->
@@ -254,13 +271,17 @@
   <br>
   <br>
   <form name="optionchecks">
-    &nbsp;&nbsp;<span id="modeLabel">Interface:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    &nbsp;&nbsp;<span id="modeLabel">Interface:&nbsp;&nbsp;</span>
+    <br><br>
+    &nbsp;&nbsp;
     <input type="radio" name="interfacemodes" id="basicMode"  title="basic mode; only essential functions (alt-B)" accesskey="b" checked/>
     &nbsp; Basic&nbsp;&nbsp;
     <input type="radio" name="interfacemodes" id="advancedMode" title="advanced mode; all functions available (alt-A)" accesskey="a"/>
-    &nbsp; Advanced&nbsp;&nbsp;
+    &nbsp; Adv.&nbsp;&nbsp;
     <input type="radio" name="interfacemodes" id="emailMode" title="PassLok for Email compatible output"/>
-    &nbsp; Email
+    &nbsp; Email&nbsp;&nbsp;
+    <input type="radio" name="interfacemodes" id="dropMode" title="drop mode; for drag and drop files (alt-D)" accesskey="d"/>
+    &nbsp; File Drop&nbsp;
     <hr>
     &nbsp;&nbsp;Color scheme:&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="radio" name="colormodes" id="liteStyle" title="switch back to default light style" checked/>
@@ -740,21 +761,45 @@
       <p>Chrome does not display the <strong>Save link as</strong> option if the file is larger than 1.5MB. Be aware that mobile devices (especially on iOS) place severe restrictions on what files can be saved, and where.</p>
     </div>
   </div>
-    <hr>
-    <div class="helpHeading">
-      <h3>File output</h3>
-    </div>
-    <div class="helpText">
-      <p>If you select <strong>File output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting, the result of the operation appears as a file (several, in the case of splitting), which you can then save anywhere with the Save button. Doing this will speed up things considerably if you are encrypting, sealing, or splitting something large.</p>
-      <p>The file can be either binary with extension .plk (default), or text with extension .txt. This can be selected on the <strong>Options</strong> tab.</p>
-      <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Sm4f6FIOShI" target="_blank">https://www.youtube.com/watch?v=Sm4f6FIOShI</a></p>
-     <div class="helpHeading2">
-      <p><em>Click here for More:</em></p>
-    </div>
-    <div class="helpText">
-     <p>An output item loaded as a file can be decrypted, unsealed, or joined just like an item loaded as text. It can also be sent by email as an attachment, which is handy when the item is large. Feel free to change the file name or extension to something else, but to decrypt, unseal, or join files made this way, you must make sure the extension is .plk or .txt before you load them or PassLok may fail to recognize them as its own output. Be aware that mobile devices (especially on iOS) often make it difficult to work with files.</p>
-    </div>
-    </div>
+  <hr>
+  <div class="helpHeading">
+    <h3>File output</h3>
+  </div>
+  <div class="helpText">
+    <p>If you select <strong>File output</strong> on the <strong>Options</strong> tab before encrypting, sealing, or splitting, the result of the operation appears as a file (several, in the case of splitting), which you can then save anywhere with the Save button. Doing this will speed up things considerably if you are encrypting, sealing, or splitting something large.</p>
+    <p>The file can be either binary with extension .plk (default), or text with extension .txt. This can be selected on the <strong>Options</strong> tab.</p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Sm4f6FIOShI" target="_blank">https://www.youtube.com/watch?v=Sm4f6FIOShI</a></p>
+    <div class="helpHeading2">
+    <p><em>Click here for More:</em></p>
+  </div>
+  <div class="helpText">
+    <p>An output item loaded as a file can be decrypted, unsealed, or joined just like an item loaded as text. It can also be sent by email as an attachment, which is handy when the item is large. Feel free to change the file name or extension to something else, but to decrypt, unseal, or join files made this way, you must make sure the extension is .plk or .txt before you load them or PassLok may fail to recognize them as its own output. Be aware that mobile devices (especially on iOS) often make it difficult to work with files.</p>
+    <p>The help item below describes another way to encrypt and decrypt single files, possibly of very large size, that is compatible with the GroupKyber app, but not with the File output mode described here.</p>
+</div>
+</div>
+<hr>
+<div class="helpHeading">
+  <h3>How to use File Drop mode</h3>
+</div>
+<div class="helpText">
+  <p>This mode, which should not be confused with the feature described in the previoous help item, allows users to encrypt and decrypt single files, possibly of very large size, by drag and drop. You start by selecting the <strong>File Drop</strong> radio button near the top of the <strong>Options</strong> tab. The main box is replaced by a large drop target with a folder icon, and then:</p>
+  <ol>
+    <li>To encrypt, select the recipients in the directory. All the recipients must have a Lock stored. You are added automatically, so no need to select 'myself'. If nobody is selected, files will be encrypted for yourself only. This step is not necessary for decryption.</li>
+    <li>Drag the file to be encrypted or decrypted into the drop target, or just click the drop target and then navigate to the file location and click OK. Encryption or decryption will start as soon as the file is loaded, and the result will appear in the Downloads folder. Encrypted file names end with the extension .crypt . You can change the name and extension freely.</li>
+  </ol>
+  <p>Alternatively, you can toggle <strong>Folder mode</strong>, useful for controlling access to a number of encrypted files, via a Folder Key file. To use this mode, do this after turning on Folder mode:</p>
+  <ol>
+    <li>If a Folder Key file exists already, simply drag it to the drop target and it will be decrypted and loaded to memory.</li>
+    <li>To make a new Folder Key or update a previously loaded Folder Key, select the intended recipients on the directory. Again, all the recipients must have a Lock stored and you are added automatically. Then click the <strong>New Folder Key</strong> or <strong>Update Folder Key</strong> button as the case may be. The new or updated Folder Key will appear in your Downloads folder. You can change the name of this file, including the extension, as you wish. Files encrypted with a Folder Key that has just been updated do not need to be modified.</li>
+    <li>You can also skip the previous step and simply start dragging files into the drop target after the Folder Key is loaded, and they will be encrypted or decrypted automatically, and the result sent to the Downloads folder. All files you process will be encrypted with the same key, and therefore will be accessible to the same set of recipients.</li>
+  </ol>
+  <div class="helpHeading2">
+  <p><em>Click here for More:</em></p>
+</div>
+<div class="helpText">
+  <p>The format of files encrypted in this mode is not compatible with the .plk files described in the previous help item, but they are compatible with the GroupEncrypt app, and those made by that app are compatible with PassLok under File Drop mode.</p>
+  </div>
+  </div>
   <hr>
   <div class="helpHeading">
     <h3>Make an invitation to join a real-time multi-party chat session</h3>
@@ -1447,17 +1492,16 @@
     <hr>
   </div>
   <!--end of advanced help-->
-
   <div class="helpHeading">
     <h3>Check the authenticity of the code</h3>
   </div>
   <div class="helpText">
     <p>If you got PassLok from an app store, that app store is ensuring that the code you have is what the author gave to them. The following is to check the integrity of the web app version of PassLok running in a browser:</p>
-    <p>1. Direct your browser to "view source." If your browser has a command to save the source (Chrome, Firefox, and Safari do), go ahead and save it to file. Alternatively, you can go to Online-convert (https://hash.online-convert.com/sha256-generator) and type the URL of your version of PassLok there, then skip step 2.</p>
-    <p>2. Now you have to take the SHA256 checksum of the code (or the MD5 or SHA1 checksums) using a program different from PassLok. You have several options:</p>
+    <p>1. Direct your browser to "save page as" and "HTML only" if your browser supports it. Alternatively, you can go to Online-convert (https://hash.online-convert.com/sha256-generator) and type the URL of your version of PassLok there, then skip step 2.</p>
+    <p>2. Now you have to take the SHA256 checksum of the code using a program different from PassLok. You have several options:</p>
     <ul>
       <li>Use a local program or online utility to take the checksum of the source saved to a file.</li>
-      <li>Use an online utility where you paste the text on a box and click a button. You must make sure that pasting does not add extra space at the top or the bottom of the file, which would affect the result.</li>
+      <li>Use an online utility where you paste the text on a box and click a button. You must make sure that pasting does not add extra space at the top or the bottom of the file, which would affect the result. Links to good ones are below.</li>
     </ul>
     <p>3. Look up the checksum for this version of PassLok, which is published on the PassLok information website at passlok.weebly.com and a number of other places. If this value and the one obtained above are not the same, the program has been tampered with. Here are some places where this information is published:</p>
     <ul>
@@ -1473,8 +1517,7 @@
       <p><em>Click here for More:</em></p>
     </div>
     <div class="helpText">
-      <p>Typically, you load the source on a separate tab by typing CTRL-U (Windows) or option-cmd-u (OSX). Another way to save the source is to copy it by first selecting the the whole source code (CTRL-A or cmd-a), then copy to clipboard (CTRL-C or cmd-c), and then paste it into a text editor (CTRL-V or cmd-v), and save it from there. DO NOT save the code using the "save" command when the working PassLok page is displayed, since then the browser would modify the source code before saving it. The correct encoding is UTF-8, no BOM (notes: Windows Notepad is unable to save text in the correct format. Cut and paste from Chrome introduces artifacts for big items like the source code).</p>
-      <p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload a file and get the hash. Online-convert (https://hash.online-convert.com/sha256-generator), fileformat.info (http://www.fileformat.info/tool/hash.htm) and freeformatter.com (https://www.freeformatter.com/sha256-generator.html) have worked well in our tests.</p>
+      <p>SHA256 is built into the OS in Linux and OSX, not so in Windows, but there are free programs available, such as Checksum Utility and Bitser. There are also online utilities where you can upload a file and get the hash. Online-convert (https://hash.online-convert.com/sha256-generator) and fileformat.info (https://www.fileformat.info/tool/hash.htm) have worked well in our tests.</p>
       <p>If you want a clipboard-based SHA256 utility, the one at Xorbin (https://www.xorbin.com/tools/sha256-hash-calculator) has worked quite well in our tests. Don't copy and paste from Chrome, since this introduces artifacts.</p>
     </div>
   </div>
@@ -1494,11 +1537,15 @@
     <p>mirrors:</p>
     <p><a href="https://www.autistici.org/passlok" target="_blank">https://www.autistici.org/passlok</a> (non-US, self-certified)</p>
     <p><a href="https://passlok.site44.com" target="_blank">https://passlok.site44.com</a></p>
-    <p><a href="https://fruiz500.github.io/passlok" target="_blank">https://fruiz500.github.io/passlok</a></p>
     <p>SHA256 for this version and video of the author reading it at:</p>
     <p><a href="http://passlok.weebly.com/get-passlok.html" target="_blank">http://passlok.weebly.com/get-passlok.html</a></p>
     <p>&nbsp;</p>
     <p><strong>Previous versions </strong>(SHA256 for each)<strong>:</strong></p>
+    <p><strong>2.5.4</strong> (ec56-d7f5-26b1-41c4-d4e4-ef6d-5559-4ee8-4f2c-1824-971f-f7bf-7878-d056-6db7-1e3c)</p>
+    <p><a href="https://passlok.com/archive/passlok25.html" target="_blank">PassLok.com</a></p>
+    <p><a href="https://www.autistici.org/passlok/archive/passlok25.html" target="_blank">Autistici</a></p>
+    <p><a href="https://passlok.site44.com/archive/passlok25.html" target="_blank">Site44</a></p>
+    <p><a href="https://www.youtube.com/watch?v=YgHXp6GVjDA" target="_blank">Author reading the SHA256</a></p>
     <p><strong>2.4.20</strong> (155f-b7f2-1067-a69b-5bd6-22d1-6d8a-9f71-84f5-e7bc-59bb-0e56-b053-6c11-6167-340d)</p>
     <p><a href="https://passlok.com/archive/passlok24.html" target="_blank">PassLok.com</a></p>
     <p><a href="https://www.autistici.org/passlok/archive/passlok24.html" target="_blank">Autistici</a></p>
@@ -1585,12 +1632,12 @@
     <p><strong>Notice:</strong> Since PassLok is distributed as a piece of human-readable code, we consider it an expression of free speech protected by the laws of many countries. Putting into circulation tampered versions of PassLok, whether by individuals or public entities, violates free speech and copyright protection laws.</p>
     <p>PassLok contains strong cryptographic methods, which may be illegal to use in some countries. Please check the local laws before using PassLok.</p>
     <div id="canary"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8BAMAAADI0sRBAAAAGFBMVEUAAAAAAAD///91XhdgYGCcnJzMzMzUqipkv+fEAAAAAXRSTlMAQObYZgAAAYFJREFUOMt1lLGOgzAQREEUaVkHkhpEUkOVmvsDIt31IF1PdP8vnWwzHtaGKRDmsbO7eHGm9Cfyys4km/ojmEvQ/ZBS10N6Gl+I18/v6G/KtCrTOnVuscbWSwsxPYPBwEsGw1nxgEGpxoUzuI00MjuDqWdwvyD4e88nuOdbMFOge3j79V3liHAjL7np4kt4u5V2fwS8bGbbHd3hjZ0wyt1hZAzuxL3FZoffqrUSlaG4qqU2HFbMfoplj68pNqr0T4xF4SFUMyJcY+EqxVgTS4QlwkZjrAXSubFRsw4H5p5BxLlIgwfTIW6DoXafPcYkqN74zRf3uN7bf2HHChvnuMGX7WoRYD8tTN/4q2CS/YQ8tvY79GwsXjO3J6jq/Qz7Mds8ds5RSDypAmz4zSr1E/EfQ9MJHjDd5PSGu1Vt8Q3BOBrVDuNdnj0DB2RCvH0xPpnYHoLhXmluXdajU7E7ONOj+YyP5Fzx9MDHQHIkQGCv1WtcaFqSkKeUumjnVB80TP0D1fGXaRHBg/YAAAAASUVORK5CYII=">
-    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.5.5 (October 2024) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
+    <p>This paragraph and the canary logo above attest to the fact that, up until the release of PassLok version 2.6 (November 2024) we have not received any requests under gag order for user data or modifications of the code. This paragraph will be periodically updated as this situation continues.</p>
     </div>
   </div>
   <hr>
   <address>
-  PassLok v2.5.5 &#169; F. Ruiz 2024
+  PassLok v2.6 &#169; F. Ruiz 2024
   </address>
   <ul>
     <li> engine: NaCl by D. Bernstein, W. Janssen, T. Lange, P. Schwabe, M. Dempsky, and A. Moon 2013</li>
@@ -1629,7 +1676,7 @@
   <div class="centered" id="lockBtnsTop">
     <button class="cssbutton" id="clearLocksBtn" value="Clear" title="clear box">Clear</button><!--
 --><button class="cssbutton" id="addLockBtn" value="Save" title="save to the local directory | if box is empty, make random item">Rand.</button><!--
---><button class="cssbutton" id="removeLockBtn" value="Delete" title="delete the item whose name is displayed">Del.</button><!--
+--><button class="cssbutton" id="renameLockBtn" value="Rename" title="rename/delete the item whose name is displayed">Rename</button><!--
 --><button class="cssbutton" id="resetPFSBtn" value="Reset" title="reset Read-once data for the item whose name is displayed">Reset</button>
   </div>
   <div contenteditable="true" class="cssbox left" id="lockBox" name="text" rows="10" placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item."></div>
@@ -1699,7 +1746,6 @@
   </div>
 </div>
 
-
 <div id="introscr3" class="block_page">
   <div id="intro3" class="left" >
     <button class="cssbutton" id="backtointro2" value="back" title="back to step 2">&#9668; Back</button>
@@ -1720,7 +1766,6 @@
   </div>
 </div>
 
-
 <div id="introscr4" class="block_page">
   <div id="intro4" class="left">
     <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>
@@ -1739,7 +1784,6 @@
     <button class="cssbutton" id="gotointro5" value="next" title="to step 5">Next &#9658;</button>
   </div>
 </div>
-
 
 <div id="introscr5" class="block_page">
   <div id="intro5" class="left">
@@ -1912,5 +1956,8 @@
 
 <!--initialization, button connections-->
 <script src="js-body/initbuttons.js"></script>
+
+<!--code for drag and drop mode-->
+<script src="js-body/filedrop.js"></script>
 </body>
 </html>

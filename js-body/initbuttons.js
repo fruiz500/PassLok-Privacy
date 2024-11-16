@@ -4,11 +4,11 @@ window.onload = function() {
     if(isMobile){
         mainMsg.style.height = '20px';
         imgSpacer.style.display = 'none';
-        partSpacer1.style.display = 'none';
-        partSpacer2.style.display = 'none';
-        decoyInSpacer1.style.display = 'none';
-        decoyInSpacer2.style.display = 'none';
-        decoyOutSpacer.style.display = 'none';
+//        partSpacer1.style.display = 'none';
+//        partSpacer2.style.display = 'none';
+//        decoyInSpacer1.style.display = 'none';
+//        decoyInSpacer2.style.display = 'none';
+//        decoyOutSpacer.style.display = 'none';
         qrcodeImg.style.width = '100%';
         qrcodeImg.style.left = '0';
         var bottomButtons = mainbuttonsbot.children;
@@ -23,8 +23,8 @@ window.onload = function() {
     if(isiOS) encodeJPGBtn.style.display = 'none';	//JPG hide does not work on iOS
     if(isiPhone || isAndroidPhone){					//to make things fit on narrow screens
         anonLabel.textContent = ' Anon.  ';
-        modeLabel.style.display = 'none';
-        otherLabel.style.display = 'none';
+//        modeLabel.style.display = 'none';
+//        otherLabel.style.display = 'none';
         greenLabel.textContent = 'Grn';
         customLabel.textContent = 'Cust';
         backgroundLabel.textContent = 'Bg.';
@@ -73,69 +73,71 @@ window.onload = function() {
 
     selectMainBtn.addEventListener('click', selectMain);
 
-       clearMainBtn.addEventListener('click', clearMain);
+    clearMainBtn.addEventListener('click', clearMain);
 
     showLockBtnBasic.addEventListener('click', showLock);
 
-       decryptBtn.addEventListener('click', lockBtnAction);
+    decryptBtn.addEventListener('click', lockBtnAction);
 
     verifyBtn.addEventListener('click', signVerify);
 
-       main2extraBtn.addEventListener('click', main2extra);
+     main2extraBtn.addEventListener('click', main2extra);
 
-       decryptBtnBasic.addEventListener('click', lockBtnAction);
+    decryptBtnBasic.addEventListener('click', lockBtnAction);
 
     decryptBtnEmail.addEventListener('click', lockBtnAction);
 
-       extra2mainBtn.addEventListener('click', main2extra);
+    extra2mainBtn.addEventListener('click', main2extra);
 
-       niceEditBtn.addEventListener('click', toggleRichText);
+    niceEditBtn.addEventListener('click', toggleRichText);
 
-       chatBtn.addEventListener('click', Chat);
+    chatBtn.addEventListener('click', Chat);
 
-       sendSMSBtn.addEventListener('click', sendSMS);
+    sendSMSBtn.addEventListener('click', sendSMS);
 
-       secretShareBtn.addEventListener('click', splitJoin);
+    secretShareBtn.addEventListener('click', splitJoin);
 
     stegoBtn.addEventListener('click', textStego);
 
     stegoBtnEmail.addEventListener('click', textStego);
 
-       image2mainBtn.addEventListener('click', image2main);
+    image2mainBtn.addEventListener('click', image2main);
 
-       clearLocksBtn.addEventListener('click', clearLocks);
+    clearLocksBtn.addEventListener('click', clearLocks);
 
-       addLockBtn.addEventListener('click', function(){addLock(false)});
+    addLockBtn.addEventListener('click', function(){addLock(false)});
 
-       removeLockBtn.addEventListener('click', removeLock);
+    renameLockBtn.addEventListener('click', renameLock);
 
-       resetPFSBtn.addEventListener('click', resetPFS);
+    resetPFSBtn.addEventListener('click', resetPFS);
 
-       showLockDBBtn.addEventListener('click', showLockDB);
+    showLockDBBtn.addEventListener('click', showLockDB);
 
-       mergeLockDBBtn.addEventListener('click', mergeLockDB);
+    mergeLockDBBtn.addEventListener('click', mergeLockDB);
 
-       moveLockDBBtn.addEventListener('click', moveLockDB);
+    moveLockDBBtn.addEventListener('click', moveLockDB);
 
-       acceptKeyBtn.addEventListener('click', acceptpwd);
+    acceptKeyBtn.addEventListener('click', acceptpwd);
 
-       cancelKeyBtn.addEventListener('click', cancelKey);
+    cancelKeyBtn.addEventListener('click', cancelKey);
 
-       skipIntroBtn.addEventListener('click', cancelKey);
+    skipIntroBtn.addEventListener('click', cancelKey);
 
-       changeNameBtn.addEventListener('click', showName);
+    changeNameBtn.addEventListener('click', showName);
 
-       changeKeyBtn.addEventListener('click', acceptnewKey);
+    changeKeyBtn.addEventListener('click', acceptnewKey);
 
-       changeEmailBtn.addEventListener('click', showEmail);
+    changeEmailBtn.addEventListener('click', showEmail);
 
-       backupSettingsBtn.addEventListener('click', moveMyself);
+    backupSettingsBtn.addEventListener('click', moveMyself);
 
-       basicMode.addEventListener('click', mode2basic);
+    basicMode.addEventListener('click', mode2basic);
 
-       advancedMode.addEventListener('click', mode2adv);
+    advancedMode.addEventListener('click', mode2adv);
 
     emailMode.addEventListener('click', mode2email);
+
+    dropMode.addEventListener('click', mode2drop);
 
     liteStyle.addEventListener('click', selectStyle);
 
@@ -207,89 +209,97 @@ window.onload = function() {
 
     pwdIcon.addEventListener('click',function(){showPwd('pwd')});
 
-       introRandomBtn.addEventListener('click', randomToken);
+    introRandomBtn.addEventListener('click', randomToken);
 
     clearIntroRandomBtn.addEventListener('click', clearIntroEmail);
 
-       randomEmailBtn.addEventListener('click', randomToken);
+    randomEmailBtn.addEventListener('click', randomToken);
 
-       acceptEmailBtn.addEventListener('click', email2any);
+    acceptEmailBtn.addEventListener('click', email2any);
 
-       cancelEmailBtn.addEventListener('click', cancelEmail);
+    cancelEmailBtn.addEventListener('click', cancelEmail);
 
-       acceptNameBtn.addEventListener('click', name2any);
+    acceptNameBtn.addEventListener('click', name2any);
 
-       cancelNameBtn.addEventListener('click', cancelName);
+    cancelNameBtn.addEventListener('click', cancelName);
 
-       pwdIntroIcon.addEventListener('click', function(){showPwd('pwdIntro')});
+    pwdIntroIcon.addEventListener('click', function(){showPwd('pwdIntro')});
 
-       clearIntroBtn.addEventListener('click', clearIntro);
+    clearIntroBtn.addEventListener('click', clearIntro);
 
-       suggestIntroBtn.addEventListener('click', suggestIntro);
+    suggestIntroBtn.addEventListener('click', suggestIntro);
 
-       showlockIntroBtn.addEventListener('click', initUser);
+    showlockIntroBtn.addEventListener('click', initUser);
 
-       decoyInIcon.addEventListener('click', function(){showPwd('decoyIn')});
+    decoyInIcon.addEventListener('click', function(){showPwd('decoyIn')});
 
-       submitDecoyBtn.addEventListener('click', acceptdecoyIn);
+    submitDecoyBtn.addEventListener('click', acceptdecoyIn);
 
-       cancelDecoyBtn.addEventListener('click', cancelDecoy);
+    cancelDecoyBtn.addEventListener('click', cancelDecoy);
 
-       decoyOutIcon.addEventListener('click', function(){showPwd('decoyOut')});
+    decoyOutIcon.addEventListener('click', function(){showPwd('decoyOut')});
 
-       submitDecoy2Btn.addEventListener('click', acceptdecoyIn);
+    submitDecoy2Btn.addEventListener('click', acceptdecoyIn);
 
-       cancelDecoy2Btn.addEventListener('click', cancelDecoy);
+    cancelDecoy2Btn.addEventListener('click', cancelDecoy);
 
-       submitPartsBtn.addEventListener('click', submitParts);
+    submitPartsBtn.addEventListener('click', submitParts);
 
-       cancelPartsBtn.addEventListener('click', cancelPartsIn);
+    cancelPartsBtn.addEventListener('click', cancelPartsIn);
 
-       cancelChatBtn.addEventListener('click', closeBox);
+    cancelChatBtn.addEventListener('click', closeBox);
 
-       submitChatBtn.addEventListener('click', makeChat);
+    submitChatBtn.addEventListener('click', makeChat);
 
-    lockList.addEventListener('change', fillBox);
+    lockList.addEventListener('change', function(){
+        if(dropMode.checked){
+            updateUsers()      //for File Drop mode
+        }else{
+            fillBox()
+        }
+    });
 
     lockList.addEventListener('click', updateButtons);
 
-       resetListBtn.addEventListener('click', resetList);
+    makeKeyBtn.addEventListener('click',makeKeyFile);
+
+    resetListBtn.addEventListener('click', resetList);
 
     main2lockBtn.addEventListener('click', main2lock);
 
     lock2mainBtn.addEventListener('click', main2lock);
 
-       newUserBtn.addEventListener('click', newUser);
+    newUserBtn.addEventListener('click', newUser);
 
-       submitKeyChangeBtn.addEventListener('click', acceptnewKey);
+    submitKeyChangeBtn.addEventListener('click', acceptnewKey);
 
-       cancelKeyChangeBtn.addEventListener('click', cancelKeyChange);
+    cancelKeyChangeBtn.addEventListener('click', cancelKeyChange);
 
     newKeyIcon.addEventListener('click',function(){showPwd('newKey')});
 
     gotointro2.addEventListener('click', go2intro2);
 
-       backtointro1.addEventListener('click', go2intro2);
+    backtointro1.addEventListener('click', go2intro2);
 
-       gotointro3.addEventListener('click', go2intro3);
+    gotointro3.addEventListener('click', go2intro3);
 
-       backtointro2.addEventListener('click', go2intro3);
+    backtointro2.addEventListener('click', go2intro3);
 
-       gotointro4.addEventListener('click', go2intro4);
+    gotointro4.addEventListener('click', go2intro4);
 
-       backtointro3.addEventListener('click', go2intro4);
+    backtointro3.addEventListener('click', go2intro4);
 
-       gotointro5.addEventListener('click', go2intro5);
+    gotointro5.addEventListener('click', go2intro5);
 
-       backtointro4.addEventListener('click', go2intro5);
+    backtointro4.addEventListener('click', go2intro5);
 
-       mainBox.addEventListener('keyup', charsLeft);
+    mainBox.addEventListener('keyup', charsLeft);
 
     mainBox.addEventListener('paste', pasteMain);
 
-       decoyText.addEventListener('keyup', charsLeft);
+    decoyText.addEventListener('keyup', charsLeft);
 
-       chatDate.addEventListener('keyup', charsLeft);
+    chatDate.addEventListener('keyup', charsLeft);
 
     pwdBox.addEventListener('keyup',function(event){boxKeyup('pwd',event)});
 
@@ -361,10 +371,10 @@ window.onload = function() {
     }
 
 //fixes after inline styles were moved to css file
-    lockList.style.padding = '4px';
-    lockList.style.width = '30%';
+//    lockList.style.padding = '4px';
+//    lockList.style.width = '30%';
     basicBtnsTop.style.display = 'block';
-    mainMsg.style.minHeight = '20px';
+//    mainMsg.style.minHeight = '20px';
     extraButtonsTop.style.display = 'none'
 };
 

@@ -70,6 +70,9 @@ select:focus {
     overflow: auto;
     background-color: white;
 }
+.hide {
+	display: none;
+}
 .centered {
   text-align: center;
   margin: auto;
@@ -94,7 +97,24 @@ select:focus {
     color: #666666;
     background: #e6e6e6;
 }
+.smallbutton {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    font-family: Arial;
+    font-size: 14px;
+    padding: 4px;
+    text-decoration: none;
+    border: 0px;
+    color: #666666;
+    background: #e6e6e6;
+}
 .cssbutton:hover {
+    text-decoration: none;
+    cursor: pointer;
+    background: #c4c4c4;
+}
+.smallbutton:hover {
     text-decoration: none;
     cursor: pointer;
     background: #c4c4c4;
@@ -118,7 +138,7 @@ select:focus {
     -moz-box-shadow: none;
     box-shadow: none;
     color: #000000;
-    background: #fffff5;
+    background: #fffffd;
     border: 1px solid #dedede;
     overflow: auto;
     white-space: pre-line;
@@ -229,6 +249,34 @@ opacity: 0;
 opacity: 0;
 }
 }
+.dropTarget {
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	font-family: Arial;
+	font-size: 18px;
+	padding: 100px;
+	text-decoration: none;
+	color: rgba(0, 0, 0, 0);
+	background: #e6e6e6;
+	display: none;
+	text-align: center;
+}
+.smallImg {
+	width: 50%;
+}
+.dropHover {
+	cursor: pointer;
+	background: #A5B9FD;
+	outline: 2px dashed #eee;
+	outline-offset: -10px;
+}
+.dropReady {
+	cursor: pointer;
+	background: #aee5a1;
+	outline: 5px dashed white;
+	outline-offset: -10px;
+}
 input[type=checkbox] {
     /* Larger checkboxes */
     -ms-transform: scale(1.7); /* IE */
@@ -312,7 +360,7 @@ select {
     white-space: nowrap;
     border: 1px solid #dedede;
     color: #666666;
-    background: #fffff5;
+    background: #fffffd;
 }
 img.intLink {
     border: 0;
@@ -350,7 +398,7 @@ img.intLink {
 }
 #lockList {
     padding: 4px;
-    width: 30%;
+    width: 100%;
 }
 #resetListBtn {
     font-size: 14px;

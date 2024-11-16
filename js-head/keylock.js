@@ -160,6 +160,7 @@ var KeyStr,
     KeyDir,
     KeySgn,
     KeyDH,
+    folderKey,
     myEmail = '';
 
 //reads Key box and stops if there's something wrong. If the timer has run out, the Key is deleted from box, and stretched keys are deleted from memory
@@ -199,7 +200,8 @@ function resetKeys(){
     KeyDH = '';
     myEmail = '';
     pwdBox.value = '';
-    imageBox.value = ''
+    imageBox.value = '';
+    folderKey = '';
 }
 
 //reads email from the box. This is used as a salt to make the Lock
@@ -744,7 +746,7 @@ function keyEncrypt(plainstr){
     }else{
         var cipher = nacl.secretbox(plainstr,nonce24,KeyDir)
     }
-    return nacl.util.encodeBase64(concatUint8Arrays([144],concatUint8Arrays(nonce,cipher))).replace(/=+$/,'')		//1st character should be k
+    return nacl.util.encodeBase64(concatUi8([[144],nonce,cipher])).replace(/=+$/,'')		//1st character should be k
 }
 
 //decrypts a string encrypted with the secret Key, 9 byte nonce. Returns original if not encrypted. If isArray set, return uint8 array

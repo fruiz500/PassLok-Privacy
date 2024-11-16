@@ -72,7 +72,7 @@ function makeInvitation(){
         var text = mainBox.innerHTML.trim(),
             nonce = nacl.randomBytes(9),
             nonce24 = makeNonce24(nonce),
-            cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,PLencrypt(text,nonce24,myLock,true)))).replace(/=+$/,'');			//this includes compression
+            cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUi8([[128],nonce,PLencrypt(text,nonce24,myLock,true)])).replace(/=+$/,'');			//this includes compression
         mainBox.textContent = '';
 
             var prefaceMsg = document.createElement('div');

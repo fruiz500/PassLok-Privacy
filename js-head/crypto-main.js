@@ -87,7 +87,7 @@ function Encrypt_Single(lockBoxItem,text){
             alert(name + " will need to place the same Key in the Locks box to decrypt the message in the main box.")
         }
 
-        var outString = nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,cipher))).replace(/=+$/,'');			//1st character is g
+        var outString = nacl.util.encodeBase64(concatUi8([[128],nonce,cipher])).replace(/=+$/,'');			//1st character is g
         if(compatMode.checked){
             mainBox.textContent = '';
             if(fileMode.checked){
@@ -135,7 +135,7 @@ function Encrypt_Single(lockBoxItem,text){
             alert(lockMsg + " will need your Lock and his/her secret Key to decrypt the message in the main box.");
         }
 
-        var outString = nacl.util.encodeBase64(concatUint8Arrays([176],concatUint8Arrays(nonce,cipher))).replace(/=+$/,'');			//1st character is s
+        var outString = nacl.util.encodeBase64(concatUi8([[176],nonce,cipher])).replace(/=+$/,'');			//1st character is s
         if(compatMode.checked){
             mainBox.textContent = '';
             if(fileMode.checked){
@@ -181,7 +181,7 @@ function Encrypt_Single(lockBoxItem,text){
             alert(name + " will need to place his/her secret Key in the key box to decrypt the message in the main box.");
         }
 
-        var outString = nacl.util.encodeBase64(concatUint8Arrays([104],concatUint8Arrays(nonce,concatUint8Arrays(pubdum,cipher)))).replace(/=+$/,'');			//1st character is a
+        var outString = nacl.util.encodeBase64(concatUi8([[104],nonce,pubdum,cipher])).replace(/=+$/,'');			//1st character is a
         if(compatMode.checked){
             mainBox.textContent = '';
             if(fileMode.checked){
@@ -301,11 +301,11 @@ function Encrypt_Single(lockBoxItem,text){
             alert(name + " will need to select you in his/her directory to decrypt the message.")
         };
         if(resetMessage){						//1st character is r
-            var outString = nacl.util.encodeBase64(concatUint8Arrays([172],concatUint8Arrays(nonce,concatUint8Arrays(newLockCipher,cipher)))).replace(/=+$/,'')
+            var outString = nacl.util.encodeBase64(concatUi8([[172],nonce,newLockCipher,cipher])).replace(/=+$/,'')
         }else if(pfsMessage){					//1st character is p
-            var outString = nacl.util.encodeBase64(concatUint8Arrays([164],concatUint8Arrays(nonce,concatUint8Arrays(newLockCipher,cipher)))).replace(/=+$/,'')
+            var outString = nacl.util.encodeBase64(concatUi8([[164],nonce,newLockCipher,cipher])).replace(/=+$/,'')
         }else{									//1st character is o
-            var outString = nacl.util.encodeBase64(concatUint8Arrays([160],concatUint8Arrays(nonce,concatUint8Arrays(newLockCipher,cipher)))).replace(/=+$/,'')
+            var outString = nacl.util.encodeBase64(concatUi8([[160],nonce,newLockCipher,cipher])).replace(/=+$/,'')
         }
 
         if(compatMode.checked){				//prepend ezLock in compatibility mode
@@ -355,12 +355,19 @@ function Encrypt_Single(lockBoxItem,text){
     }
 }
 
-//concatenates two uint8 arrays, normally used right before displaying the output
-function concatUint8Arrays(array1,array2){
-    var result = new Uint8Array(array1.length + array2.length);
-    result.set(array1,0);
-    result.set(array2,array1.length);
-    return result
+//to concatenate a few Uint8Arrays fed as an array
+function concatUi8(arrays) {
+	var totalLength = 0;
+	for(var i = 0; i < arrays.length; i++) totalLength += arrays[i].length;
+	
+	var result = new Uint8Array(totalLength);
+  
+	var length = 0;
+	for(var i = 0; i < arrays.length; i++) {
+	  result.set(arrays[i], length);
+	  length += arrays[i].length;
+	}
+	return result
 }
 
 //makes the permanent shared Key. Used by PFS and normal Read-once modes
@@ -477,9 +484,9 @@ function Encrypt_List(listArray,text){
 
     var cipher = PLencrypt(text,nonce24,msgKey,true);				//main encryption event including compression, but don't add the result yet
 
-    outArray = concatUint8Arrays(outArray,concatUint8Arrays(nonce,padding));
+    outArray = concatUi8([outArray,nonce,padding]);
 
-    if(anonMode.checked) outArray = concatUint8Arrays(outArray,pubdum);					//for anonymous mode, add the dummy Lock now
+    if(anonMode.checked) outArray = concatUi8([outArray,pubdum]);					//for anonymous mode, add the dummy Lock now
 
     //for each item on the List (unless empty), encrypt the message key and add it, prefaced by the first 256 bits of the ciphertext obtained when the item is encrypted with the message nonce and the shared key. Notice: same nonce, but different key for each item (unless someone planted two recipients who have the same key, but then the encrypted result will also be identical).
     for(var index = 0; index < recipients; index++){
@@ -606,16 +613,16 @@ function Encrypt_List(listArray,text){
 
             //now add the idTag (first 8 bytes only) and encrypted arrays to the output array, and go to the next recipient
             if(onceMode.checked){				//these include encrypted ephemeral Locks, not the other types
-                if(name != 'myself') outArray = concatUint8Arrays(outArray,concatUint8Arrays(idTag,concatUint8Arrays(cipher2,concatUint8Arrays(typeByte,newLockCipher))))
+                if(name != 'myself') outArray = concatUi8([outArray,idTag,cipher2,typeByte,newLockCipher])
             }else{
-                outArray = concatUint8Arrays(outArray,concatUint8Arrays(idTag,cipher2))
+                outArray = concatUi8([outArray,idTag,cipher2])
             }
         }
     }
     //all recipients done at this point
 
     //finish off by adding the encrypted message and tags and encoding to base64
-    var outString = nacl.util.encodeBase64(concatUint8Arrays(outArray,cipher)).replace(/=+$/,'');
+    var outString = nacl.util.encodeBase64(concatUi8([outArray,cipher])).replace(/=+$/,'');
     if(includeMode.checked && !emailMode.checked) outString = myezLock + '//////' + outString;
 
     mainBox.textContent = '';
@@ -757,7 +764,7 @@ function decoyEncrypt(length,secKey){
 
         while(text.length < length) text = text + ' ';											//add spaces to make the number of characters required
         if(text.length > length) text = text.slice(0,length);									//truncate if needed
-        var cipher = concatUint8Arrays(nonce,PLencrypt(text,nonce24,sharedKey,false))
+        var cipher = concatUi8([nonce,PLencrypt(text,nonce24,sharedKey,false)])
     }else{
         var cipher = nacl.randomBytes(length + 25)												//no decoy mode so padding is random; add 25 to account for mac and nonce
     }

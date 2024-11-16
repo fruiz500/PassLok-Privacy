@@ -32,7 +32,7 @@ if(chrome){
 //clears the no JavaScript warning and displays an initial message depending on the type of source
 function showGreeting(){
     var protocol = window.location.protocol;
-    var msgStart = "Welcome to PassLok Privacy\r\n",
+    var msgStart = "Welcome to PassLok\r\n",
         msgEnd = "\r\nSelect your user name and enter your Key. Then click OK";
     if(protocol == 'file:'){
         pwdMsg.textContent = msgStart + 'running from a saved file' + msgEnd
@@ -107,7 +107,7 @@ function loadFileAsURL(){
         }
         mainFile.type = '';
         mainFile.type = 'file'            //reset file input
-    }
+    };
     if(fileToLoad.type.slice(0,4) == "text"){
         fileReader.readAsText(fileToLoad, "UTF-8");
         mainMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
@@ -139,7 +139,7 @@ function loadLockFile(){
         lockBox.appendChild(fileLink);
         lockFile.type = '';
         lockFile.type = 'file'            //reset file input
-    }
+    };
 
     fileReader.readAsDataURL(fileToLoad, "UTF-8");
     lockMsg.textContent = 'File ' + escapedName + ' has been loaded'
@@ -157,10 +157,10 @@ function loadImage(){
         }
         var image = document.createElement("img");
         image.src = decryptSanitizer(URLFromFileLoaded).replace(/=+$/,'');
-        mainBox.appendChild(image);
+        mainBox.appendChild(image)
         imgFile.type = '';
         imgFile.type = 'file'            //reset file input
-    }
+    };
 
     fileReader.readAsDataURL(fileToLoad, "UTF-8");
 }

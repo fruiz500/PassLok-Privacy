@@ -1,5 +1,6 @@
 ﻿//start blinking message, for Msg elements
 function blinkMsg(element){
+    element.style.color = '';
     element.textContent = '';
     var blinker = document.createElement('span');
     blinker.className = "blink";
@@ -337,7 +338,8 @@ function code2checkbox(){
             checks[i].checked = (binCode[i] == '1')
         }
         var isEmailMode = checks[5].checked;
-        BasicButtons = checks[3].checked || isEmailMode
+        BasicButtons = !checks[5].checked;
+        if(BasicButtons){checks[4].checked = true; checks[6].checked = false; checks[7].checked = false}
     }
     if(!BasicButtons){									//retrieve Advanced interface
         openClose("basicBtnsTop");
@@ -576,6 +578,12 @@ function main2extra(){
 
 //switch to Advanced mode
 function mode2adv(){
+    toolBar1.style.display = 'none';
+    toolBar2.style.display = 'none';
+    mainBox.style.display = 'block';
+    fileLbl.style.display = 'none';
+    dropBtns.style.display = 'none';
+    mainbuttonsbot.style.display = 'block';
     mainBtnsTop.style.display = 'block';
     basicBtnsTop.style.display = 'none';
     emailBtnsTop.style.display = 'none';
@@ -588,6 +596,7 @@ function mode2adv(){
     basicMode.checked = false;
     advancedMode.checked = true;
     emailMode.checked = false;
+    dropMode.checked = false;
     anonMode.style.display = '';
     anonMode.checked = true;
     signedMode.checked = false;
@@ -598,6 +607,12 @@ function mode2adv(){
 
 //switch to Basic mode
 function mode2basic(){
+    toolBar1.style.display = 'none';
+    toolBar2.style.display = 'none';
+    mainBox.style.display = 'block';
+    fileLbl.style.display = 'none';
+    dropBtns.style.display = 'none';
+    mainbuttonsbot.style.display = 'block';
     mainBtnsTop.style.display = 'none';
     extraButtonsTop.style.display = 'none';
     basicBtnsTop.style.display = 'block';
@@ -611,6 +626,7 @@ function mode2basic(){
     basicMode.checked = true;
     advancedMode.checked = false;
     emailMode.checked = false;
+    dropMode.checked = false;
     resetAdvModes();
     decoyMode.checked = false;
     anonMode.style.display = '';
@@ -624,6 +640,12 @@ function mode2basic(){
 
 //switch to PassLok for Email compatible mode
 function mode2email(){
+    toolBar1.style.display = 'none';
+    toolBar2.style.display = 'none';
+    mainBox.style.display = 'block';
+    fileLbl.style.display = 'none';
+    dropBtns.style.display = 'none';
+    mainbuttonsbot.style.display = 'block';
     mainBtnsTop.style.display = 'none';
     extraButtonsTop.style.display = 'none';
     basicBtnsTop.style.display = 'none';
@@ -637,6 +659,7 @@ function mode2email(){
     basicMode.checked = false;
     advancedMode.checked = false;
     emailMode.checked = true;
+    dropMode.checked = false;
     ezLokMode.checked = true;
     resetAdvModes();
     letterMode.checked = true;
@@ -646,6 +669,29 @@ function mode2email(){
     BasicButtons = true;
     checkboxStore();
     fillList()
+}
+
+//switch to drop mode
+function mode2drop(){
+    toolBar1.style.display = 'none';
+    toolBar2.style.display = 'none';
+    mainBox.style.display = 'none';
+    fileLbl.style.display = 'block';
+    dropBtns.style.display = 'block';
+    mainbuttonsbot.style.display = 'none';
+    mainBtnsTop.style.display = 'none';
+    extraButtonsTop.style.display = 'none';
+    basicBtnsTop.style.display = 'none';
+    emailBtnsTop.style.display = 'none';
+    lockBtnsBottom.style.display = 'none';
+//    hideModes.style.display = 'none';
+    advancedBtns.style.display = 'none';
+    basicMode.checked = false;
+    advancedMode.checked = false;
+    emailMode.checked = false;
+    dropMode.checked = true;
+    BasicButtons = true;
+    checkboxStore()
 }
 
 //sets modes selectable in Advanced mode to default values
