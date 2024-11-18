@@ -67,6 +67,7 @@ function textheight(){
         }else{
             mainBox.style.height = fullheight - offsetheight - 10 + 'px';
         }
+        fileImg.style.height = parseInt(mainBox.style.height.slice(0,-2)) - 90 + 'px'
     }
 }
 
