@@ -321,6 +321,7 @@
       <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey=""/>
       &nbsp; Hidden message<br><br>
       &nbsp;&nbsp;
+    <span id="otherRow2">
       <input type="radio" name="lockType" id="ezLokMode" title="display easy to read Lock" checked/>
       &nbsp; ezLok&nbsp;&nbsp;
       <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words"/>
@@ -354,7 +355,7 @@
       &nbsp;&nbsp;
       <input type="checkbox" id="includeMode" title="include my Lock" accesskey=""/>
       &nbsp; Include my Lock
-      
+    </span>
       <div id="basicHideModes">
       <hr>
       &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
@@ -554,6 +555,29 @@
     <div class="helpText">
       <p>By default, PassLok displays the Lock in ezLok format, consisting of 50 lowercase letters (except L) and numbers, so you can easily dictate it if necessary. On the <strong>Options</strong> tab, you can change this to Word format, consisting of 20 common words, or to base64 format like all other PassLok items, consisting of 43 numbers, letters (capital and smallcase) and special characters / or +<strong></strong>. PassLok for Email, PassLok Universal, and FusionKey are compatible with all Lock formats, but SeeOnce is compatible only with ezLoks. If you wrote your real email when asked about it in the initial wizard, rather than something else, then your Lock is the same as that used in those apps, and the encrypted items made by any flavor of PassLok can be decrypted in the other apps. This precaution is not necessary for SeeOnce.</p>
       <p>If you need to make a Lock for a different Key (for instance, in order to receive hidden messages), it is best if you start PassLok in Guest mode by clicking <strong>Cancel</strong> when you are first asked for your Key, which will make PassLok accept a different Key. Then click <strong>myLock</strong> and supply the new Key and your email, if requested (if you use a random token you will need to copy it before, by  clicking Change Email in Options).</p>
+    </div>
+  </div>
+  <hr>
+  <div class="helpHeading">
+    <h3>Add a Lock or shared Key to the local directory</h3>
+  </div>
+  <div class="helpText">
+    <p>From the <strong>Main</strong> tab (this works only for Locks):</p>
+    <p>1. Paste the Lock into the Main box. If the item is identified as a Lock, a prompt will ask you to give it a name.</p>
+    <p>2. Write a name in the prompt box and click <strong>OK</strong>. You will see the name added to the selection box at the top of the <strong>Main</strong> tab.</p>
+    <p>From the directory Edit dialog:</p>
+    <p>1. Cick the <strong>Edit</strong> button next to the directory box.    </p>
+    <p>2. Paste the Lock or shared Key in the box, replacing whatever was there before. Usually PassLok will recognize a Lock and display a message saying so.</p>
+    <p>3. Click the <strong>Save</strong> button. A popup will ask you to provide a name for the item.</p>
+    <p>4. Write the name and click <strong>OK</strong>. A message confirms that the item has been saved under the name given.</p>
+    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=vQrED7eIkLA" target="_blank">https://www.youtube.com/watch?v=vQrED7eIkLA</a></p>
+    <div class="helpHeading2">
+      <p><em>Click here for More:</em></p>
+    </div>
+    <div class="helpText">
+      <p>If the given name is already in the directory, the Lock or shared Key will be replaced rather than added. You can store a cover text or a List besides an individual's Lock or shared Key. In the case of a List, the given name will be displayed bracketed by double dashes. Items that are not Locks are stored encrypted. When you load PassLok from an email link, a popup may open asking you to accept saving the sender's Lock to your directory. You can change its name at this point.</p>
+      <p>You can also rename an item that is already saved by clicking the <strong>Rename</strong> button and suplying a new name. If you leave the default name 'Delete' and click OK, the item will be deleted instead.</p>
+      <p>(<em>Chrome/Firefox app only</em>) If <strong>Chrome sync</strong> is checked in Options, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome or Firefox.</p>
     </div>
   </div>
   <hr>
@@ -779,7 +803,7 @@
 </div>
 <hr>
 <div class="helpHeading">
-  <h3>How to use File Drop mode</h3>
+  <h3>File Drop mode</h3>
 </div>
 <div class="helpText">
   <p>This mode, which should not be confused with the feature described in the previoous help item, allows users to encrypt and decrypt single files, possibly of very large size, by drag and drop. You start by selecting the <strong>File Drop</strong> radio button near the top of the <strong>Options</strong> tab. The main box is replaced by a large drop target with a folder icon, and then:</p>
@@ -967,28 +991,6 @@
   </div>
   <hr>
   <div class="helpHeading">
-    <h3>Add a Lock or shared Key to the local directory</h3>
-  </div>
-  <div class="helpText">
-    <p>From the <strong>Main</strong> tab (this works only for Locks):</p>
-    <p>1. Paste the Lock into the Main box. If the item is identified as a Lock, a prompt will ask you to give it a name.</p>
-    <p>2. Write a name in the prompt box and click <strong>OK</strong>. You will see the name added to the selection box at the top of the <strong>Main</strong> tab.</p>
-    <p>From the directory Edit dialog:</p>
-    <p>1. Cick the <strong>Edit</strong> button next to the directory box.    </p>
-    <p>2. Paste the Lock or shared Key in the box, replacing whatever was there before. Usually PassLok will recognize a Lock and display a message saying so.</p>
-    <p>3. Click the <strong>Save</strong> button. A popup will ask you to provide a name for the item.</p>
-    <p>4. Write the name and click <strong>OK</strong>. A message confirms that the item has been saved under the name given.</p>
-    <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=vQrED7eIkLA" target="_blank">https://www.youtube.com/watch?v=vQrED7eIkLA</a></p>
-    <div class="helpHeading2">
-      <p><em>Click here for More:</em></p>
-    </div>
-    <div class="helpText">
-      <p>If the given name is already in the directory, the Lock or shared Key will be replaced rather than added. You can store a cover text or a List besides an individual's Lock or shared Key. In the case of a List, the given name will be displayed bracketed by double dashes. Items that are not Locks are stored encrypted. When you load PassLok from an email link, a popup may open asking you to accept saving the sender's Lock to your directory. You can change its name at this point.</p>
-      <p>(<em>Chrome/Firefox app only</em>) If <strong>Chrome sync</strong> is checked in Options, the item will also be added to the Chrome sync area, so it is available on a different computer after you log into Chrome or Firefox.</p>
-    </div>
-  </div>
-  <hr>
-  <div class="helpHeading">
     <h3>Retrieve a Lock or shared Key from the local directory</h3>
   </div>
   <div class="helpText">
@@ -1081,6 +1083,7 @@
       <li>Backup or erase user settings, or even the entire local directory.</li>
     </ul>
     <p>There is also <strong>Email</strong> mode, which displays only the functions that are available in <a href="https://chrome.google.com/webstore/detail/passlok-for-email/ehakihemolfjgbbfhkbjgahppbhecclh" target="_blank">PassLok for Email</a> and <a href="https://chrome.google.com/webstore/detail/passlok-for-email/lbmlbnfgnbfppkfijbbpnecpglockled" target="_blank">PassLok Universal</a>. In this mode, PassLok's output is nearly identical to that of those apps, so it can be decrypted there. The ouput of PassLok for Email and PassLok Universal can always be handled by the standalone PassLok, no matter which interface mode is selected in Options.</p>
+    <p>There is a fourth interface mode, called <strong>File Drop</strong>, which allows users to encrypt and decryt single files by drag and drop. This mode is explained in a help item above, entitled <strong>File Drop mode</strong>.</p>
     <p>Finally, you can choose <strong>Compatible</strong> mode in Options (after selecting <strong>Advanced</strong>), which will cause PassLok's output to be accepted by URSA and SeeOnce.</p>
     <p>This and more is explained in this video tutorial (warning: watching it may leak your IP number): <a href="https://www.youtube.com/watch?v=Ttyvb0Qt7h0" target="_blank">https://www.youtube.com/watch?v=Ttyvb0Qt7h0</a></p>
   </div>
@@ -1770,7 +1773,7 @@
   <div id="intro4" class="left">
     <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 4 of 5<br>
-    <p>You will get better security if you also provide some public piece of data about yourself, such as your email address. This is case sensitive. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
+    <p>You will get better security if you also provide some public piece of data about yourself, such as your email address or group name. This is case sensitive. There's no risk of spam since nothing will be sent out. You can skip this if you want.</p>
     <p>If you want your encrypted output to be compatible with that of <em>PassLok for Email</em>, you must write your email address here.</p>
     <div class="centered">
       <input type="text" class="cssbox centered" id="emailIntro" name="text" placeholder="Optionally, enter your email or some other not secret personal info here">

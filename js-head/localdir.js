@@ -724,6 +724,10 @@ function fillBox(){
 
 //empty the selection box on Main tab
 function resetList(){
+    if(learnMode.checked){
+		var reply = confirm("The currently selected items on the list at left will be deselected. Cancel if this is not what you want");
+		if(!reply) return
+	}
     for (var i = 0; i < lockList.options.length; i++) {
         if(lockList.options[i].selected) {lockBox.textContent = '';lockMsg.textContent = ''}
         lockList.options[i].selected = false

@@ -1129,7 +1129,7 @@ function Decrypt_List(type,cipherStr){
         LockStr = replaceByItem(lockBoxItem);					//if it's a name, replace it with the decrypted item. Locks are stripped of their tags in any case.
     if(!locDir[name] && locDir[lockBoxItem]) name = lockBoxItem;	//name placed in the box
 
-    if(LockStr.length == 50) LockStr = changeBase(LockStr.toLowerCase().replace(/l/g,'L'), base36, base64, true) 				//ezLok case
+    if(LockStr.length == 50) LockStr = changeBase(LockStr.toLowerCase().replace(/l/g,'L'), base36, base64, true); 				//ezLok case
     if(LockStr.length == 43){var Lock = nacl.util.decodeBase64(LockStr); if(!Lock) return false};
     if(locDir['myself'] == null && fullAccess) key2any();									//make this entry if it has been deleted
 
@@ -1139,12 +1139,11 @@ function Decrypt_List(type,cipherStr){
             if(!answer) return
         }else{
             if(Lock){
-                var answer = decoyDecrypt(padding,convertPub(Lock));		//works since KeyDH was used for encryption
-                if(!answer) return
+                var answer = decoyDecrypt(padding,convertPub(Lock))		//works since KeyDH was used for encryption
             }else{
-                var answer = decoyDecrypt(padding);							//main shared Key case. Will trigger an error message if the decoy key was asymmetric
-                if(!answer) return
-            }
+                var answer = decoyDecrypt(padding)							//main shared Key case. Will trigger an error message if the decoy key was asymmetric
+            }  
+            if(!answer) return
         }
     }
 

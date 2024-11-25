@@ -14,6 +14,11 @@ var locksSelected = [];							//only for selected users; excludes legacy users
 
 //loads multiple files and processes them for encryption or decryption; adapted from https://ourcodeworld.com/articles/read/1438/how-to-read-multiple-files-at-once-using-the-filereader-class-in-javascript
 function loadFiles(){
+	if(learnMode.checked){
+		var reply = confirm("The files you just dropped will be encrypted or decripted, and the result sent to the Downloads folder. Cancel if this is not what you want");
+		if(!reply) return
+	}
+
 	let files = fileIn.files;
     let readers = [];
 	let fileNames = [];
@@ -62,9 +67,7 @@ function loadFiles(){
 				dropEncrypt(fileInBin,fileOutName)									//mode determined within encrypt function
 			}
 		}
-    });
-	fileIn.type = '';
-	fileIn.type = 'file';								//resets file input
+    })
 }
 
 //makes a promise to read the binary data of a file
@@ -111,6 +114,10 @@ function lockName(lock,legth2check){
 
 //makes a key file, by encrypting an empty array in Signed mode
 function makeKeyFile(){
+	if(learnMode.checked){
+		var reply = confirm("A new Folder Key file will be created for the currently selected users, or if one is loaded it will be updated for these users without affecting the other files. Cancel if this is not what you want");
+		if(!reply) return
+	}
 	if(locksSelected.length == 0){
 		mainMsg.textContent = 'Please select some users, and click the button again.';
 		return
@@ -122,6 +129,9 @@ function makeKeyFile(){
 //crypto functions; similar to Signed mode in KyberLock, except that 8 bytes of sender's public key are added in order to identify this user
 function dropEncrypt(fileInBin, fileOutName){
 	if(!refreshKey()) return;			//check that the Key is active and stop if not
+
+	var padding = decoyEncrypt(75,KeyDH);					//won't work for a recipient defined by a shared Key, who won't have the sender's Lock loaded (matching KeyDH)
+    if(!padding) return
 
 	startBlink(true);
 
@@ -143,7 +153,7 @@ function dropEncrypt(fileInBin, fileOutName){
 			var msgKeyCipher = nacl.secretbox(msgKey,nonce,folderKey),				//message key encrypted with folder key
 				cipher = nacl.secretbox(fileInBin,nonce,msgKey);					//message encrypted with message key
 
-			var fileOutBin = concatUi8([headTag,[0],nonce,msgKeyCipher,cipher]);		//start with header, a zero byte, and the nonce, next is msgKey encrypted with the folder Key, and the encrypted file data
+			var fileOutBin = concatUi8([headTag,[0],nonce,padding,msgKeyCipher,cipher]);		//start with header, a zero byte, and the nonce, next is msgKey encrypted with the folder Key, and the encrypted file data
 
 		}else{														//single file mode: asymmetric encryption
 
@@ -155,7 +165,7 @@ function dropEncrypt(fileInBin, fileOutName){
 			var	msgKey = nacl.randomBytes(32),	//message key for symmetric encryption
 				nonce = nacl.randomBytes(24);	//nonce so each encryption is unique; 24 bytes
 
-			fileOutBin = concatUi8([headTag,recipients,nonce,myLock.slice(0,8)]);	//global output starts with header v1, No. of recipients, 24-byte nonce, first 8 bytes of sender's public Key			
+			fileOutBin = concatUi8([headTag,recipients,nonce,padding,myLock.slice(0,8)]);	//global output starts with header v1, No. of recipients, 24-byte nonce, first 8 bytes of sender's public Key			
 			
 			if(isKeyFile){
 				var cipher = new Uint8Array(0);										//empty payload for a Folder Key file
@@ -211,8 +221,18 @@ function dropDecrypt(fileInBin, fileOutName){
 			}
 
 			var nonce = fileInBin.slice(headTag.length+1,headTag.length+25),			//24 bytes; there is a 0 byte right before it
-				msgKeyCipher = fileInBin.slice(headTag.length+25,headTag.length+73),	//encrypted key, 48 bytes
-				cipher = fileInBin.slice(headTag.length+73);							//rest of it; encrypted file
+				padding = fileInBin.slice(headTag.length+25,headTag.length+125),
+				msgKeyCipher = fileInBin.slice(headTag.length+125,headTag.length+173),	//encrypted key, 48 bytes
+				cipher = fileInBin.slice(headTag.length+173);							//rest of it; encrypted file
+
+			if(decoyMode.checked){											//decoy decryption of the padding
+				if(Lock){
+					var answer = decoyDecrypt(padding,convertPub(Lock))		//works since KeyDH was used for encryption
+				}else{
+					var answer = decoyDecrypt(padding)							//main shared Key case. Will trigger an error message if the decoy key was asymmetric
+				}
+				if(!answer) return
+			}
 
 			var msgKey = nacl.secretbox.open(msgKeyCipher,nonce,folderKey);				//decrypt the message key
 			if(!msgKey){
@@ -239,8 +259,18 @@ function dropDecrypt(fileInBin, fileOutName){
 				stuffForId = myLock;
 
 			var nonce = fileInBin.slice(headTag.length+1,headTag.length+25),		//24 bytes
-				lockID = fileInBin.slice(headTag.length+25,headTag.length+33),		//first 8 bytes of sender's public key
-				cipherInput = fileInBin.slice(headTag.length+33);					//rest of it; contains IDtags + encrypted message keys, and encrypted file
+				padding = fileInBin.slice(headTag.length+25,headTag.length+125),
+				lockID = fileInBin.slice(headTag.length+125,headTag.length+133),		//first 8 bytes of sender's public key
+				cipherInput = fileInBin.slice(headTag.length+133);					//rest of it; contains IDtags + encrypted message keys, and encrypted file
+
+			if(decoyMode.checked){											//decoy decryption of the padding
+				if(Lock){
+					var answer = decoyDecrypt(padding,convertPub(Lock))		//works since KeyDH was used for encryption
+				}else{
+					var answer = decoyDecrypt(padding)							//main shared Key case. Will trigger an error message if the decoy key was asymmetric
+				}
+				if(!answer) return
+			}
 
 			var senderName = lockName(lockID,8);									//find whose public key was used to encrypt
 
@@ -277,14 +307,14 @@ function dropDecrypt(fileInBin, fileOutName){
 				}
 			}
 
-			if(!success){														//ID tag not found; display error and bail out
+			if(!success && !decoyMode.checked){														//ID tag not found; display error and bail out
 				mainMsg.style.color = 'red';
 				mainMsg.textContent = 'This file is not encrypted for you';
 				return
 			}
 
 			var msgKey = nacl.secretbox.open(msgKeyCipher,nonce,sharedKey);		//decrypt the message key
-			if(!msgKey){
+			if(!msgKey && !decoyMode.checked){
 				mainMsg.style.color = 'red';
 				mainMsg.textContent = 'Decryption has failed';
 				return
@@ -292,8 +322,10 @@ function dropDecrypt(fileInBin, fileOutName){
 
 			if(cipher.length == 0){												//encrypted folder Key
 				folderKey = msgKey;
-				mainMsg.style.color = 'green';
-				mainMsg.textContent = 'Folder Key loaded. You are now set to encrypt and decrypt files from this folder. Last updated by ' + senderName;
+				if(!decoyMode.checked){
+					mainMsg.style.color = 'green';
+					mainMsg.textContent = 'Folder Key loaded. You are now set to encrypt and decrypt files from this folder. Last updated by ' + senderName
+				}
 				folderMode.checked = true;
 				makeKeyBtn.textContent = 'Update Folder Key';
 				fileImg.src = folderImg;
@@ -303,11 +335,15 @@ function dropDecrypt(fileInBin, fileOutName){
 				var fileOutBin = nacl.secretbox.open(cipher,nonce,msgKey);		//decrypt the main message; false if error
 
 				if(!fileOutBin){												//decryption failed
-					mainMsg.style.color = 'red';
-					mainMsg.textContent = 'Decryption has failed'
+					if(!decoyMode.checked){
+						mainMsg.style.color = 'red';
+						mainMsg.textContent = 'Decryption has failed'
+					}
 				}else{
-					mainMsg.style.color = 'green';								//success!
-					mainMsg.textContent = 'Decryption successful. File saved to Downloads. Last updated by ' + senderName;
+					if(!decoyMode.checked){
+						mainMsg.style.color = 'green';								//success!
+						mainMsg.textContent = 'Decryption successful. File saved to Downloads. Last updated by ' + senderName
+					}
 					saveFileOut(fileOutBin,fileOutName)							//download automatically if the Save button is not showing
 				}
 			}
