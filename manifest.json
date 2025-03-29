@@ -2,7 +2,7 @@
  "name": "PassLok Privacy",
  "short_name": "PassLok",
  "description": "High security asymmetric encryption and steganography for text, files and chat.",
- "version": "2.6",
+ "version": "2.6.2",
  "manifest_version": 3,
  "icons": {
  "16": "passlok-icon48.png",

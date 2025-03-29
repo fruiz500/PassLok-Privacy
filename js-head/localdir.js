@@ -84,7 +84,15 @@ function addLock(fromMain){
                 lockMsg.textContent = 'Item saved to local directory with name: ' + name
             };
         }, 100)
+
         fillList();
+
+        //select the new entry on the list
+        for(var i = 0; i < lockList.options.length; i++){
+            if(lockList.options[i].value == name) lockList.options[i].selected = true
+        }
+        mainMsg.textContent = name + ' selected';
+
         lockBox.textContent = '';
 
             if(ChromeSyncOn && chromeSyncMode.checked){													//if Chrome sync is available, add to sync storage
