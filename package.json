@@ -1,8 +1,8 @@
 {
   "name": "passlok-privacy",
-  "version": "2.6.2",
-  "description": "Usable cryptography suite based on NaCl, plus steganography",
-  "main": "index.html",
+  "version": "1.0.0",
+  "description": "PassLok-Privacy Application",
+  "main": "passlok.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,15 +10,22 @@
     "type": "git",
     "url": "git+https://github.com/fruiz500/PassLok-Privacy.git"
   },
-  "keywords": [
-    "cryptography",
-    "steganography",
-    "usability"
-  ],
   "author": "Francisco Ruiz",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fruiz500/PassLok-Privacy/issues"
   },
-  "homepage": "https://github.com/fruiz500/PassLok-Privacy#readme"
+  "homepage": "https://github.com/fruiz500/PassLok-Privacy#readme",
+  "dependencies": {
+    "dompurify": "^3.0.6",
+    "ed2curve": "^0.3.0",
+    "isaac.js": "^0.2.2",
+    "jssteg": "^1.0.1",
+    "lz-string": "^1.5.0",
+    "qrcode": "^1.5.3",
+    "scrypt-js": "^3.0.1",
+    "secrets.js": "^2.0.0",
+    "tweetnacl": "^1.0.3",
+    "vanilla-picker": "^2.12.2"
+  }
 }
