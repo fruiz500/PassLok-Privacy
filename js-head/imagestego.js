@@ -462,31 +462,35 @@ var modifyCoefficients = function(coefficients) {
 }
 
 //calculates a random-walk permutation, as seeded by "seed" and shuffles the global array "allCoefficients" accordingly. "permutation" is also global
-function shuffleCoefficients(seed,startIndex){
-    isaac.seed(seed);		//re-seed the PRNG
+function shuffleCoefficients(seed, startIndex) {
+    // Create a new, local PRNG instance from the seed
+    const prng = new Math.seedrandom(seed);
 
-    var	length = allCoefficients.length,
+    var length = allCoefficients.length,
         permutedCoeffs = new Array(length);
 
-    if(!startIndex){
-        permutation = randPerm(length)		//pseudo-random but repeatable array containing values 0 to length-1
-    }else{
-        permutation2 = randPerm(length - startIndex)		//the PRNG should be re-initialized before this operation
+    if (!startIndex) {
+        // Pass the new prng instance to our refactored function
+        permutation = randPerm(length, prng);
+    } else {
+        // Pass the new prng instance here as well
+        permutation2 = randPerm(length - startIndex, prng);
     }
 
-    if(!startIndex){
-        for(var i = 0; i < length; i++){
-            permutedCoeffs[i] = allCoefficients[permutation[i]]
+    // --- The rest of your function remains exactly the same ---
+    if (!startIndex) {
+        for (var i = 0; i < length; i++) {
+            permutedCoeffs[i] = allCoefficients[permutation[i]];
         }
-        for(var i = 0; i < length; i++){
-            allCoefficients[i] = permutedCoeffs[i]
+        for (var i = 0; i < length; i++) {
+            allCoefficients[i] = permutedCoeffs[i];
         }
-    }else{
-        for(var i = 0; i < length - startIndex; i++){
-            permutedCoeffs[i] = allCoefficients[startIndex + permutation2[i]]
+    } else {
+        for (var i = 0; i < length - startIndex; i++) {
+            permutedCoeffs[i] = allCoefficients[startIndex + permutation2[i]];
         }
-        for(var i = 0; i < length - startIndex; i++){
-            allCoefficients[startIndex + i] = permutedCoeffs[i]
+        for (var i = 0; i < length - startIndex; i++) {
+            allCoefficients[startIndex + i] = permutedCoeffs[i];
         }
     }
 }
@@ -526,13 +530,13 @@ function unShuffleCoefficients(startIndex){
     }
 }
 
-//obtain a random permutation using isaac re-seedable PRNG, for use in image steganography
-function randPerm(n) {
+// A random permutation function that accepts a PRNG instance.
+function randPerm(n, prng) { // <-- Added 'prng' argument
   var result = new Array(n);
   result[0] = 0;
 
   for(var i = 1; i < n; ++i) {
-    var idx = (isaac.random() * (i + 1)) | 0			//here is the call to the isaac PRNG library
+    var idx = (prng() * (i + 1)) | 0; // <-- Use the passed-in prng function
     if(idx < i) {
       result[i] = result[idx]
     }
