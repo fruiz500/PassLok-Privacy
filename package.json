@@ -17,15 +17,14 @@
   },
   "homepage": "https://github.com/fruiz500/PassLok-Privacy#readme",
   "dependencies": {
-    "dompurify": "^3.1.0",
+    "dompurify": "^3.0.6",
     "ed2curve": "^0.3.0",
+    "seedrandom.js": "^3.0.5",
     "jssteg": "^1.0.1",
     "lz-string": "^1.5.0",
     "qrcode": "^1.5.3",
     "scrypt-js": "^3.0.1",
-    "seedrandom": "^3.0.5",
-    "@privy-io/shamir-secret-sharing": "^0.0.3",
-    "tweetnacl": "^1.0.3",
-    "vanilla-picker": "^2.12.2"
+    "shamir-secret-sharing": "1.0.0",
+    "tweetnacl": "^1.0.3"
   }
 }
