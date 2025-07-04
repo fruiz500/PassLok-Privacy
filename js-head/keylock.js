@@ -141,7 +141,7 @@ function hashili(msgID,string){
         if(!string.trim()){
             element.innerText += ''
         }else{
-            var code = nacl.hash(nacl.util.decodeUTF8(string.trim())).slice(-2),			//take last 4 bytes of the SHA512
+            var code = nacl.hash(stringToUint8Array(string.trim())).slice(-2),			//take last 4 bytes of the SHA512
                 code10 = ((code[0]*256)+code[1]) % 10000,		//convert to decimal
                 output = '';
 
@@ -557,7 +557,7 @@ function checkKey(key){
     KeyDH = ed2curve.convertSecretKey(KeySgn);
     if(!myLock){
         myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
-        myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
+        myLockStr = uint8ArrayToBase64(myLock).replace(/=+$/,'');
         myezLock = changeBase(myLockStr, base64, base36, true);
     }
     checkingKey = false;
@@ -580,7 +580,7 @@ function showLock(){
     if(!locDir['myself']) locDir['myself'] = [];
     if(!myLock){
         myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
-        myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');	//the Lock derives from the signing Key
+        myLockStr = uint8ArrayToBase64(myLock).replace(/=+$/,'');	//the Lock derives from the signing Key
         myezLock = changeBase(myLockStr, base64, base36, true);
     }
 
@@ -709,7 +709,7 @@ function makeNonce24(nonce){
 //encrypt string with a shared Key, returns a uint8 array
 function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
     if(!isCompressed || plainstr.match('="data:')){						//no compression if it includes a file
-        var plain = nacl.util.decodeUTF8(plainstr)
+        var plain = stringToUint8Array(plainstr)
     }else{
         var plain = LZString.compressToUint8Array(plainstr)
     }
@@ -719,7 +719,7 @@ function PLencrypt(plainstr,nonce24,sharedKey,isCompressed){
 //decrypt string (or uint8 array) with a shared Key. Var 'label' is to display messages
 function PLdecrypt(cipherStr,nonce24,sharedKey,isCompressed,label){
     if(typeof cipherStr == 'string'){
-        var cipher = nacl.util.decodeBase64(cipherStr);
+        var cipher = base64ToUint8Array(cipherStr);
         if(!cipher) return false
     }else{
         var cipher = cipherStr
@@ -728,7 +728,7 @@ function PLdecrypt(cipherStr,nonce24,sharedKey,isCompressed,label){
     if(!plain){failedDecrypt(label);return false};
 
     if(!isCompressed || plain.join().match(",61,34,100,97,116,97,58,")){		//this is '="data:' after encoding
-        return nacl.util.encodeUTF8(plain)
+        return uint8ArrayToString(plain)
     }else{
         return LZString.decompressFromUint8Array(plain)
     }
@@ -746,12 +746,12 @@ function keyEncrypt(plainstr){
     }else{
         var cipher = nacl.secretbox(plainstr,nonce24,KeyDir)
     }
-    return nacl.util.encodeBase64(concatUi8([[144],nonce,cipher])).replace(/=+$/,'')		//1st character should be k
+    return uint8ArrayToBase64(concatUi8([[144],nonce,cipher])).replace(/=+$/,'')		//1st character should be k
 }
 
 //decrypts a string encrypted with the secret Key, 9 byte nonce. Returns original if not encrypted. If isArray set, return uint8 array
 function keyDecrypt(cipherStr,isArray){
-    var cipher = nacl.util.decodeBase64(cipherStr.replace(/[^a-zA-Z0-9+\/]+/g,''));
+    var cipher = base64ToUint8Array(cipherStr.replace(/[^a-zA-Z0-9+\/]+/g,''));
     if(!cipher) return false;
     if (cipher[0] == 144){
         if(!refreshKey()) return undefined;											//make sure the Key is still alive
@@ -885,7 +885,7 @@ function changeBase(numberIn, inAlpha, outAlpha, isLock) {
 
 //puts an 43-character random string in the 'emailBox' boxes
 function randomToken(){
-    var token = nacl.util.encodeBase64(nacl.randomBytes(32)).slice(0,43);
+    var token = uint8ArrayToBase64(nacl.randomBytes(32)).slice(0,43);
     emailIntro.value = token;
     emailBox.value = token;
 }

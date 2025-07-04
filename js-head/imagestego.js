@@ -32,9 +32,9 @@ var importImage = function(e) {
             if(locklen == 43 || locklen == 50){					//Lock identified, compute shared Key
                 if(!refreshKey()) return;
                 if (locklen == 50) lock = changeBase(lock.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-                var lockBin = nacl.util.decodeBase64(lock);
+                var lockBin = base64ToUint8Array(lock);
                 if(!lockBin) return false;
-                imageBox.value = nacl.util.encodeBase64(makeShared(convertPub(lockBin),KeyDH)).replace(/=+$/,'')
+                imageBox.value = uint8ArrayToBase64(makeShared(convertPub(lockBin),KeyDH)).replace(/=+$/,'')
             }else{													//not a Lock, so use it directly
                 imageBox.value = lock
             }
@@ -176,7 +176,7 @@ function encodePNGprocess(text){
     //now turn the base64 text into a binary array
     var msgBin = toBin(text).concat(imgEOF),							//also replace special characters with base64 and add 48-bit end marker
         pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
-        seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
+        seed = uint8ArrayToBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
     if(pwdArray.length == 3){
         var pwd2 = pwdArray[1].trim(),
             msgBin2 = toBin(LZString.compressToBase64(pwdArray[2].trim())).concat(imgEOF);						//for when there is a second message
@@ -189,7 +189,7 @@ function encodePNGprocess(text){
     if(msgBin2){													//this is done only if there is a second message, to be added immediately after the main message
         msgBin2 = msgBin2.concat(imgEOF);
 
-        var seed2 = nacl.util.encodeBase64(wiseHash(pwd2, lastIndex.toString() + 'png'));  			//using Wisehash rather than built-in
+        var seed2 = uint8ArrayToBase64(wiseHash(pwd2, lastIndex.toString() + 'png'));  			//using Wisehash rather than built-in
 
         shuffleCoefficients(seed2,lastIndex + 1);							//shuffle only beyond the last index used
 
@@ -272,7 +272,7 @@ function decodePNG(){
     allCoefficients = allCoefficients.slice(0,k);
 
     var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
-        seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
+        seed = uint8ArrayToBase64(wiseHash(pwdArray[0].trim(), length.toString() + 'png'));
     if(pwdArray.length == 2) var pwd2 = pwdArray[1].trim();										//for when there is a second message
 
     shuffleCoefficients(seed,0);																	//scramble image data to unpredictable locations
@@ -280,7 +280,7 @@ function decodePNG(){
     var result = decodeFromCoefficients('png',0);
 
     if(pwd2){													//extract hidden message if a second password is supplied
-        var seed2 = nacl.util.encodeBase64(wiseHash(pwd2, result[2].toString() + 'png'));
+        var seed2 = uint8ArrayToBase64(wiseHash(pwd2, result[2].toString() + 'png'));
         shuffleCoefficients(seed2,result[2] + 1);
         var result2 = decodeFromCoefficients('png',result[2] + 1)
     }
@@ -325,7 +325,7 @@ var decodeJPG = function(){
         allCoefficients = removeZeros(rawCoefficients);							//get rid of zeros
 
         var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
-            seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
+            seed = uint8ArrayToBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
         if(pwdArray.length == 2) var pwd2 = pwdArray[1].trim();						//for when there is a second message
 
         shuffleCoefficients(seed,0);															//scramble image data to unpredictable locations
@@ -333,7 +333,7 @@ var decodeJPG = function(){
         var result = decodeFromCoefficients('jpeg',0);
 
         if(pwd2){													//extract hidden message if a second password is supplied
-            var seed2 = nacl.util.encodeBase64(wiseHash(pwd2, result[2].toString() + 'jpeg'));
+            var seed2 = uint8ArrayToBase64(wiseHash(pwd2, result[2].toString() + 'jpeg'));
             shuffleCoefficients(seed2,result[2] + 1);
             var result2 = decodeFromCoefficients('png',result[2] + 1)
         }
@@ -417,7 +417,7 @@ var modifyCoefficients = function(coefficients) {
     allCoefficients = removeZeros(rawCoefficients);							//remove zeros and store in global variable
 
     var pwdArray = imageBox.value.trim().replace(/\n/g,' ').split('|'),
-        seed = nacl.util.encodeBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
+        seed = uint8ArrayToBase64(wiseHash(pwdArray[0].trim(), allCoefficients.length.toString() + 'jpeg'));
     if(pwdArray.length == 3){
         var pwd2 = pwdArray[1].trim(),
             msgBin2 = toBin(LZString.compressToBase64(pwdArray[2].trim())).concat(imgEOF);						//for when there is a second message
@@ -428,7 +428,7 @@ var modifyCoefficients = function(coefficients) {
     var lastIndex = encodeToCoefficients('jpeg', msgBin, 0);						//encoding step
 
     if(msgBin2){													//this is done only if there is a second message, to be added immediately after the main message
-        var seed2 = nacl.util.encodeBase64(wiseHash(pwd2, lastIndex.toString() + 'jpeg'));
+        var seed2 = uint8ArrayToBase64(wiseHash(pwd2, lastIndex.toString() + 'jpeg'));
 
         shuffleCoefficients(seed2,lastIndex + 1);							//shuffle only beyond the last index used
 

@@ -27,13 +27,13 @@ function applySignature(textStr){
     var	padding = decoyEncrypt(75,KeyDH);
 
     if(textStr.match('="data:')){
-        var encodedText = nacl.util.decodeUTF8(textStr)
+        var encodedText = stringToUint8Array(textStr)
     }else{
         var encodedText = LZString.compressToUint8Array(textStr)
     }
 
     //main signing instruction, prefix is l
-    var sealedText = nacl.util.encodeBase64(concatUi8([[150],padding,nacl.sign(encodedText,KeySgn)])).replace(/=+$/,'');
+    var sealedText = uint8ArrayToBase64(concatUi8([[150],padding,nacl.sign(encodedText,KeySgn)])).replace(/=+$/,'');
 
     mainBox.textContent = '';
     if(fileMode.checked){
@@ -100,9 +100,9 @@ function verifySignature(textStr,LockStr){
         return
     }
 
-    var Lock = nacl.util.decodeBase64(LockStr);
+    var Lock = base64ToUint8Array(LockStr);
     if(!Lock) return false;
-    var	sealedArray = nacl.util.decodeBase64(textStr);
+    var	sealedArray = base64ToUint8Array(textStr);
     if(!sealedArray) return false;
     var	padding = sealedArray.slice(1,101);
 
@@ -113,7 +113,7 @@ function verifySignature(textStr,LockStr){
 
     if(result){
         if(result.join().match(",61,34,100,97,116,97,58,")){
-            mainBox.innerHTML = decryptSanitizer(nacl.util.encodeUTF8(result))
+            mainBox.innerHTML = decryptSanitizer(uint8ArrayToString(result))
         }else{
             mainBox.innerHTML = decryptSanitizer(LZString.decompressFromUint8Array(result));			//decompress and filter
             var mainTxt = mainBox.textContent;
@@ -132,7 +132,7 @@ var entropyPerChar = 1.58;			//expected entropy of the key text in bits per char
 //function for encrypting with long key
 function padEncrypt(text){
     var keyText = lockBox.textContent.replace(/\n/g,' ').trim(),		//turn linefeeds into spaces for compatibility with PassLok for Email
-        keyTextBin = nacl.util.decodeUTF8(keyText),
+        keyTextBin = stringToUint8Array(keyText),
         clipped = false;
 
     if(shortMode.checked){
@@ -141,11 +141,11 @@ function padEncrypt(text){
         text = text.slice(0,94);
         while (text.length < 94) text += ' ';							//ensure standard ciphertext length after encoding
         var nonce = nacl.randomBytes(9),
-            textBin = nacl.util.decodeUTF8(text)
+            textBin = stringToUint8Array(text)
     }else{
         var nonce = nacl.randomBytes(15);
         if(text.match('="data:')){
-            var textBin = nacl.util.decodeUTF8(text)
+            var textBin = stringToUint8Array(text)
         }else{
             var textBin = LZString.compressToUint8Array(text)
         }
@@ -163,7 +163,7 @@ function padEncrypt(text){
 
     var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex),				//main encryption event
         macBin = padMac(textBin, keyTextBin, nonce, startIndex),						//make mac
-        outStr = nacl.util.encodeBase64(concatUi8([[116],nonce,macBin,cipherBin])).replace(/=+$/,'');
+        outStr = uint8ArrayToBase64(concatUi8([[116],nonce,macBin,cipherBin])).replace(/=+$/,'');
 
     if(shortMode.checked){
         mainBox.textContent = outStr
@@ -223,7 +223,7 @@ function padResult(textBin, keyTextBin, nonce, startIndex){
     var count = Math.ceil(textBin.length / 64),
         keyStream = new Uint8Array(count * 64);
     for(var index = 0; index < count; index++){
-        var indexBin = nacl.util.decodeUTF8(index);
+        var indexBin = stringToUint8Array(index);
         var inputArray = new Uint8Array(keyBin.length + nonce.length + indexBin.length);
 
         //now concatenate the arrays
@@ -295,9 +295,9 @@ function padDecrypt(cipherStr){
         return
     }
     try{
-        var inputBin = nacl.util.decodeBase64(cipherStr);
+        var inputBin = base64ToUint8Array(cipherStr);
         if(!inputBin) return false;
-        var	keyTextBin = nacl.util.decodeUTF8(keyText);
+        var	keyTextBin = stringToUint8Array(keyText);
         if(cipherStr.length == 160){									//short mode message
             var	nonce = inputBin.slice(1,10),
                 macBin = inputBin.slice(10,26),
@@ -324,10 +324,10 @@ function padDecrypt(cipherStr){
 
     try{
         if(cipherStr.length == 160){
-            var plain = decodeURI(nacl.util.encodeUTF8(plainBin)).trim()
+            var plain = decodeURI(uint8ArrayToString(plainBin)).trim()
         }else{
             if(plainBin.join().match(",61,34,100,97,116,97,58,")){					//this when the result is a file, which uses no compression
-                var plain = nacl.util.encodeUTF8(plainBin)
+                var plain = uint8ArrayToString(plainBin)
             }else{
                 var plain = LZString.decompressFromUint8Array(plainBin)			//use compression in the normal case
             }

@@ -337,7 +337,7 @@ function code2checkbox(){
         for(i = 0; i < checks.length; i++){
             checks[i].checked = (binCode[i] == '1')
         }
-        var isEmailMode = checks[5].checked;
+        var isEmailMode = checks[6].checked;
         BasicButtons = !checks[5].checked;
         if(BasicButtons){checks[4].checked = true; checks[6].checked = false; checks[7].checked = false}
     }

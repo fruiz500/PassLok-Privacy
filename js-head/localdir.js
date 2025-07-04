@@ -39,7 +39,7 @@ function addLock(fromMain){
 
     if (lock == ''){																//if box is empty, put a random string there
         if(!locDir['myself'] || BasicButtons) return;									//don't do it in Basic mode
-        lock = nacl.util.encodeBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct from  a Lock
+        lock = uint8ArrayToBase64(nacl.randomBytes(31)).replace(/=+$/,'');			//a little shorter so it's distinct from  a Lock
         lockBox.textContent = lock;
         addLockBtn.textContent = "Save";
         return
@@ -331,7 +331,7 @@ function mergeLockDB(){
         KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,email)).secretKey;
         KeyDH = ed2curve.convertSecretKey(KeySgn);
         myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
-        myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
+        myLockStr = uint8ArrayToBase64(myLock).replace(/=+$/,'');
         myezLock = changeBase(myLockStr, base64, base36, true);
 
         fillList();
@@ -348,10 +348,10 @@ function mergeLockDB(){
             if(!reply) return
         }
         if (mainlen == 50) mainstr2 = changeBase(mainstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-        var mainBin2 = nacl.util.decodeBase64(mainstr2),
-            lockBin2 = nacl.util.decodeBase64(lockstr2);
+        var mainBin2 = base64ToUint8Array(mainstr2),
+            lockBin2 = base64ToUint8Array(lockstr2);
         if(!mainBin2 || !lockBin2) return false;
-        var merged = nacl.util.encodeBase64(makeShared(mainBin2,lockBin2)).replace(/=+$/,'');
+        var merged = uint8ArrayToBase64(makeShared(mainBin2,lockBin2)).replace(/=+$/,'');
         mainBox.textContent = merged;
         lockBox.textContent = merged;
         lockMsg.textContent = 'Key merged with Lock, in main box';
@@ -364,9 +364,9 @@ function mergeLockDB(){
         }
         if(!refreshKey()) return;
         if (locklen == 50) lockstr2 = changeBase(lockstr2.toLowerCase().replace(/l/g,'L'), base36, base64, true);
-        var lockBin2 = nacl.util.decodeBase64(lockstr2);
+        var lockBin2 = base64ToUint8Array(lockstr2);
         if(!lockBin2) return false;
-        var merged = nacl.util.encodeBase64(makeShared(convertPub(lockBin2),KeyDH)).replace(/=+$/,'');
+        var merged = uint8ArrayToBase64(makeShared(convertPub(lockBin2),KeyDH)).replace(/=+$/,'');
         lockBox.textContent = merged;
         imageBox.value = merged;										//for image hiding
         lockMsg.textContent = 'The Lock has been merged with your Key and turned into this shared Key. Also copied as image Password';
@@ -542,7 +542,7 @@ function recryptDB(newKey,newUserName){
     KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(newKey,email)).secretKey;
     KeyDH = ed2curve.convertSecretKey(KeySgn);
     myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
-    myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
+    myLockStr = uint8ArrayToBase64(myLock).replace(/=+$/,'');
     myezLock = changeBase(myLockStr, base64, base36, true);
     locDir['myself'][0] = keyEncrypt(email);
     if(!locDir['myself'][0]) return;

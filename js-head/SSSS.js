@@ -16,9 +16,6 @@ function splitJoin(){
 }
 
 //this function implements the Shamir Secret Sharing Scheme, taking the secret from the main box and putting the result back there, and vice-versa.
-// =============================================================================
-// --- MAIN APPLICATION LOGIC (Unchanged - Now Correct with Fixed Adapters) ---
-// =============================================================================
 
 function secretshare() {
     var main = mainBox.innerHTML.trim(),
@@ -145,11 +142,6 @@ function displayshare(shares, quorum) {
     mainBox.appendChild(fragment);
 }
 
-
-// =============================================================================
-// --- CORE ADAPTERS (Corrected and Simplified) ---
-// =============================================================================
-
 /**
  * Splits a Uint8Array secret into an array of raw Uint8Array shares.
  * This is a direct, clean wrapper around the shamir library.
@@ -164,36 +156,4 @@ function sss_split_uint8(secret, numShares, threshold) {
  */
 function sss_combine_uint8(shares) {
     return shamir.combine(shares);
-}
-
-
-// =============================================================================
-// --- DATA CONVERSION HELPERS (Unchanged) ---
-// =============================================================================
-
-function uint8ArrayToBase64(bytes) {
-  let binary = '';
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}
-
-function base64ToUint8Array(base64) {
-  const binary_string = window.atob(base64);
-  const len = binary_string.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binary_string.charCodeAt(i);
-  }
-  return bytes;
-}
-
-function stringToUint8Array(str) {
-  return new TextEncoder().encode(str);
-}
-
-function uint8ArrayToString(bytes) {
-  return new TextDecoder().decode(bytes);
 }

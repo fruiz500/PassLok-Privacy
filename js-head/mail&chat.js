@@ -72,7 +72,7 @@ function makeInvitation(){
         var text = mainBox.innerHTML.trim(),
             nonce = nacl.randomBytes(9),
             nonce24 = makeNonce24(nonce),
-            cipherStr = myezLock + '//////' + nacl.util.encodeBase64(concatUi8([[128],nonce,PLencrypt(text,nonce24,myLock,true)])).replace(/=+$/,'');			//this includes compression
+            cipherStr = myezLock + '//////' + uint8ArrayToBase64(concatUi8([[128],nonce,PLencrypt(text,nonce24,myLock,true)])).replace(/=+$/,'');			//this includes compression
         mainBox.textContent = '';
 
             var prefaceMsg = document.createElement('div');
@@ -172,7 +172,7 @@ function makeChat(){
     var date = chatDate.value.slice(0,43);						//can't do encodeURI here because this will be decrypted by decryptList, which doesn't expect it
     if(date.trim() == '') date = 'noDate';
     while(date.length < 43) date += ' ';
-    var password = nacl.util.encodeBase64(nacl.randomBytes(32)).replace(/=+$/,''),
+    var password = uint8ArrayToBase64(nacl.randomBytes(32)).replace(/=+$/,''),
         chatRoom = makeChatRoom();
     lock(lockBox.innerHTML.replace(/\n/g,'<br>').replace(/<br>$/,"").trim(),date + type + chatRoom + '?' + password);	//date msg + info to be sent to chat page
     setTimeout(function(){
