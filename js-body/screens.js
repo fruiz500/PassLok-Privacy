@@ -349,7 +349,7 @@ function code2checkbox(){
         openClose('advancedModes');
         openClose('specialEncryptModes');
         openClose('advancedBtns');
-        openClose('advancedHelp');
+//        openClose('advancedHelp');
         basicMode.checked = false;
         advancedMode.checked = true
     }
@@ -594,7 +594,7 @@ function mode2adv(){
     otherRow2.style.display = '';
     basicHideModes.style.display = 'block';
     advancedBtns.style.display = 'block';
-    advancedHelp.style.display = 'block';
+//    advancedHelp.style.display = 'block';
     basicMode.checked = false;
     advancedMode.checked = true;
     emailMode.checked = false;
@@ -627,7 +627,7 @@ function mode2basic(){
     otherRow2.style.display = '';
     basicHideModes.style.display = '';
     advancedBtns.style.display = 'none';
-    advancedHelp.style.display = 'none';
+//    advancedHelp.style.display = 'none';
     basicMode.checked = true;
     advancedMode.checked = false;
     emailMode.checked = false;
@@ -663,7 +663,7 @@ function mode2email(){
     basicHideModes.style.display = 'block';
     advancedModes.style.display = '';
     advancedBtns.style.display = 'none';
-    advancedHelp.style.display = 'none';
+//    advancedHelp.style.display = 'none';
     basicMode.checked = false;
     advancedMode.checked = false;
     emailMode.checked = true;
@@ -806,7 +806,7 @@ function email2any(){
     KeySgn = nacl.sign.keyPair.fromSeed(wiseHash(KeyStr,myEmail)).secretKey;			//do this regardless in case email has changed
     KeyDH = ed2curve.convertSecretKey(KeySgn);
     myLock = nacl.sign.keyPair.fromSecretKey(KeySgn).publicKey;
-    myLockStr = nacl.util.encodeBase64(myLock).replace(/=+$/,'');
+    myLockStr = encodeBase64(myLock).replace(/=+$/,'');
     myezLock = changeBase(myLockStr, base64, base36, true);
     if(dispLock) lockDisplay();
 
@@ -880,6 +880,44 @@ function openHelp2(){
         parent = this.parentElement;
     panel.style.maxHeight = panel.scrollHeight + "px";
     setTimeout(function(){parent.style.maxHeight = parent.scrollHeight + "px"},301)
+}
+
+// Function to filter help items based on search input
+function filterHelp() {
+    var query = document.getElementById("helpSearch").value.toLowerCase();
+    var helpItems = document.getElementsByClassName('helpHeading');
+    
+    for (var i = 0; i < helpItems.length; i++) {
+        var heading = helpItems[i];
+        var panel = heading.nextElementSibling; // This is the .helpText div
+        
+        // Search in both the heading title and the body text
+        var content = (heading.innerText + panel.innerText).toLowerCase();
+        
+        // Find the horizontal rule (hr) before this heading to hide/show it
+        var hr = heading.previousElementSibling;
+
+        if (content.indexOf(query) !== -1) {
+            heading.style.display = ""; // Show heading
+            if (hr && hr.tagName === "HR") hr.style.display = ""; // Show separator
+            
+            // Auto-expand if the search is specific (more than 2 characters)
+            if (query.length > 2) {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+        } else {
+            heading.style.display = "none"; // Hide heading
+            if (hr && hr.tagName === "HR") hr.style.display = "none"; // Hide separator
+            panel.style.maxHeight = null; // Collapse if hidden
+        }
+    }
+
+    // If search is cleared, collapse everything back to the default state
+    if (query === "") {
+        for (var i = 0; i < helpItems.length; i++) {
+            helpItems[i].nextElementSibling.style.maxHeight = null;
+        }
+    }
 }
 
 //variables and functions for making tabs, by Matt Doyle 2009
