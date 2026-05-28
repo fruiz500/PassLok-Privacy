@@ -650,3 +650,64 @@ function corrAtDistance(array,freqArray,base,distance){
     }
     return result
 }
+
+// taken from an old version of TweetNaCl, which dropped this code eventually
+
+decodeUTF8 = function(s) {
+  var i, d = unescape(encodeURIComponent(s)), b = new Uint8Array(d.length);
+  for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
+  return b;
+};
+
+encodeUTF8 = function(arr) {
+  var i, s = [];
+  for (i = 0; i < arr.length; i++) s.push(String.fromCharCode(arr[i]));
+  return decodeURIComponent(escape(s.join('')));
+};
+
+encodeBase64 = function(arr) {
+  if (typeof btoa === 'undefined') {
+    return (new Buffer(arr)).toString('base64');
+  } else {
+    var i, s = [], len = arr.length;
+    for (i = 0; i < len; i++) s.push(String.fromCharCode(arr[i]));
+    return btoa(s.join('')).replace(/=+$/, '');
+  }
+};
+
+decodeBase64 = function(s) {
+  if (typeof atob === 'undefined') {
+    return new Uint8Array(Array.prototype.slice.call(new Buffer(s, 'base64'), 0));
+  } else {
+	  try{															//added for PassLok because atob may fail
+    var i, d = atob(s), b = new Uint8Array(d.length);
+	  }catch(error){
+		  return false
+	  }
+    for (i = 0; i < d.length; i++) b[i] = d.charCodeAt(i);
+    return b;
+  }
+};
+
+function base64ToUint8Array(base64) {
+    var paddedBase64 = base64;
+    while (paddedBase64.length % 4 !== 0) {
+        paddedBase64 += '=';
+    }
+    
+    var binaryString = atob(paddedBase64);
+    var bytes = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
+function uint8ArrayToBase64(bytes) {
+    var binaryString = '';
+    for (var i = 0; i < bytes.length; i++) {
+        binaryString += String.fromCharCode(bytes[i]);
+    }
+    
+    return btoa(binaryString).replace(/=+$/, '');
+}
