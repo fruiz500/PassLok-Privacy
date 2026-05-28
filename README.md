@@ -47,6 +47,13 @@ Full documentation can be found at: <http://passlok.weebly.com/> including:
 * technical design document: http://www.weebly.com/uploads/2/4/1/8/24187628/passlok_technical_document.pdf
 * and a number of articles and video tutorials.
 
+Verification
+-----------
+
+Beginning with v2.7.0, the files are verified against their SHA256 hashes as they load. The file containing the hashes is signed, and its signature is verified with the public key by the loader code ontained in index.html, which is meant to remain stable as the software is updated. Users are encouraged to check the SHA256 of index.html, which should be this:
+
+211b66df03ccf366a9b35c0a1c373b1a187157e8ed1f905c0a0d459813cf6d9d
+
 License
 -------
 
