@@ -1,0 +1,918 @@
+<!--Tabs-->
+<ul id="tabs">
+    <li><a href="#mainTab" title="messages go here (alt-M)" accesskey="m">Main</a></li>
+    <li><a href="#optionsTab" title="several modes available (alt-O)" accesskey="o">Options</a></li>
+    <li><a href="#helpTab" title="help for all functions (alt-M)" accesskey="h">Help</a></li>
+</ul>
+
+<!--Main tab-->
+<div class="tabContent" id="mainTab">
+    <div class="centered"> <br>
+        <br>
+        <br>
+
+        <!--message area and local directory box, plus buttons-->
+        <div id="mainMsg" class="message">Welcome to PassLok</div>
+        <table class="centered" id="recipientsTbl">
+            <tr>
+                <td width="70%">
+                    <select class="cssbox" id='lockList' size='5' multiple
+                        title="Hold Ctrl or cmd to select several items">
+                        <option value="" disabled selected>Select recipients (ctrl-click for several):</option>
+                    </select>
+                </td>
+                <td>
+                    <span class="hide" id="dropBtns">
+                        <p><button class="smallbutton" id="makeKeyBtn"
+                                title="Make or update a Folder Key for selected users">New Folder Key</button></p>
+                        <label for="folderMode" class="smallbutton"
+                            title="in Folder mode all files use the same key; you start by loading an encrypted Folder key"><input
+                                type="checkbox" id="folderMode">&nbsp;Folder mode</label>
+                    </span>
+                    <p>
+                        <button class="smallbutton" id="resetListBtn" value="resetList" title="reset selection (alt-0)"
+                            accesskey="0">Deselect</button>
+                        <button class="smallbutton" id="main2lockBtn" value="editLocks"
+                            title="add or edit items in the local directory (alt-E)" accesskey="e">Edit</button>
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <br>
+
+        <!--buttons above the main box-->
+        <div id="basicBtnsTop">
+            <button class="cssbutton" id="decryptBtnBasic" value="Lock/Unlock"
+                title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="d">Encrypt</button><!--
+--><button class="cssbutton" id="showLockBtnBasic" value="myLock" title="display your Lock or send email (alt-L)"
+                accesskey="l">myLock</button>
+        </div>
+        <div id="emailBtnsTop">
+            <button class="cssbutton" id="decryptBtnEmail" value="Lock/Unlock"
+                title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="d">Encrypt</button><!--
+--><button class="cssbutton" id="stegoBtnEmail" value="Hide" title="hide box contents as text (alt-T)"
+                accesskey="T">Txt hide</button><!--
+--><label for="imageFileEmail" title="open dialog to select the cover image"><span class="cssbutton"
+                    id="imageFileEmailBtn" title="open image hiding functions (alt-I)" accesskey="i">Img
+                    hide</span></label><!--
+--><input type='file' id='imageFileEmail' />
+        </div>
+        <div id="mainBtnsTop">
+            <button class="cssbutton" id="decryptBtn" value="Lock/Unlock"
+                title="encrypt plain text in the box, decrypt encrypted text (alt-D)" accesskey="">Encrypt</button><!--
+--><button class="cssbutton" id="verifyBtn" value="Seal/Unseal"
+                title="add signature based on secret Key and box contents, or verify existing signature (alt-V)"
+                accesskey="v">Seal</button><!--
+--><button class="cssbutton" id="showLockBtn" value="myLock" title="display your Lock (alt-L)">myLock</button><!--
+--><button class="cssbutton" id="main2extraBtn" value="More"
+                title="replace main buttons with those for extra functions (alt-.)" accesskey=".">&#9660;</button>
+            <br>
+        </div>
+        <div id="extraButtonsTop">
+            <button class="cssbutton" id="stegoBtn" value="Stego"
+                title="hide box contents as text, using method set in Options tab, or reveal hidden contents (alt-T)"
+                accesskey="t">Text hide</button><!--
+--><label for="imageFile" title="open dialog to select the cover image"><span class="cssbutton" id="imageFileBtn"
+                    title="open image hiding functions (alt-I)" accesskey="i">Image hide</span></label><!--
+--><input type='file' id='imageFile' /><!--
+--><button class="cssbutton" id="secretShareBtn" value="Split/Join"
+                title="split plain box contents into several random-looking parts, or rejoin parts in the box (alt-J)"
+                accesskey="j">&nbsp;Split&nbsp;</button><!--
+--><button class="cssbutton" id="extra2mainBtn" value="Less" title="return main buttons (alt-.)">&#9650;</button>
+            <br>
+        </div>
+    </div>
+
+    <!--toolbar for rich text editing; this first section contains lists for style, fonts, etc.-->
+    <div id="toolBar1">
+        <select id="formatBlock" title="headings, etc.">
+            <option selected>- formatting -</option>
+            <option value="h1">Title 1 &lt;h1&gt;</option>
+            <option value="h2">Title 2 &lt;h2&gt;</option>
+            <option value="h3">Title 3 &lt;h3&gt;</option>
+            <option value="h4">Title 4 &lt;h4&gt;</option>
+            <option value="h5">Title 5 &lt;h5&gt;</option>
+            <option value="h6">Subtitle &lt;h6&gt;</option>
+            <option value="p">Paragraph &lt;p&gt;</option>
+            <option value="pre">Preformatted &lt;pre&gt;</option>
+        </select>
+        <select id="fontName" title="font type">
+            <option class="heading" selected>- font -</option>
+            <option>Arial</option>
+            <option>Arial Black</option>
+            <option>Courier New</option>
+            <option>Times New Roman</option>
+            <option>Verdana</option>
+            <option>Comic Sans MS</option>
+            <option>Impact</option>
+            <option>Trebuchet MS</option>
+            <option>Symbol</option>
+        </select>
+        <select id="fontSize" title="font size">
+            <option class="heading" selected>- size -</option>
+            <option value="1">Very small</option>
+            <option value="2">A bit small</option>
+            <option value="3">Normal</option>
+            <option value="4">Medium-large</option>
+            <option value="5">Big</option>
+            <option value="6">Very big</option>
+            <option value="7">Maximum</option>
+        </select>
+        <select id="foreColor" title="text color">
+            <option class="heading" selected>- color -</option>
+            <option value="brown">Brown</option>
+            <option value="red">Red</option>
+            <option value="orange">Orange</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Violet</option>
+            <option value="violet">Pink</option>
+            <option value="yellow">Yellow</option>
+            <option value="cyan">Cyan</option>
+            <option value="white">White</option>
+            <option value="gray">Gray</option>
+            <option value="black">Black</option>
+        </select>
+        <select id="backColor" title="color behind the text">
+            <option class="heading" selected>- back color -</option>
+            <option value="brown">Brown</option>
+            <option value="red">Red</option>
+            <option value="orange">Orange</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Violet</option>
+            <option value="violet">Pink</option>
+            <option value="yellow">Yellow</option>
+            <option value="cyan">Cyan</option>
+            <option value="white">White</option>
+            <option value="gray">Gray</option>
+            <option value="black">Black</option>
+        </select>
+
+        <!--rich text editing buttons; images are loaded as data-->
+        <div id="toolBar2"> <img class="intLink" title="Bold"
+                src="data:image/gif;base64,R0lGODlhFgAWAID/AMDAwAAAACH5BAEAAAAALAAAAAAWABYAQAInhI+pa+H9mJy0LhdgtrxzDG5WGFVk6aXqyk6Y9kXvKKNuLbb6zgMFADs=" />
+            <img class="intLink" title="Italic"
+                src="data:image/gif;base64,R0lGODlhFgAWAKEDAAAAAF9vj5WIbf///yH5BAEAAAMALAAAAAAWABYAAAIjnI+py+0Po5x0gXvruEKHrF2BB1YiCWgbMFIYpsbyTNd2UwAAOw==" />
+            <img class="intLink" title="Underline"
+                src="data:image/gif;base64,R0lGODlhFgAWAKECAAAAAF9vj////////yH5BAEAAAIALAAAAAAWABYAAAIrlI+py+0Po5zUgAsEzvEeL4Ea15EiJJ5PSqJmuwKBEKgxVuXWtun+DwxCCgA7" />
+            <img class="intLink" title="Strikethrough"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAGFBMVEUAAABGRkZxcXGrq6uOjo7CwsINDQ3p6emLJhauAAAAAXRSTlMAQObYZgAAAEVJREFUGNNjoCYoDjaBs1UZDGFMVmUGJhibXcidFa7GUVAVygpSUlJMS0uBqmFgFhSA6TVgYIOxmcUZ2BxgbEFnF2o6HQD3yAWvJ+vXvwAAAABJRU5ErkJggg==" />
+            <img class="intLink" title="Subscript"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAGFBMVEUAAACCgoJISEh0pePr7/WgssrS0tLH1vP156UFAAAAAXRSTlMAQObYZgAAAElJREFUGNNjoB5gDBQRFICy2YQCAhNgEomqAghFSg5wNosSkniQGktwAURYlFEp2d0AIiyYpKTGbICwJBihnd2kBM5mNjagzPEAztoHvc+7u1sAAAAASUVORK5CYII=" />
+            <img class="intLink" title="Superscript"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAGFBMVEUAAACCgoJISEigssrr7/V0pePS0tLH1vPtoVcWAAAAAXRSTlMAQObYZgAAAEpJREFUGNNjoC5gCTaAs5ndAxASrBA2o6GIoICpA5jNJmhg6B5SApFPUhZgDQ2AalRyQBioJABnMxqpwYWFGZUMYMKCSUpqlDocAJ7SBzNIUMnCAAAAAElFTkSuQmCC" />
+            <img class="intLink" title="Left align"
+                src="data:image/gif;base64,R0lGODlhFgAWAID/AMDAwAAAACH5BAEAAAAALAAAAAAWABYAQAIghI+py+0Po5y02ouz3jL4D4JMGELkGYxo+qzl4nKyXAAAOw==" />
+            <img class="intLink" title="Center align"
+                src="data:image/gif;base64,R0lGODlhFgAWAID/AMDAwAAAACH5BAEAAAAALAAAAAAWABYAQAIfhI+py+0Po5y02ouz3jL4D4JOGI7kaZ5Bqn4sycVbAQA7" />
+            <img class="intLink" title="Right align"
+                src="data:image/gif;base64,R0lGODlhFgAWAID/AMDAwAAAACH5BAEAAAAALAAAAAAWABYAQAIghI+py+0Po5y02ouz3jL4D4JQGDLkGYxouqzl43JyVgAAOw==" />
+            <img class="intLink" title="Justify"
+                src="data:image/gif;base64,R0lGODlhFgAWAIAAAMDAwAAAACH5BAEAAAAALAAAAAAWABYAAAIghI+py+0Po2yh2nvnxNxq2XVfFHIjVGLnk2brC8fyXAAAOw==" />
+            <img class="intLink" title="Numbered list"
+                src="data:image/gif;base64,R0lGODlhFgAWAMIGAAAAADljwliE35GjuaezxtHa7P///////yH5BAEAAAcALAAAAAAWABYAAAM2eLrc/jDKSespwjoRFvggCBUBoTFBeq6QIAysQnRHaEOzyaZ07Lu9lUBnC0UGQU1K52s6n5oEADs=" />
+            <img class="intLink" title="Dotted list"
+                src="data:image/gif;base64,R0lGODlhFgAWAMIGAAAAAB1ChF9vj1iE33mOrqezxv///////yH5BAEAAAcALAAAAAAWABYAAAMyeLrc/jDKSesppNhGRlBAKIZRERBbqm6YtnbfMY7lud64UwiuKnigGQliQuWOyKQykgAAOw==" />
+            <img class="intLink" title="Quote"
+                src="data:image/gif;base64,R0lGODlhFgAWAIQXAC1NqjFRjkBgmT9nqUJnsk9xrFJ7u2R9qmKBt1iGzHmOrm6Sz4OXw3Odz4Cl2ZSnw6KxyqO306K63bG70bTB0rDI3bvI4P///////////////////////////////////yH5BAEKAB8ALAAAAAAWABYAAAVP4CeOZGmeaKqubEs2CekkErvEI1zZuOgYFlakECEZFi0GgTGKEBATFmJAVXweVOoKEQgABB9IQDCmrLpjETrQQlhHjINrTq/b7/i8fp8PAQA7" />
+            <img class="intLink" title="Delete indentation"
+                src="data:image/gif;base64,R0lGODlhFgAWAMIHAAAAADljwliE35GjuaezxtDV3NHa7P///yH5BAEAAAcALAAAAAAWABYAAAM2eLrc/jDKCQG9F2i7u8agQgyK1z2EIBil+TWqEMxhMczsYVJ3e4ahk+sFnAgtxSQDqWw6n5cEADs=" />
+            <img class="intLink" title="Add indentation"
+                src="data:image/gif;base64,R0lGODlhFgAWAOMIAAAAADljwl9vj1iE35GjuaezxtDV3NHa7P///////////////////////////////yH5BAEAAAgALAAAAAAWABYAAAQ7EMlJq704650B/x8gemMpgugwHJNZXodKsO5oqUOgo5KhBwWESyMQsCRDHu9VOyk5TM9zSpFSr9gsJwIAOw==" />
+            <img class="intLink" title="Horizontal rule"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAGFBMVEUAAADIyMimpqbp6enz8/P8/PzZ2dldXV27aT9/AAAAAXRSTlMAQObYZgAAAD5JREFUGNNjoBg4GSDYSgpYFCQKgkECiC0aGuLi7GwsAGILKYGBABYt5QUwVoiZuJhJAITN6mxs7Apk0wIAACMpB/oWEo0pAAAAAElFTkSuQmCC" />
+            <img class="intLink" title="Hyperlink"
+                src="data:image/gif;base64,R0lGODlhFgAWAOMKAB1ChDRLY19vj3mOrpGjuaezxrCztb/I19Ha7Pv8/f///////////////////////yH5BAEKAA8ALAAAAAAWABYAAARY8MlJq7046827/2BYIQVhHg9pEgVGIklyDEUBy/RlE4FQF4dCj2AQXAiJQDCWQCAEBwIioEMQBgSAFhDAGghGi9XgHAhMNoSZgJkJei33UESv2+/4vD4TAQA7" />
+            <img class="intLink" title="Remove hyperlink"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAGFBMVEUAAAD08fHXzcxjY2OMhoafn5+uLyrktrTVXxhsAAAAAXRSTlMAQObYZgAAAGxJREFUGNNjwAAFMAZjEkMCYyKUU6aQoAaTYU90TIcrFwBCCFANDWIKDVUAMZkcBUVZBQWDQGwWERcnJhcXETBbBUEyKzubsjobK4PYrEZCwsxCQqZgc4KNTVmMjQOQzIfbW5jOgOYehDspAwBt9Q/S3exo3wAAAABJRU5ErkJggg==" />
+            <img class="intLink" title="Remove formatting"
+                src="data:image/gif;base64,R0lGODlhFgAWAIQbAD04KTRLYzFRjlldZl9vj1dusY14WYODhpWIbbSVFY6O7IOXw5qbms+wUbCztca0ccS4kdDQjdTLtMrL1O3YitHa7OPcsd/f4PfvrvDv8Pv5xv///////////////////yH5BAEKAB8ALAAAAAAWABYAAAV84CeOZGmeaKqubMteyzK547QoBcFWTm/jgsHq4rhMLoxFIehQQSAWR+Z4IAyaJ0kEgtFoLIzLwRE4oCQWrxoTOTAIhMCZ0tVgMBQKZHAYyFEWEV14eQ8IflhnEHmFDQkAiSkQCI2PDC4QBg+OAJc0ewadNCOgo6anqKkoIQA7" />
+            <img class="intLink" title="Undo"
+                src="data:image/gif;base64,R0lGODlhFgAWAOMKADljwliE33mOrpGjuYKl8aezxqPD+7/I19DV3NHa7P///////////////////////yH5BAEKAA8ALAAAAAAWABYAAARR8MlJq7046807TkaYeJJBnES4EeUJvIGapWYAC0CsocQ7SDlWJkAkCA6ToMYWIARGQF3mRQVIEjkkSVLIbSfEwhdRIH4fh/DZMICe3/C4nBQBADs=" />
+            <img class="intLink" title="Redo"
+                src="data:image/gif;base64,R0lGODlhFgAWAMIHAB1ChDljwl9vj1iE34Kl8aPD+7/I1////yH5BAEKAAcALAAAAAAWABYAAANKeLrc/jDKSesyphi7SiEgsVXZEATDICqBVJjpqWZt9NaEDNbQK1wCQsxlYnxMAImhyDoFAElJasRRvAZVRqqQXUy7Cgx4TC6bswkAOw==" />
+            <label for="imgFile">
+                <img class="intLink" title="Insert image"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAbFBMVEUAAAAAAAAmJibm5uaJiYnZ2dnn5+e5ubmBgYHNzc3z8/Pr6+vW1ta2trZ/f3/y8vLQ0NDPz8/Dw8OgoKCOjo54eHgcHBwGBgb+/v7T09PIyMi+vr6srKyEhIRqampiYmJbW1tPT08qKioRERGLOctyAAAAAXRSTlMAQObYZgAAAHJJREFUGNOtzkkShCAQRNFKbLsVsZ3nWe9/R8EAYeHSv6u3qEh6qo0/TkUiKULNbCglfZGSjf0vCvWZLTmxwBBXVGG1NO2D+hoIQ6IHmrKrciJDfgxIBGbPId12E//pUjOiyHydCGtFyQG3kWTcc4ro1U7vPAUU4TAxJQAAAABJRU5ErkJggg==" />
+            </label>
+            <input type="file" id="imgFile" />
+            <label for="mainFile">
+                <img class="intLink" title="Load a file"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAATlBMVEUAAAAAAAD19fVcXFwbGxsTExP8/PzT09NxcXFaWlo4ODg1NTUEBAT5+fnw8PDr6+vU1NTIyMi+vr6Xl5dsbGxnZ2dXV1dISEghISEMDAw0f0rSAAAAAXRSTlMAQObYZgAAAFBJREFUGNO9yEkOgCAQBMBmUxDc9/9/VJ2EjgkHb9axcJuceqQRtMq4aAdWkDr6xtW5jJRFx2MBu23fdS7eG6Vz0U8VytrKmhMnVoDQlOfbBQLIAl4FF2fyAAAAAElFTkSuQmCC" />
+            </label>
+            <input type="file" id="mainFile" />
+            <img class="intLink" title="Download files"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAdVBMVEUAAAAfHx9GRkYAAAAPDw9aWlr+/v739/fHx8dpaWkEBAT7+/v29vby8vLu7u7Z2dm1tbWysrKtra2qqqqMjIxWVlZJSUk1NTUUFBQJCQnz8/Pq6uri4uLMzMzKysq+vr69vb2NjY16enpvb29hYWE9PT0rKytDpsqlAAAAAXRSTlMAQObYZgAAAHdJREFUGNO1zscOgCAMgGG0iIp77z3e/xEV05CoJJ78D9B86aHkO6bUuXBUnFWuig1q/sTs5PclyR7YpZ+vD+4rrSg3mJ7rFgWA9EZhcPmlbuyh1mCLr0vEO0CI7HPB2AgRTh43mORYMstBk3HaEqxZdFlmkZ87AICHBL2TAUCPAAAAAElFTkSuQmCC" />
+        </div>
+    </div>
+
+    <input type="file" id="fileIn" class="hide" multiple></input>
+    <label for="fileIn" id="fileLbl" class="dropTarget hide" title="drop a File or a Folder key here">
+        <img id="fileImg" class="smallImg" src="">
+    </label>
+
+    <div id="mainBox" contenteditable="true" class="cssbox" accesskey=";"
+        placeholder="Write or paste your message here. You can use nice formatting and add images and files if you click Rich. To encrypt or decrypt, select the correspondents in the top box, then click the button. Add more correspondents by pasting their Locks in this box.">
+    </div>
+    <div class="centered">
+        <!--buttons below the main box-->
+        <div id="mainbuttonsbot">
+            <button class="cssbutton" id="niceEditBtn" value="Rich" title="toggle rich text editor (alt-R)"
+                accesskey="r">Rich</button><!--
+--><button class="cssbutton" id="selectMainBtn" value="Select"
+                title="select the box content and copy it to clipboard">Copy</button><!--
+--><button class="cssbutton" id="clearMainBtn" value="Clear" title="clear the text in the box">Clear</button><!--
+--><button class="cssbutton" id="chatBtn" value="Chat" title="make a chat invitation or open it (alt-C)"
+                accesskey="c">Chat</button><!--
+--><button class="cssbutton" id="sendSMSBtn" value="SMS" title="mobile: open the default Texting app">SMS</button>
+            <br>
+            <br>
+            <input type="radio" name="lockmodes" id="anonMode"
+                title="anonymous encryption mode; recipient's Lock needed (alt-N)" accesskey="n" checked />
+            <span id="anonLabel">&nbsp;Anonymous&nbsp;&nbsp;</span>
+            <input type="radio" name="lockmodes" id="signedMode"
+                title="signed encryption mode; recipient needs the sender's Lock (alt-S)" accesskey="s" />
+            &nbsp; Signed &nbsp;&nbsp;
+            <input type="radio" name="lockmodes" id="onceMode"
+                title="Read-once encryption mode; messages become unreadable after being read once (alt-1)"
+                accesskey="1" />
+            &nbsp; Read-once
+        </div>
+    </div>
+</div>
+
+<!--Options tab-->
+<div class="tabContent" id="optionsTab"> <br>
+    <br>
+    <br>
+    <form name="optionchecks">
+        &nbsp;&nbsp;<span id="modeLabel">Interface:&nbsp;&nbsp;</span>
+        <br><br>
+        &nbsp;&nbsp;
+        <input type="radio" name="interfacemodes" id="basicMode" title="basic mode; only essential functions (alt-B)"
+            accesskey="b" checked />
+        &nbsp; Basic&nbsp;&nbsp;
+        <input type="radio" name="interfacemodes" id="advancedMode"
+            title="advanced mode; all functions available (alt-A)" accesskey="a" />
+        &nbsp; Adv.&nbsp;&nbsp;
+        <input type="radio" name="interfacemodes" id="emailMode" title="PassLok for Email compatible output" />
+        &nbsp; Email&nbsp;&nbsp;
+        <input type="radio" name="interfacemodes" id="dropMode" title="drop mode; for drag and drop files (alt-D)"
+            accesskey="d" />
+        &nbsp; File Drop&nbsp;
+        <hr>
+        &nbsp;&nbsp;Color scheme:&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="liteStyle" title="switch back to default light style" checked />
+        &nbsp; Light&nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="darkStyle" title="switch to dark style" />
+        &nbsp; Dark <br>
+        <br>
+        &nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="redStyle" title="switch to red style" />
+        &nbsp; Red&nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="greenStyle" title="switch to green style" />
+        &nbsp; <span id="greenLabel">Green</span>&nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="blueStyle" title="switch to blue style" />
+        &nbsp; Blue&nbsp;&nbsp;
+        <input type="radio" name="colormodes" id="customStyle" title="switch to custom style" />
+        &nbsp; <span id="customLabel">Custom</span>
+        <div id='customColors'><br>
+            Click to edit color:
+            <input class="color {pickerPosition:'top', onImmediateChange:'updateColor();'}" id="colorPicker"
+                title="click here to edit the color selected below">
+            &nbsp;
+            <button type="button" class="cssbutton" id="rndColors" value="Random Colors"
+                title="pick colors at random">Random</button>
+            <br>
+            <br>
+            &nbsp;&nbsp;
+            <input type="radio" name="colorareas" id="editTabColor" title="edit Tab color" checked />
+            &nbsp; Tabs&nbsp;&nbsp;
+            <input type="radio" name="colorareas" id="editBgColor" title="edit Background color" />
+            &nbsp; <span id='backgroundLabel'>Backg.</span>&nbsp;&nbsp;
+            <input type="radio" name="colorareas" id="editBtnColor" title="edit Button color" />
+            &nbsp; Btns.&nbsp;&nbsp;
+            <input type="radio" name="colorareas" id="editBoxColor" title="edit Box color" />
+            &nbsp; Box
+        </div>
+        <hr>
+        &nbsp;&nbsp;<span id="otherLabel">Other:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input type="checkbox" id="learnMode"
+            title="get explanatory messages after buttons are pressed, but before functions are executed" />
+        &nbsp; Learn&nbsp;&nbsp;
+        <input type="checkbox" id="decoyMode" title="second message added or retrieved" accesskey="" />
+        &nbsp; Hidden message<br><br>
+        &nbsp;&nbsp;
+        <span id="otherRow2">
+            <input type="radio" name="lockType" id="ezLokMode" title="display easy to read Lock" checked />
+            &nbsp; ezLok&nbsp;&nbsp;
+            <input type="radio" name="lockType" id="wordLockMode" title="display Lock made of words" />
+            &nbsp; Word Lock&nbsp;&nbsp;
+            <input type="radio" name="lockType" id="normalLockMode" title="display base64 Lock" />
+            &nbsp; base64<br><br>
+            &nbsp;&nbsp;
+            <input type="checkbox" id="fileMode" title="output is turned into files" accesskey="" />
+            &nbsp; File output&nbsp;&nbsp;
+            <input type="radio" name="fileModes" id="binaryMode" title="output file is binary" checked />
+            &nbsp; Binary&nbsp;&nbsp;
+            <input type="radio" name="fileModes" id="textMode" title="output file is text" />
+            &nbsp; Text
+            <br><br>
+            <div id='specialEncryptModes'>
+                &nbsp;&nbsp;
+                <input type="radio" name="lenghtModes" id="longMode"
+                    title="encrypted message can be as long as it needs to be" checked />
+                &nbsp; Normal&nbsp;&nbsp;
+                <input type="radio" name="lenghtModes" id="shortMode"
+                    title="encrypted message will fit within 160 characters" />
+                &nbsp; Short&nbsp;&nbsp;
+                <input type="radio" name="lenghtModes" id="compatMode"
+                    title="encrypted message compatible with SeeOnce and URSA" />
+                &nbsp; Compatible
+                <br><br>&nbsp;&nbsp;
+                <input type="radio" name="lenghtModes" id="qrMode" title="encrypted message as QR code" />
+                &nbsp; QR code
+                <div id="syncCheck"> <br>&nbsp;&nbsp;
+                    <input type="checkbox" id="chromeSyncMode" title="sync through Chrome" checked />
+                    &nbsp;Chrome sync
+                </div>
+                <br><br>
+            </div>
+            &nbsp;&nbsp;
+            <input type="checkbox" id="includeMode" title="include my Lock" accesskey="" />
+            &nbsp; Include my Lock
+        </span>
+        <div id="basicHideModes">
+            <hr>
+            &nbsp;&nbsp;Text Hiding:&nbsp;&nbsp;
+            <input type="radio" name="stegomodes" id="letterMode" title="hide item into letters" checked />
+            &nbsp; Letters&nbsp;&nbsp;
+            <input type="radio" name="stegomodes" id="invisibleMode" title="hide item invisibly" />
+            &nbsp; Invisible
+        </div>
+        <div id='advancedModes'>
+            <br>&nbsp;&nbsp;
+            <input type="radio" name="stegomodes" id="wordMode" title="hide item as individual words" />
+            &nbsp; Words&nbsp;&nbsp;
+            <input type="radio" name="stegomodes" id="spaceMode" title="hide item in spaces between words" />
+            &nbsp; Spaces&nbsp;&nbsp;
+            <input type="radio" name="stegomodes" id="sentenceMode" title="hide item as sentences" />
+            &nbsp; <span id='sentencesLabel'>Sentences</span>
+        </div>
+    </form>
+    <div id='advancedBtns'>
+        <hr>
+        &nbsp;&nbsp;<span id="optionMsg" class="message">Change Name, Key, etc.</span><br>
+        <br>&nbsp;
+        <button class="cssbutton" id="changeNameBtn" value="Change Name"
+            title="re-store directory under a new User Name">Name</button><!--
+   --><button class="cssbutton" id="changeKeyBtn" value="Change Key"
+            title="re-encrypt directory with a new Key">Key</button><!--
+   --><button class="cssbutton" id="changeEmailBtn" value="Change Email"
+            title="change email/token">Email/token</button>
+        <br>
+        <br>
+        &nbsp;&nbsp;Backup/Remove:<br>
+        <br>&nbsp;
+        <button class="cssbutton" id="backupSettingsBtn" value="Backup"
+            title="backup and optionally reset options, including the email/token">Options only</button><!--
+    --><button class="cssbutton" id="moveLockDBBtn" value="Move"
+            title="archive entire local directory, then delete it">Whole Directory</button>
+    </div>
+</div>
+
+<!--Directory dialog-->
+<div id="lockScr" class="white_content">
+    <div id="locktop" class="centered">
+        <button class="cssbutton" id="lock2mainBtn" value="&lt; Back" title="return to main screen (alt-E)"
+            accesskey="">&#9668; Done</button>
+        <br>
+        <br>
+        <br>
+        <div id="lockMsg" class="message">Enter Locks, shared Keys, or their names in the box</div>
+        <br>
+        <br>
+    </div>
+    <div class="centered" id="lockBtnsTop">
+        <button class="cssbutton" id="clearLocksBtn" value="Clear" title="clear box">Clear</button><!--
+--><button class="cssbutton" id="addLockBtn" value="Save"
+            title="save to the local directory | if box is empty, make random item">Rand.</button><!--
+--><button class="cssbutton" id="renameLockBtn" value="Rename"
+            title="rename/delete the item whose name is displayed">Rename</button><!--
+--><button class="cssbutton" id="resetPFSBtn" value="Reset"
+            title="reset Read-once data for the item whose name is displayed">Reset</button>
+    </div>
+    <div contenteditable="true" class="cssbox left" id="lockBox" name="text" rows="10"
+        placeholder="To save a Lock or shared Key, write it in this box, then click Save. You will be asked for a name. You can also use Locks and shared Keys without saving them if you write them here, one line per item.">
+    </div>
+    <div class="centered" id="lockBtnsBottom">
+        <button class="cssbutton" id="showLockDBBtn" value="All" title="show the entire local directory">All</button><!--
+--><button class="cssbutton" id="mergeLockDBBtn" value="Merge"
+            title="merge into the local directory | Diffie-Hellman merge of this and the main screen contents">Merge</button><!--
+--><label for="lockFile" title="open dialog to select file to load"><span class="cssbutton">Load
+                file</span></label><input type="file" id="lockFile" title="open dialog to select file to load" />
+    </div>
+</div>
+
+<!--Key dialog-->
+<div id="keyScr" class="white_content"> <br>
+    <div id="pwdMsg" class="message"><span id="javascriptOff">JAVASCRIPT OFF, PASSLOK CANNOT RUN</span></div>
+    <br>
+    <br>
+    <select class="cssbox" id="nameList" size='4' title="select your user name">
+        <option value="" disabled>Select user name:</option>
+    </select>
+    <button class="cssbutton" id="newUserBtn" value="new user" title="set up a new user">New User</button>
+    <br>
+    <br>
+    <input type="password" class="cssbox centered" autocomplete="off" id="pwdBox" name="text"
+        placeholder="Enter your secret Key here."><img id='pwdIcon' class="field-icon" src=""
+        title="click this to see/hide the Password">
+    <br>
+    <br>
+    <button class="cssbutton" id="cancelKeyBtn" value="cancel" title="close Key dialog">Cancel</button>
+    &nbsp;
+    <button class="cssbutton" id="acceptKeyBtn" value="OK" title="accept Key">OK</button>
+    <br>
+    <br>
+    <span id="fiveMin">
+        <p>You will need to re-enter your Key if you don't use it for 5 min.</p>
+    </span>
+    <p><strong>PassLok will be very slow</strong> if your Key is worse than Medium.</p>
+    <p>To display or refresh your Lock, click myLock on the Main tab.</p>
+    <p>Cancel for limited functionality in Guest mode.</p>
+</div>
+
+<!--Intro wizard, split into five screens-->
+<div id="introscr" class="block_page">
+    <h2 id="introWelcome" class="centered">Welcome to PassLok</h2>
+    <div id="intro1" class="left">
+        <p>In the following screens, you will be asked to provide a user name for yourself, plus a secret Key, and a
+            piece of public data such as your email. You can go offline if you like; nothing will leave this device.
+            Your Key will not be stored.</p>
+        <p>This is needed to keep a permanent directory of your friends’ Locks and shared Keys, all securely encrypted.
+            If you prefer not to store anything, click <strong>Exit</strong>.</p>
+        <div id='introVideoText'>
+            <p>If you have three minutes to spare, you may want to watch the fun video called by the button below, which
+                explains how PassLok works. It will load on a separate window. Click <strong>Next</strong> when you're
+                ready.</p>
+            <div class="centered">
+                <a href="https://www.youtube.com/watch?v=UxgrES_CGcg" target="_blank">
+                    <button class="cssbutton" id="introvideo" value="video"
+                        title="click this to load the introductory video. WARNING: this may leak your IP number">Alice &
+                        Bob Video</button>
+                </a>
+            </div>
+        </div>
+        <button class="cssbutton" id="gotointro2" value="next" title="to step 2">Next &#9658;</button>
+        <button class="cssbutton" id="skipIntroBtn" value="skip" title="skip this">Exit</button>
+    </div>
+</div>
+
+
+<div id="introscr2" class="block_page">
+    <div id="intro2" class="left">
+        <button class="cssbutton" id="backtointro1" value="back" title="back to beginning">&#9668; Back</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 2 of 5<br>
+        <p>Please enter your user name here. This way several users (or several identities) can share the same device.
+        </p>
+        <div class="centered">
+            <input type="text" class="cssbox centered" autocomplete="off" id="nameIntro" name="username"
+                placeholder="Enter your User Name here">
+            <br>
+            <br>
+        </div>
+        <button class="cssbutton" id="gotointro3" value="next" title="to step 3">Next &#9658;</button>
+    </div>
+</div>
+
+<div id="introscr3" class="block_page">
+    <div id="intro3" class="left">
+        <button class="cssbutton" id="backtointro2" value="back" title="back to step 2">&#9668; Back</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 3 of 5<br>
+        <p>Now enter your secret Key in the box below. You will <strong>never give this Key to anyone</strong>. Make
+            sure to use $ymbol$, numb3rs, caPiTals, unusual words and mespelingss. You should be able to remember it,
+            because it won't get stored.</p>
+        <p>The Suggest button will get you started with five words, which you can modify at will.</p>
+        <div class="centered"> <span id="pwdIntroMsg" class="message">This is where the Key score will appear</span><br>
+            <br>
+            <input type="password" class="cssbox centered" autocomplete="off" id="pwdIntroBox" name="text"
+                placeholder="Enter your secret Key here"><img id='pwdIntroIcon' class="field-icon" src=""
+                title="click this to see/hide the Password">
+            <br>
+            <br>
+            <button class="cssbutton" id="suggestIntroBtn" value="Suggest"
+                title="suggest a Key made of five common words">Suggest</button>
+            <button class="cssbutton" id="clearIntroBtn" value="Clear" title="clear box contents">Clear</button>
+            <br>
+        </div>
+        <p>If your Key score is below Medium, <strong>PassLok will be very slow.</strong></p>
+        <button class="cssbutton" id="gotointro4" value="next" title="to step 4">Next &#9658;</button>
+    </div>
+</div>
+
+<div id="introscr4" class="block_page">
+    <div id="intro4" class="left">
+        <button class="cssbutton" id="backtointro3" value="back" title="back to step 3">&#9668; Back</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 4 of 5<br>
+        <p>You will get better security if you also provide some public piece of data about yourself, such as your email
+            address or group name. This is case sensitive. There's no risk of spam since nothing will be sent out. You
+            can skip this if you want.</p>
+        <p>If you want your encrypted output to be compatible with that of <em>PassLok for Email</em>, you must write
+            your email address here.</p>
+        <div class="centered">
+            <input type="text" class="cssbox centered" id="emailIntro" name="text"
+                placeholder="Optionally, enter your email or some other not secret personal info here">
+            <br>
+            <br>
+            <button class="cssbutton" id="introRandomBtn" value="Rand." title="display a random token">Random</button>
+            <button class="cssbutton" id="clearIntroRandomBtn" value="Clear" title="clear box contents">Clear</button>
+            <br>
+        </div>
+        <p>For ultimate security (at the expense of portability), you may want to click the Random button to use a
+            random token instead. It will be stored locally in encrypted form.</p>
+        <button class="cssbutton" id="gotointro5" value="next" title="to step 5">Next &#9658;</button>
+    </div>
+</div>
+
+<div id="introscr5" class="block_page">
+    <div id="intro5" class="left">
+        <button class="cssbutton" id="backtointro4" value="back" title="back to step 4">&#9668; Back</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Step 5 of 5<br>
+        <p>When you click the button below, the random-looking Lock matching your secret Key will appear on PassLok's
+            Main screen, along with some further instructions. You want to send that Lock to your friends so they can
+            send you encrypted messages. You can do this any time by clicking the Email button.</p>
+        <p>You will start in Basic mode, which shows only the most essential functions. If you are looking for more
+            features, go to the Options tab and check the Advanced checkbox. There is also Email mode, which makes this
+            app fully compatible with <em>PassLok for Email</em>.</p>
+        <p>You may not see this screen again, but comprehensive help is always available on the Help tab.</p>
+    </div>
+    <div class="centered">
+        <button class="cssbutton centered" id="showlockIntroBtn" value="Make Lock"
+            title="make matching Lock and open Main tab">Finish</button>
+        <br>
+        <br>
+        <span id="intromsg2" class="message"></span>
+    </div>
+</div>
+
+<!--name dialog-->
+<div id="nameScr" class="white_content"> <br>
+    <div class="centered">
+        <div id="namechangemsg" class="message">Please enter a new User name for this account</div>
+        <br>
+        <br>
+        <input type="text" class="cssbox centered" autocomplete="off" id="userNameBox" name="name"
+            placeholder="Enter your new User Name here.">
+        <br>
+        <br>
+        <button class="cssbutton" id="cancelNameBtn" value="cancel" title="close name change dialog">Cancel</button>
+        &nbsp;
+        <button class="cssbutton" id="acceptNameBtn" value="OK" title="accept new user name">OK</button>
+    </div>
+</div>
+
+<!--Key change dialog-->
+<div id="keyChange" class="white_content"> <br>
+    <br>
+    <div id="newKeyMsg" class="message"></div>
+    <br>
+    <br>
+    <input type="password" id="newKeyBox" class="cssbox" name="newkey" placeholder="Enter the new Key here." /><img
+        id='newKeyIcon' class="field-icon" src="" title="click this to see/hide the Password">
+    <br>
+    <br>
+    <input type="password" id="newKey2Box" class="cssbox" name="newkey2" placeholder="Enter the new Key again." />
+    <br>
+    <br>
+    <button class="cssbutton" id="cancelKeyChangeBtn" value="Cancel" title="do not change the Key">Cancel</button>
+    &nbsp;
+    <button class="cssbutton" id="submitKeyChangeBtn" value="OK" title="go on with Key change">OK</button>
+</div>
+
+<!--email change dialog-->
+<div id="emailScr" class="white_content"> <br>
+    <div class="centered"> <span id="emailMsg" class="message">Please enter your new email or similar item, or a new
+            random token</span><br>
+        <br>
+        <button class="cssbutton" id="randomEmailBtn" value="random" title="insert random token">Random</button>
+        <br>
+        <br>
+        <input type="text" class="cssbox centered" autocomplete="off" id='emailBox' name='emailBox'
+            placeholder="Enter your email or some other not secret personal info here.">
+        <br>
+        <br>
+        <button class="cssbutton" id="cancelEmailBtn" value="cancel" title="close email dialog">Cancel</button>
+        &nbsp;
+        <button class="cssbutton" id="acceptEmailBtn" value="OK" title="accept email">OK</button>
+        <p>Your Lock will change if this is not the same you entered before.</p>
+        <p>If you use a random token, make sure to back it up from Options.</p>
+    </div>
+</div>
+
+<!--Decoy In dialog-->
+<div id="decoyIn" class="white_content"> <br>
+    <span id="decoyInMsg" class="message">Enter the Hidden Message</span>
+    <br>
+    <br>
+    <textarea id="decoyText" class="cssbox" name="text" rows="3"></textarea>
+    <p>Enter the Key/Lock
+    <p>
+        <br>
+        <input type="password" class="cssbox" id="decoyInBox" name="key" /><img id='decoyInIcon' class="field-icon"
+            src="" title="click this to see/hide the Password">
+        <br>
+        <br>
+        <button class="cssbutton" id="cancelDecoyBtn" value="Cancel" title="do not encrypt">Cancel</button>
+        &nbsp;
+        <button class="cssbutton" id="submitDecoyBtn" value="OK" title="go on with encryption">OK</button>
+</div>
+
+<!--Decoy Out dialog-->
+<div id="decoyOut" class="white_content"> <br>
+    <span id="decoyOutMsg" class="message">Enter the Key for the Hidden message</span><br>
+    <br>
+    <input type="password" class="cssbox" id="decoyOutBox" name="key" /><img id='decoyOutIcon' class="field-icon" src=""
+        title="click this to see/hide the Password">
+    <br>
+    <br>
+    <button class="cssbutton" id="cancelDecoy2Btn" value="Cancel" title="stop decrypt">Cancel</button>
+    &nbsp;
+    <button class="cssbutton" id="submitDecoy2Btn" value="OK" title="go on with decrypt">OK</button>
+    <p>The Hidden message will appear on the Main tab</p>
+</div>
+
+<!--Parts for SSSS dialog-->
+<div id="partsIn" class="white_content"> <br>
+    <p>Enter the total number of parts (between 2 and 255)</p>
+    <br>
+    <br>
+    <input type="text" class="cssbox" id="partsNumber" name="text" rows="1" />
+    <br>
+    <p>And the number of parts needed to retrieve the item</p>
+    <br>
+    <br>
+    <input type="text" class="cssbox" id="partsQuorum" name="text" rows="1" />
+    <br>
+    <br>
+    <button class="cssbutton" id="cancelPartsBtn" value="Cancel" title="do not split">Cancel</button>
+    &nbsp;
+    <button class="cssbutton" id="submitPartsBtn" value="OK" title="go on with splitting">OK</button>
+</div>
+
+<!--Chat dialog, to enter the chat type and date or other information-->
+<div id="chatDialog" class="white_content"> <br>
+    <br>
+    <br>
+    <span id="chatmsg" class="message">Choose the type of chat, then optionally write in the box a message including the
+        date and time</span><br>
+    <br>
+    <input type="radio" name="chatmodes" id="dataChat" title="chat with text messages and file exchange" />
+    &nbsp; Text and files&nbsp;&nbsp;
+    <input type="radio" name="chatmodes" id="audioChat" title="like Text chat, plus audio" />
+    &nbsp; Audio&nbsp;&nbsp;
+    <input type="radio" name="chatmodes" id="videoChat" title="like audio chat, plus video" />
+    &nbsp; Video&nbsp;&nbsp;
+    <input type="radio" name="chatmodes" id="jitsiChat" title="full featured, on jit.si" checked />
+    &nbsp; Jitsi
+    <br>
+    <br>
+    <textarea id="chatDate" class="cssbox" name="chatDate" rows="1" title="additional information"
+        placeholder="Write here the date and time for the chat"></textarea>
+    <br>
+    <br>
+    <button class="cssbutton" id="cancelChatBtn" value="Cancel" title="cancel chat invitation">Cancel</button>
+    &nbsp;
+    <button class="cssbutton" id="submitChatBtn" value="OK" title="make chat invitation">OK</button>
+</div>
+
+<!--Image hiding dialog-->
+<div id="imageScr" class="white_content">
+    <button class="cssbutton" id="image2mainBtn" value="&lt; Done" title="return to main screen (alt-I)"
+        accesskey="i">&#9668; Done</button>
+    <span id="imgSpacer"><br>
+        <br>
+        <br>
+    </span>
+    <button class="cssbutton" id="encodePNGBtn" value="PNG Hide" title="hide main box contents into PNG image">PNG
+        hide</button>
+    &nbsp;
+    <button class="cssbutton" id="encodeJPGBtn" value="JPG Hide" title="hide main box contents into JPG image">JPG
+        hide</button>
+    &nbsp;
+    <button class="cssbutton" id="decodeImgBtn" value="Reveal"
+        title="extract hidden content and put it in main box">Reveal</button>
+    <br>
+    <br>
+    <input type="password" class="cssbox" id="imageBox" title="use a password for better undetectability"
+        placeholder="optional Password" /><img id='imageIcon' class="field-icon" src=""
+        title="click this to see/hide the Password">
+    <br>
+    <br>
+    <div id="imageMsg" class="message"></div>
+    <br>
+    <img id="previewImg" src="" width="100%" />
+</div>
+
+<!--Shadow backdrop-->
+<div id="shadow" class="black_overlay"> </div>
+
+<!--QRcode, which goes away when touched-->
+<div id="qrcodeImg" class="white_content"></div>
+
+<!--Help tab-->
+<div class="tabContent" id="helpTab">
+    <br>
+    <br>
+    <div class="centered">
+        <input type="text" id="helpSearch" class="cssbox" placeholder="Search help topics..."
+            style="width: 80%; margin-bottom: 10px;">
+        <br>
+        <span id='helpmsg' class="message">For instructions on how to do things, click on each title.</span>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>What is PassLok?</h3>
+    </div>
+    <div class="helpText">
+        <p>PassLok provides <strong>end-to-end encryption</strong> for text, files, and real-time chat sessions. It
+            operates on a "Lock and Key" principle: you encrypt using a recipient's public <strong>Lock</strong>, and
+            they decrypt using their private <strong>Key</strong>. Because there is no central server, no private data
+            ever leaves your device. It is portable across computers, phones, and tablets via copy-paste. Note: PassLok
+            is experimental; use caution for critical secrets. Alternatives include <strong>SeeOnce</strong>
+            (Read-once), <strong>URSA</strong> (shared Keys), and the <strong>FusionKey</strong> browser extension.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Invite others & Display your Lock</h3>
+    </div>
+    <div class="helpText">
+        <p>Before communicating, others must generate a Lock from their own Key and share it with you.</p>
+        <p>1. <strong>QR Invitation:</strong> Click <strong>Invite</strong> with an empty main box to display a QR code
+            containing your Lock and an app link.</p>
+        <p>2. <strong>Email Invitation:</strong> Type a message and click <strong>Invite</strong> to open an email draft
+            containing your Lock and instructions.</p>
+        <p>3. <strong>Manual Display:</strong> Click <strong>myLock</strong> to display your Lock in ezLok, Word, or
+            base64 format for manual sharing.</p>
+        <p>To authenticate your identity, you can post a video of yourself reading the first 15 characters of your Lock
+            aloud.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Making a Strong Key & Guest Mode</h3>
+    </div>
+    <div class="helpText">
+        <p>Your Key should be memorable as it is never stored and is erased from memory after five minutes of
+            inactivity. Use <strong>caPiTals</strong>, <strong>numb3rs</strong>, and <strong>$ymbol$</strong>; avoid
+            common words. As you type, a color-coded strength score and a "Hashili" mnemonic word appear to help you
+            verify the Key without revealing the text. If PassLok runs slowly, it is likely because your Key is weak and
+            requires extra computations.</p>
+        <p><strong>Guest Mode:</strong> Click <strong>Cancel</strong> at the Key prompt to access the directory and
+            encrypt items without a personal Key. You cannot decrypt items meant for your Lock in this mode.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Managing the Local Directory</h3>
+    </div>
+    <div class="helpText">
+        <p>1. <strong>Add from Main:</strong> Paste a Lock into the Main box; you will be prompted for a name if
+            recognized.</p>
+        <p>2. <strong>Add from Edit:</strong> Click <strong>Edit</strong> next to the directory, paste the Lock or
+            shared Key, and click <strong>Save</strong>.</p>
+        <p>3. <strong>Rename/Delete:</strong> Select an item in the Edit dialog, click <strong>Rename</strong>, and
+            enter a new name or "Delete" to remove it.</p>
+        <p>4. <strong>Lists:</strong> You can save multiple items as a List (bracketed by double dashes) to encrypt for
+            several people at once.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Encryption: Anonymous Mode (PL**msa)</h3>
+    </div>
+    <div class="helpText">
+        <p>Standard mode where the sender's identity is hidden.</p>
+        <p>1. Select <strong>Anonymous</strong> at the bottom of the Main tab.</p>
+        <p>2. Select recipients in the directory or paste their Locks in the <strong>Edit</strong> dialog.</p>
+        <p>3. Write your message (use <strong>Rich</strong> for files) and click <strong>Encrypt</strong>.</p>
+        <p>Check <strong>Include my Lock</strong> in Options if you want the recipient to receive your public Lock with
+            the message.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Encryption: Signed (PL**mss) and Read-once (PL**mso)</h3>
+    </div>
+    <div class="helpText">
+        <p><strong>Signed Mode:</strong> Encrypts using your Lock so the recipient can verify you as the sender.
+            Decryption requires the recipient to have your Lock stored.</p>
+        <p><strong>Read-once Mode:</strong> Messages become unreadable after one decryption. 1. Select
+            <strong>Read-once</strong>. 2. Select stored recipients. 3. Click <strong>Encrypt</strong>. If a
+            conversation loses sync, select the contact in <strong>Edit</strong> and click <strong>Reset</strong> to
+            re-initiate.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Shared Keys, Pads, and Human Mode</h3>
+    </div>
+    <div class="helpText">
+        <p><strong>Shared Keys:</strong> Agree on a phrase with your recipient and save it in <strong>Edit</strong>.
+            Encrypt normally.</p>
+        <p><strong>Pad Mode (PL**msp):</strong> Paste a shared text 5x longer than your message into the
+            <strong>Edit</strong> box. Click <strong>Encrypt</strong> and enter a starting numerical position when
+            prompted.</p>
+        <p><strong>Human Mode (PL**msh):</strong> Uses keys made of four text strings separated by tildes (~). This mode
+            is designed for manual encryption/decryption with paper and pencil.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Loading and Retrieving Files</h3>
+    </div>
+    <div class="helpText">
+        <p>1. Click the "Load file" icon <img
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAATlBMVEUAAAAAAAD19fVcXFwbGxsTExP8/PzT09NxcXFaWlo4ODg1NTUEBAT5+fnw8PDr6+vU1NTIyMi+vr6Xl5dsbGxnZ2dXV1dISEghISEMDAw0f0rSAAAAAXRSTlMAQObYZgAAAFBJREFUGNO9yEkOgCAQBMBmUxDc9/9/VJ2EjgkHb9axcJuceqQRtMq4aAdWkDr6xtW5jJRFx2MBu23fdS7eG6Vz0U8VytrKmhMnVoDQlOfbBQLIAl4FF2fyAAAAAElFTkSuQmCC" />
+            on the <strong>Rich</strong> toolbar.</p>
+        <p>2. Select your file; it appears as a link. You can add multiple files or images.</p>
+        <p>3. To retrieve, click the <strong>Save</strong> button below the Main box after decryption.</p>
+        <p>Enable <strong>File output</strong> in Options to handle large files faster as <code>.plk</code> or
+            <code>.txt</code> files. Use <strong>File Drop Mode</strong> in Options for drag-and-drop encryption.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Concealing Data (Steganography)</h3>
+    </div>
+    <div class="helpText">
+        <p><strong>Text Hiding:</strong> Click <strong>Text hide</strong> to turn output into cover text. Modes:
+            <strong>Invisible</strong>, <strong>Letters</strong> (look-alike symbols), <strong>Words</strong>,
+            <strong>Spaces</strong>, or <strong>Sentences</strong>. To reveal, paste text and click <strong>Text
+                hide</strong>.</p>
+        <p><strong>Image Hiding:</strong> 1. Click <strong>Image hide</strong> and load a photo. 2. Enter an optional
+            password. 3. Click <strong>PNG hide</strong> or <strong>JPG hide</strong>. 4. Save the result. To reveal,
+            load the image and click <strong>Reveal</strong>. <em>Warning: iOS currently cannot reveal hidden image
+                data.</em></p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Secure Real-Time Chat</h3>
+    </div>
+    <div class="helpText">
+        <p>1. Select participants and click <strong>Chat</strong>.</p>
+        <p>2. Choose <strong>Text</strong>, <strong>Audio</strong>, <strong>Video</strong>, or <strong>Jitsi</strong>
+            and click <strong>OK</strong>.</p>
+        <p>3. Send the generated invitation (PL**chat) to others.</p>
+        <p>4. To join, paste an invitation and click <strong>Chat</strong>.</p>
+        <p>Connections are direct (except Jitsi). Verify identities in chat by sending garbage text for others to
+            <strong>Seal</strong>; if you can <strong>Unseal</strong> it with their stored Lock, they are authenticated.
+        </p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Advanced: Splitting, Seals, and Hidden Messages</h3>
+    </div>
+    <div class="helpText">
+        <p><strong>Split (PL**p^^^):</strong> Click <strong>Split</strong> to break an item into parts; enter the total
+            parts and the minimum "quorum" needed to rejoin.</p>
+        <p><strong>Seals (PL**sld):</strong> Click <strong>Seal</strong> to sign a text. This is NOT encryption; others
+            verify it via <strong>Unseal</strong> to confirm the sender.</p>
+        <p><strong>Hidden Message:</strong> Enable in Options. During standard encryption, you'll be prompted for a
+            second undetectable message and key.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Backups, User Change, and Checksums</h3>
+    </div>
+    <div class="helpText">
+        <p><strong>Backups:</strong> Click <strong>Options only</strong> to backup your token, or <strong>Whole
+                Directory</strong> to export your contacts (PL**dir). <strong>Change Info:</strong> Use
+            <strong>Name</strong>, <strong>Key</strong>, or <strong>Email/Token</strong> buttons in Options to update
+            your profile.</p>
+        <p><strong>Checksums:</strong> Verify code integrity by comparing the SHA256 checksum of this page against
+            values at <a href="https://passlok.weebly.com" target="_blank">passlok.weebly.com</a>. Watch the author's
+            video to confirm the values audibly.</p>
+    </div>
+
+    <hr>
+    <div class="helpHeading">
+        <h3>Privacy Policy and Warrant Canary</h3>
+    </div>
+    <div class="helpText">
+        <p>We collect no data and have no servers. Your Key is never stored and stays local to your device. We will
+            never add backdoors.</p>
+        <p><strong>Canary:</strong> As of May 2026 (v2.7.0), we have received no gag orders or user data requests.</p>
+    </div>
+
+    <address>
+        PassLok v2.7.0 © F. Ruiz 2025. GNU GPL v3.0+. NaCl Engine.
+    </address>
+</div>

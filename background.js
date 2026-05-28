@@ -1,5 +1,6 @@
-//this one opens tabs as directed by the extension
-chrome.action.onClicked.addListener(function(){
-                chrome.tabs.create({url: 'index.html'})
-      }
-);
+chrome.action.onClicked.addListener(function() {
+    // This dynamically grabs your exact chrome-extension://[ID]/ path
+    const localUrl = chrome.runtime.getURL("extension.html");
+    
+    chrome.tabs.create({ url: localUrl });
+});

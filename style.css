@@ -1,6 +1,7 @@
 html {
     -webkit-text-size-adjust: 100%;
 }
+
 body {
     font-family: Sans-Serif;
     font-size: 100%;
@@ -10,25 +11,30 @@ body {
     background-color: #FFFFFF;
     color: #000000;
 }
+
 input:focus {
     outline: none !important;
-    border:1px solid #00CA68;
+    border: 1px solid #00CA68;
     box-shadow: 0 0 10px #77b5a4;
 }
+
 div:focus {
     outline: none !important;
-    border:1px solid #00CA68;
+    border: 1px solid #00CA68;
     box-shadow: 0 0 10px #719ECE;
 }
+
 button:focus {
     outline: none !important;
     box-shadow: 0 0 10px #75b3a2;
 }
+
 select:focus {
     outline: none !important;
-    border:1px solid #00CA68;
+    border: 1px solid #00CA68;
     box-shadow: 0 0 10px #719ECE;
 }
+
 .black_overlay {
     display: block;
     position: absolute;
@@ -42,6 +48,7 @@ select:focus {
     filter: alpha(opacity=50);
     background-color: black;
 }
+
 .white_content {
     display: none;
     position: absolute;
@@ -57,6 +64,7 @@ select:focus {
     text-align: center;
     margin: auto;
 }
+
 .block_page {
     display: none;
     position: absolute;
@@ -70,21 +78,26 @@ select:focus {
     overflow: auto;
     background-color: white;
 }
+
 .hide {
-	display: none;
+    display: none;
 }
+
 .centered {
-  text-align: center;
-  margin: auto;
+    text-align: center;
+    margin: auto;
 }
+
 .left {
-  text-align: left;
-  margin: auto;
+    text-align: left;
+    margin: auto;
 }
+
 .borderless {
-  border: 0;
-	margin: 0;
+    border: 0;
+    margin: 0;
 }
+
 .cssbutton {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -97,6 +110,7 @@ select:focus {
     color: #666666;
     background: #e6e6e6;
 }
+
 .smallbutton {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -109,20 +123,24 @@ select:focus {
     color: #666666;
     background: #e6e6e6;
 }
+
 .cssbutton:hover {
     text-decoration: none;
     cursor: pointer;
     background: #c4c4c4;
 }
+
 .smallbutton:hover {
     text-decoration: none;
     cursor: pointer;
     background: #c4c4c4;
 }
+
 .narrow {
     padding-left: 9px;
     padding-right: 9px;
 }
+
 .cssbox {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
@@ -143,35 +161,73 @@ select:focus {
     overflow: auto;
     white-space: pre-line;
 }
+
 .message {
     white-space: pre-line;
     height: 40px;
 }
+
 .field-icon {
-  margin-left: -30px;
-  height: 18px;
-  z-index: 1003;
-  position: relative;
+    margin-left: -30px;
+    height: 18px;
+    z-index: 1003;
+    position: relative;
 }
+
 .helpHeading {
     cursor: pointer;
     padding: 1px;
 }
+
 .helpHeading:hover {
     background-color: #eeeeee;
 }
+
 .helpHeading2 {
     cursor: pointer;
     padding: 1px;
 }
+
+/* Add these to the end of your style.css or update existing help classes */
+
+.helpHeading h3::before,
+.helpHeading2 p::before {
+    content: '▶ ';
+    font-size: 0.8em;
+    color: #888;
+    margin-right: 10px;
+    transition: transform 0.3s;
+    display: inline-block;
+}
+
+/* When the heading has the 'open' class, rotate the arrow and expand the text */
+.helpHeading.open h3::before,
+.helpHeading2.open p::before {
+    transform: rotate(90deg);
+}
+
+.helpHeading.open+.helpText,
+.helpHeading2.open+.helpText {
+    max-height: 5000px;
+    /* Large value to allow full expansion */
+    padding-bottom: 20px;
+}
+
+/* Optional: add a slight background to open sections to differentiate them */
+.helpHeading.open {
+    background-color: #f9f9f9;
+}
+
 .helpText {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
 }
+
 .intLink {
     cursor: pointer;
 }
+
 .blink {
     -webkit-animation: blink .75s linear infinite;
     -moz-animation: blink .75s linear infinite;
@@ -179,126 +235,161 @@ select:focus {
     -o-animation: blink .75s linear infinite;
     animation: blink .75s linear infinite;
 }
- @-webkit-keyframes blink {
- 0% {
-opacity: 1;
+
+@-webkit-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    50.01% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
- 50% {
-opacity: 1;
+
+@-moz-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    50.01% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
- 50.01% {
-opacity: 0;
+
+@-ms-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    50.01% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
- 100% {
-opacity: 0;
+
+@-o-keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    50.01% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    50.01% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
- @-moz-keyframes blink {
- 0% {
-opacity: 1;
-}
- 50% {
-opacity: 1;
-}
- 50.01% {
-opacity: 0;
-}
- 100% {
-opacity: 0;
-}
-}
- @-ms-keyframes blink {
- 0% {
-opacity: 1;
-}
- 50% {
-opacity: 1;
-}
- 50.01% {
-opacity: 0;
-}
- 100% {
-opacity: 0;
-}
-}
- @-o-keyframes blink {
- 0% {
-opacity: 1;
-}
- 50% {
-opacity: 1;
-}
- 50.01% {
-opacity: 0;
-}
- 100% {
-opacity: 0;
-}
-}
- @keyframes blink {
- 0% {
-opacity: 1;
-}
- 50% {
-opacity: 1;
-}
- 50.01% {
-opacity: 0;
-}
- 100% {
-opacity: 0;
-}
-}
+
 .dropTarget {
-	-webkit-border-radius: 20px;
-	-moz-border-radius: 20px;
-	border-radius: 20px;
-	font-family: Arial;
-	font-size: 18px;
-	padding: 100px;
-	text-decoration: none;
-	color: rgba(0, 0, 0, 0);
-	background: #e6e6e6;
-	display: none;
-	text-align: center;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    font-family: Arial;
+    font-size: 18px;
+    padding: 100px;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0);
+    background: #e6e6e6;
+    display: none;
+    text-align: center;
 }
+
 .smallImg {
-	width: 50%;
+    width: 50%;
 }
+
 .dropHover {
-	cursor: pointer;
-	background: #A5B9FD;
-	outline: 2px dashed #eee;
-	outline-offset: -10px;
+    cursor: pointer;
+    background: #A5B9FD;
+    outline: 2px dashed #eee;
+    outline-offset: -10px;
 }
+
 .dropReady {
-	cursor: pointer;
-	background: #aee5a1;
-	outline: 5px dashed white;
-	outline-offset: -10px;
+    cursor: pointer;
+    background: #aee5a1;
+    outline: 5px dashed white;
+    outline-offset: -10px;
 }
+
 input[type=checkbox] {
     /* Larger checkboxes */
-    -ms-transform: scale(1.7); /* IE */
-    -moz-transform: scale(1.7); /* FF */
-    -webkit-transform: scale(1.7); /* Safari and Chrome */
-    -o-transform: scale(1.7); /* Opera */
+    -ms-transform: scale(1.7);
+    /* IE */
+    -moz-transform: scale(1.7);
+    /* FF */
+    -webkit-transform: scale(1.7);
+    /* Safari and Chrome */
+    -o-transform: scale(1.7);
+    /* Opera */
     transform: scale(1.7);
     padding: 0px;
     cursor: pointer;
     border: 1px solid #dedede;
 }
+
 input[type=radio] {
     /* Larger radio buttons */
-    -ms-transform: scale(1.7); /* IE */
-    -moz-transform: scale(1.7); /* FF */
-    -webkit-transform: scale(1.7); /* Safari and Chrome */
-    -o-transform: scale(1.7); /* Opera */
+    -ms-transform: scale(1.7);
+    /* IE */
+    -moz-transform: scale(1.7);
+    /* FF */
+    -webkit-transform: scale(1.7);
+    /* Safari and Chrome */
+    -o-transform: scale(1.7);
+    /* Opera */
     transform: scale(1.7);
     padding: 0px;
     cursor: pointer;
     border: 1px solid #dedede;
 }
+
 ul#tabs {
     margin: 0;
     text-align: center;
@@ -310,10 +401,12 @@ ul#tabs {
     z-index: 1;
     background-color: #c6d5c6;
 }
+
 ul#tabs li {
     display: inline;
     width: auto;
 }
+
 ul#tabs li a {
     font-size: 18px;
     border: none;
@@ -324,9 +417,11 @@ ul#tabs li a {
     color: #42454a;
     background-color: #c6d5c6;
 }
+
 ul#tabs li a:hover {
     background-color: #a4b3a4;
 }
+
 ul#tabs li a.selected {
     font-weight: bold;
     padding: 12px;
@@ -336,6 +431,7 @@ ul#tabs li a.selected {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
+
 div.tabContent {
     border: none;
     max-width: 1000px;
@@ -343,9 +439,11 @@ div.tabContent {
     margin-right: auto;
     background-color: #ffffff;
 }
+
 div.tabContent.hide {
     display: none;
 }
+
 select {
     -webkit-appearance: button;
     -moz-appearance: button;
@@ -362,9 +460,11 @@ select {
     color: #666666;
     background: #fffffd;
 }
+
 img.intLink {
     border: 0;
 }
+
 #toolBar1 {
     display: none;
     padding-top: 1px;
@@ -373,118 +473,146 @@ img.intLink {
     border-top-right-radius: 15px;
     background: #e6e6e6;
 }
+
 #toolBar1 select {
     font-size: 10px;
     width: 80px;
     padding: 4px;
     border-radius: 8px;
 }
+
 #mainBox {
     width: 100%;
     padding: 12px;
 }
+
 #editMode label {
     cursor: pointer;
 }
-[contenteditable=true]:empty:before{
-  content: attr(placeholder);
-  display: block; /* For Firefox */
-  color: #999999;
+
+[contenteditable=true]:empty:before {
+    content: attr(placeholder);
+    display: block;
+    /* For Firefox */
+    color: #999999;
 }
 
-<!--previously inline formatting moved to style.css-->
 #mainMsg {
     min-height: 20px;
 }
+
 #lockList {
     padding: 4px;
     width: 100%;
 }
+
 #resetListBtn {
     font-size: 14px;
     padding: 4px;
 }
+
 #main2lockBtn {
     font-size: 14px;
     padding: 4px;
     padding-left: 10px;
     padding-right: 12px;
 }
+
 #basicBtnsTop {
     display: block;
 }
+
 #decryptBtnBasic {
     font-size: 22px;
     padding: 14px;
 }
+
 #showLockBtnBasic {
     font-size: 22px;
     padding: 14px;
 }
+
 #emailBtnsTop {
     display: none;
 }
+
 #decryptBtnEmail {
     padding-right: 7px;
     padding-left: 7px;
 }
+
 #stegoBtnEmail {
     padding-right: 6px;
     padding-left: 6px;
 }
+
 #imageFileEmailBtn {
     padding-right: 6px;
     padding-left: 6px;
     padding-bottom: 13px;
 }
+
 #imageFileEmail {
     display: none;
 }
+
 #mainBtnsTop {
     display: none;
 }
+
 #decryptBtn {
     padding-right: 7px;
     padding-left: 7px;
 }
+
 #verifyBtn {
     padding-right: 7px;
     padding-left: 7px;
 }
+
 #showLockBtn {
     padding-right: 7px;
     padding-left: 7px;
 }
+
 #main2extraBtn {
     color: orange;
     padding-right: 9px;
     padding-left: 9px;
 }
+
 #extraButtonsTop {
     display: none;
 }
+
 #stegoBtn {
     padding-right: 9px;
     padding-left: 9px;
 }
+
 #imageFileBtn {
     padding-bottom: 13px;
 }
+
 #imageFile {
     display: none;
 }
+
 #secretShareBtn {
     padding-right: 9px;
     padding-left: 9px;
 }
+
 #extra2mainBtn {
     color: orange;
     padding-right: 9px;
     padding-left: 9px;
 }
+
 #imgFile {
     display: none;
 }
+
 #mainFile {
     display: none;
 }
@@ -492,29 +620,37 @@ img.intLink {
 #optionsTab {
     max-width: 500px;
 }
+
 #customColors {
     display: block;
 }
+
 #colorPicker {
     width: 50px;
     padding: 12px;
 }
+
 #rndColors {
     font-size: medium;
     padding: 9px;
 }
+
 #specialEncryptModes {
     display: none;
 }
+
 #syncCheck {
     display: none;
 }
+
 #basicHideModes {
     display: none;
 }
+
 #advancedModes {
     display: none;
 }
+
 #advancedBtns {
     display: none;
 }
@@ -522,6 +658,7 @@ img.intLink {
 #advancedHelp {
     display: none;
 }
+
 #canary {
     float: left;
 }
@@ -529,43 +666,54 @@ img.intLink {
 #lockScr {
     display: none;
 }
+
 #lock2mainBtn {
     float: left;
 }
+
 #lockMsg {
     height: 25px;
 }
+
 #lockNameBox {
     width: 95%;
 }
+
 #lockBox {
     width: 95%;
 }
+
 #lockBtnsBottom {
     display: none;
 }
-#lockFile{
+
+#lockFile {
     display: none;
 }
 
 #keyScr {
     display: block;
 }
+
 #pwdMsg {
     height: 40px;
 }
+
 #javascriptOff {
     color: red;
     font-weight: bold;
 }
+
 #nameList {
     padding: 4px;
     width: 30%;
 }
+
 #newUserBtn {
     font-size: 14px;
     padding: 4px;
 }
+
 #pwdBox {
     width: 95%;
 }
@@ -573,59 +721,76 @@ img.intLink {
 #introscr {
     display: none;
 }
+
 #introWelcome {
     color: green;
 }
+
 #intro1 {
     width: 98%;
     max-width: 500px;
 }
+
 #skipIntroBtn {
     float: right;
 }
+
 #introscr2 {
     display: none;
 }
+
 #intro2 {
     width: 98%;
     max-width: 500px;
 }
+
 #nameIntro {
     width: 90%;
 }
+
 #pwdIntroMsg {
     color: green;
 }
+
 #introscr3 {
     display: none;
 }
+
 #intro3 {
     width: 98%;
     max-width: 500px;
 }
+
 #pwdIntroBox {
     width: 90%;
 }
+
 #introscr4 {
     display: none;
 }
+
 #intro4 {
     width: 98%;
     max-width: 500px;
 }
+
 #emailIntro {
     width: 90%;
 }
+
 #introscr5 {
     display: none;
 }
+
 #intro5 {
     width: 98%;
     max-width: 500px;
 }
+
 #showlockIntroBtn {
     color: blue;
 }
+
 #intromsg2 {
     color: red;
 }
@@ -633,24 +798,31 @@ img.intLink {
 #nameScr {
     display: none;
 }
+
 #namechangemsg {
     height: 30px;
 }
+
 #userNameBox {
     width: 95%;
 }
+
 #newKeyMsg {
     height: 30px;
 }
+
 #newKeyBox {
     width: 95%;
 }
+
 #newKey2Box {
     width: 95%;
 }
+
 #emailScr {
     display: none;
 }
+
 #emailBox {
     width: 95%;
 }
@@ -658,9 +830,11 @@ img.intLink {
 #decoyText {
     width: 95%;
 }
+
 #decoyInBox {
     width: 95%;
 }
+
 #decoyOutBox {
     width: 95%;
 }
@@ -668,6 +842,7 @@ img.intLink {
 #partsNumber {
     width: 30%;
 }
+
 #partsQuorum {
     width: 30%;
 }
@@ -679,13 +854,16 @@ img.intLink {
 #imageScr {
     display: none;
 }
+
 #image2mainBtn {
     float: left;
 }
+
 #imageBox {
     width: 25%;
     padding: 5px;
 }
+
 #imageMsg {
     height: 40px;
 }

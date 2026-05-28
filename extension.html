@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PassLok Privacy</title>
+    <meta name="Keywords"
+        content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM">
+    <meta name="Description" content="PassLok privacy">
+    <meta name="author" content="F. Ruiz">
+    <meta name="robots" content="index">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="touch-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <!--Default stylesheet containing the Light color scheme-->
+    <link rel="stylesheet" href="style.css">
+
+    <!--Open-source libraries used, all found on GitHub:-->
+
+    <!--Shamir Secret Sharing Scheme. Edited so NaCl RNG is used instead of built-in RNG. https://github.com/amper5and/secrets.js-->
+    <script src="js-opensrc/secrets.js"></script>
+
+    <!--Tweet NaCl crypto library 1.0.3 by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
+    <script src="js-opensrc/nacl-fast.js"></script>
+
+    <!--ed2curve-js conversion of curve coordinates 0.2.1 by Dmitry Chestnykh. https://github.com/dchest/ed2curve-js-->
+    <script src="js-opensrc/ed2curve.js"></script>
+
+    <!--scrypt-async-js KDF 2.0.1 by Dmitry Chestnykh. https://github.com/dchest/scrypt-async-js-->
+    <script src="js-opensrc/scrypt-async.js"></script>
+
+    <!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
+    <script src="js-opensrc/lz-string.js"></script>
+
+    <!--DOMPurify, used to sanitize decrypted material before putting in DOM v3.1.7. https://github.com/cure53/DOMPurify-->
+    <script src="js-opensrc/purify.js"></script>
+
+    <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
+    <script src="js-opensrc/jsstegencoder-1.0.js"></script>
+
+    <!--jsstegdecoder-1.0.js. One edit to display warning on error-->
+    <script src="js-opensrc/jsstegdecoder-1.0.js"></script>
+
+    <!--jssteg-1.0.js-->
+    <script src="js-opensrc/jssteg-1.0.js"></script>
+
+    <!--color picker by Jan Odvarko. Edited so images are included, and to make it smaller. https://github.com/odvarko/JSColor-->
+    <script src="js-opensrc/jscolor.js"></script>
+
+    <!--QRcode.js by David Shim. https://github.com/davidshimjs/qrcodejs-->
+    <script src="js-opensrc/qrcode.js"></script>
+
+    <!--ORIGINAL PASSLOK CODE-->
+
+    <!--this only loads two word arrays: wordlist and blacklist-->
+    <script src="js-head/dictionary_en.js"></script>
+
+    <!--converters for data formats-->
+    <script src="js-head/converters.js"></script>
+
+    <!--Key and Lock functions-->
+    <script src="js-head/keylock.js"></script>
+
+    <!--cryptographic functions, main part-->
+    <script src="js-head/crypto-main.js"></script>
+
+    <!--cryptographic functions, additional functions-->
+    <script src="js-head/crypto-extra.js"></script>
+
+    <!--extra functions for email and chat.-->
+    <script src="js-head/mail&chat.js"></script>
+
+    <!--Shamir Secret Sharing Scheme-->
+    <script src="js-head/SSSS.js"></script>
+
+    <!--text steganograghy-->
+    <script src="js-head/textstego.js"></script>
+
+    <!--seedable PRNG-->
+    <script src="js-head/prng.js"></script>
+
+    <!--steganography library-->
+    <script src="js-head/plstego.js"></script>
+
+    <!--image steganograghy-->
+    <script src="js-head/imagestego.js"></script>
+
+    <!--local Directory functions-->
+    <script src="js-head/localdir.js"></script>
+
+    <!--for changing screen colors-->
+    <script src="js-head/colors.js"></script>
+
+    <!--special functions that work only with Chrome apps and extensions-->
+    <script src="js-head/Chromestuff.js"></script>
+
+</head>
+
+<body>
+    <div id="app-root"></div>
+    <script src="extension-loader.js"></script>
+</body>
+
+</html>
