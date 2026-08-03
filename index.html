@@ -1,146 +1,187 @@
 <!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Crypto</title>
-    <meta name="Crypto"
-        content="passlok, URSA, browser, encryption, decryption, symmetric, public key, signature, AES, ECDH, Diffie, Hellman, elliptic curve, advanced, javascript, PGP, PRISM, Quantum, Crystals, Kyber, ML-KEM">
-    <meta name="Description" content="Crypto">
-    <meta name="author" content="F. Ruiz">
-    <meta name="robots" content="index">
-
-    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="touch-icon.png">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
-    <link rel="manifest" href="site.webmanifest">
-
-    <style>
-        body {
-            background: #f0f0f0;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
-            /* Simple padding for the status message */
-        }
-
-        #status {
-            color: #555;
-            font-size: 14px;
-        }
-    </style>
-
-    <script>
-        // 1. ELEGANT INTERCEPT: Check for the Service Worker's secret handshake
-        if (window.location.search.includes('worker_cache=true')) {
-            console.log("Background caching pass detected. Sleeping to save CPU.");
-        } else {
-            // 2. THE LIVE APP: If there's no flag, run the full cryptographic boot
-            const PUBLIC_KEY_B64 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzD1OVmkLaEWg3Q7wVPa6lK1ynBCjkKJ0i8cf5iaXeCOl9stpgvzaXKKQ+mBp8phjJvXngyFAJ/qblaY8YngMgiJrrBuY0GOg1BHWcWfUeYlp3TVtQVZDeXHd3TbfnEvssMnAutCAKxKeonLOe6U05phv6rEgtrbWOBGVoKMEhZlaZd0mhZeJk7BM3JZFwVICUrQHTS7qCmGFBHjut6oLZejmIQTX3ycY70cNbYwKWdTYTQev6/V1sCGhgtNviPtD5g/Nh3P58yqLKO/LVqiMk52vxlLyWTtLjwnDswzp6YBqZ1nM0NwhFWZpJrIStzDoWpD0eLzFywq326ASbQTLsQIDAQAB";
-
-            async function verifyAndBoot() {
-                window.onload = null;
-                const statusEl = document.getElementById('status');
-
-                try {
-                    const nocache = `?t=${Date.now()}`;
-                    const manifestRes = await fetch('hashes.json' + nocache);
-                    const manifestText = await manifestRes.text();
-
-                    const sigRes = await fetch('manifest.sig' + nocache);
-                    const sigBuffer = await sigRes.arrayBuffer();
-
-                    const pubKeyData = Uint8Array.from(atob(PUBLIC_KEY_B64), c => c.charCodeAt(0));
-                    const key = await crypto.subtle.importKey(
-                        "spki", pubKeyData, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]
-                    );
-                    const isValid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, sigBuffer, new TextEncoder().encode(manifestText));
-                    if (!isValid) throw new Error("Manifest signature invalid.");
-
-                    const manifest = JSON.parse(manifestText);
-
-                    const verificationTasks = Object.entries(manifest).map(async ([file, expectedHash]) => {
-                        const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
-                        const fetchUrl = isLocal ? file : `${file}?t=${Date.now()}`;
-
-                        const response = await fetch(fetchUrl);
-                        const rawBuffer = await response.arrayBuffer();
-
-                        const actualHash = await computeSHA256(rawBuffer);
-                        if (actualHash !== expectedHash) throw new Error(`Integrity Breach: ${file}`);
-
-                        return { file, content: new TextDecoder().decode(rawBuffer) };
-                    });
-
-                    const verifiedModules = await Promise.all(verificationTasks);
-
-                    for (const { file, content } of verifiedModules) {
-                        if (file.endsWith('.json') && file.includes('config')) {
-                            const config = JSON.parse(content);
-                            if (config.appName) document.title = config.appName;
-                            if (config.favicon) {
-                                const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-                                link.type = 'image/x-icon';
-                                link.rel = 'shortcut icon';
-                                link.href = config.favicon;
-                                document.getElementsByTagName('head')[0].appendChild(link);
-                            }
-                            if (config.description) {
-                                const metaDesc = document.querySelector('meta[name="Description"]');
-                                if (metaDesc) metaDesc.setAttribute("content", config.description);
-                            }
-                            console.log(`Verified Identity: ${config.appName}`);
-                        } else if (file.endsWith('.css')) {
-                            const style = document.createElement('style');
-                            style.textContent = content + `\n/*# sourceURL=${file} */`;
-                            document.head.appendChild(style);
-                        } else if (file.endsWith('.html')) {
-                            document.body.removeAttribute('style');
-                            document.body.innerHTML = content;
-                        } else if (file.endsWith('.js')) {
-                            const script = document.createElement('script');
-                            script.textContent = content + `\n//# sourceURL=${file}`;
-                            document.head.appendChild(script);
-                        }
-                    }
-
-                    console.log("High-speed boot complete.");
-                    window.dispatchEvent(new Event('DOMContentLoaded'));
-
-                    // Ensure the Service Worker only registers after a fully validated boot
-                    if ('serviceWorker' in navigator) {
-                        navigator.serviceWorker.register('./sw.js')
-                            .then(registration => {
-                                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                            })
-                            .catch(err => {
-                                console.error('ServiceWorker registration failed: ', err);
-                            });
-                    }
-
-                } catch (e) {
-                    document.body.innerHTML = `<div style="color:red; padding:40px;"><h2>SECURITY ALERT</h2><p>${e.message}</p></div>`;
-                    console.error(e);
-                }
-            }
-
-            async function computeSHA256(buffer) {
-                const hashBuf = await crypto.subtle.digest('SHA-256', buffer);
-                return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                verifyAndBoot();
-            }, { once: true });
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booting...</title>
 </head>
 
 <body>
-    <div id="status">Verifying App Integrity...</div>
+    <div id="status" style="font-family: sans-serif; padding: 20px;">
+        Verifying application integrity...
+    </div>
+
+    <script>
+        /* ====================================================================
+         * AUDIT POINT 0: GLOBAL PUBLIC KEY & RE-ENTRY LOCK
+         * - PUBLIC_KEY_B64: Your published RSA public key (SPKI format).
+         * - _bootAttempted: Prevents duplicate execution loops.
+         * ==================================================================== */
+        window._bootAttempted = window._bootAttempted || false;
+
+        const PUBLIC_KEY_B64 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzD1OVmkLaEWg3Q7wVPa6lK1ynBCjkKJ0i8cf5iaXeCOl9stpgvzaXKKQ+mBp8phjJvXngyFAJ/qblaY8YngMgiJrrBuY0GOg1BHWcWfUeYlp3TVtQVZDeXHd3TbfnEvssMnAutCAKxKeonLOe6U05phv6rEgtrbWOBGVoKMEhZlaZd0mhZeJk7BM3JZFwVICUrQHTS7qCmGFBHjut6oLZejmIQTX3ycY70cNbYwKWdTYTQev6/V1sCGhgtNviPtD5g/Nh3P58yqLKO/LVqiMk52vxlLyWTtLjwnDswzp6YBqZ1nM0NwhFWZpJrIStzDoWpD0eLzFywq326ASbQTLsQIDAQAB";
+
+        async function verifyAndBoot() {
+            if (window._bootAttempted) return;
+            window._bootAttempted = true;
+
+            console.log("[AUDIT 1/5] Starting boot sequence...");
+
+            try {
+                /* ============================================================
+                 * AUDIT POINT 1: ONE-TIME SERVICE WORKER CLEANUP
+                 * - Ensures legacy Service Worker caches do not hijack fetches.
+                 * ============================================================ */
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of registrations) {
+                        await reg.unregister();
+                        console.log("[AUDIT 1/5] Purged legacy Service Worker registration.");
+                    }
+                }
+
+                /* ============================================================
+                 * AUDIT POINT 2: FETCH SIGNED MANIFEST & SIGNATURE
+                 * - Uses timestamp cache-busting ONLY for manifest files to ensure
+                 *   we fetch fresh signature states without degrading asset speed.
+                 * ============================================================ */
+                console.log("[AUDIT 2/5] Fetching manifest and cryptographic signature...");
+                const timestampParam = `?t=${Date.now()}`;
+
+                const [manifestRes, sigRes] = await Promise.all([
+                    fetch('hashes.json' + timestampParam),
+                    fetch('manifest.sig' + timestampParam)
+                ]);
+
+                const manifestText = await manifestRes.text();
+                const sigBuffer = await sigRes.arrayBuffer();
+
+                /* ============================================================
+                 * AUDIT POINT 3: VERIFY MANIFEST RSASSA-PKCS1-v1_5 SIGNATURE
+                 * - Imports PUBLIC_KEY_B64 into Web Crypto API.
+                 * - Validates that hashes.json was signed by the private key holder.
+                 * ============================================================ */
+                console.log("[AUDIT 3/5] Verifying manifest signature against public key...");
+                const encodedManifest = new TextEncoder().encode(manifestText);
+                const pubKeyBytes = Uint8Array.from(atob(PUBLIC_KEY_B64), c => c.charCodeAt(0));
+
+                const cryptoKey = await crypto.subtle.importKey(
+                    "spki",
+                    pubKeyBytes,
+                    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+                    false,
+                    ["verify"]
+                );
+
+                const isSignatureValid = await crypto.subtle.verify(
+                    "RSASSA-PKCS1-v1_5",
+                    cryptoKey,
+                    sigBuffer,
+                    encodedManifest
+                );
+
+                if (!isSignatureValid) {
+                    throw new Error("SECURITY FAILURE: Manifest signature verification failed.");
+                }
+                console.log("[AUDIT 3/5] Manifest signature VALID.");
+
+                /* ============================================================
+                 * AUDIT POINT 4: PARALLEL FILE FETCH & SHA-256 HASH VERIFICATION
+                 * - Parses verified hashes.json manifest.
+                 * - Fetches all listed files AND computes SHA-256 digests in parallel.
+                 * ============================================================ */
+                console.log("[AUDIT 4/5] Fetching modules and verifying individual SHA-256 hashes in parallel...");
+                const manifest = JSON.parse(manifestText);
+                const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+
+                const verificationTasks = Object.entries(manifest).map(async ([fileName, expectedHash]) => {
+                    // Local environments bypass cache query parameters; remote relies on HTTP ETag caching.
+                    const fetchUrl = isLocal ? fileName : `${fileName}${timestampParam}`;
+
+                    const response = await fetch(fetchUrl);
+                    if (!response.ok) throw new Error(`Network error fetching: ${fileName}`);
+
+                    const rawBuffer = await response.arrayBuffer();
+                    const actualHash = await computeSHA256(rawBuffer);
+
+                    if (actualHash !== expectedHash) {
+                        throw new Error(`INTEGRITY BREACH: File '${fileName}' hash mismatch! Expected: ${expectedHash}, Got: ${actualHash}`);
+                    }
+
+                    console.log(`[AUDIT 4/5] Verified: ${fileName}`);
+                    return { fileName, content: new TextDecoder().decode(rawBuffer) };
+                });
+
+                // Wait for all fetches and cryptographic checks to resolve concurrently
+                const verifiedModules = await Promise.all(verificationTasks);
+
+                /* ============================================================
+                 * AUDIT POINT 5: SAFE DOM MOUNTING & INITIALIZATION
+                 * - Applies app-settings, CSS, HTML layout, and JavaScript logic.
+                 * ============================================================ */
+                console.log("[AUDIT 5/5] All hashes match. Mounting verified application components...");
+
+                for (const { fileName, content } of verifiedModules) {
+                    if (fileName === 'app-settings.json') {
+                        const config = JSON.parse(content);
+                        if (config.appName) document.title = config.appName;
+                        if (config.favicon) {
+                            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+                            link.type = 'image/x-icon';
+                            link.rel = 'shortcut icon';
+                            link.href = config.favicon;
+                            document.getElementsByTagName('head')[0].appendChild(link);
+                        }
+                        if (config.description) {
+                            const metaDesc = document.querySelector('meta[name="Description"]');
+                            if (metaDesc) metaDesc.setAttribute("content", config.description);
+                        }
+                    } else if (fileName.endsWith('.css')) {
+                        const style = document.createElement('style');
+                        style.textContent = content + `\n/*# sourceURL=${fileName} */`;
+                        document.head.appendChild(style);
+                    } else if (fileName.endsWith('.html')) {
+                        document.body.removeAttribute('style');
+                        document.body.innerHTML = content;
+                    } else if (fileName.endsWith('.js')) {
+                        const script = document.createElement('script');
+                        script.textContent = content + `\n//# sourceURL=${fileName}`;
+                        document.head.appendChild(script);
+                    }
+                }
+
+                console.log("[AUDIT COMPLETE] Application boot successful.");
+
+            } catch (error) {
+                console.error("[AUDIT FAILURE]", error);
+                document.body.innerHTML = `
+                    <div style="color: #d9534f; background: #fdf2f2; border: 1px solid #f5c6cb; padding: 20px; border-radius: 4px; margin: 20px;">
+                        <h2>Security Alert</h2>
+                        <p>${error.message}</p>
+                        <small>Check DevTools console for full diagnostic logs.</small>
+                    </div>`;
+            }
+        }
+
+        /* ====================================================================
+         * HELPER: SHA-256 DIGEST COMPUTATION
+         * - Uses standard Web Crypto subtle API for rapid native hashing.
+         * ==================================================================== */
+        async function computeSHA256(buffer) {
+            const hashBuf = await crypto.subtle.digest('SHA-256', buffer);
+            return Array.from(new Uint8Array(hashBuf))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        // Trigger boot sequence when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener("DOMContentLoaded", verifyAndBoot, { once: true });
+        } else {
+            verifyAndBoot();
+        }
+    </script>
 </body>
 
 </html>

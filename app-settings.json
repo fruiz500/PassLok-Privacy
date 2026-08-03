@@ -1,0 +1,6 @@
+{
+    "appName": "PassLok",
+    "version": "2.7.0",
+    "description": "Secure, private communication based on NaCl.",
+    "favicon": "favicon.png"
+}
